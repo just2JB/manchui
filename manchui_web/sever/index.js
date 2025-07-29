@@ -1,0 +1,12 @@
+//index.js
+const express = require("express"); //require로 불러와 install한 모듈 사용
+const app = express();
+const PORT = 3000;
+
+app.get("/", (req,res) => {
+    res.send("출력될 내용");
+})
+
+app.listen(PORT, () => {
+    console.log("Server is running");
+})

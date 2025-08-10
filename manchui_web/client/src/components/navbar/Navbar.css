@@ -1,0 +1,73 @@
+.navbar {
+  position: fixed;
+  display: flex;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 70px;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(#a62415, #1a1a1a);
+  z-index: 50;
+}
+.manchui-logo {
+  display: block;
+  width: auto;
+  height: 50px;
+  margin-left: 3vw;
+}
+.page-list-ul {
+  display: flex;
+  width: 40%;
+  margin-right: 50px;
+  justify-content: space-between;
+}
+.link {
+  color: #fafafa;
+  text-decoration: none;
+}
+.link:hover {
+  font-weight: bold;
+}
+.pop-button {
+  visibility: hidden;
+  position: absolute;
+  right: 0px;
+}
+.pop-bar {
+  visibility: hidden;
+  position: absolute;
+  right: -400px;
+  transition-duration: 0.3s;
+  top: 60px;
+  background-color: #a62415;
+
+  z-index: 51;
+}
+.pop-page-list-ul {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 767px) {
+  /** Mobile & Tablet  */
+  .page-list-ul {
+    visibility: hidden;
+  }
+  .pop-button {
+    visibility: visible;
+  }
+  .manchui-logo {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    width: auto;
+    height: 60px;
+    margin-left: 0px;
+  }
+  .pop-open {
+    visibility: visible;
+    right: 0px;
+  }
+}

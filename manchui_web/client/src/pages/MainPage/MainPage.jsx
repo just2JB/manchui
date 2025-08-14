@@ -1,8 +1,24 @@
 import React from "react";
 import "./MainPage.css";
+import LiquidChrome from "../../components/LiquidChrome/LiquidChrome";
 
 const MainPage = () => {
-  return <div className="main-page">MainPage 안녕하세요 저희 만취에요</div>;
+  return (
+    <div className="main-page">
+      <div style={{ width: "100vw", height: "1000px", position: "relative" }}>
+        <LiquidChrome
+          baseColor={[0.05, 0.05, 0.05]}
+          speed={0.15}
+          amplitude={0.3}
+          interactive={false}
+        />
+      </div>
+      <div className="cover"></div>
+      <div className="main-content">
+        <p>종합예술 댄스 동아리 만가지를 취하다, 만취</p>
+      </div>
+    </div>
+  );
 };
 
 export default MainPage;

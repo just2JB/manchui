@@ -1,64 +1,180 @@
 import React, { useState } from "react";
 import "./AuthWindow.css";
+import axios from "axios";
 
-const AuthWindow = ({ setAuthIsOpen }) => {
+const AuthWindow = ({ setUser, setAuthIsOpen }) => {
   const [currentWork, setCurrentWork] = useState("login");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    passwordCheck: "",
+    username: "",
+    clubcode: "",
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (e.target.className === "login") {
+      setFormData({ email: formData.email, password: formData.password });
+      try {
+        const response = await axios.post(
+          "https://manchuitestserver.run.goorm.site/api/auth/login",
+          formData,
+          { withCredentials: true }
+        );
+        if (response.data.user) {
+          setUser(response.data.user);
+          return setAuthIsOpen(false);
+        } else {
+          return alert(response.data.message);
+        }
+      } catch (error) {
+        console.log(error.response.data.message);
+        setErrorMessage("비밀번호가 틀렸거나, 존재하지 않는 계정입니다.");
+      }
+    } else if (e.target.className === "signup") {
+      console.log(formData);
+      if (formData.password !== formData.passwordCheck) {
+        return setErrorMessage("비밀번호가 일치하지 않습니다.");
+      }
+      if (formData.clubcode != 10007) {
+        return setErrorMessage("동아리방 비밀번호가 틀렸습니다.");
+      }
+      try {
+        const response = await axios.post(
+          "https://manchuitestserver.run.goorm.site/api/auth/signup",
+          formData
+        );
+        if (response.status === 201) {
+          alert("계정 생성이 성공 되었습니다.");
+          setCurrentWork("login");
+        }
+      } catch (error) {
+        setErrorMessage(error.response.data.message);
+      }
+    }
+  };
+
   return (
     <div className="auth-window">
       <div className="form-div">
         <div className="top">
           <h2>{currentWork === "login" ? "로그인" : "계정생성"}</h2>
           <button className="close" onClick={() => setAuthIsOpen(false)}>
-            x
+            창닫기
           </button>
         </div>
         {currentWork === "login" ? (
-          <form className="login">
-            <div className="userid">
-              <label>아이디</label>
-              <input type="text" required />
-            </div>
-            <div className="password">
-              <label>비밀번호</label>
-              <input type="password" required />
-            </div>
-
-            <button className="login-button">로그인</button>
-          </form>
-        ) : (
-          <form className="signup">
-            <div className="userid">
-              <label>아이디</label>
-              <input type="text" required />
-            </div>
-            <div className="username">
-              <label>이름</label>
-              <input type="text" required />
-            </div>
+          <form className="login" onSubmit={handleSubmit}>
             <div className="email">
               <label>이메일</label>
-              <input type="email" required />
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                required
+                onChange={handleChange}
+              />
             </div>
             <div className="password">
               <label>비밀번호</label>
-              <input type="password" required />
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <button type="submit">로그인</button>
+          </form>
+        ) : (
+          <form className="signup" onSubmit={handleSubmit}>
+            <div className="email">
+              <label>이메일</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="password">
+              <label>비밀번호</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                required
+                onChange={handleChange}
+              />
             </div>
             <div className="password-check">
               <label>비밀번호 확인</label>
-              <input type="password" required />
+              <input
+                type="password"
+                name="passwordCheck"
+                value={formData.passwordCheck}
+                required
+                onChange={handleChange}
+              />
             </div>
-            <button className="signup-button">계정생성</button>
+            <div className="username">
+              <label>이름</label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="clubcode">
+              <label>동아리방 비밀번호</label>
+              <input
+                type="text"
+                name="clubcode"
+                value={formData.clubcode}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <button type="submit">계정 생성</button>
           </form>
         )}
+        <div className="error">{errorMessage}</div>
         <div className="bottom">
-          로그인 하러가기
-          <button className="toLogin" onClick={() => setCurrentWork("login")}>
-            로그인
-          </button>
-          계정이 없나요?
-          <button className="toSignup" onClick={() => setCurrentWork("signup")}>
-            계정생성
-          </button>
+          {currentWork === "login" ? (
+            <>
+              계정 만들러 가기
+              <button
+                className="toSignup"
+                onClick={() => setCurrentWork("signup")}
+              >
+                계정생성
+              </button>
+            </>
+          ) : (
+            <>
+              이미계정이 있나요?
+              <button
+                className="toLogin"
+                onClick={() => setCurrentWork("login")}
+              >
+                로그인
+              </button>
+            </>
+          )}
         </div>
       </div>
     </div>

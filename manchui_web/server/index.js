@@ -1,8 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
 const app = express();
 const PORT = 3000;
+
+const userRouter = require("./routes/user");
+
+app.use(
+  cors({
+    origin: "https://manchuitestweb.run.goorm.site",
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+app.use(express.urlencoded());
+app.use(cookieParser());
+
+app.use("/api/auth", userRouter);
 
 app.get("/", (req, res) => {
   res.send("만취 웹사이트의 백엔드 서버 입니다.");

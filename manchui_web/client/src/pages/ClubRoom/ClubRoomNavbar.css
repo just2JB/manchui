@@ -1,0 +1,10 @@
+.ClubRoomNavbar {
+  position: sticky;
+  top: 0px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 50px;
+  background-color: #b31313;
+}

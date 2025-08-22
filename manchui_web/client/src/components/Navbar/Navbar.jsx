@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { IoMenuSharp, IoChevronDownSharp } from "react-icons/io5";
+import { IoChevronDownSharp } from "react-icons/io5";
 
 import "./Navbar.css";
 

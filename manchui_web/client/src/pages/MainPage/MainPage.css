@@ -3,10 +3,18 @@
   height: 2000px;
   background-color: #121212;
 }
+.background {
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+}
+.liquid {
+  width: 100%;
+}
 .cover {
   position: absolute;
   top: 0px;
-  width: 100%;
+  width: 100vw;
   height: 1000px;
   background: linear-gradient(#00000088, #121212);
   z-index: 20;
@@ -20,4 +28,12 @@
   color: white;
   top: 65px;
   z-index: 30;
+}
+@media screen and (min-width: 767px) {
+  .liquid {
+    width: 72%;
+  }
+  .cover {
+    background: radial-gradient(#0000002c, #121212 50%);
+  }
 }

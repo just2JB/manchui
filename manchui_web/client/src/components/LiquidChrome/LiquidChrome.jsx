@@ -112,32 +112,6 @@ export const LiquidChrome = ({
     window.addEventListener("resize", resize);
     resize();
 
-    function handleMouseMove(event) {
-      const rect = container.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width;
-      const y = 1 - (event.clientY - rect.top) / rect.height;
-      const mouseUniform = program.uniforms.uMouse.value;
-      mouseUniform[0] = x;
-      mouseUniform[1] = y;
-    }
-
-    function handleTouchMove(event) {
-      if (event.touches.length > 0) {
-        const touch = event.touches[0];
-        const rect = container.getBoundingClientRect();
-        const x = (touch.clientX - rect.left) / rect.width;
-        const y = 1 - (touch.clientY - rect.top) / rect.height;
-        const mouseUniform = program.uniforms.uMouse.value;
-        mouseUniform[0] = x;
-        mouseUniform[1] = y;
-      }
-    }
-
-    if (interactive) {
-      container.addEventListener("mousemove", handleMouseMove);
-      container.addEventListener("touchmove", handleTouchMove);
-    }
-
     let animationId;
     function update(t) {
       animationId = requestAnimationFrame(update);
@@ -151,10 +125,7 @@ export const LiquidChrome = ({
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener("resize", resize);
-      if (interactive) {
-        container.removeEventListener("mousemove", handleMouseMove);
-        container.removeEventListener("touchmove", handleTouchMove);
-      }
+
       if (gl.canvas.parentElement) {
         gl.canvas.parentElement.removeChild(gl.canvas);
       }

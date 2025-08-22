@@ -105,7 +105,8 @@ router.post("/verify-token", async (req, res) => {
   }
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    return res.status(201).json({ isValid: true, user: decoded });
+    const user = await User.findById(decoded.userId);
+    return res.status(201).json({ isValid: true, user: user });
   } catch (error) {
     return res
       .status(401)

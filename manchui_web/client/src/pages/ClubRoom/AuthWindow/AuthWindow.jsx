@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./AuthWindow.css";
 import axios from "axios";
 
-const AuthWindow = ({ setUser, setAuthIsOpen }) => {
+const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
   const [currentWork, setCurrentWork] = useState("login");
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -32,6 +32,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen }) => {
           { withCredentials: true }
         );
         if (response.data.user) {
+          setIsLogin(true);
           setUser(response.data.user);
           return setAuthIsOpen(false);
         } else {

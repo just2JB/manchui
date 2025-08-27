@@ -1,9 +1,10 @@
 import axios from "axios";
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./ClubRoomNavbar.css";
 
-const ClubRoomNavbar = () => {
+const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
+  const location = useLocation();
   const nav = useNavigate();
   const handleLogout = async (e) => {
     try {
@@ -24,7 +25,11 @@ const ClubRoomNavbar = () => {
   return (
     <div className="ClubRoomNavbar">
       <div className="out">
-        <Link to="/club">나가기</Link>
+        {location.pathname === "/club" ? (
+          <></>
+        ) : (
+          <Link to="/club">뒤로가기</Link>
+        )}
       </div>
       <Link className="logo" to="/">
         <img
@@ -34,12 +39,27 @@ const ClubRoomNavbar = () => {
         />
       </Link>
       <div className="button">
-        <Link className="mypage" to="/club/mypage">
-          마이페이지
-        </Link>
-        <button className="logout" onClick={handleLogout}>
-          로그아웃
-        </button>
+        {isLogin ? (
+          <>
+            <Link className="mypage" to="/club/mypage">
+              마이페이지
+            </Link>
+            <div className="logout" onClick={handleLogout}>
+              로그아웃
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              className="login"
+              onClick={() => {
+                setAuthIsOpen(true);
+              }}
+            >
+              로그인
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

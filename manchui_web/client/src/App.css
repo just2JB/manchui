@@ -1,0 +1,15 @@
+.clubRoomLayout {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: #1f1f1f;
+}
+.clubRoombody {
+  width: 700px;
+  background-color: #121212;
+}
+@media screen and (max-width: 767px) {
+  .clubRoombody {
+    width: 100%;
+  }
+}

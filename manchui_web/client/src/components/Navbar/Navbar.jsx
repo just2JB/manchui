@@ -44,12 +44,17 @@ const Navbar = () => {
         </ul>
 
         <div
-          className="pop-button"
+          className={`pop-button ${isOpen ? "rotate" : ""}`}
           onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
         >
           <IoChevronDownSharp />
         </div>
-
+        <div
+          className={`pop-button ${isOpen ? "rotate2" : ""}`}
+          onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
+        >
+          <IoChevronDownSharp />
+        </div>
         <div className={`pop-bar pop-${isOpen ? "open" : "close"}`}>
           <ul className="pop-page-list-ul">
             {pages.map((item) => (

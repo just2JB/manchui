@@ -48,7 +48,16 @@
   position: absolute;
   margin-right: 5%;
   right: 0px;
-  color: white;
+  color: rgb(180, 180, 180);
+  transition-property: transform;
+  transition-duration: 0.3s;
+}
+.rotate {
+  transform: rotate(180deg);
+}
+.rotate2 {
+  transition-duration: 0.6s;
+  transform: rotate(360deg);
 }
 .pop-bar {
   transition-duration: 0.5s;

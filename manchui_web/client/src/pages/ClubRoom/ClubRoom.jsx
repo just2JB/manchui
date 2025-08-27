@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useOutletContext } from "react-router-dom";
 import axios from "axios";
 
 import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
-import PracticeCard from "../../components/PracticeCard/PracticeCard";
+import Schedule from "../../components/Schedule/Schedule";
 
 const mokData = [
   {
@@ -39,6 +39,7 @@ const mokData = [
 
 const ClubRoom = () => {
   const [user, setUser] = useState({ username: "" });
+  const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
   useEffect(() => {
     const verifyToken = async () => {
       try {
@@ -48,18 +49,18 @@ const ClubRoom = () => {
           { withCredentials: true }
         );
         if (responsse.data.isValid) {
+          setIsLogin(true);
           return setUser(responsse.data.user);
         }
-        return setAuthIsOpen(true);
+        setIsLogin(false);
+        return;
       } catch (error) {
-        setAuthIsOpen(true);
+        setIsLogin(false);
         console.log("토큰 인증 실패", error);
       }
     };
     verifyToken();
   }, []);
-
-  const [authIsOpen, setAuthIsOpen] = useState(false);
 
   const handleLogout = async (e) => {
     try {
@@ -69,6 +70,7 @@ const ClubRoom = () => {
         { withCredentials: true }
       );
       alert(response.data.message);
+      setIsLogin(false);
       setUser({ username: "" });
     } catch (error) {
       console.log(error.response.data.message);
@@ -77,7 +79,11 @@ const ClubRoom = () => {
   return (
     <div className="club-room">
       {authIsOpen ? (
-        <AuthWindow setUser={setUser} setAuthIsOpen={setAuthIsOpen} />
+        <AuthWindow
+          setIsLogin={setIsLogin}
+          setUser={setUser}
+          setAuthIsOpen={setAuthIsOpen}
+        />
       ) : (
         <></>
       )}
@@ -86,28 +92,27 @@ const ClubRoom = () => {
           <div className="aka">그냥 사는</div>
           <div className="username">{user.username}</div>
           <div className="position">직책: 댄서</div>
-          {user.username.length > 0 ? (
-            <>
-              <Link className="mypage" to="/club/mypage">
-                마이페이지
-              </Link>
-              <button className="logout" onClick={handleLogout}>
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <button className="authOpen" onClick={() => setAuthIsOpen(true)}>
-              로그인
-            </button>
-          )}
+
+          <div className="profill-button">
+            {isLogin ? (
+              <>
+                <Link className="mypage" to="/club/mypage">
+                  마이페이지
+                </Link>
+                <div className="logout" onClick={handleLogout}>
+                  로그아웃
+                </div>
+              </>
+            ) : (
+              <div className="authOpen" onClick={() => setAuthIsOpen(true)}>
+                로그인
+              </div>
+            )}
+          </div>
         </div>
         <div className="next-practice">
           <h3>나의 연습 일정</h3>
-          <div className="cards">
-            {mokData.map((practice) => (
-              <PracticeCard practice={practice} />
-            ))}
-          </div>
+          <Schedule />
         </div>
       </div>
       <div className="menu">

@@ -7,6 +7,7 @@ const app = express();
 const PORT = 3000;
 
 const userRouter = require("./routes/user");
+const reservationRouter = require("./routes/reservation");
 
 app.use(
   cors({
@@ -20,6 +21,7 @@ app.use(express.urlencoded());
 app.use(cookieParser());
 
 app.use("/api/auth", userRouter);
+app.use("/api/reservation", reservationRouter);
 
 app.get("/", (req, res) => {
   res.send("만취 웹사이트의 백엔드 서버 입니다.");

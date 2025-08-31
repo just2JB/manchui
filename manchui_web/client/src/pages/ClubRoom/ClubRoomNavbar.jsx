@@ -26,18 +26,28 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
     <div className="ClubRoomNavbar">
       <div className="out">
         {location.pathname === "/club" ? (
-          <></>
+          <Link to="/">홈으로</Link>
         ) : (
           <Link to="/club">뒤로가기</Link>
         )}
       </div>
-      <Link className="logo" to="/">
-        <img
-          src="/logos/longLogo_white.png"
-          alt="Logo"
-          className="manchui-logo"
-        />
-      </Link>
+      <div className="title">
+        <div>
+          {location.pathname === "/club" ? (
+            <Link className="logo" to="/">
+              <img
+                src="/logos/longLogo_white.png"
+                alt="Logo"
+                className="manchui-logo"
+              />
+            </Link>
+          ) : location.pathname === "/club/reservation" ? (
+            <h2>동아리방 예약</h2>
+          ) : (
+            ""
+          )}
+        </div>
+      </div>
       <div className="button">
         {isLogin ? (
           <>

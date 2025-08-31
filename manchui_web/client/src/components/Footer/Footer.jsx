@@ -15,10 +15,8 @@ const Footer = () => {
             <IoLogoYoutube size={20} />
           </a>
         </div>
-
         <Link>가입 하기</Link>
       </div>
-
       <div className="info">
         <p>
           Dance Crew. <span className="span-red">MANCHUI</span>
@@ -28,7 +26,6 @@ const Footer = () => {
           학생복지관 ~~~호
         </p>
       </div>
-
       <div className="footer-logo">
         <a className="logo" href="/">
           <img src="/logos/shortLogo.png" alt="Logo" className="short-logo" />

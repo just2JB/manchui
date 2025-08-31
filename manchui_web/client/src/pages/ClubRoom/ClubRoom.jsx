@@ -6,37 +6,6 @@ import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Schedule from "../../components/Schedule/Schedule";
 
-const mokData = [
-  {
-    name: "봄축제-올데프",
-    date: "2025-08-30",
-    startTime: 18,
-    endTime: 20,
-    place: "귀곡산장",
-  },
-  {
-    name: "꿈터-사이렌",
-    date: "2025-09-03",
-    startTime: 18,
-    endTime: 20,
-    place: "이젠스튜디오 E10",
-  },
-  {
-    name: "꿈터-볼케이노",
-    date: "2025-09-10",
-    startTime: 18,
-    endTime: 20,
-    place: "이젠스튜디오 E10",
-  },
-  {
-    name: "꿈터-사이렌",
-    date: "2025-09-19",
-    startTime: 18,
-    endTime: 20,
-    place: "이젠스튜디오 E10",
-  },
-];
-
 const ClubRoom = () => {
   const [user, setUser] = useState({ username: "" });
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();

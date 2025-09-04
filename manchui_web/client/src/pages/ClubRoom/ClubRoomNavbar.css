@@ -6,7 +6,8 @@
   align-items: center;
   width: 100%;
   height: 50px;
-  background-color: #b31313;
+  background: linear-gradient(#751a0fc4, #121212c4 50%);
+  user-select: none;
 }
 .ClubRoomNavbar > * {
   flex: 0.333;
@@ -33,7 +34,15 @@
   color: white;
   align-content: center;
   text-align: center;
+  margin-top: -10px;
 }
-.title > div {
-  width: 50vw;
+.title-text {
+  font-weight: 150;
+  margin-top: 10px;
+}
+
+@media screen and (max-width: 767px) {
+  .title > div {
+    width: 50vw;
+  }
 }

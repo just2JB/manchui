@@ -6,6 +6,8 @@ import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Schedule from "../../components/Schedule/Schedule";
 
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+
 const ClubRoom = () => {
   const [user, setUser] = useState({ username: "" });
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
@@ -13,7 +15,7 @@ const ClubRoom = () => {
     const verifyToken = async () => {
       try {
         const responsse = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/verify-token",
+          `${serverUrl}/api/auth/verify-token`,
           {},
           { withCredentials: true }
         );
@@ -34,7 +36,7 @@ const ClubRoom = () => {
   const handleLogout = async (e) => {
     try {
       const response = await axios.post(
-        "https://manchuitestserver.run.goorm.site/api/auth/logout",
+        `${serverUrl}/api/auth/logout`,
         {},
         { withCredentials: true }
       );

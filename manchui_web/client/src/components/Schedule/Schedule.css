@@ -20,7 +20,7 @@
 @keyframes open {
   0% {
     position: static;
-    background-color: rgba(129, 27, 27, 0.753);
+    background-color: #751a0fc4;
     height: inherit;
   }
   50% {

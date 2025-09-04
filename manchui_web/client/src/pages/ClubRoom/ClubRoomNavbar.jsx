@@ -3,13 +3,15 @@ import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./ClubRoomNavbar.css";
 
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+
 const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
   const location = useLocation();
   const nav = useNavigate();
   const handleLogout = async (e) => {
     try {
       const response = await axios.post(
-        "https://manchuitestserver.run.goorm.site/api/auth/logout",
+        `${serverUrl}/api/auth/logout`,
         {},
         { withCredentials: true }
       );
@@ -42,7 +44,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
               />
             </Link>
           ) : location.pathname === "/club/reservation" ? (
-            <h2>동아리방 예약</h2>
+            <h2 className="title-text">동아리방 예약</h2>
           ) : (
             ""
           )}

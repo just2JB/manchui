@@ -28,7 +28,7 @@
 }
 .page-list-ul {
   display: flex;
-  width: 40%;
+  width: 50%;
   margin-right: 50px;
   justify-content: space-between;
   gap: 10px;
@@ -38,6 +38,7 @@
   text-decoration: none;
   font-size: large;
   font-weight: 300;
+  width: max-content;
 }
 .link:hover {
   transition-duration: 0.5s;
@@ -81,6 +82,7 @@
   height: 50px;
   border-bottom: 1px solid #181818d5;
   align-content: center;
+  width: auto;
 }
 .pop-back {
   width: 100%;

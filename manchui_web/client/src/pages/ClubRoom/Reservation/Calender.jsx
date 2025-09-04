@@ -50,6 +50,7 @@ export const Calender = ({
                       onClick={() => clickDate(data.date)}
                     >
                       {data.date.getDate()}
+
                       {data.date.toDateString() ===
                       selectedDay.toDateString() ? (
                         <div className="selectedDay"></div>
@@ -90,7 +91,7 @@ export const Calender = ({
                       )}
                       {data.date.toDateString() ===
                       new Date().toDateString() ? (
-                        <div className="today">ToDay</div>
+                        <div className="today"></div>
                       ) : (
                         ""
                       )}

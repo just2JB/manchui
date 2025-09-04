@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./AuthWindow.css";
 import axios from "axios";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
   const [currentWork, setCurrentWork] = useState("login");
@@ -27,7 +28,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
       setFormData({ email: formData.email, password: formData.password });
       try {
         const response = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/login",
+          `${serverUrl}/api/auth/login`,
           formData,
           { withCredentials: true }
         );
@@ -52,7 +53,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
       }
       try {
         const response = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/signup",
+          `${serverUrl}/api/auth/signup`,
           formData
         );
         if (response.status === 201) {

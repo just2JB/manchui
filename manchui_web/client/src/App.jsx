@@ -23,6 +23,7 @@ import Mypage from "./pages/ClubRoom/Mypage/Mypage";
 import Practice from "./pages/ClubRoom/Practice/Practice";
 import CreatePractice from "./pages/ClubRoom/Practice/CreatePractice";
 import EditPractice from "./pages/ClubRoom/Practice/EditPractice";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
   const [isAuthenticated, setIsauthenticated] = useState(null);
@@ -38,7 +39,7 @@ function ProtectedRoute() {
     const verifyToken = async () => {
       try {
         const responsse = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/verify-token",
+          `${serverUrl}/api/auth/verify-token`,
           {},
           { withCredentials: true }
         );

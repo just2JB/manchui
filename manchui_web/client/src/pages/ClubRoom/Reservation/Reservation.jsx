@@ -1,63 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
-import { IoCloseOutline } from "react-icons/io5";
-import { Calender } from "./Calender";
 import { useOutletContext } from "react-router-dom";
+import axios from "axios";
 import "./Reservation.css";
 import { Swiper, SwiperSlide } from "swiper/react";
-
-const mokData = [
-  {
-    date: new Date("2025-08-30"),
-    agentId: "68a71c459117fa8505bc28af",
-    time: [10],
-  },
-  {
-    date: new Date("2025-09-10"),
-    agentId: "68a71c459117fa8505bc28af",
-    time: [8, 9],
-  },
-  {
-    date: new Date("2025-09-10"),
-    agentId: "",
-    time: [5, 6],
-  },
-  {
-    date: new Date("2025-09-12"),
-    agentId: "",
-    time: [1, 2],
-  },
-  {
-    date: new Date("2025-08-30"),
-    agentId: "68a71c459117fa8505bc28af",
-    time: [10],
-  },
-  {
-    date: new Date("2025-09-10"),
-    agentId: "68a71c459117fa8505bc28af",
-    time: [8, 9],
-  },
-  {
-    date: new Date("2025-08-30"),
-    agentId: "68a71c459117fa8505bc28af",
-    time: [10],
-  },
-  {
-    date: new Date("2025-09-10"),
-    agentId: "68a71c459117fa8505bc28af",
-    time: [8, 9],
-  },
-];
+import { Calender } from "./Calender";
+import { IoIosArrowForward, IoIosArrowBack, IoMdShare } from "react-icons/io";
+import { IoCloseOutline } from "react-icons/io5";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const Reservation = () => {
+  const [reservationData, setReservationData] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setmonth] = useState(new Date().getMonth());
   const [selectedDay, setselectedDay] = useState(new Date());
   const [makeTime, setMakeTime] = useState([]);
   const [openInfo, setOpenInfo] = useState(false);
   const [dayData, setDayData] = useState(
-    mokData.filter(
-      (data) => data.date.toDateString() === new Date().toDateString()
+    reservationData.filter(
+      (data) => new Date(data.date).toDateString() === new Date().toDateString()
     )
   );
 
@@ -140,20 +100,82 @@ const Reservation = () => {
   };
 
   const clickDate = (date) => {
+    fetchReservation();
     setOpenInfo(true);
     setselectedDay(date);
     setYear(date.getFullYear());
     setmonth(date.getMonth());
     setMakeTime([]);
     setDayData(
-      mokData.filter((data) => data.date.toDateString() === date.toDateString())
+      reservationData.filter(
+        (data) => new Date(data.date).toDateString() === date.toDateString()
+      )
     );
   };
-
+  const makeHandle = async (e) => {
+    if (makeTime.length < 1) {
+      return alert("예약할 시간을 선택해주세요!");
+    }
+    if (Math.max(...makeTime) + 1 - Math.min(...makeTime) !== makeTime.length) {
+      return alert("연속된 시간을 선택해주세요!");
+    }
+    const date = `${selectedDay.getFullYear()}-${String(
+      selectedDay.getMonth() + 1
+    ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
+    const reqData = {
+      date: date,
+      agentId: user._id,
+      time: makeTime,
+    };
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/reservation/make`,
+        reqData
+      );
+      if (response.status === 201) {
+        alert("예약이 완료되었습니다.");
+      }
+      fetchReservation();
+      setMakeTime([]);
+      setOpenInfo(false);
+    } catch (error) {
+      alert("오류가 발생하였습니다.");
+    }
+  };
+  const deleteHandle = async (data) => {
+    if (
+      confirm(
+        `${data.date} / ${Math.min(...data.time)}시 - ${
+          Math.max(...data.time) + 1
+        }시 / 취소하시겠습니까?`
+      )
+    ) {
+      try {
+        const response = await axios.delete(
+          `${serverUrl}/api/reservation/${data._id}`,
+          { withCredentials: true }
+        );
+        alert("성공적으로 취소 되었습니다.");
+        fetchReservation();
+      } catch (error) {
+        alert("오류가 발생하였습니다.");
+      }
+    }
+  };
+  const fetchReservation = async () => {
+    try {
+      const response = await axios.get(`${serverUrl}/api/reservation`, {
+        withCredentials: true,
+      });
+      setReservationData(response.data);
+    } catch (error) {}
+  };
   useEffect(() => {
     setRows(makeRows(year, month));
   }, [month]);
-
+  useEffect(() => {
+    fetchReservation();
+  }, []);
   return (
     <div className="reservation">
       <div className="calendar-section">
@@ -164,7 +186,7 @@ const Reservation = () => {
           >
             저번 달
           </IoIosArrowBack>
-          <h4>
+          <h4 className="year-month">
             {year}년 {month + 1}월
           </h4>
           <IoIosArrowForward
@@ -184,24 +206,33 @@ const Reservation = () => {
       <div className="info-section">
         <div className="my-reservation">
           <h4 className="myText">{user.username} 님의 예약</h4>
-
-          <Swiper className="my-reservation-list" spaceBetween={110}>
-            {mokData.map((data, index) =>
-              data.agentId === user._id ? (
-                <SwiperSlide key={index}>
-                  <div className="card">
-                    <div className="card-date">
-                      {`${data.date.getFullYear()}년 ${
-                        data.date.getMonth() + 1
-                      }월 ${data.date.getDate()}일`}
+          <div className="my-reservation-list">
+            <div className="card-bar">
+              {reservationData.map((data, index) =>
+                data.agentId === user._id ? (
+                  <div key={index} className="card">
+                    <div className="card-inner">
+                      <div className="card-date">{`${data.date}`}</div>
+                      <div className="card-time">{`${Math.min(
+                        ...data.time
+                      )} - ${Math.max(...data.time) + 1}`}</div>
+                      <div className="card-buttons">
+                        <button
+                          className="cancle-reservation"
+                          onClick={() => deleteHandle(data)}
+                        >
+                          예약 취소
+                        </button>
+                        <button className="share">
+                          <IoMdShare className="share-icon" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="card-time"></div>
-                    <button className="cancle-reservation">취소하기</button>
                   </div>
-                </SwiperSlide>
-              ) : null
-            )}
-          </Swiper>
+                ) : null
+              )}
+            </div>
+          </div>
         </div>
         {openInfo ? (
           <div className="date-info">
@@ -231,21 +262,23 @@ const Reservation = () => {
                       ></div>
                     ) : null}
                     {dayData.map((data) => (
-                      <>
+                      <div key={data.time} className="reserved-outdiv">
                         {data.time.includes(index) ? (
                           <div
                             className="
                 reserved"
                           ></div>
                         ) : null}
-                      </>
+                      </div>
                     ))}
                   </div>
                 ))}
               </div>
             </div>
             <div className="make-reservation">
-              <div className="make-button">예약하기</div>
+              <div className="make-button" onClick={makeHandle}>
+                예약하기
+              </div>
             </div>
           </div>
         ) : (

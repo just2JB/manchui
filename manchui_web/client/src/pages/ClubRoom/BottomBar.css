@@ -1,0 +1,30 @@
+.bottomBar {
+  position: fixed;
+  bottom: 0px;
+  background-color: #202020;
+  border-top: 1px solid #b6b6b64b;
+  width: 700px;
+  height: 40px;
+  display: flex;
+  justify-content: space-between;
+  z-index: 500;
+  user-select: none;
+}
+
+.menu-button {
+  flex: 1;
+  text-decoration: none;
+  align-content: center;
+  text-align: center;
+  font-size: small;
+  font-weight: 200;
+}
+.menu-button:hover {
+  background-color: #121212;
+}
+
+@media screen and (max-width: 767px) {
+  .bottomBar {
+    width: 100%;
+  }
+}

@@ -10,7 +10,7 @@
   align-items: center;
   z-index: 50;
 }
-.info {
+.footer .info {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -22,7 +22,7 @@
   color: #a62415;
 }
 
-.link-div {
+.footer .link-div {
   font-weight: 200;
   display: flex;
   flex-direction: column;
@@ -44,10 +44,10 @@
   align-items: center;
   justify-content: end;
 }
-.short-logo {
+.footer .short-logo {
   height: 70px;
 }
-.reserved {
+.footer .reserved {
   font-size: 11px;
   color: white;
   font-weight: 300;

@@ -1,6 +1,5 @@
 import React from "react";
 import "./Practice.css";
-import Schedule from "../../../components/Schedule/Schedule";
 
 const mokData = [
   {
@@ -29,9 +28,6 @@ const Practice = () => {
             ))}
           </div>
         </div>
-      </div>
-      <div className="mySchedule">
-        <Schedule />
       </div>
 
       <div className="find">

@@ -23,7 +23,7 @@ const Footer = () => {
         </p>
         <p>
           경기도 안산시 상록구 한양대학로 55<br></br> 한양대학교 ERICA캠퍼스
-          학생복지관 ~~~호
+          학생복지관 422호
         </p>
       </div>
       <div className="footer-logo">

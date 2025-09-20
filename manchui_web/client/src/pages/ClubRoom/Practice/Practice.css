@@ -8,13 +8,7 @@
   background-color: rgb(182, 182, 182);
   height: 50px;
 }
-.mySchedule {
-  overflow: hidden;
-}
-.mySchedule > .schedule {
-  height: 40vh;
-  width: 100%;
-}
+
 .find {
   border: 1px solid white;
   height: 20vh;

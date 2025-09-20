@@ -2,13 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import "./Reservation.css";
-import { Swiper, SwiperSlide } from "swiper/react";
 import { Calender } from "./Calender";
 import { IoIosArrowForward, IoIosArrowBack, IoMdShare } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
+import Loading from "../../../components/Loading/Loading";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const Reservation = () => {
+  const [loading, setLoading] = useState(false);
   const [reservationData, setReservationData] = useState([]);
   const [year, setYear] = useState(new Date().getFullYear());
   const [month, setmonth] = useState(new Date().getMonth());
@@ -100,7 +101,6 @@ const Reservation = () => {
   };
 
   const clickDate = (date) => {
-    fetchReservation();
     setOpenInfo(true);
     setselectedDay(date);
     setYear(date.getFullYear());
@@ -119,6 +119,7 @@ const Reservation = () => {
     if (Math.max(...makeTime) + 1 - Math.min(...makeTime) !== makeTime.length) {
       return alert("연속된 시간을 선택해주세요!");
     }
+    setLoading(true);
     const date = `${selectedDay.getFullYear()}-${String(
       selectedDay.getMonth() + 1
     ).padStart(2, "0")}-${String(selectedDay.getDate()).padStart(2, "0")}`;
@@ -135,11 +136,13 @@ const Reservation = () => {
       if (response.status === 201) {
         alert("예약이 완료되었습니다.");
       }
-      fetchReservation();
+
       setMakeTime([]);
       setOpenInfo(false);
     } catch (error) {
       alert("오류가 발생하였습니다.");
+    } finally {
+      fetchReservation();
     }
   };
   const deleteHandle = async (data) => {
@@ -150,25 +153,30 @@ const Reservation = () => {
         }시 / 취소하시겠습니까?`
       )
     ) {
+      setLoading(true);
       try {
         const response = await axios.delete(
           `${serverUrl}/api/reservation/${data._id}`,
           { withCredentials: true }
         );
-        alert("성공적으로 취소 되었습니다.");
-        fetchReservation();
       } catch (error) {
         alert("오류가 발생하였습니다.");
+      } finally {
+        fetchReservation();
       }
     }
   };
   const fetchReservation = async () => {
+    setLoading(true);
     try {
       const response = await axios.get(`${serverUrl}/api/reservation`, {
         withCredentials: true,
       });
       setReservationData(response.data);
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     setRows(makeRows(year, month));
@@ -178,6 +186,13 @@ const Reservation = () => {
   }, []);
   return (
     <div className="reservation">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="calendar-section">
         <div className="date-bar">
           <IoIosArrowBack

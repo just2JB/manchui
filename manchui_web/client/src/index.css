@@ -1,6 +1,7 @@
 * {
   margin: 0px;
   padding: 0px;
+  user-select: none;
 }
 
 @font-face {
@@ -9,11 +10,12 @@
 }
 body {
   font-family: "pretendard";
-  background-color: #050505;
+  background-color: #0c0c0c;
   overflow-x: hidden;
 }
+
 ::-webkit-scrollbar {
-  width: 10px; /* 세로축 스크롤바 폭 너비 */
+  width: 5px; /* 세로축 스크롤바 폭 너비 */
   height: 5px;
 }
 ::-webkit-scrollbar-thumb {
@@ -30,7 +32,7 @@ body {
 
 @media screen and (min-width: 767px) {
   ::-webkit-scrollbar {
-    width: 10px; /* 세로축 스크롤바 폭 너비 */
+    width: 5px; /* 세로축 스크롤바 폭 너비 */
     height: 15px;
   }
 }

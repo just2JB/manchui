@@ -8,6 +8,7 @@
 .clubRoombody {
   width: 700px;
   background-color: #121212;
+  margin-top: 40px;
 }
 
 @media screen and (max-width: 767px) {

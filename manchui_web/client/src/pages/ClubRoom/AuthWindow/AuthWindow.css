@@ -11,7 +11,7 @@
   background-color: #1212128a;
   z-index: 100;
 }
-.form-div {
+.auth-window .form-div {
   background-color: #121212;
   display: flex;
   flex-direction: column;

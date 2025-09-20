@@ -23,6 +23,8 @@ import Mypage from "./pages/ClubRoom/Mypage/Mypage";
 import Practice from "./pages/ClubRoom/Practice/Practice";
 import CreatePractice from "./pages/ClubRoom/Practice/CreatePractice";
 import EditPractice from "./pages/ClubRoom/Practice/EditPractice";
+import BottomBar from "./pages/ClubRoom/BottomBar";
+
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
@@ -75,6 +77,8 @@ function Layout() {
 function ClubRoomLayout() {
   const [isLogin, setIsLogin] = useState(false);
   const [authIsOpen, setAuthIsOpen] = useState(false);
+  const [loading, setLoading] = useState(0);
+
   return (
     <>
       <div className="clubRoomLayout">
@@ -85,9 +89,15 @@ function ClubRoomLayout() {
             setAuthIsOpen={setAuthIsOpen}
           />
           <Outlet
-            context={{ isLogin, setIsLogin, authIsOpen, setAuthIsOpen }}
+            context={{
+              isLogin,
+              setIsLogin,
+              authIsOpen,
+              setAuthIsOpen,
+            }}
           />
         </div>
+        <BottomBar />
       </div>
     </>
   );

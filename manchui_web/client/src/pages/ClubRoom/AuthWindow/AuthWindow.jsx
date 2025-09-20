@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import "./AuthWindow.css";
 import axios from "axios";
+import Loading from "../../../components/Loading/Loading";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-const AuthWindow = ({ setUser, setAuthIsOpen }) => {
+const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
+  const [loading, setLoading] = useState(false);
   const [currentWork, setCurrentWork] = useState("login");
   const [errorMessage, setErrorMessage] = useState("");
   const [formData, setFormData] = useState({
@@ -22,16 +25,18 @@ const AuthWindow = ({ setUser, setAuthIsOpen }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     if (e.target.className === "login") {
       setFormData({ email: formData.email, password: formData.password });
       try {
         const response = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/login",
+          `${serverUrl}/api/auth/login`,
           formData,
           { withCredentials: true }
         );
         if (response.data.user) {
+          setIsLogin(true);
           setUser(response.data.user);
           return setAuthIsOpen(false);
         } else {
@@ -40,6 +45,8 @@ const AuthWindow = ({ setUser, setAuthIsOpen }) => {
       } catch (error) {
         console.log(error.response.data.message);
         setErrorMessage("비밀번호가 틀렸거나, 존재하지 않는 계정입니다.");
+      } finally {
+        setLoading(false);
       }
     } else if (e.target.className === "signup") {
       console.log(formData);
@@ -51,7 +58,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen }) => {
       }
       try {
         const response = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/signup",
+          `${serverUrl}/api/auth/signup`,
           formData
         );
         if (response.status === 201) {
@@ -60,12 +67,21 @@ const AuthWindow = ({ setUser, setAuthIsOpen }) => {
         }
       } catch (error) {
         setErrorMessage(error.response.data.message);
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   return (
     <div className="auth-window">
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        <></>
+      )}
       <div className="form-div">
         <div className="top">
           <h2>{currentWork === "login" ? "로그인" : "계정생성"}</h2>

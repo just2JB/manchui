@@ -9,18 +9,19 @@
   justify-content: space-between;
   background-color: #121212c4;
   z-index: 50;
+  user-select: none;
 }
 .navbar-bottom {
   position: fixed;
   top: 60px;
-  height: 2px;
+  height: 3px;
   width: 100%;
-  background: linear-gradient(90deg, #121212c4, #a62415c4, #121212c4);
+  background: linear-gradient(#a624158f, #dadada00);
   z-index: 50;
 }
 
 .manchui-logo {
-  display: block;
+  display: inline-block;
   width: auto;
   height: 50px;
   margin-left: 3vw;
@@ -28,7 +29,7 @@
 }
 .page-list-ul {
   display: flex;
-  width: 40%;
+  width: 50%;
   margin-right: 50px;
   justify-content: space-between;
   gap: 10px;
@@ -37,7 +38,8 @@
   color: #fafafa;
   text-decoration: none;
   font-size: large;
-  font-weight: 300;
+  font-weight: 200;
+  width: max-content;
 }
 .link:hover {
   transition-duration: 0.5s;
@@ -48,7 +50,16 @@
   position: absolute;
   margin-right: 5%;
   right: 0px;
-  color: white;
+  color: rgb(180, 180, 180);
+  transition-property: transform;
+  transition-duration: 0.3s;
+}
+.rotate {
+  transform: rotate(180deg);
+}
+.rotate2 {
+  transition-duration: 0.6s;
+  transform: rotate(360deg);
 }
 .pop-bar {
   transition-duration: 0.5s;
@@ -62,7 +73,7 @@
 }
 
 .pop-page-list-ul {
-  background: linear-gradient(90deg, #121212c4, #121212, #121212c4);
+  background: linear-gradient(90deg, #1212125d, #121212, #1212125d);
   display: flex;
   flex-direction: column;
   padding-top: 5px;
@@ -72,6 +83,7 @@
   height: 50px;
   border-bottom: 1px solid #181818d5;
   align-content: center;
+  width: auto;
 }
 .pop-back {
   width: 100%;
@@ -89,7 +101,7 @@ a {
   .pop-button {
     visibility: visible;
   }
-  .manchui-logo {
+  .navbar .manchui-logo {
     position: absolute;
     transform: translate(-50%, -50%);
     left: 50%;

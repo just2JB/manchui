@@ -15,6 +15,14 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
+  aka: {
+    type: String,
+    default: "만치치",
+  },
+  position: {
+    type: String,
+    default: "댄서",
+  },
 });
 
 const User = mongoose.model("User", userSchema);

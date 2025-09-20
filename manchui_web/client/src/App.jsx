@@ -1,4 +1,14 @@
 import "./App.css";
+import { useEffect, useState } from "react";
+import {
+  createBrowserRouter,
+  useNavigate,
+  Outlet,
+  RouterProvider,
+  useOutletContext,
+} from "react-router-dom";
+
+import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import MainPage from "./pages/MainPage/MainPage";
@@ -6,24 +16,21 @@ import About from "./pages/About/About";
 import Contact from "./pages/Contact/Contact";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
-
-import {
-  createBrowserRouter,
-  useNavigate,
-  Outlet,
-  RouterProvider,
-} from "react-router-dom";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
-import Practice from "./pages/ClubRoom/Practice/Practice";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
+import Practice from "./pages/ClubRoom/Practice/Practice";
+import CreatePractice from "./pages/ClubRoom/Practice/CreatePractice";
+import EditPractice from "./pages/ClubRoom/Practice/EditPractice";
+import BottomBar from "./pages/ClubRoom/BottomBar";
+
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
   const [isAuthenticated, setIsauthenticated] = useState(null);
   const [user, setUser] = useState(null);
+  const { setIsLogin } = useOutletContext();
   const nav = useNavigate();
   const notAuth = () => {
     nav("/club");
@@ -34,15 +41,17 @@ function ProtectedRoute() {
     const verifyToken = async () => {
       try {
         const responsse = await axios.post(
-          "https://manchuitestserver.run.goorm.site/api/auth/verify-token",
+          `${serverUrl}/api/auth/verify-token`,
           {},
           { withCredentials: true }
         );
         setIsauthenticated(responsse.data.isValid);
         setUser(responsse.data.user);
+        setIsLogin(true);
       } catch (error) {
         console.log("토큰 인증 실패", error);
         setIsauthenticated(false);
+        setIsLogin(false);
         setUser(null);
       }
     };
@@ -66,10 +75,30 @@ function Layout() {
 }
 
 function ClubRoomLayout() {
+  const [isLogin, setIsLogin] = useState(false);
+  const [authIsOpen, setAuthIsOpen] = useState(false);
+  const [loading, setLoading] = useState(0);
+
   return (
     <>
-      <ClubRoomNavbar />
-      <Outlet />
+      <div className="clubRoomLayout">
+        <div className="clubRoombody">
+          <ClubRoomNavbar
+            isLogin={isLogin}
+            setIsLogin={setIsLogin}
+            setAuthIsOpen={setAuthIsOpen}
+          />
+          <Outlet
+            context={{
+              isLogin,
+              setIsLogin,
+              authIsOpen,
+              setAuthIsOpen,
+            }}
+          />
+        </div>
+        <BottomBar />
+      </div>
     </>
   );
 }
@@ -98,6 +127,8 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: "practice", element: <Practice /> },
+          { path: "create-practice", element: <CreatePractice /> },
+          { path: "edit-practice/:id", element: <EditPractice /> },
           { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
         ],

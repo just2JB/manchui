@@ -8,7 +8,7 @@ const pages = [
   { name: "홈", path: "/" },
   { name: "동아리 소개", path: "/about" },
   { name: "문의하기", path: "/contact" },
-  { name: "가입 안내", path: "/join" },
+  { name: "가입", path: "/join" },
   { name: "동아리방", path: "/club" },
 ];
 
@@ -44,12 +44,17 @@ const Navbar = () => {
         </ul>
 
         <div
-          className="pop-button"
+          className={`pop-button ${isOpen ? "rotate" : ""}`}
           onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
         >
           <IoChevronDownSharp />
         </div>
-
+        <div
+          className={`pop-button ${isOpen ? "rotate2" : ""}`}
+          onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
+        >
+          <IoChevronDownSharp />
+        </div>
         <div className={`pop-bar pop-${isOpen ? "open" : "close"}`}>
           <ul className="pop-page-list-ul">
             {pages.map((item) => (

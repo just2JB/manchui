@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Cup from "../../components/Cup/Cup";
+import Loading from "../../components/Loading/Loading";
 import { IoIosArrowForward, IoIosArrowBack, IoMdOpen } from "react-icons/io";
 import "./Join.css";
 import axios from "axios";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const array = [false, false, false, false, false, false, false];
 const Join = () => {
@@ -25,6 +27,7 @@ const Join = () => {
     formData.wish.length > 0 ? (array[5] = true) : (array[5] = false);
   };
   const controlIndex = (e, num) => {
+    num === 7 ? (array[6] = true) : (array[6] = false);
     e.preventDefault();
     setFormIndex(num);
     fillCup();
@@ -44,16 +47,20 @@ const Join = () => {
     });
   };
   const handleSubmit = async (e) => {
-    alert("hello");
-    e.preventDefault();
     setLoading(true);
+    e.preventDefault();
     try {
-      const response = await axios.post(`${serverUrl}/api/join`, formData, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${serverUrl}/api/join/apply`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
       alert(response.data.message);
+      //동일한거 있어도 그냥 하기
     } catch (error) {
-      console.log(error.response.data.message);
+      alert(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -107,16 +114,21 @@ const Join = () => {
               formIndex === 0 ? "onIndex" : ""
             }`}
           >
-            <div className="text">만취 가입하기</div>
+            <div className="text"></div>
+
             <div
               className={`button ${formIndex === 0 ? "onIndex" : ""}`}
               onClick={() => setFormIndex(1)}
             >
-              가입하기
+              가입 신청
+            </div>
+            <div className={`button ${formIndex === 0 ? "onIndex" : ""}`}>
+              신청 확인
             </div>
           </div>
-          <div className={`name ${formIndex === 1 ? "visible" : "hide"}`}>
+          <div className={`formdiv ${formIndex === 1 ? "visible" : "hide"}`}>
             <div className="text">이름을 입력해주세요</div>
+            <span className="subText">ex) 홍길동</span>
             <input
               type="text"
               name="name"
@@ -126,8 +138,9 @@ const Join = () => {
               className={`${formIndex === 1 ? "onIndex" : ""}`}
             />
           </div>
-          <div className={`major ${formIndex === 2 ? "visible" : "hide"}`}>
+          <div className={`formdiv ${formIndex === 2 ? "visible" : "hide"}`}>
             <div className="text">학과를 입력해주세요</div>
+            <span className="subText">ex) ICT융합학부</span>
             <input
               type="text"
               name="major"
@@ -137,12 +150,12 @@ const Join = () => {
               className={`${formIndex === 2 ? "onIndex" : ""}`}
             />
           </div>
-          <div className={`grade ${formIndex === 3 ? "visible" : "hide"}`}>
+          <div className={`formdiv ${formIndex === 3 ? "visible" : "hide"}`}>
             <div className="text">학년을 선택해주세요</div>
+            <span className="subText">*해당사항 없을 시 공란선택</span>
             <select
               name="grade"
               value={formData.grade}
-              required
               onChange={handleChange}
               className={`${formIndex === 3 ? "onIndex" : ""}`}
             >
@@ -155,8 +168,11 @@ const Join = () => {
               <option>대학원</option>
             </select>
           </div>
-          <div className={`studentId ${formIndex === 4 ? "visible" : "hide"}`}>
-            <div className="text">학번을 입력해주세요</div>
+          <div className={`formdiv ${formIndex === 4 ? "visible" : "hide"}`}>
+            <div className="text">학번(10자리)을 입력해주세요</div>
+            <span className="subText">
+              ex) {new Date().getFullYear()}123456
+            </span>
             <input
               type="text"
               name="studentId"
@@ -166,8 +182,9 @@ const Join = () => {
               className={`${formIndex === 4 ? "onIndex" : ""}`}
             />
           </div>
-          <div className={`contact ${formIndex === 5 ? "visible" : "hide"}`}>
+          <div className={`formdiv ${formIndex === 5 ? "visible" : "hide"}`}>
             <div className="text">연락처를 입력해주세요</div>
+            <span className="subText">(전화번호 or 카카오톡ID)</span>
             <input
               type="text"
               name="contact"
@@ -177,8 +194,9 @@ const Join = () => {
               className={`${formIndex === 5 ? "onIndex" : ""}`}
             />
           </div>
-          <div className={`wish ${formIndex === 6 ? "visible" : "hide"}`}>
+          <div className={`formdiv ${formIndex === 6 ? "visible" : "hide"}`}>
             <div className="text">해보고 싶은 활동이 있나요?</div>
+            <span className="subText">없을 시 공란</span>
             <textarea
               style={{
                 width: `${formIndex === 6 ? "54%" : ""}`,
@@ -192,8 +210,12 @@ const Join = () => {
               className={`${formIndex === 6 ? "onIndex" : ""}`}
             />
           </div>
-          <div className={`check ${formIndex === 7 ? "visible" : "hide"}`}>
-            <div className="text">아래 정보를 확인하세요</div>
+          <div className={`formdiv ${formIndex === 7 ? "visible" : "hide"}`}>
+            <div className="text">아래 정보를 확인해주세요</div>
+            <span className="subText">
+              추후 공지를 위한 카카오톡 초대 및 가입절차를 위해 정확히
+              입력해주세요.
+            </span>
             <div className={`checkInfo ${formIndex === 7 ? "onIndex" : ""}`}>
               <div>
                 이름: {formData.name}{" "}
@@ -227,7 +249,7 @@ const Join = () => {
                 연락처: {formData.contact}{" "}
                 <IoMdOpen
                   className="mdOpen"
-                  onClick={(e) => controlIndex(e, 4)}
+                  onClick={(e) => controlIndex(e, 5)}
                 />
               </div>
             </div>

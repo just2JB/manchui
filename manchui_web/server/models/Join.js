@@ -1,0 +1,29 @@
+const mongoose = require("mongoose");
+
+const join = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  major: {
+    type: String,
+    required: true,
+  },
+  grade: {
+    type: String,
+  },
+  studentId: {
+    type: Number,
+    required: true,
+  },
+  contact: {
+    type: String,
+    require: true,
+  },
+  wish: {
+    type: String,
+  },
+});
+
+const Join = mongoose.model("Join", join);
+module.exports = Join;

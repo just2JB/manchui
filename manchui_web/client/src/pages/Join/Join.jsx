@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Cup from "../../components/Cup/Cup";
 import Loading from "../../components/Loading/Loading";
 import { IoIosArrowForward, IoIosArrowBack, IoMdOpen } from "react-icons/io";
@@ -18,6 +18,14 @@ const Join = () => {
     contact: "",
     wish: "",
   });
+
+  const nameRef = useRef();
+  const majorRef = useRef();
+  const gradeRef = useRef();
+  const studentIdRef = useRef();
+  const contactRef = useRef();
+  const wishRef = useRef();
+
   const fillCup = () => {
     formData.name.length > 0 ? (array[0] = true) : (array[0] = false);
     formData.major.length > 0 ? (array[1] = true) : (array[1] = false);
@@ -29,6 +37,9 @@ const Join = () => {
   const controlIndex = (e, num) => {
     num === 7 ? (array[6] = true) : (array[6] = false);
     e.preventDefault();
+    if (num > 7) {
+      return;
+    }
     setFormIndex(num);
     fillCup();
     if (num > 5) {
@@ -38,6 +49,26 @@ const Join = () => {
           wish: "...",
         });
       }
+    }
+    switch (num) {
+      case 1:
+        nameRef.current.focus();
+        break;
+      case 2:
+        majorRef.current.focus();
+        break;
+      case 3:
+        gradeRef.current.focus();
+        break;
+      case 4:
+        studentIdRef.current.focus();
+        break;
+      case 5:
+        contactRef.current.focus();
+        break;
+      case 6:
+        wishRef.current.focus();
+        break;
     }
   };
   const handleChange = (e) => {
@@ -66,8 +97,13 @@ const Join = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      controlIndex(e, formIndex + 1);
+    }
+  };
   return (
-    <div className="join">
+    <div className="join" onKeyDown={handleKeyPress}>
       <div className="screen">
         <form onSubmit={handleSubmit}>
           <div className={`control `}>
@@ -118,7 +154,7 @@ const Join = () => {
 
             <div
               className={`button ${formIndex === 0 ? "onIndex" : ""}`}
-              onClick={() => setFormIndex(1)}
+              onClick={(e) => controlIndex(e, 1)}
             >
               가입 신청
             </div>
@@ -135,6 +171,7 @@ const Join = () => {
               value={formData.name}
               required
               onChange={handleChange}
+              ref={nameRef}
               className={`${formIndex === 1 ? "onIndex" : ""}`}
             />
           </div>
@@ -147,6 +184,7 @@ const Join = () => {
               value={formData.major}
               required
               onChange={handleChange}
+              ref={majorRef}
               className={`${formIndex === 2 ? "onIndex" : ""}`}
             />
           </div>
@@ -157,6 +195,7 @@ const Join = () => {
               name="grade"
               value={formData.grade}
               onChange={handleChange}
+              ref={gradeRef}
               className={`${formIndex === 3 ? "onIndex" : ""}`}
             >
               <option>- - -</option>
@@ -179,6 +218,7 @@ const Join = () => {
               value={formData.studentId}
               required
               onChange={handleChange}
+              ref={studentIdRef}
               className={`${formIndex === 4 ? "onIndex" : ""}`}
             />
           </div>
@@ -191,6 +231,7 @@ const Join = () => {
               value={formData.contact}
               required
               onChange={handleChange}
+              ref={contactRef}
               className={`${formIndex === 5 ? "onIndex" : ""}`}
             />
           </div>
@@ -207,6 +248,7 @@ const Join = () => {
               name="wish"
               value={formData.wish}
               onChange={handleChange}
+              ref={wishRef}
               className={`${formIndex === 6 ? "onIndex" : ""}`}
             />
           </div>

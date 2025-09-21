@@ -55,6 +55,7 @@ const ClubRoom = () => {
   };
   return (
     <div className="club-room">
+      {user.position === "임원진" ? <Link to="/admin">관리자페이지</Link> : ""}
       <div className="my-info">
         <div className="profil">
           <div className="aka">{user.aka} </div>

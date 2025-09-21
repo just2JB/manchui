@@ -25,6 +25,9 @@ import CreatePractice from "./pages/ClubRoom/Practice/CreatePractice";
 import EditPractice from "./pages/ClubRoom/Practice/EditPractice";
 import BottomBar from "./pages/ClubRoom/BottomBar";
 
+import AdminHome from "./pages/Admin/AdminHome";
+import AdminJoin from "./pages/Admin/AdminJoin";
+
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
@@ -64,6 +67,43 @@ function ProtectedRoute() {
   return isAuthenticated ? <Outlet context={{ user }} /> : notAuth();
 }
 
+function AdminRoute() {
+  const [isAuthenticated, setIsauthenticated] = useState(null);
+  const [user, setUser] = useState(null);
+  const nav = useNavigate();
+  const notAuth = () => {
+    nav("/club");
+    alert("임원진이 아닙니다.");
+  };
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      try {
+        const responsse = await axios.post(
+          `${serverUrl}/api/auth/verify-token`,
+          {},
+          { withCredentials: true }
+        );
+        setIsauthenticated(responsse.data.isValid);
+        setUser(responsse.data.user);
+        if (responsse.data.user.position !== "임원진") {
+          notAuth();
+        }
+      } catch (error) {
+        console.log("토큰 인증 실패", error);
+        setIsauthenticated(false);
+        setUser(null);
+      }
+    };
+    verifyToken();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return null;
+  }
+  return isAuthenticated ? <Outlet context={{ user }} /> : notAuth();
+}
+
 function Layout() {
   return (
     <>
@@ -77,7 +117,6 @@ function Layout() {
 function ClubRoomLayout() {
   const [isLogin, setIsLogin] = useState(false);
   const [authIsOpen, setAuthIsOpen] = useState(false);
-  const [loading, setLoading] = useState(0);
 
   return (
     <>
@@ -133,6 +172,14 @@ const router = createBrowserRouter([
           { path: "mypage", element: <Mypage /> },
         ],
       },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <AdminRoute />,
+    children: [
+      { index: true, element: <AdminHome /> },
+      { path: "join", element: <AdminJoin /> },
     ],
   },
 ]);

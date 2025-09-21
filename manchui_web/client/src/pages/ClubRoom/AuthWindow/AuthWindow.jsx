@@ -63,6 +63,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
         );
         if (response.status === 201) {
           alert("계정 생성이 성공 되었습니다.");
+          setFormData({ email: formData.email, password:""});
           setCurrentWork("login");
         }
       } catch (error) {

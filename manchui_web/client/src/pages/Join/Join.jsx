@@ -167,6 +167,7 @@ const Join = () => {
             <span className="subText">ex) 홍길동</span>
             <input
               type="text"
+              inputmode="search"
               name="name"
               value={formData.name}
               required
@@ -180,6 +181,7 @@ const Join = () => {
             <span className="subText">ex) ICT융합학부</span>
             <input
               type="text"
+              inputmode="search"
               name="major"
               value={formData.major}
               required
@@ -214,6 +216,7 @@ const Join = () => {
             </span>
             <input
               type="text"
+              inputmode="search"
               name="studentId"
               value={formData.studentId}
               required
@@ -227,6 +230,7 @@ const Join = () => {
             <span className="subText">(전화번호 or 카카오톡ID)</span>
             <input
               type="text"
+              inputmode="search"
               name="contact"
               value={formData.contact}
               required
@@ -245,6 +249,7 @@ const Join = () => {
                 transitionDuration: `${formIndex === 6 ? "0.5s" : ""}`,
               }}
               type="text"
+              inputmode="search"
               name="wish"
               value={formData.wish}
               onChange={handleChange}

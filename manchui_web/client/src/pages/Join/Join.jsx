@@ -2,8 +2,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Cup from "../../components/Cup/Cup";
 import Loading from "../../components/Loading/Loading";
 import { IoIosArrowForward, IoIosArrowBack, IoMdOpen } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import "./Join.css";
 import axios from "axios";
+
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const array = [false, false, false, false, false, false, false];
@@ -18,6 +20,8 @@ const Join = () => {
     contact: "",
     wish: "",
   });
+
+  const nav = useNavigate();
 
   const nameRef = useRef();
   const majorRef = useRef();
@@ -158,7 +162,10 @@ const Join = () => {
             >
               가입 신청
             </div>
-            <div className={`button ${formIndex === 0 ? "onIndex" : ""}`}>
+            <div
+              className={`button ${formIndex === 0 ? "onIndex" : ""}`}
+              onClick={() => nav("/join/check")}
+            >
               신청 확인
             </div>
           </div>

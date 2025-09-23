@@ -1,0 +1,21 @@
+.table {
+  border: 1px solid #f5f5f5;
+  width: 99%;
+  border-collapse: collapse;
+}
+.table td {
+  border: 1px solid #f5f5f5;
+}
+
+.table .tdCell {
+  font-size: 13px;
+  color: #f5f5f5;
+  overflow: hidden;
+  height: 25px;
+}
+.table .tdCell:hover {
+  height: 25px;
+  background-color: #570c0ca1;
+
+  overflow-y: scroll;
+}

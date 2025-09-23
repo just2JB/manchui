@@ -23,6 +23,10 @@ const join = new mongoose.Schema({
   wish: {
     type: String,
   },
+  applyAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Join = mongoose.model("Join", join);

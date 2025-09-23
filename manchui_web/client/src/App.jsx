@@ -27,6 +27,7 @@ import BottomBar from "./pages/ClubRoom/BottomBar";
 
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
+import JoinCheck from "./pages/Join/JoinCheck";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -151,6 +152,7 @@ const router = createBrowserRouter([
       { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
       { path: "/join", element: <Join /> },
+      { path: "/join/check", element: <JoinCheck /> },
     ],
   },
   {

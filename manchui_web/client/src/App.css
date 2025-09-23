@@ -4,11 +4,13 @@
   display: flex;
   justify-content: center;
   background-color: #050505;
+  user-select: none;
 }
 .clubRoombody {
   width: 700px;
   background-color: #121212;
   margin-top: 40px;
+  user-select: none;
 }
 
 @media screen and (max-width: 767px) {

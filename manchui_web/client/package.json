@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-table": "^8.21.3",
     "axios": "^1.11.0",
     "cookies": "^0.9.1",
     "gsap": "^3.13.0",

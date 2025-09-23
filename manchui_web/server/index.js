@@ -12,7 +12,7 @@ const joinRouter = require("./routes/join");
 
 app.use(
   cors({
-    origin: "https://manchuitestweb.run.goorm.site",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   })
 );

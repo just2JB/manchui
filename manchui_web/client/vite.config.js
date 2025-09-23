@@ -8,6 +8,6 @@ export default defineConfig({
     host: "0.0.0.0", // 외부 접속 허용
     port: 5173, // 포트 번호 확인
     strictPort: true,
-		allowedHosts: ["localhost", "manchuitestweb.run.goorm.io"],
+		allowedHosts: ["localhost",],
 	},
 })

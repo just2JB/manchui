@@ -1,8 +1,18 @@
 .joinCheck {
   height: 100vh;
-  align-items: center;
+  justify-items: center;
   align-content: center;
   color: #f5f5f5;
+}
+.joinCheck .inputForm {
+  position: absolute;
+  top: 40vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+
+  flex-direction: column;
+  gap: 10px;
 }
 .joinCheck input {
   background-color: #090909;
@@ -22,6 +32,46 @@
   outline: none;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #a624158f;
   transition-duration: 0.5s;
+}
+.joinCheck .check {
+  background-color: #090909;
+  border: 1px solid #f5f5f5;
+  border-radius: 10px;
+  padding: 5px;
+  font-weight: 200;
+  animation: onIndex;
+  animation-duration: 1s;
+}
+
+.joinCheck .submit {
+  background-color: #090909;
+  border: 1px solid #8080808f;
+  border-radius: 10px;
+  width: 120px;
+  height: 50px;
+  color: #f5f5f5;
+  font-size: medium;
+  z-index: 0;
+  animation-duration: 2s;
+  font-weight: 200;
+  cursor: pointer;
+}
+.joinCheck .submit:hover {
+  transition-duration: 0.3s;
+  border-color: #a6241500;
+  outline: none;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #8080808f;
+}
+.joinCheck .buttonBox {
+  display: flex;
+
+  gap: 5px;
+  position: absolute;
+  margin-top: 120px;
+}
+.joinCheck .finded {
+  margin-top: 200px;
+  transition-duration: 0.4s;
 }
 @keyframes onIndex {
   0% {

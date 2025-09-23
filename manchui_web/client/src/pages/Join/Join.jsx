@@ -93,6 +93,7 @@ const Join = () => {
         }
       );
       alert(response.data.message);
+      controlIndex(e, 0);
       //동일한거 있어도 그냥 하기
     } catch (error) {
       alert(error.response.data.message);

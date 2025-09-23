@@ -10,6 +10,10 @@ const AdminHome = () => {
       관리자 페이지 입니다.
       {user.position} 인증 완료
       <div></div>
+      <Link className="" to="/club">
+        동아리방으로
+      </Link>
+      <br></br>
       <Link className="" to="/admin/join">
         가입 신청 관리
       </Link>

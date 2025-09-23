@@ -27,9 +27,6 @@ router.post("/apply", async (req, res) => {
   }
 });
 
-//학번으로 가입여부 찾기 이름 최*범 반환
-
-//정보 가져오기 관리자 권한 설정하기
 router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
@@ -48,7 +45,6 @@ router.get("/:userId", async (req, res) => {
 
 router.get("/check/:studentId", async (req, res) => {
   try {
-    console.log(req.params.studentId);
     const studentId = req.params.studentId;
     const join = await Join.findOne({ studentId });
     if (!join) {
@@ -68,7 +64,6 @@ router.get("/check/:studentId", async (req, res) => {
       name: hashName,
       major: join.major,
       applyAt: join.applyAt,
-
     };
     res.json({
       join: sendData,

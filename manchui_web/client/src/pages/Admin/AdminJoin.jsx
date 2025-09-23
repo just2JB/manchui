@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, Link } from "react-router-dom";
 import axios from "axios";
 import "./AdminJoin.css";
 import Table from "../../components/Table/Table";
@@ -80,6 +80,7 @@ const AdminJoin = () => {
 
   return (
     <div className="adminJome">
+      <Link to="../">돌아가기</Link>
       <div>메시지: {messages}</div>
       <div className="joinTable">
         <Table columns={columns} data={data} setSortType={setSortType} />

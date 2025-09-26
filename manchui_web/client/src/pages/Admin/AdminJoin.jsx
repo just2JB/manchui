@@ -83,8 +83,7 @@ const AdminJoin = () => {
   return (
     <div className="adminJome">
       <Link to="../">돌아가기</Link>
-      <button className="openJoin">웹 가입신청 폼 활성화</button>
-      <button className="closeJoin">웹 가입신청 폼 비활성회</button>
+
       <div>메시지: {messages}</div>
       <div className="joinTable">
         <Table columns={columns} data={data} setSortType={setSortType} />

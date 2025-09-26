@@ -1,3 +1,18 @@
 .adminHome {
   color: #f5f5f5;
 }
+
+.adminHome .linkBox {
+  display: flex;
+  flex-direction: column;
+
+  gap: 4px;
+}
+.adminHome .linkBox > * {
+  width: 200px;
+  height: 60px;
+  border: 1px solid gray;
+  text-align: center;
+  align-content: center;
+  text-decoration: none;
+}

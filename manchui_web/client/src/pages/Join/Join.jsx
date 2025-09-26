@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Cup from "../../components/Cup/Cup";
 import Loading from "../../components/Loading/Loading";
 import { IoIosArrowForward, IoIosArrowBack, IoMdOpen } from "react-icons/io";
+import { IoAlertCircleOutline, IoCheckmark } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import "./Join.css";
 import axios from "axios";
@@ -20,6 +21,50 @@ const Join = () => {
     contact: "",
     wish: "",
   });
+  const [formError, setFormError] = useState({
+    name: "",
+    major: "",
+    grade: "",
+    studentId: "",
+    contact: "",
+    error: false,
+  });
+
+  const checkError = () => {
+    const message = {
+      name: "",
+      major: "",
+      grade: "",
+      studentId: "",
+      contact: "",
+      error: false,
+    };
+    if (formData.name.length < 1) {
+      message.name = "*이름은 필수 항목입니다!";
+      message.error = true;
+    }
+    if (formData.major.length < 1) {
+      message.major = "*학과는 필수 항목입니다!";
+      message.error = true;
+    }
+    if (formData.grade === "- - -" || !formData.grade) {
+      message.grade = "*학년은 필수 항목입니다!";
+      message.error = true;
+    }
+    if (formData.studentId.length !== 10) {
+      message.studentId = "*숫자 10자리를 입력해주세요!";
+      message.error = true;
+    }
+    const regex = /^[\w-]*$/;
+    if (formData.contact.length < 1) {
+      message.contact = "*연락처는 필수 항목입니다!";
+      message.error = true;
+    } else if (!regex.test(formData.contact)) {
+      message.contact = "*영어, 숫자, (-), (_)만 입력 가능합니다!";
+      message.error = true;
+    }
+    setFormError(message);
+  };
 
   const nav = useNavigate();
 
@@ -30,13 +75,15 @@ const Join = () => {
   const contactRef = useRef();
   const wishRef = useRef();
 
-  const fillCup = () => {
+  const fillCup = (num) => {
     formData.name.length > 0 ? (array[0] = true) : (array[0] = false);
     formData.major.length > 0 ? (array[1] = true) : (array[1] = false);
     formData.grade.length > 0 ? (array[2] = true) : (array[2] = false);
     formData.studentId.length > 0 ? (array[3] = true) : (array[3] = false);
     formData.contact.length > 0 ? (array[4] = true) : (array[4] = false);
-    formData.wish.length > 0 ? (array[5] = true) : (array[5] = false);
+    num > 5 || formData.wish.length > 0
+      ? (array[5] = true)
+      : (array[5] = false);
   };
   const controlIndex = (e, num) => {
     num === 7 ? (array[6] = true) : (array[6] = false);
@@ -44,17 +91,29 @@ const Join = () => {
     if (num > 7) {
       return;
     }
-    setFormIndex(num);
-    fillCup();
-    if (num > 5) {
+    if (num > 6) {
       if (formData.wish.length < 1) {
         setFormData({
           ...formData,
-          wish: "...",
+          wish: "",
         });
       }
+      checkError();
     }
+    setFormIndex(num);
+    fillCup(num);
+
     switch (num) {
+      case 0:
+        setFormError({
+          name: "",
+          major: "",
+          grade: "",
+          studentId: "",
+          contact: "",
+          error: false,
+        });
+        break;
       case 1:
         nameRef.current.focus();
         break;
@@ -79,6 +138,10 @@ const Join = () => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
+    });
+    setFormError({
+      ...formError,
+      [e.target.name]: "",
     });
   };
   const handleSubmit = async (e) => {
@@ -107,6 +170,7 @@ const Join = () => {
       controlIndex(e, formIndex + 1);
     }
   };
+
   return (
     <div className="join" onKeyDown={handleKeyPress}>
       <div className="screen">
@@ -172,7 +236,12 @@ const Join = () => {
           </div>
           <div className={`formdiv ${formIndex === 1 ? "visible" : "hide"}`}>
             <div className="text">이름을 입력해주세요</div>
-            <span className="subText">ex) 홍길동</span>
+            {formError.name !== "" ? (
+              <span className="subText errorText">{formError.name}</span>
+            ) : (
+              <span className="subText">ex) 홍길동</span>
+            )}
+
             <input
               type="text"
               inputmode="search"
@@ -186,7 +255,12 @@ const Join = () => {
           </div>
           <div className={`formdiv ${formIndex === 2 ? "visible" : "hide"}`}>
             <div className="text">학과를 입력해주세요</div>
-            <span className="subText">ex) ICT융합학부</span>
+            {formError.major !== "" ? (
+              <span className="subText errorText">{formError.major}</span>
+            ) : (
+              <span className="subText">ex) ICT융합학부</span>
+            )}
+
             <input
               type="text"
               inputmode="search"
@@ -200,7 +274,12 @@ const Join = () => {
           </div>
           <div className={`formdiv ${formIndex === 3 ? "visible" : "hide"}`}>
             <div className="text">학년을 선택해주세요</div>
-            <span className="subText">*해당사항 없을 시 공란선택</span>
+
+            {formError.grade !== "" ? (
+              <span className="subText errorText">{formError.grade}</span>
+            ) : (
+              <span className="subText">*해당사항 없을 시 기타 선택</span>
+            )}
             <select
               name="grade"
               value={formData.grade}
@@ -215,15 +294,21 @@ const Join = () => {
               <option>4학년</option>
               <option>5학년</option>
               <option>대학원</option>
+              <option>기타</option>
             </select>
           </div>
           <div className={`formdiv ${formIndex === 4 ? "visible" : "hide"}`}>
             <div className="text">학번(10자리)을 입력해주세요</div>
-            <span className="subText">
-              ex) {new Date().getFullYear()}123456
-            </span>
+
+            {formError.studentId !== "" ? (
+              <span className="subText errorText">{formError.studentId}</span>
+            ) : (
+              <span className="subText">
+                ex) {new Date().getFullYear()}123456
+              </span>
+            )}
             <input
-              type="text"
+              type="number"
               inputmode="search"
               name="studentId"
               value={formData.studentId}
@@ -235,7 +320,12 @@ const Join = () => {
           </div>
           <div className={`formdiv ${formIndex === 5 ? "visible" : "hide"}`}>
             <div className="text">연락처를 입력해주세요</div>
-            <span className="subText">(전화번호 or 카카오톡ID)</span>
+            {formError.contact !== "" ? (
+              <span className="subText errorText">{formError.contact}</span>
+            ) : (
+              <span className="subText">전화번호 or 카카오톡ID</span>
+            )}
+
             <input
               type="text"
               inputmode="search"
@@ -273,47 +363,101 @@ const Join = () => {
             </span>
             <div className={`checkInfo ${formIndex === 7 ? "onIndex" : ""}`}>
               <div>
-                이름: {formData.name}{" "}
+                {formError.name.length > 0 ? (
+                  <IoAlertCircleOutline
+                    className="errorIcon"
+                    onClick={(e) => controlIndex(e, 1)}
+                  />
+                ) : (
+                  <IoCheckmark className="checkIcon" />
+                )}
+                <div className="label">이름: {formData.name} </div>
+                <div className="hor"></div>
                 <IoMdOpen
                   className="mdOpen"
                   onClick={(e) => controlIndex(e, 1)}
                 />
               </div>
+
               <div>
-                학과: {formData.major}{" "}
+                {formError.major.length > 0 ? (
+                  <IoAlertCircleOutline
+                    className="errorIcon"
+                    onClick={(e) => controlIndex(e, 2)}
+                  />
+                ) : (
+                  <IoCheckmark className="checkIcon" />
+                )}
+                <div className="label">학과: {formData.major} </div>{" "}
+                <div className="hor"></div>
                 <IoMdOpen
                   className="mdOpen"
                   onClick={(e) => controlIndex(e, 2)}
                 />
               </div>
-              <div>
-                학년: {formData.grade}{" "}
+
+              <div className="label">
+                {formError.grade.length > 0 ? (
+                  <IoAlertCircleOutline
+                    className="errorIcon"
+                    onClick={(e) => controlIndex(e, 3)}
+                  />
+                ) : (
+                  <IoCheckmark className="checkIcon" />
+                )}
+                <div>학년: {formData.grade}</div> <div className="hor"></div>
                 <IoMdOpen
                   className="mdOpen"
-                  onClick={(e) => controlIndex(e, 2)}
+                  onClick={(e) => controlIndex(e, 3)}
                 />
               </div>
+
               <div>
-                학번: {formData.studentId}{" "}
+                {formError.studentId.length > 0 ? (
+                  <IoAlertCircleOutline
+                    className="errorIcon"
+                    onClick={(e) => controlIndex(e, 4)}
+                  />
+                ) : (
+                  <IoCheckmark className="checkIcon" />
+                )}
+                <div className="label">학번: {formData.studentId} </div>{" "}
+                <div className="hor"></div>
                 <IoMdOpen
                   className="mdOpen"
                   onClick={(e) => controlIndex(e, 4)}
                 />
               </div>
               <div>
-                연락처: {formData.contact}{" "}
+                {formError.contact.length > 0 ? (
+                  <IoAlertCircleOutline
+                    className="errorIcon"
+                    onClick={(e) => controlIndex(e, 5)}
+                  />
+                ) : (
+                  <IoCheckmark className="checkIcon" />
+                )}
+                <div className="label">연락처: {formData.contact}</div>{" "}
+                <div className="hor"></div>
                 <IoMdOpen
                   className="mdOpen"
                   onClick={(e) => controlIndex(e, 5)}
                 />
               </div>
             </div>
-            <button
-              className={`submit ${formIndex === 7 ? "onIndex" : ""}`}
-              type="submit"
-            >
-              신청 완료
-            </button>
+            <div className={`${formIndex === 7 ? "onIndex" : ""}`}>
+              {formError.error ? (
+                <div className="submitError">
+                  <span className="errorText">
+                    정보를 형식에 맞게 입력해 주세요!
+                  </span>
+                </div>
+              ) : (
+                <button className="submit" type="submit">
+                  신청 완료
+                </button>
+              )}
+            </div>
           </div>
         </form>
       </div>

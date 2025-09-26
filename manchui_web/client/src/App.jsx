@@ -13,7 +13,7 @@ import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import MainPage from "./pages/MainPage/MainPage";
 import About from "./pages/About/About";
-import Contact from "./pages/Contact/Contact";
+import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
@@ -150,7 +150,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <MainPage /> },
       { path: "/about", element: <About /> },
-      { path: "/contact", element: <Contact /> },
+      { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },
     ],

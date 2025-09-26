@@ -14,7 +14,7 @@ const JoinCheck = () => {
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const studentIdRef = useRef();
-
+  const backRef = useRef();
   useEffect(() => {
     studentIdRef.current.focus();
   }, []);
@@ -40,6 +40,7 @@ const JoinCheck = () => {
       setFindData();
     } finally {
       setLoading(false);
+      backRef.current.focus();
     }
   };
 
@@ -70,7 +71,7 @@ const JoinCheck = () => {
           <button className="submit" onClick={handleSubmit}>
             확인하기
           </button>
-          <button className="submit" onClick={() => nav("/join")}>
+          <button className="submit" ref={backRef} onClick={() => nav("/join")}>
             돌아가기
           </button>
         </div>

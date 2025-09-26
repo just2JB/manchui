@@ -9,9 +9,11 @@ const AdminJoin = () => {
   const { user } = useOutletContext();
   const [joinData, setJoinData] = useState([]);
   const [messages, setMessages] = useState("");
+
   const [search, setSearch] = useState("");
   const [searchType, setSearchType] = useState("name");
-  const [searchData, setSearchData] = useState([]);
+  const [timeRange, setTimeRange] = useState([]);
+  const [filteredhData, setSearchData] = useState([]);
   const [sortType, setSortType] = useState("name");
   const [sortedData, setSortedData] = useState([]);
 
@@ -81,6 +83,8 @@ const AdminJoin = () => {
   return (
     <div className="adminJome">
       <Link to="../">돌아가기</Link>
+      <button className="openJoin">웹 가입신청 폼 활성화</button>
+      <button className="closeJoin">웹 가입신청 폼 비활성회</button>
       <div>메시지: {messages}</div>
       <div className="joinTable">
         <Table columns={columns} data={data} setSortType={setSortType} />

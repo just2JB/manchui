@@ -37,11 +37,6 @@
   color: #f5f5f5;
   cursor: pointer;
 }
-.join .control > div > button:hover {
-  border-color: #a6241500;
-  outline: none;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #8080808f;
-}
 
 .join .index0 {
   transform: translateY(50vh);
@@ -54,7 +49,7 @@
   transform: translateY(105px);
 }
 .join .index7 {
-  transform: translateY(165px);
+  transform: translateY(190px);
 }
 
 .join .control > div .index {
@@ -108,6 +103,7 @@
   border-radius: 20px;
   font-weight: 200;
   cursor: pointer;
+  user-select: none;
 }
 .join .start > .button:hover {
   transition-duration: 0.3s;
@@ -127,6 +123,12 @@
   text-align: center;
   font-size: medium;
 }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
 .join input:focus {
   border-color: #a624158f;
   outline: none;
@@ -168,23 +170,50 @@
 
 .join .mdOpen {
   height: 10px;
+  height: 14px;
   cursor: pointer;
 }
+
 .join .checkInfo {
+  position: relative;
   background-color: #090909;
   border: 1px solid #f5f5f5;
   border-radius: 10px;
-  width: 54%;
-  height: 100px;
+  width: 400px;
+  height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
   color: #f5f5f5;
   padding: 4px;
   resize: none;
+  overflow: hidden;
   z-index: 0;
 }
 .join .checkInfo > div {
-  font-weight: 100;
   width: 100%;
+  font-weight: 50;
+  align-content: center;
+  display: flex;
+  justify-content: space-around;
+  flex-direction: row;
 }
+.join .hor {
+  flex: 0.9;
+  margin-top: 10px;
+  border-top: 1px dotted rgba(112, 112, 112, 0.411);
+}
+.join .checkInfo > div > .checkIcon {
+  color: rgb(16, 206, 80);
+  width: 15px;
+}
+.join .checkInfo > div > .errorIcon {
+  color: #a62415;
+  width: 15px;
+  visibility: visible;
+  cursor: pointer;
+}
+
 .join .submit {
   background-color: #090909;
   border: 1px solid #f5f5f5;
@@ -202,6 +231,15 @@
   outline: none;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #a624158f;
 }
+.join .submitError {
+  height: 50px;
+  align-content: center;
+  font-size: 17px;
+}
+.join .errorText {
+  color: #a62415d0;
+  font-weight: 300;
+}
 
 @keyframes onIndex {
   0% {
@@ -211,6 +249,7 @@
   100% {
   }
 }
+
 @media screen and (max-width: 767px) {
   .join textarea {
     width: 200px;
@@ -228,9 +267,22 @@
     width: 130px;
   }
   .join .subText {
-    font-size: 10px;
+    font-size: 11px;
   }
   .join .formdiv {
     margin-top: -25px;
+  }
+  .join .checkInfo > div {
+    flex-direction: row;
+    justify-content: start;
+    gap: 5px;
+  }
+  .join .hor {
+    position: fixed;
+  }
+  .join .mdOpen {
+    position: absolute;
+    height: 14px;
+    right: 10px;
   }
 }

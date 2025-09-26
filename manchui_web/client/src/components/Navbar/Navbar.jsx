@@ -7,8 +7,8 @@ import "./Navbar.css";
 const pages = [
   { name: "홈", path: "/" },
   { name: "동아리 소개", path: "/about" },
-  { name: "문의하기", path: "/contact" },
   { name: "가입", path: "/join" },
+  { name: "굿즈", path: "/goods" },
   { name: "동아리방", path: "/club" },
 ];
 

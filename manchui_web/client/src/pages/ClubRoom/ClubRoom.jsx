@@ -53,29 +53,56 @@ const ClubRoom = () => {
       }
     }
   };
+
   return (
     <div className="club-room">
-      {user.position === "임원진" ? <Link to="/admin">관리자페이지</Link> : ""}
       <div className="my-info">
         <div className="profil">
-          <div className="aka">{user.aka} </div>
-          <div className="username">{user.username} </div>
-          <div className="position">직책: {user.position}</div>
-          {isLogin ? (
-            <>
-              <div className="logout" onClick={handleLogout}>
-                로그아웃
+          <div className="topMenu">
+            <h3 className="title">내 정보</h3>
+            <div className="myPage">수정하기</div>
+          </div>
+          <div className="user">
+            <div className="aka">{user.aka} </div>
+            <div className="username">{user.username} </div>
+            <div className="position">직책: {user.position}</div>
+            {isLogin ? (
+              <>
+                <div className="logout" onClick={handleLogout}>
+                  로그아웃
+                </div>
+              </>
+            ) : (
+              <div className="authOpen" onClick={() => setAuthIsOpen(true)}>
+                로그인
               </div>
-            </>
-          ) : (
-            <div className="authOpen" onClick={() => setAuthIsOpen(true)}>
-              로그인
-            </div>
-          )}
+            )}
+            <div className="nextPractice">다음 연습</div>
+          </div>
         </div>
       </div>
-      <div className="content">콘텐츠</div>
-
+      <div className="content">
+        <div className="schedule">
+          <div className="topMenu">
+            <div className="left">
+              <h3 className="title">나의 일정</h3>
+              <div className="month">10월</div>
+            </div>
+            <div className="right">
+              <div className="toToday">오늘</div>
+              <div className="update">일정등록</div>
+            </div>
+          </div>
+          <div className="swiper"></div>
+        </div>
+      </div>
+      <div className="toAdmin">
+        {user.position === "임원진" ? (
+          <Link to="/admin">관리자페이지</Link>
+        ) : (
+          ""
+        )}
+      </div>
       {loading ? (
         <div>
           <Loading />
@@ -83,6 +110,7 @@ const ClubRoom = () => {
       ) : (
         <></>
       )}
+
       {authIsOpen ? (
         <AuthWindow
           setIsLogin={setIsLogin}

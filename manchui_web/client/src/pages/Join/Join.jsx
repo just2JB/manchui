@@ -51,7 +51,8 @@ const Join = () => {
       message.grade = "*학년은 필수 항목입니다!";
       message.error = true;
     }
-    if (formData.studentId.length !== 10) {
+    const numTest = /^\d+$/;
+    if (formData.studentId.length !== 10 || !numTest.test(formData.studentId)) {
       message.studentId = "*숫자 10자리를 입력해주세요!";
       message.error = true;
     }
@@ -308,7 +309,7 @@ const Join = () => {
               </span>
             )}
             <input
-              type="number"
+              type="text"
               inputmode="search"
               name="studentId"
               value={formData.studentId}

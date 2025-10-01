@@ -1,20 +1,27 @@
 .club-room {
   width: 100%;
-  background-color: #121212;
   color: #f5f5f5;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 .my-info {
-  margin-top: 20px;
+  margin-top: 15px;
   align-items: center;
   width: 100%;
   display: flex;
   justify-content: space-around;
-  background-color: #96151500;
+  position: relative;
 }
-
+.my-info .infoBack {
+  position: absolute;
+  width: 95%;
+  height: 310px;
+  top: 34px;
+  z-index: 1;
+  border-radius: 10px;
+  overflow: hidden;
+}
 .club-room .my-info .topMenu {
   display: flex;
   flex-direction: row;
@@ -22,14 +29,15 @@
 }
 .my-info .profil {
   width: 95%;
+  z-index: 2;
+  background-color: #0c0c0c79;
 }
 .my-info .user {
   height: 300px;
-  margin-top: 15px;
+  margin-top: 10px;
   padding: 5px;
-  background-color: #f5f5f5;
-  color: #121212;
-  border: 1px solid #f5f5f5;
+  border: 1px solid #33333369;
+  color: #f5f5f5;
   border-radius: 10px;
 }
 .user .username {
@@ -37,7 +45,7 @@
   font-weight: 500;
 }
 .user .nextPractice {
-  margin-top: 15px;
+  margin-top: 10px;
   border-top: 1px solid #5f5f5f;
 }
 
@@ -69,15 +77,18 @@
   background-color: #751a0fc4;
 }
 .club-room .swiper {
-  background-color: #f5f5f5;
-  border: 1px solid #f5f5f5;
+  border: 1px solid #333333;
   border-radius: 10px;
-  margin-top: 20px;
+  margin-top: 10px;
   height: 150px;
+}
+.club-room .swiper .mok {
+  height: 100%;
+  border: 1px solid #5f5f5f;
 }
 
 .club-room > .toAdmin {
-  margin-top: 15px;
+  margin-top: 10px;
   align-items: center;
   width: 100%;
   display: flex;
@@ -85,8 +96,6 @@
 }
 .club-room > .toAdmin > * {
   width: 95%;
-  color: #121212;
-  background-color: #f5f5f5;
   border: 1px solid #f5f5f5;
   border-radius: 10px;
 }

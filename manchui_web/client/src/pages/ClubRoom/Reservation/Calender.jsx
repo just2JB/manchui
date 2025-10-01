@@ -1,6 +1,6 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "./Calender.css";
+import "./Calender.css"; 
 import "swiper/swiper-bundle.css";
 
 export const Calender = ({

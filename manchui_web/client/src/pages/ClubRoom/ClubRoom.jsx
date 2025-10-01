@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import axios from "axios";
 
 import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
+import Beams from "../../components/Beams/Beams";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -12,6 +13,8 @@ const ClubRoom = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({ username: "" });
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
+  const [profilSpeed, setProfilSpeed] = useState(0);
+
   useEffect(() => {
     const verifyToken = async () => {
       setLoading(true);
@@ -57,12 +60,27 @@ const ClubRoom = () => {
   return (
     <div className="club-room">
       <div className="my-info">
+        <div className="infoBack">
+          <Beams
+            beamWidth={20}
+            beamHeight={40}
+            beamNumber={1}
+            lightColor="rgba(184, 184, 184, 1)"
+            speed={profilSpeed}
+            noiseIntensity={0}
+            scale={0.25}
+            rotation={315}
+          />
+        </div>
         <div className="profil">
           <div className="topMenu">
             <h3 className="title">내 정보</h3>
             <div className="myPage">수정하기</div>
           </div>
-          <div className="user">
+          <div
+            className="user"
+            onClick={() => setProfilSpeed(profilSpeed + 0.5)}
+          >
             <div className="aka">{user.aka} </div>
             <div className="username">{user.username} </div>
             <div className="position">직책: {user.position}</div>

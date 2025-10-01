@@ -29,6 +29,7 @@ import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
+import Beams from "./components/Beams/Beams";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 

@@ -6,14 +6,16 @@ import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
 import Beams from "../../components/Beams/Beams";
-
+import { RiMenuFoldFill, RiMenuFold2Fill } from "react-icons/ri";
+import { CgProfile } from "react-icons/cg";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoom = () => {
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({ username: "" });
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
-  const [profilSpeed, setProfilSpeed] = useState(0);
+  const [profilSpeed, setProfilSpeed] = useState(4);
+  const [profilMenu, setProfilMenu] = useState(false);
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -62,39 +64,78 @@ const ClubRoom = () => {
       <div className="my-info">
         <div className="infoBack">
           <Beams
-            beamWidth={20}
+            beamWidth={3.2}
             beamHeight={40}
-            beamNumber={1}
+            beamNumber={10}
             lightColor="rgba(184, 184, 184, 1)"
             speed={profilSpeed}
-            noiseIntensity={0}
-            scale={0.25}
+            noiseIntensity={2}
+            scale={0.2}
             rotation={315}
           />
         </div>
         <div className="profil">
           <div className="topMenu">
             <h3 className="title">내 정보</h3>
-            <div className="myPage">수정하기</div>
+
+            <div className="profilMenu">
+              <div
+                className="menuButton"
+                onClick={() => setProfilMenu(profilMenu ? false : true)}
+              >
+                <RiMenuFoldFill className="menuIcon" />
+              </div>
+              <div
+                className={`menuContent ${profilMenu ? "profilMenuOn" : ""}`}
+              >
+                <div
+                  className="menuButton"
+                  onClick={() => setProfilMenu(profilMenu ? false : true)}
+                >
+                  <RiMenuFold2Fill className="menuIcon" />
+                </div>
+                <div className="myPage">수정하기</div>
+
+                {user.position === "임원진" ? (
+                  <div className="toAdmin">
+                    <Link to="/admin">관리자페이지</Link>
+                  </div>
+                ) : (
+                  ""
+                )}
+
+                {isLogin ? (
+                  <>
+                    <div className="logout" onClick={handleLogout}>
+                      로그아웃
+                    </div>
+                  </>
+                ) : (
+                  <div className="authOpen" onClick={() => setAuthIsOpen(true)}>
+                    로그인
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           <div
-            className="user"
+            className="profilCard"
             onClick={() => setProfilSpeed(profilSpeed + 0.5)}
           >
-            <div className="aka">{user.aka} </div>
-            <div className="username">{user.username} </div>
-            <div className="position">직책: {user.position}</div>
-            {isLogin ? (
-              <>
-                <div className="logout" onClick={handleLogout}>
-                  로그아웃
-                </div>
-              </>
-            ) : (
-              <div className="authOpen" onClick={() => setAuthIsOpen(true)}>
-                로그인
+            <div className="user">
+              <div className="userImage">
+                <img
+                  src="/profilIcon.png"
+                  alt="Logo"
+                  className="defaultImage"
+                />
               </div>
-            )}
+              <div className="userText">
+                <div className="aka">{user.aka} </div>
+                <div className="username">{user.username} </div>
+                <div className="position">직책: {user.position}</div>
+              </div>
+            </div>
             <div className="nextPractice">다음 연습</div>
           </div>
         </div>
@@ -114,13 +155,7 @@ const ClubRoom = () => {
           <div className="swiper"></div>
         </div>
       </div>
-      <div className="toAdmin">
-        {user.position === "임원진" ? (
-          <Link to="/admin">관리자페이지</Link>
-        ) : (
-          ""
-        )}
-      </div>
+
       {loading ? (
         <div>
           <Loading />

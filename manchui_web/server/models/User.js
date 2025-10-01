@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   aka: {
     type: String,
-    default: "만치치",
+    default: "신규부원",
   },
   position: {
     type: String,

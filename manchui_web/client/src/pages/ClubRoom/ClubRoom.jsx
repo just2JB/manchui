@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/swiper-bundle.css";
 
 import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
 import Beams from "../../components/Beams/Beams";
 import { RiMenuFoldFill, RiMenuFold2Fill } from "react-icons/ri";
-import { CgProfile } from "react-icons/cg";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoom = () => {
@@ -16,8 +17,46 @@ const ClubRoom = () => {
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
   const [profilSpeed, setProfilSpeed] = useState(4);
   const [profilMenu, setProfilMenu] = useState(false);
+  const [schedule, setSchedule] = useState([[], [], []]);
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
 
+  const setDayArray = (date, index) => {
+    const firstDate = new Date(date).setDate(
+      date.getDate() - date.getDay() - 7
+    );
+    const first = new Date(firstDate);
+    const dayArray = [];
+    for (let i = 0; i < 21; i++) {
+      const next = new Date(first).setDate(first.getDate() + i);
+      dayArray.push(new Date(next));
+    }
+    setMonth(dayArray[10].getMonth() + 1);
+    if (index === 0) {
+      setSchedule([
+        dayArray.slice(7, 14),
+        dayArray.slice(14, 21),
+        dayArray.slice(0, 7),
+      ]);
+    } else if (index === 1) {
+      setSchedule([
+        dayArray.slice(0, 7),
+        dayArray.slice(7, 14),
+        dayArray.slice(14, 21),
+      ]);
+    } else if (index === 2) {
+      setSchedule([
+        dayArray.slice(14, 21),
+        dayArray.slice(0, 7),
+        dayArray.slice(7, 14),
+      ]);
+    }
+  };
+
+  const changeSlideHandle = (e) => {
+    setDayArray(schedule[e.realIndex][0], e.realIndex);
+  };
   useEffect(() => {
+    setDayArray(new Date(), 0);
     const verifyToken = async () => {
       setLoading(true);
       try {
@@ -76,7 +115,7 @@ const ClubRoom = () => {
         </div>
         <div className="profil">
           <div className="topMenu">
-            <h3 className="title">내 정보</h3>
+            <h3 className="title">- 내 정보</h3>
 
             <div className="profilMenu">
               <div
@@ -136,7 +175,7 @@ const ClubRoom = () => {
                 <div className="position">직책: {user.position}</div>
               </div>
             </div>
-            <div className="nextPractice">다음 연습</div>
+            <div className="nextPractice"></div>
           </div>
         </div>
       </div>
@@ -144,15 +183,37 @@ const ClubRoom = () => {
         <div className="schedule">
           <div className="topMenu">
             <div className="left">
-              <h3 className="title">나의 일정</h3>
-              <div className="month">10월</div>
+              <h3 className="title">- 내 일정</h3>
+              <div className="month">{month}월</div>
             </div>
             <div className="right">
               <div className="toToday">오늘</div>
               <div className="update">일정등록</div>
             </div>
           </div>
-          <div className="swiper"></div>
+
+          <Swiper
+            onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
+            loop="true"
+            className="swiper"
+          >
+            {schedule.map((array, index) => (
+              <SwiperSlide className={`swiperBox swipe${index}`} key={index}>
+                <div className="swipeContent">
+                  {array.map((date) => (
+                    <div className="days" key={date}>
+                      {date.getDate()}
+                      {date.getDate() === 1 ? (
+                        <div className="nextMonth">다음 달</div>
+                      ) : (
+                        ""
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
 

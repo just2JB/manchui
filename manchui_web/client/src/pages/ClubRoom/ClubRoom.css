@@ -138,14 +138,15 @@
   font-size: 12px;
   text-align: center;
   font-weight: 300;
-  align-content: center;
+  align-items: center;
+  color: #f0f0f0bd;
 }
-
 .club-room .topMenu > div {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   gap: 5px;
+  align-items: center;
 }
 .club-room .topMenu > div > .month {
   border-radius: 10px;

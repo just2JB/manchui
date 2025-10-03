@@ -8,6 +8,7 @@
   height: 40px;
   background: #75190f;
   user-select: none;
+  z-index: 10;
 }
 .out {
   padding: 3%;

@@ -9,10 +9,23 @@ import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
 import Beams from "../../components/Beams/Beams";
 import { RiMenuFoldFill, RiMenuFold2Fill } from "react-icons/ri";
+import { TbClockEdit } from "react-icons/tb";
+import { RiArrowGoBackLine } from "react-icons/ri";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+const toKrDay = ({ day }) => {
+  if (day === 0) return <div className={`day sunday`}>일</div>;
+  else if (day === 1) return <div className="day">월</div>;
+  else if (day === 2) return <div className="day">화</div>;
+  else if (day === 3) return <div className="day">수</div>;
+  else if (day === 4) return <div className="day">목</div>;
+  else if (day === 5) return <div className="day">금</div>;
+  else if (day === 6) return <div className={`day saturday`}>토</div>;
+};
 
 const ClubRoom = () => {
   const [loading, setLoading] = useState(false);
+  const [swiperInstance, setSwiperInstance] = useState(null);
   const [user, setUser] = useState({ username: "" });
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
   const [profilSpeed, setProfilSpeed] = useState(4);
@@ -97,7 +110,15 @@ const ClubRoom = () => {
       }
     }
   };
+  const handleSwiper = (swiper) => {
+    setSwiperInstance(swiper);
+  };
 
+  const toToday = () => {
+    if (swiperInstance) {
+      setDayArray(new Date(), swiperInstance.realIndex);
+    }
+  };
   return (
     <div className="club-room">
       <div className="my-info">
@@ -187,27 +208,42 @@ const ClubRoom = () => {
               <div className="month">{month}월</div>
             </div>
             <div className="right">
-              <div className="toToday">오늘</div>
+              <div className="toToday" onClick={() => toToday()}>
+                오늘 <RiArrowGoBackLine />
+              </div>
               <div className="update">일정등록</div>
             </div>
           </div>
 
           <Swiper
             onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
+            onSwiper={handleSwiper}
             loop="true"
             className="swiper"
+            slidesPerView={1}
+            spaceBetween={1}
           >
             {schedule.map((array, index) => (
-              <SwiperSlide className={`swiperBox swipe${index}`} key={index}>
+              <SwiperSlide className="swiperBox" key={index}>
                 <div className="swipeContent">
                   {array.map((date) => (
                     <div className="days" key={date}>
-                      {date.getDate()}
-                      {date.getDate() === 1 ? (
-                        <div className="nextMonth">다음 달</div>
-                      ) : (
-                        ""
-                      )}
+                      <div
+                        className={`top ${
+                          date.toLocaleDateString() ===
+                          new Date().toLocaleDateString()
+                            ? "isToday"
+                            : ""
+                        }`}
+                      >
+                        {toKrDay({ day: date.getDay() })}
+                        <div className="date">{date.getDate()}</div>
+                      </div>
+                      <div className="bottom">
+                        <div className="editSchedule">
+                          <TbClockEdit />
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

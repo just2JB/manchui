@@ -173,7 +173,7 @@
   height: 50px;
   width: 1100px;
 }
-.time {
+.reservation .time {
   display: inline-block;
   position: relative;
   height: 40px;

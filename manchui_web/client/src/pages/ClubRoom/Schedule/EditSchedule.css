@@ -1,0 +1,142 @@
+.editSchedule {
+  background-color: #0c0c0c;
+  padding-top: 10px;
+}
+.editSchedule .timeSlotsContainer {
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+  border-top: 1px solid rgba(128, 128, 128, 0.452);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.452);
+  border-radius: 5px;
+}
+.editSchedule .timeSlots {
+  padding: 10px 10px 10px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background-color: #0c0c0c;
+  margin-bottom: 40px;
+}
+.editSchedule .timeSlot {
+  height: 70px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-between;
+}
+.editSchedule .timeSlot .time {
+  position: relative;
+  color: white;
+  text-align: center;
+  line-height: 70px;
+  flex: 0.5;
+  border-right: 1px solid rgba(128, 128, 128, 0.452);
+  border-radius: 0px 10px 10px 0px;
+  background-color: #1a1a1a;
+}
+.editSchedule .timeSlot .timeText {
+  position: absolute;
+  right: 15px;
+  color: #cacaca;
+  padding: 2px 5px;
+  border-radius: 5px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.editSchedule .timeSlot .content {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  flex: 0.5;
+  color: white;
+  line-height: 70px;
+  padding-left: 10px;
+}
+.editSchedule .timeSlot .content .line {
+  height: 10%;
+  border-top: 1px solid rgba(128, 128, 128, 0.452);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.452);
+  border-radius: 0px 5px 5px 0px;
+  flex: 1;
+}
+.editSchedule .timeSlot .content .status {
+  width: 100px;
+  height: 100%;
+  text-align: center;
+  border-radius: 5px;
+  background-color: #1a1a1a;
+  cursor: pointer;
+}
+.editSchedule .content .status.possible {
+  background-color: #4caf50;
+  transition-duration: 0.3s;
+}
+.editSchedule .scheduleMenuBar {
+  position: fixed;
+  bottom: 40px;
+  background-color: #202020;
+  border-top: 1px solid #b6b6b64b;
+  height: 40px;
+  width: 700px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  user-select: none;
+}
+
+.editSchedule .menuBar button {
+  flex: 1;
+  text-decoration: none;
+  align-content: center;
+  text-align: center;
+  font-size: small;
+  font-weight: 200;
+  padding: 10px 0px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #3a3a3a;
+  color: white;
+  border: none;
+}
+
+.editSchedule .floatView {
+  padding: 1px;
+  position: fixed;
+  bottom: 130px;
+  left: 20px;
+  width: 80px;
+  height: 200px;
+  background-color: rgba(0, 0, 0, 0.705);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: #616161 0px 0px 3px 0px;
+  z-index: 1000;
+}
+
+.editSchedule .floatView .floatTime {
+  width: 100%;
+  flex: 1;
+  text-align: center;
+  line-height: 40px;
+  font-size: large;
+  font-weight: 600;
+  color: white;
+}
+.editSchedule .floatTimeStatus {
+  width: 100%;
+  height: 100%;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.158);
+  background-color: #1a1a1a44;
+}
+.editSchedule .possible {
+  background-color: #4caf4f46;
+  transition-duration: 0.3s;
+}
+@media screen and (max-width: 767px) {
+  .editSchedule .scheduleMenuBar {
+    width: 100%;
+  }
+}

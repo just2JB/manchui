@@ -138,6 +138,7 @@
   font-size: 12px;
   text-align: center;
   font-weight: 300;
+
   align-items: center;
   color: #f0f0f0bd;
 }
@@ -147,6 +148,10 @@
   justify-content: space-between;
   gap: 5px;
   align-items: center;
+}
+.club-room .topMenu .createSchedule {
+  color: #f0f0f0bd;
+  text-decoration: none;
 }
 .club-room .topMenu > div > .month {
   border-radius: 10px;

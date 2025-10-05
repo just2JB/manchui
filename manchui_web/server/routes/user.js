@@ -25,7 +25,6 @@ router.post("/signup", async (req, res) => {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
   }
 });
-
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -58,7 +57,6 @@ router.post("/login", async (req, res) => {
     res.status(501).json({ message: "서버 오류가 발생했습니다." });
   }
 });
-
 router.post("/logout", async (req, res) => {
   try {
     const token = req.cookies.token;
@@ -85,7 +83,6 @@ router.post("/logout", async (req, res) => {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
-
 router.delete("/delete/:userId", async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.userId);
@@ -97,7 +94,6 @@ router.delete("/delete/:userId", async (req, res) => {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
-
 router.post("/verify-token", async (req, res) => {
   const token = req.cookies.token;
   if (!token) {
@@ -106,7 +102,9 @@ router.post("/verify-token", async (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.userId);
-    return res.status(201).json({ isValid: true, user: user });
+    const userWithoutSchedule = user.toObject();
+    delete userWithoutSchedule.schedule;
+    return res.status(201).json({ isValid: true, user: userWithoutSchedule });
   } catch (error) {
     return res
       .status(401)

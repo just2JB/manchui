@@ -211,7 +211,9 @@ const ClubRoom = () => {
               <div className="toToday" onClick={() => toToday()}>
                 오늘 <RiArrowGoBackLine />
               </div>
-              <div className="update">일정등록</div>
+              <Link className="createSchedule" to="/club/schedule">
+                일정등록
+              </Link>
             </div>
           </div>
 
@@ -240,9 +242,12 @@ const ClubRoom = () => {
                         <div className="date">{date.getDate()}</div>
                       </div>
                       <div className="bottom">
-                        <div className="editSchedule">
+                        <Link
+                          className="editSchedule"
+                          to={`/club/edit-schedule/${date.toLocaleDateString()}`}
+                        >
                           <TbClockEdit />
-                        </div>
+                        </Link>
                       </div>
                     </div>
                   ))}

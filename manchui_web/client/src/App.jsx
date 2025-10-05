@@ -30,6 +30,8 @@ import AdminJoin from "./pages/Admin/AdminJoin";
 import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import Beams from "./components/Beams/Beams";
+import Schedule from "./pages/ClubRoom/Schedule/Schedule";
+import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -174,6 +176,8 @@ const router = createBrowserRouter([
           { path: "edit-practice/:id", element: <EditPractice /> },
           { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
+          { path: "schedule", element: <Schedule /> },
+          { path: "edit-schedule/:date", element: <EditSchedule /> },
         ],
       },
     ],

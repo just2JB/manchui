@@ -1,12 +1,13 @@
 import axios from "axios";
 import React from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate, useLocation, useParams } from "react-router-dom";
 import "./ClubRoomNavbar.css";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
   const location = useLocation();
+  const { date } = useParams();
   const nav = useNavigate();
   const handleLogout = async (e) => {
     if (confirm(`로그아웃 하시겠습니까?`)) {
@@ -50,8 +51,10 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
               <h2 className="title-text">동아리방 예약</h2>
             ) : location.pathname === "/club/mypage" ? (
               <h2 className="title-text">마이페이지</h2>
+            ) : location.pathname.includes("/club/edit-schedule") ? (
+              <h2 className="title-text">{date}</h2>
             ) : (
-              ""
+              <h2 className="title-text">없는 페이지입니다?</h2>
             )}
           </div>
         </div>

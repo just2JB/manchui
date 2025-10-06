@@ -1,6 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import "./EditSchedule.css";
 
 const EditSchedule = () => {
@@ -21,7 +22,7 @@ const EditSchedule = () => {
     0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
   useEffect(() => {}, []);
-
+  const { date } = useParams();
   return (
     <div className="editSchedule">
       <div className="floatView">
@@ -33,6 +34,12 @@ const EditSchedule = () => {
             ></div>
           </div>
         ))}
+      </div>
+      <div className="dateContainer">
+        <div className="date">{date}</div>
+        <div className="seeDawn">
+          <div className="seeDawnText">새벽시간 숨기기</div>
+        </div>
       </div>
       <div className="timeSlotsContainer">
         <div className="timeSlots">
@@ -55,7 +62,13 @@ const EditSchedule = () => {
 
       <div className="scheduleMenuBar">
         <button className="saveButton">저장</button>
-        <button className="cancelButton">취소</button>
+        <button
+          className="cancelButton"
+          onClick={() => setSchedule(mokschedule)}
+        >
+          취소
+        </button>
+
         <button
           className="clearButton"
           onClick={() =>
@@ -66,12 +79,6 @@ const EditSchedule = () => {
           }
         >
           모두 비우기
-        </button>
-        <button
-          className="seeDawnButton"
-          onClick={() => setSchedule(mokschedule)}
-        >
-          새벽시간 보기
         </button>
       </div>
     </div>

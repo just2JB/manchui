@@ -1,8 +1,8 @@
 .bottomBar {
   position: fixed;
   bottom: 0px;
-  background-color: #202020;
-  border-top: 1px solid #b6b6b64b;
+  background-color: #0c0c0c;
+  border-top: 1px solid #b6b6b62c;
   width: 700px;
   height: 40px;
   display: flex;
@@ -12,12 +12,21 @@
 }
 
 .menu-button {
+  padding-bottom: 3px;
+  display: flex;
+  justify-content: end;
+  flex-direction: column;
+  align-items: center;
   flex: 1;
   text-decoration: none;
   align-content: center;
   text-align: center;
   font-size: small;
   font-weight: 200;
+  color: #979797c2;
+}
+.menu-button .button-icon {
+  font-size: 18px;
 }
 .menu-button:hover {
   background-color: #121212;

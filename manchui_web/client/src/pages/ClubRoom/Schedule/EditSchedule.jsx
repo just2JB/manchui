@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./EditSchedule.css";
 
 const EditSchedule = () => {
@@ -14,13 +14,21 @@ const EditSchedule = () => {
       3. 기존에 있던 시간 정보 삭제 (모두 비우기)    
       1, 2, 3번 모두 백엔드에서 처리
 */
+  const nav = useNavigate();
   const [schedule, setSchedule] = useState([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
 
-  const mokschedule = [
-    0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
-  ];
+  const changeStatus = (index) => {
+    const status = [...schedule];
+    if (status[index] === 0) {
+      status[index] = 1;
+    } else {
+      status[index] = 0;
+    }
+    setSchedule(status);
+  };
+
   useEffect(() => {}, []);
   const { date } = useParams();
   return (
@@ -52,6 +60,7 @@ const EditSchedule = () => {
               <div className="content">
                 <div className="line"></div>
                 <div
+                  onClick={() => changeStatus(index)}
                   className={`status ${item === 1 ? "possible" : ""} `}
                 ></div>
               </div>
@@ -61,25 +70,23 @@ const EditSchedule = () => {
       </div>
 
       <div className="scheduleMenuBar">
-        <button className="saveButton">저장</button>
-        <button
-          className="cancelButton"
-          onClick={() => setSchedule(mokschedule)}
-        >
-          취소
-        </button>
-
-        <button
-          className="clearButton"
-          onClick={() =>
-            setSchedule([
-              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-              0, 0,
-            ])
-          }
-        >
-          모두 비우기
-        </button>
+        <div className="button-box">
+          <button className="saveButton">저장</button>
+          <button className="cancelButton" onClick={() => nav(-1)}>
+            취소
+          </button>
+          <button
+            className="clearButton"
+            onClick={() =>
+              setSchedule([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0,
+              ])
+            }
+          >
+            모두 비우기
+          </button>
+        </div>
       </div>
     </div>
   );

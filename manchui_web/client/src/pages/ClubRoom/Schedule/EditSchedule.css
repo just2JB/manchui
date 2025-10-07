@@ -107,7 +107,12 @@
   user-select: none;
   transition-duration: 0.3s;
 }
-
+.editSchedule .scheduleMenuBar .button-box {
+  width: 80%;
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
 .editSchedule .scheduleMenuBar button {
   flex: 1;
   text-decoration: none;
@@ -120,7 +125,7 @@
   cursor: pointer;
   background-color: #3a3a3a00;
   color: white;
-  border: none;
+  border: 1px solid #f1f1f1;
 }
 
 .editSchedule .floatView {

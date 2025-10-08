@@ -32,6 +32,7 @@ const ClubRoom = () => {
   const [profilMenu, setProfilMenu] = useState(false);
   const [schedule, setSchedule] = useState([[], [], []]);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [scheduleData, setScheduleData] = useState([]);
 
   const setDayArray = (date, index) => {
     const firstDate = new Date(date).setDate(
@@ -73,14 +74,15 @@ const ClubRoom = () => {
     const verifyToken = async () => {
       setLoading(true);
       try {
-        const responsse = await axios.post(
+        const response = await axios.post(
           `${serverUrl}/api/auth/verify-token`,
           {},
           { withCredentials: true }
         );
-        if (responsse.data.isValid) {
+        if (response.data.isValid) {
           setIsLogin(true);
-          return setUser(responsse.data.user);
+          getSchedule(response.data.user._id);
+          return setUser(response.data.user);
         }
         setIsLogin(false);
         return;
@@ -89,6 +91,22 @@ const ClubRoom = () => {
         console.log("토큰 인증 실패", error);
       } finally {
         setLoading(false);
+      }
+    };
+    const getSchedule = async (userId) => {
+      setLoading(true);
+      console.log("yee");
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/schedule/${userId}`,
+          {
+            withCredentials: true,
+          }
+        );
+        console.log(response.data);
+        setScheduleData(response.data);
+      } catch (error) {
+        nav(-1);
       }
     };
     verifyToken();
@@ -241,6 +259,15 @@ const ClubRoom = () => {
                         {toKrDay({ day: date.getDay() })}
                         <div className="date">{date.getDate()}</div>
                       </div>
+                      <div className="isWritten">
+                        {scheduleData.some(
+                          (data) => data.date === date.toLocaleDateString()
+                        ) ? (
+                          <div className="Written"></div>
+                        ) : (
+                          <div className="notWritten"></div>
+                        )}
+                      </div>
                       <div className="bottom">
                         <Link
                           className="editSchedule"
@@ -255,6 +282,16 @@ const ClubRoom = () => {
               </SwiperSlide>
             ))}
           </Swiper>
+          <div className="explanation">
+            <div>
+              <div className="Written"></div>
+              <div className="explanText">가능한 시간 O</div>
+            </div>
+            <div>
+              <div className="notWritten"></div>
+              <div className="explanText">가능한시간 X</div>
+            </div>
+          </div>
         </div>
       </div>
 

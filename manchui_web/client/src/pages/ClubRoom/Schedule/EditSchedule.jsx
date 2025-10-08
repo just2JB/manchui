@@ -1,9 +1,16 @@
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+  useParams,
+  useNavigate,
+  useOutletContext,
+  data,
+} from "react-router-dom";
+import axios from "axios";
 import "./EditSchedule.css";
-
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+import Loading from "../../../components/Loading/Loading";
 const EditSchedule = () => {
   /* 처음 들어오면: 당일의 시간 정보 가져오기 없으면 24칸 배열
       있으면 그 시간 정보 가져오기  
@@ -14,7 +21,9 @@ const EditSchedule = () => {
       3. 기존에 있던 시간 정보 삭제 (모두 비우기)    
       1, 2, 3번 모두 백엔드에서 처리
 */
+
   const nav = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [schedule, setSchedule] = useState([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
@@ -28,9 +37,57 @@ const EditSchedule = () => {
     }
     setSchedule(status);
   };
+  const saveSchedule = async () => {
+    setLoading(true);
 
-  useEffect(() => {}, []);
+    const reqData = {
+      userId: user._id,
+      date: date,
+      times: schedule,
+    };
+    if (!schedule.includes(1)) {
+      reqData.times = [];
+    }
+    try {
+      const response = await axios.post(`${serverUrl}/api/schedule`, reqData, {
+        withCredentials: true,
+      });
+      if (response.status === 201) {
+        alert("일정이 성공적으로 저장되었습니다.");
+      }
+      nav(-1);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    const getSchedule = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/schedule/${user._id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        const schedules = response.data;
+        const finded = schedules.find((data) => data.date === date);
+        if (finded) {
+          setSchedule(finded.times);
+        }
+      } catch (error) {
+        nav(-1);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getSchedule();
+  }, []);
+
   const { date } = useParams();
+  const { user } = useOutletContext();
+
   return (
     <div className="editSchedule">
       <div className="floatView">
@@ -71,7 +128,9 @@ const EditSchedule = () => {
 
       <div className="scheduleMenuBar">
         <div className="button-box">
-          <button className="saveButton">저장</button>
+          <button className="saveButton" onClick={() => saveSchedule()}>
+            저장
+          </button>
           <button className="cancelButton" onClick={() => nav(-1)}>
             취소
           </button>
@@ -88,6 +147,13 @@ const EditSchedule = () => {
           </button>
         </div>
       </div>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

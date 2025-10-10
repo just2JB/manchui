@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
-import "./Calender.css";
 import "swiper/swiper-bundle.css";
 
 export const Calender = ({ selectedDay, clickDate }) => {

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import "./Reservation.css";
-import { Calender } from "./Calender";
+import "./ReservationCalender.css";
+import { Calender } from "../../../components/Calender/Calender";
 import { IoMdShare } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
 import Loading from "../../../components/Loading/Loading";
@@ -134,7 +135,7 @@ const Reservation = () => {
       ) : (
         <></>
       )}
-      <div className="calendar-section">
+      <div className="reserv-calendar-section">
         <Calender selectedDay={selectedDay} clickDate={clickDate} />
       </div>
       <div className="info-section">

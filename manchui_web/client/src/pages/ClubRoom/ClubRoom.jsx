@@ -81,7 +81,7 @@ const ClubRoom = () => {
         );
         if (response.data.isValid) {
           setIsLogin(true);
-          getSchedule(response.data.user._id);
+          await getSchedule(response.data.user._id);
           return setUser(response.data.user);
         }
         setIsLogin(false);
@@ -95,7 +95,6 @@ const ClubRoom = () => {
     };
     const getSchedule = async (userId) => {
       setLoading(true);
-      console.log("yee");
       try {
         const response = await axios.get(
           `${serverUrl}/api/schedule/${userId}`,
@@ -103,7 +102,7 @@ const ClubRoom = () => {
             withCredentials: true,
           }
         );
-        console.log(response.data);
+
         setScheduleData(response.data);
       } catch (error) {
         nav(-1);

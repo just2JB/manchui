@@ -2,7 +2,8 @@ import axios from "axios";
 import React from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./ClubRoomNavbar.css";
-
+import { IoIosLogOut, IoIosLogIn, IoMdArrowBack } from "react-icons/io";
+import { LuSquareArrowOutUpLeft } from "react-icons/lu";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
@@ -32,9 +33,13 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
       <div className="topBar">
         <div className="out">
           {location.pathname === "/club" ? (
-            <Link to="/">홈으로</Link>
+            <Link to="/">
+              <LuSquareArrowOutUpLeft className="navIcons" />
+            </Link>
           ) : (
-            <Link to="/club">뒤로가기</Link>
+            <Link to="/club">
+              <IoMdArrowBack className="navIcons" />
+            </Link>
           )}
         </div>
         <div className="title">
@@ -49,10 +54,14 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
               </Link>
             ) : location.pathname === "/club/reservation" ? (
               <h2 className="title-text">동아리방 예약</h2>
-            ) : location.pathname === "/club/mypage" ? (
-              <h2 className="title-text">마이페이지</h2>
+            ) : location.pathname === "/club/practice" ? (
+              <h2 className="title-text">연습</h2>
             ) : location.pathname.includes("/club/edit-schedule") ? (
               <h2 className="title-text">일정 작성</h2>
+            ) : location.pathname === "/club/schedule" ? (
+              <h2 className="title-text">일정 등록</h2>
+            ) : location.pathname === "/club/mypage" ? (
+              <h2 className="title-text">마이페이지</h2>
             ) : (
               <h2 className="title-text">없는 페이지입니다?</h2>
             )}
@@ -62,7 +71,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
           {isLogin ? (
             <>
               <div className="logout" onClick={handleLogout}>
-                로그아웃
+                <IoIosLogOut className="navIcons" />
               </div>
             </>
           ) : (
@@ -73,7 +82,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
                   setAuthIsOpen(true);
                 }}
               >
-                로그인
+                <IoIosLogIn className="navIcons" />
               </div>
             </>
           )}

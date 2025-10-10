@@ -6,7 +6,7 @@ import {
   LiaFlag,
   LiaCalendarCheckSolid,
 } from "react-icons/lia";
-
+import { RiMenuAddLine } from "react-icons/ri";
 import { Link } from "react-router-dom";
 import "./BottomBar.css";
 
@@ -23,6 +23,10 @@ const BottomBar = () => {
       <Link className="menu-button" to="/club/practice">
         <LiaFlag className="button-icon" />
         연습
+      </Link>
+      <Link className="menu-button" to="/club/schedule">
+        <RiMenuAddLine className="button-icon" />
+        일정등록
       </Link>
       <Link className="menu-button" to="/club/mypage">
         <LiaAddressCard className="button-icon" />

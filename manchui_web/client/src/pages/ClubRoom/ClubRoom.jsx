@@ -69,10 +69,22 @@ const ClubRoom = () => {
   const changeSlideHandle = (e) => {
     setDayArray(schedule[e.realIndex][0], e.realIndex);
   };
+  const getSchedule = async (userId) => {
+    try {
+      const response = await axios.get(`${serverUrl}/api/schedule/${userId}`, {
+        withCredentials: true,
+      });
+
+      setScheduleData(response.data);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
+    setLoading(true);
     setDayArray(new Date(), 0);
     const verifyToken = async () => {
-      setLoading(true);
       try {
         const response = await axios.post(
           `${serverUrl}/api/auth/verify-token`,
@@ -80,36 +92,27 @@ const ClubRoom = () => {
           { withCredentials: true }
         );
         if (response.data.isValid) {
+          setUser(response.data.user);
           setIsLogin(true);
           await getSchedule(response.data.user._id);
-          return setUser(response.data.user);
+          return;
         }
-        setIsLogin(false);
+
         return;
       } catch (error) {
-        setIsLogin(false);
         console.log("토큰 인증 실패", error);
       } finally {
         setLoading(false);
       }
     };
-    const getSchedule = async (userId) => {
-      setLoading(true);
-      try {
-        const response = await axios.get(
-          `${serverUrl}/api/schedule/${userId}`,
-          {
-            withCredentials: true,
-          }
-        );
-
-        setScheduleData(response.data);
-      } catch (error) {
-        nav(-1);
-      }
-    };
     verifyToken();
   }, []);
+
+  useEffect(() => {
+    if (user.username !== "") {
+      getSchedule(user._id);
+    }
+  }, [user.username]);
 
   const handleLogout = async (e) => {
     if (confirm(`로그아웃 하시겠습니까?`)) {
@@ -123,7 +126,7 @@ const ClubRoom = () => {
         setIsLogin(false);
         setUser({ username: "" });
       } catch (error) {
-        console.log(error.response.data.message);
+        console.log("토큰인증 실패");
       }
     }
   };

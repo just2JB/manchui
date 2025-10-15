@@ -14,6 +14,9 @@ const Schedule = () => {
       <div className="schedule-Calender-section">
         <Calender selectedDay={selectedDay} clickDate={clickDate} />
       </div>
+      <div className="dateInfo-section">
+        
+      </div>
     </div>
   );
 };

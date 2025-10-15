@@ -21,17 +21,17 @@ import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
 
 import Practice from "./pages/ClubRoom/Practice/Practice";
-import CreatePractice from "./pages/ClubRoom/Practice/CreatePractice";
-import EditPractice from "./pages/ClubRoom/Practice/EditPractice";
+import CreateTeam from "./pages/ClubRoom/Practice/CreateTeam";
+import TeamMain from "./pages/ClubRoom/Practice/TeamMain";
 import BottomBar from "./pages/ClubRoom/BottomBar";
 
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
-import Beams from "./components/Beams/Beams";
 import Schedule from "./pages/ClubRoom/Schedule/Schedule";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
+import TeamJoin from "./pages/ClubRoom/Practice/TeamJoin";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -162,7 +162,10 @@ const router = createBrowserRouter([
   {
     path: "/club",
     element: <ClubRoomLayout />,
-    children: [{ index: true, element: <ClubRoom /> }],
+    children: [
+      { index: true, element: <ClubRoom /> },
+      { path: "team/join/:id", element: <TeamJoin /> },
+    ],
   },
   {
     path: "/club",
@@ -172,8 +175,8 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: "practice", element: <Practice /> },
-          { path: "create-practice", element: <CreatePractice /> },
-          { path: "edit-practice/:id", element: <EditPractice /> },
+          { path: "create-team", element: <CreateTeam /> },
+          { path: "team-main/:id", element: <TeamMain /> },
           { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
           { path: "schedule", element: <Schedule /> },

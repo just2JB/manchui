@@ -5,6 +5,9 @@ const teamSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  leaderId: {
+    type: String,
+  },
   members: {
     type: Array,
   },

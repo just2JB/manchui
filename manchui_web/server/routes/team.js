@@ -12,6 +12,7 @@ router.post("/create", async (req, res) => {
     }
     const team = new Team({
       name: name,
+      leaderId: user._id,
       members: [user],
     });
     await team.save();
@@ -21,10 +22,18 @@ router.post("/create", async (req, res) => {
   }
 });
 
-//초대 링크를 보내면 어떻게 가입이 되야할지 고민해야할 듯
-//1. 초대 링크에 팀 아이디 담아서 보내고 그 페이지에서 로그인 토큰 있을 시 가입 완
-// 해당 페이지는 로그인 창 따로하기? clubRoom 레이아웃에서 하면 될 듯
-//2. 노션처럼 이메일로 찾아서 권한 부여할까
+router.delete("/:id", async (req, res) => {
+  try {
+    const team = await Team.findByIdAndDelete(req.params.id);
+    if (!team) {
+      return res.status(404).json({ message: "없는 팀 입니다." });
+    }
+    res.json({ message: "팀이 삭제되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
 router.post("/join", async (req, res) => {
   try {
     const { teamId, userId } = req.body;
@@ -43,6 +52,35 @@ router.post("/join", async (req, res) => {
     }
     team.members.push(user);
     await team.save();
+    return res.status(201).json({ message: "가입 완료되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+router.post("/quit", async (req, res) => {
+  try {
+    const { teamId, userId } = req.body;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
+    }
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
+    }
+    const afterMembers = team.members.filter(
+      (member) => String(member._id) !== String(userId)
+    );
+    if (afterMembers.length > 0) {
+      team.members = afterMembers;
+      await team.save();
+      return res.status(201).json({ message: "탈퇴되었습니다" });
+    } else {
+      await Team.findByIdAndDelete(teamId);
+      console.log("팀 인원 0명으로 팀 삭제");
+      return res.status(201).json({ message: "탈퇴되었습니다" });
+    }
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
@@ -59,7 +97,6 @@ router.get("/:teamId", async (req, res) => {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
-module.exports = router;
 
 router.get("/user/:userId", async (req, res) => {
   try {
@@ -71,7 +108,7 @@ router.get("/user/:userId", async (req, res) => {
     const myTeam = teams.filter((team) =>
       team.members.some((member) => String(member._id) === String(user._id))
     );
-    console.log(myTeam);
+
     res.json({ myTeam: myTeam });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });

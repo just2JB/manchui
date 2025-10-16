@@ -4,3 +4,13 @@
 .teamMain .joinUrl {
   user-select: all;
 }
+.teamMain .members {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+.teamMain .members .member {
+  background-color: rgb(36, 36, 36);
+  padding: 5px;
+  border-radius: 10px;
+}

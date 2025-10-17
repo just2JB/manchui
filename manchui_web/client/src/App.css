@@ -9,6 +9,7 @@
 
 .clubRoombody {
   width: 700px;
+  min-height: calc(100vh - 40px);
   background-color: #0c0c0c;
   margin-top: 40px;
   user-select: none;
@@ -18,5 +19,6 @@
 @media screen and (max-width: 767px) {
   .clubRoombody {
     width: 100%;
+    position: fixed;
   }
 }

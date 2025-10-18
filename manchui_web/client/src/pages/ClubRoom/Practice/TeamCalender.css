@@ -1,11 +1,11 @@
 .teamCalender .calender {
   width: 100%;
-  height: 90%;
+  height: 80%;
   user-select: none;
 }
 .teamCalender .year-month {
   font-weight: 200;
-  font-size: 18px;
+  font-size: 13px;
   user-select: none;
 }
 .teamCalender .date-bar {
@@ -15,10 +15,11 @@
   gap: 4px;
   overflow: hidden;
   width: 100%;
-  height: 40px;
+  height: 30px;
 }
 .teamCalender .calendar-day {
   width: 100%;
+  font-size: 12px;
   border-collapse: collapse;
 }
 .teamCalender .calendar-table {
@@ -35,7 +36,7 @@
 }
 .teamCalender tbody td {
   text-align: center;
-  font-size: medium;
+  font-size: 12px;
   font-weight: 150;
   color: rgba(255, 255, 255, 0.37);
   position: relative;

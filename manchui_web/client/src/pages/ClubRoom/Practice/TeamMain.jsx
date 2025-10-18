@@ -135,15 +135,40 @@ const TeamMain = () => {
         </div>
       </div>
       <div className="teamSchedule">
-        <div className="teamScheduleMenu"></div>
         <div className="teamCalender">
           <TeamCalender selectedDay={selectedDay} clickDate={clickDate} />
         </div>
+        <div className="teamScheduleMenu">
+          <div className="date">{selectedDay.toLocaleDateString()}</div>
+        </div>
       </div>
-      날짜 클릭 시 종합된 일정과 해당일 연습 만들 수 있는 창 띄우기( 새 페이지
-      말고 하위 컴퍼넌트로 오버랩하자)
     </div>
   );
 };
 
+/* 
+달력에 표시될 것
+1. 연습이 있는 날
+2. 연습 일정 작성 요청된 날
+3. 연습 일정 작성이 완료된 날
+
+날짜 클릭 시 종합된 일정과 해당일 연습 만들 수 있는 창 띄우기( 새 페이지 말고 하위 컴퍼넌트로 오버랩하자)
+해당 날짜 선택 시
+1. 해당 일 연습 일정 보기 
+2. 해당 일 연습 일정 추가하기(수정하기)
+3. 일정 작성 요청하기
+4. 내 일정 작성 상태 보이기
+
+연습 일정 추가 탭
+1. 팀원의 스케줄 확인 후 연습 시간 설정
+2. 연습장소 설정(1.개인이 입력 2. 미정상태)
+3. 등록 완료
+연습 장소 동아리 지원 시 - 임원진 계정에서 확인 가능한 페이지에서 예약후 할당
+임원진 페이지에 연습장소 요청된 연습들 볼 수 있도록 구성, 이후 예약 완료하면 임원진이 할당 및 공지
+
+문제1 - 다른 팀 연습 때문에 스케줄이 안될 경우 이를 확인하는 방법?
+  ㄴ 원래 가능하지만 다른 팀때문에 불가능한 시간대는 따로표기
+
+
+*/
 export default TeamMain;

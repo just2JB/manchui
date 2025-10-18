@@ -57,6 +57,14 @@ const Practice = () => {
           ))}
         </div>
       </div>
+      <div className="myPractice">
+        <div className="topMenu">
+          <h4>내 연습</h4>
+          <div className="">월 별로 보기, 리스트로 보기</div>
+        </div>
+        <div className="practiceList"></div>
+        <div className="practiceCalender"></div>
+      </div>
     </div>
   );
 };

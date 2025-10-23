@@ -15,10 +15,16 @@
   font-weight: 200;
   color: white;
 }
-.editSchedule .seeDawn {
+.editSchedule .clear {
   display: flex;
   align-items: center;
   font-weight: 300;
+}
+.editSchedule .clearButton {
+  background-color: #0c0c0c;
+  color: #cacaca;
+  border: none;
+  margin-bottom: 3px;
 }
 
 .editSchedule .seeDawn .seeDawnText {

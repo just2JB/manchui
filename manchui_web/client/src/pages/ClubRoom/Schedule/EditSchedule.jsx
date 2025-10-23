@@ -20,6 +20,9 @@ const EditSchedule = () => {
       2. 기존에 없던 시간 정보 추가
       3. 기존에 있던 시간 정보 삭제 (모두 비우기)    
       1, 2, 3번 모두 백엔드에서 처리
+
+
+      +날짜, (확정, 임시저장) 여부, 일정,
 */
 
   const nav = useNavigate();
@@ -27,6 +30,19 @@ const EditSchedule = () => {
   const [schedule, setSchedule] = useState([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
+
+  const getFomatDate = (localeDateString) => {
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
 
   const changeStatus = (index) => {
     const status = [...schedule];
@@ -37,11 +53,12 @@ const EditSchedule = () => {
     }
     setSchedule(status);
   };
-  const saveSchedule = async () => {
+  const saveSchedule = async (category) => {
     setLoading(true);
 
     const reqData = {
       userId: user._id,
+      category: category,
       date: date,
       times: schedule,
     };
@@ -86,6 +103,7 @@ const EditSchedule = () => {
   }, []);
 
   const { date } = useParams();
+
   const { user } = useOutletContext();
 
   return (
@@ -102,8 +120,18 @@ const EditSchedule = () => {
       </div>
       <div className="dateContainer">
         <div className="date">{date}</div>
-        <div className="seeDawn">
-          <div className="seeDawnText">새벽시간 숨기기</div>
+        <div className="clear">
+          <button
+            className="clearButton"
+            onClick={() =>
+              setSchedule([
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0,
+              ])
+            }
+          >
+            모두 비우기
+          </button>
         </div>
       </div>
       <div className="timeSlotsContainer">
@@ -128,22 +156,17 @@ const EditSchedule = () => {
 
       <div className="scheduleMenuBar">
         <div className="button-box">
-          <button className="saveButton" onClick={() => saveSchedule()}>
-            저장
+          <button
+            className="confirmedButton"
+            onClick={() => saveSchedule("confirem")}
+          >
+            일정 확정
+          </button>
+          <button className="saveButton" onClick={() => saveSchedule("temp")}>
+            임시 저장
           </button>
           <button className="cancelButton" onClick={() => nav(-1)}>
             취소
-          </button>
-          <button
-            className="clearButton"
-            onClick={() =>
-              setSchedule([
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0,
-              ])
-            }
-          >
-            모두 비우기
           </button>
         </div>
       </div>

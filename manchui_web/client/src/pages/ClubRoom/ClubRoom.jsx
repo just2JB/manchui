@@ -65,7 +65,21 @@ const ClubRoom = () => {
       ]);
     }
   };
-
+  const thisWeek = new Date().setDate(
+    new Date().getDate() - new Date().getDay() - 1
+  );
+  const getFomatDate = (localeDateString) => {
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
   const changeSlideHandle = (e) => {
     setDayArray(schedule[e.realIndex][0], e.realIndex);
   };
@@ -259,13 +273,30 @@ const ClubRoom = () => {
                         }`}
                       >
                         {toKrDay({ day: date.getDay() })}
-                        <div className="date">{date.getDate()}</div>
+                        <div
+                          className="date"
+                          style={{
+                            color: `${date < thisWeek ? "gray" : ""}`,
+                          }}
+                        >
+                          {date.getDate()}
+                        </div>
                       </div>
                       <div className="isWritten">
                         {scheduleData.some(
-                          (data) => data.date === date.toLocaleDateString()
+                          (data) =>
+                            data.date ===
+                            getFomatDate(date.toLocaleDateString())
                         ) ? (
-                          <div className="Written"></div>
+                          scheduleData.find(
+                            (data) =>
+                              data.date ===
+                              getFomatDate(date.toLocaleDateString())
+                          ).category === "confirem" ? (
+                            <div className="confirem"></div>
+                          ) : (
+                            <div className="temp"></div>
+                          )
                         ) : (
                           <div className="notWritten"></div>
                         )}
@@ -273,7 +304,13 @@ const ClubRoom = () => {
                       <div className="bottom">
                         <Link
                           className="editSchedule"
-                          to={`/club/edit-schedule/${date.toLocaleDateString()}`}
+                          to={`/club/edit-schedule/${getFomatDate(
+                            date.toLocaleDateString()
+                          )}`}
+                          style={{
+                            color: `${date < thisWeek ? "gray" : ""}`,
+                            zIndex: `${date < thisWeek ? "-3" : ""}`,
+                          }}
                         >
                           <TbClockEdit />
                         </Link>
@@ -286,12 +323,12 @@ const ClubRoom = () => {
           </Swiper>
           <div className="explanation">
             <div>
-              <div className="Written"></div>
-              <div className="explanText">가능한 시간 O</div>
+              <div className="confirem"></div>
+              <div className="explanText">일정 확정</div>
             </div>
             <div>
-              <div className="notWritten"></div>
-              <div className="explanText">가능한시간 X</div>
+              <div className="temp"></div>
+              <div className="explanText">임시 저장</div>
             </div>
           </div>
         </div>

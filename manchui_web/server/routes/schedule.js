@@ -22,7 +22,7 @@ router.post("/verify-token", async (req, res) => {
 });
 router.post("/", async (req, res) => {
   try {
-    const { userId, date, times } = req.body;
+    const { userId, date, times, category } = req.body;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
@@ -30,12 +30,8 @@ router.post("/", async (req, res) => {
     const filteredSchedules = user.schedule.filter(
       (item) => item.date !== date
     );
-    if (times.length === 0) {
-      user.schedule = filteredSchedules;
-      await user.save();
-      return res.status(201).json({ message: "스케줄이 삭제되었습니다." });
-    }
-    filteredSchedules.push({ date, times });
+
+    filteredSchedules.push({ date, category, times });
     user.schedule = filteredSchedules;
     await user.save();
     res.status(201).json({ message: "스케줄이 저장되었습니다." });
@@ -43,12 +39,21 @@ router.post("/", async (req, res) => {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
+
 router.get("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
     }
+    const thisWeek = new Date().setDate(
+      new Date().getDate() - new Date().getDay() - 1
+    );
+    const filteredSchedules = user.schedule.filter(
+      (item) => new Date(item.date) > thisWeek
+    );
+    user.schedule = filteredSchedules;
+    await user.save();
     res.json(user.schedule);
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });

@@ -30,19 +30,7 @@ const EditSchedule = () => {
   const [schedule, setSchedule] = useState([
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
-
-  const getFomatDate = (localeDateString) => {
-    const year = localeDateString.split(".")[0];
-    const month =
-      localeDateString.split(".")[1].length === 1
-        ? "0" + localeDateString.split(".")[1]
-        : localeDateString.split(".")[1];
-    const date =
-      localeDateString.split(".")[2].length === 1
-        ? "0" + localeDateString.split(".")[2]
-        : localeDateString.split(".")[2];
-    return `${year}-${month}-${date}`;
-  };
+  const [isConfirem, setIsConfirem] = useState();
 
   const changeStatus = (index) => {
     const status = [...schedule];
@@ -92,6 +80,7 @@ const EditSchedule = () => {
         const finded = schedules.find((data) => data.date === date);
         if (finded) {
           setSchedule(finded.times);
+          setIsConfirem(finded.category);
         }
       } catch (error) {
         nav(-1);
@@ -119,7 +108,7 @@ const EditSchedule = () => {
         ))}
       </div>
       <div className="dateContainer">
-        <div className="date">{date}</div>
+        <div className="date">{new Date(date).toLocaleDateString()}</div>
         <div className="clear">
           <button
             className="clearButton"
@@ -158,13 +147,23 @@ const EditSchedule = () => {
         <div className="button-box">
           <button
             className="confirmedButton"
-            onClick={() => saveSchedule("confirem")}
+            onClick={() => saveSchedule("confirm")}
           >
             일정 확정
           </button>
-          <button className="saveButton" onClick={() => saveSchedule("temp")}>
-            임시 저장
-          </button>
+          {isConfirem === "confirm" ? (
+            <button
+              className="cancleConfirmButton"
+              onClick={() => saveSchedule("temp")}
+            >
+              확정 취소
+            </button>
+          ) : (
+            <button className="saveButton" onClick={() => saveSchedule("temp")}>
+              임시 저장
+            </button>
+          )}
+
           <button className="cancelButton" onClick={() => nav(-1)}>
             취소
           </button>

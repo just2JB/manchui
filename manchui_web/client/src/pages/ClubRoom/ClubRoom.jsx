@@ -292,8 +292,8 @@ const ClubRoom = () => {
                             (data) =>
                               data.date ===
                               getFomatDate(date.toLocaleDateString())
-                          ).category === "confirem" ? (
-                            <div className="confirem"></div>
+                          ).category === "confirm" ? (
+                            <div className="confirm"></div>
                           ) : (
                             <div className="temp"></div>
                           )
@@ -323,7 +323,7 @@ const ClubRoom = () => {
           </Swiper>
           <div className="explanation">
             <div>
-              <div className="confirem"></div>
+              <div className="confirm"></div>
               <div className="explanText">일정 확정</div>
             </div>
             <div>

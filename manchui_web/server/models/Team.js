@@ -15,7 +15,7 @@ const teamSchema = new mongoose.Schema({
     type: String,
     default: "작성해 주세요.",
   },
-  practice: {
+  requestSchedules: {
     type: Array,
     default: [],
   },

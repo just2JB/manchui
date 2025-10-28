@@ -26,8 +26,6 @@ const TeamMain = () => {
 
   const clickDate = (date) => {
     setselectedDay(date);
-    console.log(date.toLocaleDateString());
-    console.log(team.requestSchedules);
     return;
   };
 
@@ -81,6 +79,25 @@ const TeamMain = () => {
       alert(response.data.message);
       nav("/club/practice");
     } catch {
+      alert(error.response.data.message);
+    }
+  };
+
+  const requestsHandle = async () => {
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/team/request-schedule`,
+        {
+          teamId: parmas.id.slice(1),
+          date: selectedDay.toLocaleDateString(),
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setTeam({ ...team, requestSchedules: response.data.newRequestSchedules });
+      alert(response.data.message);
+    } catch (error) {
       alert(error.response.data.message);
     }
   };
@@ -180,13 +197,13 @@ const TeamMain = () => {
             {team.requestSchedules.some(
               (item) => item === selectedDay.toLocaleDateString()
             ) ? (
-              <div className="requestSchedule">
+              <div className="requestSchedule" onClick={() => requestsHandle()}>
                 요청
                 <br />
                 취소
               </div>
             ) : (
-              <div className="requestSchedule">
+              <div className="requestSchedule" onClick={() => requestsHandle()}>
                 일정
                 <br />
                 요청

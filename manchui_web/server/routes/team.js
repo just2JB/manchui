@@ -86,6 +86,35 @@ router.post("/quit", async (req, res) => {
   }
 });
 
+router.post("/request-schedule", async (req, res) => {
+  try {
+    const { teamId, date } = req.body;
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
+    }
+    if (team.requestSchedules.includes(date)) {
+      team.requestSchedules = team.requestSchedules.filter(
+        (item) => item !== date
+      );
+      await team.save();
+      return res.status(201).json({
+        message: "업데이트 되었습니다",
+        newRequestSchedules: team.requestSchedules,
+      });
+    } else {
+      team.requestSchedules.push(date);
+      await team.save();
+      return res.status(201).json({
+        message: "업데이트 되었습니다",
+        newRequestSchedules: team.requestSchedules,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
 router.get("/:teamId", async (req, res) => {
   try {
     const team = await Team.findById(req.params.teamId);

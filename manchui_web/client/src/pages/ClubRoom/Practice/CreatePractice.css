@@ -1,0 +1,87 @@
+.createPractice {
+  position: absolute;
+  top: 40px;
+  background-color: #121212;
+  width: 700px;
+  height: calc(100% - 40px);
+  z-index: 100;
+  animation-name: onLoad;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+}
+.createPractice .topMenu {
+  padding: 0px 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.createPractice .optionMenu {
+  border: 1px solid #333333;
+}
+.createPractice .memberOption {
+  align-content: center;
+}
+.createPractice .choiceMember {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 5px;
+  padding: 7px;
+}
+.createPractice .member {
+  background-color: #2c2b2b;
+  padding: 5px;
+  text-align: center;
+  border-radius: 5px;
+  font-size: 13px;
+  transition-duration: 0.1s;
+}
+.createPractice .selected {
+  background-color: #a83737;
+}
+.createPractice .timeBar {
+  align-content: center;
+}
+.createPractice .timeCell {
+  border: 1px solid #333333;
+  height: 35px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.createPractice .availabilityIndicator {
+  display: flex;
+  width: 50%;
+  gap: 2px;
+}
+.createPractice .availabllity {
+  flex: 1;
+  height: 10px;
+  background-color: #353535;
+}
+.createPractice .available {
+  background-color: #4caf50;
+}
+
+.createPractice .actionButton {
+  position: absolute;
+  bottom: 40px;
+  border: 1px solid #333333;
+}
+@keyframes onLoad {
+  0% {
+    top: 100%;
+  }
+  100% {
+    top: 40px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .createPractice {
+    top: 40px;
+    width: 100%;
+    position: fixed;
+  }
+}

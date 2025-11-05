@@ -169,6 +169,10 @@
   font-size: 15px;
   font-weight: 200;
 }
+.teamMain .scheduleSection .redButton {
+  background-color: #2f0606;
+  border: 1px solid #2f0606;
+}
 .teamMain .teamScheduleMenu .writeState {
   border: 1px solid #353535;
   background-color: #2c2c2c;

@@ -8,6 +8,7 @@ import { IoMenuOutline, IoCloseOutline } from "react-icons/io5";
 import { TeamCalender } from "./TeamCalender";
 import { HiUserGroup } from "react-icons/hi";
 import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
+import CreatePractice from "./CreatePractice";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
 const TeamMain = () => {
@@ -16,7 +17,8 @@ const TeamMain = () => {
     members: [],
     requestSchedules: [],
   });
-  const [teamPreactice, setTeamPractice] = useState();
+  const [openCreatePractice, setOpenCreatePractice] = useState(false);
+  const [teamPractice, setTeamPractice] = useState([]);
   const [selectedDay, setselectedDay] = useState(new Date());
   const [infoMenuOpen, setinfoMenuOpen] = useState(false);
   const { user } = useOutletContext();
@@ -162,7 +164,12 @@ const TeamMain = () => {
       </div>
       <div className="teamSchedule">
         <div className="teamCalender">
-          <TeamCalender selectedDay={selectedDay} clickDate={clickDate} />
+          <TeamCalender
+            selectedDay={selectedDay}
+            clickDate={clickDate}
+            requestSchedules={team.requestSchedules}
+            teamPractice={teamPractice}
+          />
         </div>
         <div className="teamScheduleMenu">
           <div className="practiceSection">
@@ -185,7 +192,12 @@ const TeamMain = () => {
               </div>
             </div>
           </div>
-          <div className="cratePractice">연습 추가</div>
+          <div
+            className="cratePractice"
+            onClick={() => setOpenCreatePractice(true)}
+          >
+            연습 추가
+          </div>
           <div className="scheduleSection">
             <div className="writeState">
               <div className="stateText">일정 종합</div>
@@ -197,7 +209,10 @@ const TeamMain = () => {
             {team.requestSchedules.some(
               (item) => item === selectedDay.toLocaleDateString()
             ) ? (
-              <div className="requestSchedule" onClick={() => requestsHandle()}>
+              <div
+                className="requestSchedule redButton"
+                onClick={() => requestsHandle()}
+              >
                 요청
                 <br />
                 취소
@@ -213,6 +228,15 @@ const TeamMain = () => {
         </div>
       </div>
       <span style={{ userSelect: "all" }}>{inviteURL}</span>
+      {openCreatePractice ? (
+        <CreatePractice
+          setOpenCreatePractice={setOpenCreatePractice}
+          selectedDay={selectedDay}
+          team={team}
+        />
+      ) : (
+        ""
+      )}
     </div>
   );
 };

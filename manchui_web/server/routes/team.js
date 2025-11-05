@@ -13,7 +13,7 @@ router.post("/create", async (req, res) => {
     const team = new Team({
       name: name,
       leaderId: user._id,
-      members: [user],
+      members: [user._id],
     });
     await team.save();
     res.status(201).json({ message: "팀 생성이 완료되었습니다" });
@@ -45,7 +45,7 @@ router.post("/join", async (req, res) => {
     if (!team) {
       return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
     }
-    if (team.members.some((member) => String(member._id) === String(userId))) {
+    if (team.members.some((member) => String(member) === String(userId))) {
       return res
         .status(401)
         .json({ message: "이미 해당 팀에 가입되어 있습니다." });
@@ -70,7 +70,7 @@ router.post("/quit", async (req, res) => {
       return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
     }
     const afterMembers = team.members.filter(
-      (member) => String(member._id) !== String(userId)
+      (member) => String(member) !== String(userId)
     );
     if (afterMembers.length > 0) {
       team.members = afterMembers;
@@ -121,6 +121,10 @@ router.get("/:teamId", async (req, res) => {
     if (!team) {
       return res.status(404).json({ message: "팀 찾을 수 없습니다." });
     }
+
+    const memberDetails = await User.find({ _id: { $in: team.members } });
+    team.members = memberDetails;
+
     res.json({ team: team });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
@@ -135,7 +139,7 @@ router.get("/user/:userId", async (req, res) => {
     }
     const teams = await Team.find();
     const myTeam = teams.filter((team) =>
-      team.members.some((member) => String(member._id) === String(user._id))
+      team.members.some((member) => String(member) === String(user._id))
     );
 
     res.json({ myTeam: myTeam });

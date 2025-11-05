@@ -3,7 +3,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import "swiper/swiper-bundle.css";
 import "./TeamCalender.css";
-export const TeamCalender = ({ selectedDay, clickDate }) => {
+export const TeamCalender = ({
+  selectedDay,
+  clickDate,
+  requestSchedules,
+  teamPractice,
+}) => {
   const [swiperInstance, setSwiperInstance] = useState(null);
 
   const getFirstDate = (date) => {
@@ -152,6 +157,23 @@ export const TeamCalender = ({ selectedDay, clickDate }) => {
                         ) : (
                           ""
                         )}
+                        <div className="dateSchedule">
+                          {requestSchedules.includes(
+                            data.date.toLocaleDateString()
+                          ) ? (
+                            <div className="requestSchedule"></div>
+                          ) : (
+                            <div className=""></div>
+                          )}
+                          {teamPractice.includes(
+                            data.date.toLocaleDateString()
+                          ) ? (
+                            <div className="teamPractice"></div>
+                          ) : (
+                            <div className=""></div>
+                          )}
+                        </div>
+
                         {data.date.toDateString() ===
                         new Date().toDateString() ? (
                           <div className="today"></div>

@@ -50,7 +50,7 @@ router.post("/join", async (req, res) => {
         .status(401)
         .json({ message: "이미 해당 팀에 가입되어 있습니다." });
     }
-    team.members.push(user);
+    team.members.push(user._id);
     await team.save();
     return res.status(201).json({ message: "가입 완료되었습니다." });
   } catch (error) {
@@ -138,6 +138,7 @@ router.get("/user/:userId", async (req, res) => {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
     }
     const teams = await Team.find();
+    console.log(teams);
     const myTeam = teams.filter((team) =>
       team.members.some((member) => String(member) === String(user._id))
     );
@@ -147,4 +148,7 @@ router.get("/user/:userId", async (req, res) => {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
+
+
+//팀장이 나가면 팀 삭제 or 팀장 위임 기능은 추후에...
 module.exports = router;

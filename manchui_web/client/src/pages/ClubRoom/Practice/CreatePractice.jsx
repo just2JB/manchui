@@ -6,12 +6,22 @@ const arrayOfHours = Array.from({ length: 24 }, (_, i) => i);
 const CreatePractice = ({ setOpenCreatePractice, selectedDay, team }) => {
   const [date, setDate] = useState(selectedDay || new Date());
   const [selectedMembers, setSelectedMembers] = useState(team.members || []);
-
+  const [openTimeTable, setOpenTimeTable] = useState(3);
+  const [selectHours, setSelectHours] = useState([]);
   const toggleMemberSelection = (member) => {
     if (selectedMembers.includes(member)) {
       setSelectedMembers(selectedMembers.filter((m) => m !== member));
     } else {
       setSelectedMembers([...selectedMembers, member]);
+    }
+  };
+
+  //연속된 시간만 선택 가능한 기능 추후 구현 예정
+  const toggleHourSelection = (hour) => {
+    if (selectHours.includes(hour)) {
+      setSelectHours(selectHours.filter((h) => h !== hour));
+    } else {
+      setSelectHours([...selectHours, hour]);
     }
   };
 
@@ -69,14 +79,34 @@ const CreatePractice = ({ setOpenCreatePractice, selectedDay, team }) => {
         <div className="timeOption"></div>
       </div>
       <div className="practiceTime">
-        {/* 오전 시간대 표시<div className="timeBar">
-          <div className="">00~07</div>
+        <div
+          className={`timeBar ${openTimeTable === 1 ? "openThisTable" : ""}`}
+        >
+          <div
+            className={`timeOpenContainer ${
+              openTimeTable === 1 ? "openTableTimeContainer" : ""
+            }`}
+            onClick={() =>
+              openTimeTable === 1 ? setOpenTimeTable(0) : setOpenTimeTable(1)
+            }
+          >
+            <div className="">00~07</div>
+            <div className="moreInfo">모두 가능 3</div>
+          </div>
           <div className="timeTable">
             {arrayOfHours.slice(0, 8).map((hour) => (
-              <div className="timeCell" key={hour}>
+              <div
+                className={`timeCell ${
+                  selectHours.includes(hour) ? "select" : ""
+                }`}
+                key={hour}
+              >
                 <div className="timeText">{hour}:00</div>
+
                 <div className="availabilityIndicator">
-                  <div>{countAbleMembers(hour).count}</div>
+                  <div className="ableCount">
+                    {countAbleMembers(hour).count}
+                  </div>
                   {selectedMembers.map((member) => (
                     <div
                       key={member.username}
@@ -89,19 +119,45 @@ const CreatePractice = ({ setOpenCreatePractice, selectedDay, team }) => {
                       }`}
                     ></div>
                   ))}
+                </div>
+                <div
+                  className="selectTimeButton"
+                  onClick={() => toggleHourSelection(hour)}
+                >
+                  {selectHours.includes(hour) ? "해제" : "선택"}
                 </div>
               </div>
             ))}
           </div>
         </div>
-        <div className="timeBar">
-          <div className="">08~15</div>
+        <div
+          className={`timeBar ${openTimeTable === 2 ? "openThisTable" : ""}`}
+        >
+          <div
+            className={`timeOpenContainer ${
+              openTimeTable === 2 ? "openTableTimeContainer" : ""
+            }`}
+            onClick={() =>
+              openTimeTable === 2 ? setOpenTimeTable(0) : setOpenTimeTable(2)
+            }
+          >
+            <div className="">08~15</div>
+            <div className="moreInfo"></div>
+          </div>
           <div className="timeTable">
             {arrayOfHours.slice(8, 16).map((hour) => (
-              <div className="timeCell" key={hour}>
+              <div
+                className={`timeCell ${
+                  selectHours.includes(hour) ? "select" : ""
+                }`}
+                key={hour}
+              >
                 <div className="timeText">{hour}:00</div>
+
                 <div className="availabilityIndicator">
-                  <div>{countAbleMembers(hour).count}</div>
+                  <div className="ableCount">
+                    {countAbleMembers(hour).count}
+                  </div>
                   {selectedMembers.map((member) => (
                     <div
                       key={member.username}
@@ -114,20 +170,45 @@ const CreatePractice = ({ setOpenCreatePractice, selectedDay, team }) => {
                       }`}
                     ></div>
                   ))}
+                </div>
+                <div
+                  className="selectTimeButton"
+                  onClick={() => toggleHourSelection(hour)}
+                >
+                  {selectHours.includes(hour) ? "해제" : "선택"}
                 </div>
               </div>
             ))}
           </div>
-        </div> */}
-
-        <div className="timeBar">
-          <div className="">16~23</div>
+        </div>
+        <div
+          className={`timeBar ${openTimeTable === 3 ? "openThisTable" : ""}`}
+        >
+          <div
+            className={`timeOpenContainer ${
+              openTimeTable === 3 ? "openTableTimeContainer" : ""
+            }`}
+            onClick={() =>
+              openTimeTable === 3 ? setOpenTimeTable(0) : setOpenTimeTable(3)
+            }
+          >
+            <div className="">16~23</div>
+            <div className="moreInfo"></div>
+          </div>
           <div className="timeTable">
             {arrayOfHours.slice(16, 24).map((hour) => (
-              <div className="timeCell" key={hour}>
+              <div
+                className={`timeCell ${
+                  selectHours.includes(hour) ? "select" : ""
+                }`}
+                key={hour}
+              >
                 <div className="timeText">{hour}:00</div>
+
                 <div className="availabilityIndicator">
-                  <div>{countAbleMembers(hour).count}</div>
+                  <div className="ableCount">
+                    {countAbleMembers(hour).count}
+                  </div>
                   {selectedMembers.map((member) => (
                     <div
                       key={member.username}
@@ -141,15 +222,24 @@ const CreatePractice = ({ setOpenCreatePractice, selectedDay, team }) => {
                     ></div>
                   ))}
                 </div>
-                <div className="selectTimeButton">선택</div>
+                <div
+                  className="selectTimeButton"
+                  onClick={() => toggleHourSelection(hour)}
+                >
+                  {selectHours.includes(hour) ? "해제" : "선택"}
+                </div>
               </div>
             ))}
           </div>
         </div>
       </div>
-      <div className="actionButton">
-        <div className="" onClick={() => console.log(selectedMembers[0])}>
-          dd
+      <div className="bottomMenu">
+        <div className="selectTimes"></div>
+        <div className="actionButton">
+          <div className="" onClick={() => setSelectHours([])}>
+            모두해제
+          </div>
+          <div className="">연습 생성</div>
         </div>
       </div>
     </div>

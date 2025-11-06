@@ -5,9 +5,10 @@
   justify-content: space-between;
   align-items: center;
   width: 700px;
-  padding-top: 5px; 
+  padding: 2px 0px;
   height: 35px;
   background-color: #0c0c0c;
+  border-bottom: 1px solid #222222;
   user-select: none;
   z-index: 10;
 }

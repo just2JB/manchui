@@ -474,3 +474,6 @@ const Join = () => {
 };
 
 export default Join;
+
+//학번 중복 있을 시 그냥 진행되도록
+//중복 학번 조회시 모두 표시해주게 변경(JoinCheck.jsx 수정 필요)

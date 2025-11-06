@@ -156,7 +156,7 @@
 .club-room .topMenu > div > .month {
   border-radius: 10px;
   width: 30px;
-  background-color: #751a0fc4;
+  background-color: #a83737;
   font-size: 12px;
   text-align: center;
   font-weight: 300;
@@ -200,7 +200,7 @@
   overflow: hidden;
 }
 .club-room .sunday {
-  color: #75190f;
+  color: #a83737;
 }
 .club-room .isToday .sunday {
   color: #0c0c0c;
@@ -231,7 +231,7 @@
   width: 10px;
   height: 30px;
   border-radius: 5px;
-  background-color: #75190fd3;
+  background-color: #a83737;
 }
 .club-room .notWritten {
   width: 10px;
@@ -243,7 +243,7 @@
   width: 10px;
   height: 30px;
   border-radius: 5px;
-  background-color: #b6a725;
+  background: linear-gradient(#333333 70%, #a83737);
 }
 .club-room .days .bottom {
   border-top: 2px dotted #5f5f5f;

@@ -98,7 +98,7 @@
   cursor: pointer;
 }
 .editSchedule .content .status.possible {
-  background-color: #75190f7e;
+  background-color: #a83737;
   border: none;
   transition-duration: 0.1s;
 }
@@ -164,7 +164,7 @@
   height: 100%;
 }
 .editSchedule .possible {
-  background-color: #75190f7e;
+  background-color: #a83737af;
   transition-duration: 0.3s;
 }
 @media screen and (max-width: 767px) {

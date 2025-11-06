@@ -227,7 +227,7 @@ const TeamMain = () => {
           </div>
         </div>
       </div>
-      <span style={{ userSelect: "all" }}>{inviteURL}</span>
+
       {openCreatePractice ? (
         <CreatePractice
           setOpenCreatePractice={setOpenCreatePractice}

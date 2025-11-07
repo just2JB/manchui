@@ -4,7 +4,7 @@ import "./TeamMain.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
-import { IoMenuOutline, IoCloseOutline } from "react-icons/io5";
+import { IoMenuOutline, IoCloseOutline, IoTrash } from "react-icons/io5";
 import { TeamCalender } from "./TeamCalender";
 import { HiUserGroup } from "react-icons/hi";
 import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
@@ -39,7 +39,14 @@ const TeamMain = () => {
           withCredentials: true,
         }
       );
-      setTeamPractice(response.data.teamPractice);
+      const sortedPractices = response.data.teamPractice.sort((a, b) => {
+        const aFirst = a.time.split("~")[0];
+        const bFirst = b.time.split("~")[0];
+        if (aFirst > bFirst) return 1;
+        if (aFirst === bFirst) return 0;
+        if (aFirst < bFirst) return -1;
+      });
+      setTeamPractice(sortedPractices);
     } catch {
       alert("연습을 불러올 수 없습니다.");
     }
@@ -195,7 +202,7 @@ const TeamMain = () => {
                   new Date(practice.date).toLocaleDateString() ===
                   selectedDay.toLocaleDateString()
               ).length === 0 ? (
-                <div className="practice">없어요</div>
+                <div className="practice">연습이 없습니다</div>
               ) : (
                 ""
               )}
@@ -207,7 +214,7 @@ const TeamMain = () => {
                     selectedDay.toLocaleDateString()
                 )
                 .map((practice) => (
-                  <div className="practice">
+                  <div className="practice" key={practice._id}>
                     <div className="top">
                       <div className="prTime">
                         <MdOutlineAccessTime />
@@ -218,9 +225,11 @@ const TeamMain = () => {
                         {practice.members.length}
                       </div>
                     </div>
-                    <div className="prPlace">
-                      <MdOutlinePlace />
-                      {practice.place}
+                    <div className="bottom">
+                      <div className="prPlace">
+                        <MdOutlinePlace />
+                        {practice.place}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -295,6 +304,9 @@ const TeamMain = () => {
 3. 일정 작성 요청하기
 4. 팀원 일정 작성 상태 보기
 5. 내 일정 작성 하기
+6. 연습 정보 상세보기
+7. 연습 취소하기
+8. 연습실 설정하기
 
 연습 일정 추가 탭
 1. 팀원의 스케줄 확인 후 연습 시간 설정
@@ -307,4 +319,5 @@ const TeamMain = () => {
 문제1 - 다른 팀 연습 때문에 스케줄이 안될 경우 이를 확인하는 방법?
   ㄴ 원래 가능하지만 다른 팀때문에 불가능한 시간대는 따로표기
 */
+
 export default TeamMain;

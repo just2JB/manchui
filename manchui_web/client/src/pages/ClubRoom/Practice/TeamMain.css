@@ -122,8 +122,10 @@
   margin: 0px 5px;
   text-align: start;
   font-weight: 200;
+  align-content: center;
+  text-align: center;
 }
-.teamMain .practiceSection .practice .top {
+.teamMain .practiceSection .practice > div {
   display: flex;
   justify-content: space-between;
 }

@@ -31,6 +31,20 @@ const TeamMain = () => {
     return;
   };
 
+  const getPractice = async () => {
+    try {
+      const response = await axios.get(
+        `${serverUrl}/api/practice/teamPractice/${parmas.id.slice(1)}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setTeamPractice(response.data.teamPractice);
+    } catch {
+      alert("연습을 불러올 수 없습니다.");
+    }
+  };
+
   useEffect(() => {
     const getMyTeams = async () => {
       try {
@@ -41,6 +55,7 @@ const TeamMain = () => {
           }
         );
         setTeam(response.data.team);
+        await getPractice();
       } catch {
         alert("존재하지 않는 팀 입니다.");
         nav("/club/practice");
@@ -175,21 +190,40 @@ const TeamMain = () => {
           <div className="practiceSection">
             <h4>연습</h4>
             <div className="thisDayPractice">
-              <div className="practice">
-                <div className="top">
-                  <div className="prTime">
-                    <MdOutlineAccessTime />
-                    12~14
+              {teamPractice.filter(
+                (practice) =>
+                  new Date(practice.date).toLocaleDateString() ===
+                  selectedDay.toLocaleDateString()
+              ).length === 0 ? (
+                <div className="practice">없어요</div>
+              ) : (
+                ""
+              )}
+
+              {teamPractice
+                .filter(
+                  (practice) =>
+                    new Date(practice.date).toLocaleDateString() ===
+                    selectedDay.toLocaleDateString()
+                )
+                .map((practice) => (
+                  <div className="practice">
+                    <div className="top">
+                      <div className="prTime">
+                        <MdOutlineAccessTime />
+                        {practice.time}
+                      </div>
+                      <div className="prMember">
+                        <HiUserGroup />
+                        {practice.members.length}
+                      </div>
+                    </div>
+                    <div className="prPlace">
+                      <MdOutlinePlace />
+                      {practice.place}
+                    </div>
                   </div>
-                  <div className="prMember">
-                    <HiUserGroup />3
-                  </div>
-                </div>
-                <div className="prPlace">
-                  <MdOutlinePlace />
-                  미정
-                </div>
-              </div>
+                ))}
             </div>
           </div>
           <div
@@ -233,6 +267,14 @@ const TeamMain = () => {
           setOpenCreatePractice={setOpenCreatePractice}
           selectedDay={selectedDay}
           team={team}
+          getPractice={getPractice}
+          selectedDayPractice={[
+            ...teamPractice.filter(
+              (practice) =>
+                new Date(practice.date).toLocaleDateString() ===
+                selectedDay.toLocaleDateString()
+            ),
+          ]}
         />
       ) : (
         ""

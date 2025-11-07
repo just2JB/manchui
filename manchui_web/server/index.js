@@ -11,6 +11,7 @@ const reservationRouter = require("./routes/reservation");
 const joinRouter = require("./routes/join");
 const scheduleRouter = require("./routes/schedule");
 const teamRouter = require("./routes/team");
+const practiceRouter = require("./routes/practice");
 
 app.use(
   cors({
@@ -28,6 +29,7 @@ app.use("/api/reservation", reservationRouter);
 app.use("/api/join", joinRouter);
 app.use("/api/schedule", scheduleRouter);
 app.use("/api/team", teamRouter);
+app.use("/api/practice", practiceRouter);
 
 app.get("/", (req, res) => {
   res.send("만취 웹사이트의 백엔드 서버 입니다.");

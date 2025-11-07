@@ -17,6 +17,10 @@ const practiceSchema = new mongoose.Schema({
     type: Array,
     required: true,
   },
+  place: {
+    type: String,
+    default: "미확정",
+  },
 });
 
 const Practice = mongoose.model("Practice", practiceSchema);

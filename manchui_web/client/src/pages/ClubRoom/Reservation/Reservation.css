@@ -5,6 +5,8 @@
   color: #f5f5f5;
   user-select: none;
   background-color: #0c0c0c;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(128, 128, 128, 0.452) transparent;
 }
 
 .reserv-calendar-section {

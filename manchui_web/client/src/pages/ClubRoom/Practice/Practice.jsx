@@ -51,7 +51,7 @@ const Practice = () => {
               key={item._id}
               onClick={() => nav(`/club/team-main/:${item._id}`)}
             >
-              <div className="teamName">Team {item.name}</div>
+              <div className="teamName">{item.name}</div>
               <div className="toTeamMain">{">"}</div>
             </div>
           ))}

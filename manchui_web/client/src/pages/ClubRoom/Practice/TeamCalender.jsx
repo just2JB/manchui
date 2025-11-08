@@ -165,8 +165,11 @@ export const TeamCalender = ({
                           ) : (
                             <div className=""></div>
                           )}
-                          {teamPractice.includes(
-                            data.date.toLocaleDateString()
+
+                          {teamPractice.some(
+                            (practice) =>
+                              new Date(practice.date).toLocaleDateString() ===
+                              data.date.toLocaleDateString()
                           ) ? (
                             <div className="teamPractice"></div>
                           ) : (

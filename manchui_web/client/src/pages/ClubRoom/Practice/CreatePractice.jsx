@@ -134,7 +134,36 @@ const CreatePractice = ({
             <IoCloseOutline style={{ fontSize: "20px" }} />
           </div>
         </div>
-
+        <div className="memberOption">
+          <div className="obtionLable">연습 인원</div>
+          <div className="choiceMember">
+            <div
+              className={`member selectAllMembers ${
+                selectedMembers.length === team.members.length
+                  ? "allSelected"
+                  : ""
+              }`}
+              onClick={() => selectAllMembers()}
+            >
+              <p>
+                {selectedMembers.length === team.members.length
+                  ? "모두 해제"
+                  : "모두 참여"}
+              </p>
+            </div>
+            {team.members.map((member) => (
+              <div
+                onClick={() => toggleMemberSelection(member)}
+                className={`member ${
+                  selectedMembers.includes(member) ? "selected" : ""
+                }`}
+                key={member.id}
+              >
+                {member.username}
+              </div>
+            ))}
+          </div>
+        </div>
         <div className="practiceTime">
           <div
             className={`timeBar ${openTimeTable === 1 ? "openThisTable" : ""}`}
@@ -291,7 +320,7 @@ const CreatePractice = ({
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
-                    <div className="selectTimeButton">완료</div>
+                    <div className="selectTimeButton">--</div>
                   ) : (
                     <div
                       className="selectTimeButton"
@@ -308,38 +337,7 @@ const CreatePractice = ({
       </div>
 
       <div className="bottomMenu">
-        <div className="optionMenu">
-          <div className="memberOption">
-            <div className="obtionLable">연습 인원</div>
-            <div className="choiceMember">
-              <div
-                className={`member selectAllMembers ${
-                  selectedMembers.length === team.members.length
-                    ? "allSelected"
-                    : ""
-                }`}
-                onClick={() => selectAllMembers()}
-              >
-                <p>
-                  {selectedMembers.length === team.members.length
-                    ? "비우기"
-                    : "모두 참여"}
-                </p>
-              </div>
-              {team.members.map((member) => (
-                <div
-                  onClick={() => toggleMemberSelection(member)}
-                  className={`member ${
-                    selectedMembers.includes(member) ? "selected" : ""
-                  }`}
-                  key={member.id}
-                >
-                  {member.username}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        <div className="optionMenu"></div>
         <div className="endSection">
           <div className="practicePreview">
             {selectHours.length === 0 ? (

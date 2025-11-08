@@ -33,4 +33,16 @@ router.get("/teamPractice/:teamId", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  try {
+    const practices = await Practice.findByIdAndDelete(req.params.id);
+    if (!practices) {
+      return res.status(404).json({ message: "없는 연습 입니다." });
+    }
+    res.json({ message: "연습이 삭제되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
 module.exports = router;

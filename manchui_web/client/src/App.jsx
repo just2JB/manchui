@@ -29,7 +29,6 @@ import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
-import Schedule from "./pages/ClubRoom/Schedule/Schedule";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
 import TeamJoin from "./pages/ClubRoom/Practice/TeamJoin";
 
@@ -179,7 +178,7 @@ const router = createBrowserRouter([
           { path: "team-main/:id", element: <TeamMain /> },
           { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
-          { path: "schedule", element: <Schedule /> },
+
           { path: "edit-schedule/:date", element: <EditSchedule /> },
         ],
       },

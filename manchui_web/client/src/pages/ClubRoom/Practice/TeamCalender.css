@@ -63,7 +63,7 @@
   width: 80%;
   border-radius: 100px;
   background-color: #75190f7e;
-  animation-name: pointIn;
+  animation-name: pointIn2;
   animation-duration: 0.2s;
   animation-timing-function: ease-in;
 }
@@ -96,17 +96,11 @@
   background-color: rgba(94, 22, 22, 0);
 }
 
-@keyframes pointIn {
+@keyframes pointIn2 {
   0% {
-    top: 25%;
-    left: 50%;
-    height: 0%;
-    width: 0%;
+    background-color: #75190f00;
   }
   100% {
-    top: 25%;
-    left: 10%;
-    height: 50%;
-    width: 80%;
+    background-color: #75190f7e;
   }
 }

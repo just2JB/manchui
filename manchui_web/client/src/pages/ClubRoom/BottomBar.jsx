@@ -24,9 +24,8 @@ const BottomBar = () => {
         <LiaFlag className="button-icon" />
         연습
       </Link>
-      <Link className="menu-button" to="/club/schedule">
-        <RiMenuAddLine className="button-icon" />
-        일정등록
+      <Link className="menu-button" to="/club">
+        <RiMenuAddLine className="button-icon" />빈 블럭
       </Link>
       <Link className="menu-button" to="/club/mypage">
         <LiaAddressCard className="button-icon" />

@@ -4,10 +4,16 @@ import "./TeamMain.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
-import { IoMenuOutline, IoCloseOutline, IoTrash } from "react-icons/io5";
+import {
+  IoMenuOutline,
+  IoCloseOutline,
+  IoTrash,
+  IoPencil,
+} from "react-icons/io5";
 import { TeamCalender } from "./TeamCalender";
 import { HiUserGroup } from "react-icons/hi";
 import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
+import { LiaPlusSolid } from "react-icons/lia";
 import CreatePractice from "./CreatePractice";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
@@ -125,11 +131,22 @@ const TeamMain = () => {
       alert(error.response.data.message);
     }
   };
+  const deletePracticeHandle = async (id) => {
+    try {
+      const response = await axios.delete(`${serverUrl}/api/practice/${id}`, {
+        withCredentials: true,
+      });
+      setTeamPractice(teamPractice.filter((practice) => practice._id !== id));
+      alert(response.data.message);
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
   return (
     <div className="teamMain">
       <div className="teamInfo">
         <div className="tmamInfoTop">
-          <div className="name">Team {team.name}</div>
+          <div className="name">{team.name}</div>
           <div className="menuDiv">
             {infoMenuOpen ? (
               <button
@@ -197,16 +214,6 @@ const TeamMain = () => {
           <div className="practiceSection">
             <h4>연습</h4>
             <div className="thisDayPractice">
-              {teamPractice.filter(
-                (practice) =>
-                  new Date(practice.date).toLocaleDateString() ===
-                  selectedDay.toLocaleDateString()
-              ).length === 0 ? (
-                <div className="practice">연습이 없습니다</div>
-              ) : (
-                ""
-              )}
-
               {teamPractice
                 .filter(
                   (practice) =>
@@ -231,16 +238,30 @@ const TeamMain = () => {
                         {practice.place}
                       </div>
                     </div>
+
+                    <div className="moreOption">
+                      <div className="hoverDiv"></div>
+                      <div className="edit">
+                        <IoPencil />
+                      </div>
+                      <div
+                        className="delete"
+                        onClick={() => deletePracticeHandle(practice._id)}
+                      >
+                        <IoTrash />
+                      </div>
+                    </div>
                   </div>
                 ))}
+              <div
+                className="practice"
+                onClick={() => setOpenCreatePractice(true)}
+              >
+                <LiaPlusSolid />
+              </div>
             </div>
           </div>
-          <div
-            className="cratePractice"
-            onClick={() => setOpenCreatePractice(true)}
-          >
-            연습 추가
-          </div>
+
           <div className="scheduleSection">
             <div className="writeState">
               <div className="stateText">일정 종합</div>
@@ -293,19 +314,12 @@ const TeamMain = () => {
 };
 
 /* 
-달력에 표시될 것
-1. 연습이 있는 날
-2. 연습 일정 작성 요청된 날
-
+      <span className="joinUrl"> {inviteURL}</span>
 날짜 클릭 시 종합된 일정과 해당일 연습 만들 수 있는 창 띄우기( 새 페이지 말고 하위 컴퍼넌트로 오버랩하자)
 해당 날짜 선택 시
-1. 해당 일 연습 일정 보기 
-2. 해당 일 연습 일정 추가하기(수정하기)
-3. 일정 작성 요청하기
 4. 팀원 일정 작성 상태 보기
 5. 내 일정 작성 하기
 6. 연습 정보 상세보기
-7. 연습 취소하기
 8. 연습실 설정하기
 
 연습 일정 추가 탭

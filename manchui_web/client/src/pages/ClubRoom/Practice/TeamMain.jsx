@@ -15,6 +15,7 @@ import { HiUserGroup } from "react-icons/hi";
 import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
 import { LiaPlusSolid } from "react-icons/lia";
 import CreatePractice from "./CreatePractice";
+import EditPractice from "./EditPractice";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
 const TeamMain = () => {
@@ -27,6 +28,7 @@ const TeamMain = () => {
   const [teamPractice, setTeamPractice] = useState([]);
   const [selectedDay, setselectedDay] = useState(new Date());
   const [infoMenuOpen, setinfoMenuOpen] = useState(false);
+  const [editPractice, setEditPractice] = useState("unSelect");
   const { user } = useOutletContext();
   const nav = useNavigate();
   const parmas = useParams();
@@ -138,6 +140,7 @@ const TeamMain = () => {
       });
       setTeamPractice(teamPractice.filter((practice) => practice._id !== id));
       alert(response.data.message);
+      setEditPractice("unSelect");
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -189,7 +192,7 @@ const TeamMain = () => {
         </div>
 
         <div className="members">
-          -팀원: {team.members.length}명
+          팀원: {team.members.length}명
           {team.members.map((member) => (
             <div className="member" key={member._id}>
               {member.username}
@@ -197,7 +200,6 @@ const TeamMain = () => {
           ))}
         </div>
         <div className="comment">
-          -설명
           <div className="commentContent">{team.comment}</div>
         </div>
       </div>
@@ -212,7 +214,6 @@ const TeamMain = () => {
         </div>
         <div className="teamScheduleMenu">
           <div className="practiceSection">
-            <h4>연습</h4>
             <div className="thisDayPractice">
               {teamPractice
                 .filter(
@@ -221,7 +222,11 @@ const TeamMain = () => {
                     selectedDay.toLocaleDateString()
                 )
                 .map((practice) => (
-                  <div className="practice" key={practice._id}>
+                  <div
+                    className="practice"
+                    onClick={() => setEditPractice(practice)}
+                    key={practice._id}
+                  >
                     <div className="top">
                       <div className="prTime">
                         <MdOutlineAccessTime />
@@ -236,19 +241,6 @@ const TeamMain = () => {
                       <div className="prPlace">
                         <MdOutlinePlace />
                         {practice.place}
-                      </div>
-                    </div>
-
-                    <div className="moreOption">
-                      <div className="hoverDiv"></div>
-                      <div className="edit">
-                        <IoPencil />
-                      </div>
-                      <div
-                        className="delete"
-                        onClick={() => deletePracticeHandle(practice._id)}
-                      >
-                        <IoTrash />
                       </div>
                     </div>
                   </div>
@@ -305,6 +297,24 @@ const TeamMain = () => {
                 selectedDay.toLocaleDateString()
             ),
           ]}
+        />
+      ) : (
+        ""
+      )}
+      {editPractice !== "unSelect" ? (
+        <EditPractice
+          setEditPractice={setEditPractice}
+          editPractice={editPractice}
+          team={team}
+          getPractice={getPractice}
+          selectedDayPractice={[
+            ...teamPractice.filter(
+              (practice) =>
+                new Date(practice.date).toLocaleDateString() ===
+                selectedDay.toLocaleDateString()
+            ),
+          ]}
+          deletePracticeHandle={deletePracticeHandle}
         />
       ) : (
         ""

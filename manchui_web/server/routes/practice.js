@@ -2,15 +2,17 @@ const express = require("express");
 const router = express.Router();
 const Team = require("../models/Team");
 const Practice = require("../models/Practice");
+const User = require("../models/User");
 
 router.post("/create", async (req, res) => {
   try {
-    const { teamId, date, time, members } = req.body;
+    const { teamId, date, time, members, place } = req.body;
     const practice = new Practice({
       teamId: teamId,
       date: date,
       time: time,
       members: members,
+      place: place,
     });
     await practice.save();
     res.status(201).json({ message: "연습 생성이 완료되었습니다" });
@@ -18,7 +20,19 @@ router.post("/create", async (req, res) => {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
   }
 });
-
+router.post("/edit", async (req, res) => {
+  try {
+    const { practiceId, time, members, place } = req.body;
+    const practice = await Practice.findById(practiceId);
+    practice.time = time;
+    practice.members = members;
+    practice.place = place;
+    await practice.save();
+    res.status(201).json({ message: "연습이 수정되었습니다" });
+  } catch (error) {
+    res.status(501).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
 router.get("/teamPractice/:teamId", async (req, res) => {
   try {
     const practices = await Practice.find();
@@ -28,6 +42,19 @@ router.get("/teamPractice/:teamId", async (req, res) => {
     );
 
     res.json({ teamPractice: teamPractice });
+  } catch (error) {
+    res.status(501).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const practice = await Practice.findById(req.params.id);
+    const memberDetails = await User.find({
+      _id: { $in: practice.members },
+    });
+    practice.members = memberDetails;
+    res.json({ practice: practice });
   } catch (error) {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
   }

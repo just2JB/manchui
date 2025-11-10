@@ -10,7 +10,7 @@ export const TeamCalender = ({
   teamPractice,
 }) => {
   const [swiperInstance, setSwiperInstance] = useState(null);
-
+  const [swiping, setSwiping] = useState(false);
   const getFirstDate = (date) => {
     const firstDate = new Date(date);
     firstDate.setDate(1);
@@ -73,6 +73,7 @@ export const TeamCalender = ({
   };
   const changeSlideHandle = (e) => {
     setCalenderArray(calenders[e.realIndex][2][0].date, e.realIndex);
+    setSwiping(false);
   };
   const clickDateHandle = (date) => {
     clickDate(date);
@@ -130,6 +131,7 @@ export const TeamCalender = ({
         </thead>
       </table>
       <Swiper
+        onSlideChangeTransitionStart={() => setSwiping(true)}
         onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
         onSwiper={handleSwiper}
         loop="true"
@@ -151,12 +153,6 @@ export const TeamCalender = ({
                       >
                         {data.date.getDate()}
 
-                        {data.date.toDateString() ===
-                        selectedDay.toDateString() ? (
-                          <div className="selectedDay"></div>
-                        ) : (
-                          ""
-                        )}
                         <div className="dateSchedule">
                           {requestSchedules.includes(
                             data.date.toLocaleDateString()
@@ -165,7 +161,6 @@ export const TeamCalender = ({
                           ) : (
                             <div className=""></div>
                           )}
-
                           {teamPractice.some(
                             (practice) =>
                               new Date(practice.date).toLocaleDateString() ===
@@ -176,10 +171,17 @@ export const TeamCalender = ({
                             <div className=""></div>
                           )}
                         </div>
-
                         {data.date.toDateString() ===
                         new Date().toDateString() ? (
-                          <div className="today"></div>
+                          <div className="today">{data.date.getDate()}</div>
+                        ) : (
+                          ""
+                        )}
+                        {data.date.toDateString() ===
+                        selectedDay.toDateString() ? (
+                          <div className="selectedDay">
+                            {data.date.getDate()}
+                          </div>
                         ) : (
                           ""
                         )}
@@ -192,6 +194,8 @@ export const TeamCalender = ({
             </table>
           </SwiperSlide>
         ))}
+
+        <div className={`${swiping ? "swiping" : ""}`}></div>
       </Swiper>
     </div>
   );

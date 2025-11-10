@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./CreatePractice.css";
 import axios from "axios";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -9,26 +9,37 @@ import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
 const arrayOfHours = Array.from({ length: 24 }, (_, i) => i);
 
 const CreatePractice = ({
-  setOpenCreatePractice,
-  selectedDay,
+  setEditPractice,
+  editPractice,
   team,
   getPractice,
   selectedDayPractice,
+  deletePracticeHandle,
 }) => {
-  const [date, setDate] = useState(selectedDay || new Date());
+  const [date, setDate] = useState(new Date(editPractice.date));
   const [selectedMembers, setSelectedMembers] = useState(team.members || []);
   const [openTimeTable, setOpenTimeTable] = useState(3);
   const [place, setPlace] = useState("미확정");
-  //장소 작성 기능 추가 해야함
   const [selectHours, setSelectHours] = useState([]);
   const selectedDayPracticeArray = () => {
     const data = [];
     selectedDayPractice.forEach((practice) => {
       const time = practice.time.split("~");
       for (let i = 0; i < Number(time[1]) - Number(time[0]); i++) {
-        data.push(Number(time[0]) + i);
+        if (practice._id !== editPractice._id) {
+          data.push(Number(time[0]) + i);
+        }
       }
     });
+    return data;
+  };
+  const editDayPracticeArray = () => {
+    const data = [];
+    const time = editPractice.time.split("~");
+    for (let i = 0; i < Number(time[1]) - Number(time[0]); i++) {
+      data.push(Number(time[0]) + i);
+    }
+
     return data;
   };
   const [reservedTime, setReservedTime] = useState(
@@ -36,15 +47,14 @@ const CreatePractice = ({
   );
 
   const toggleMemberSelection = (member) => {
-    if (selectedMembers.includes(member)) {
-      setSelectedMembers(selectedMembers.filter((m) => m !== member));
+    if (selectedMembers.some((sMem) => sMem._id === member._id)) {
+      setSelectedMembers(selectedMembers.filter((m) => m._id !== member._id));
     } else {
       setSelectedMembers([...selectedMembers, member]);
     }
   };
 
   //연속된 시간만 선택 가능하게 해야해!!@#!@#!@#!$@#$@ㅁㄴ
-  //해결하면 Edit에도 같이 기능 적용할 것
   const toggleHourSelection = (hour) => {
     if (selectHours.includes(hour)) {
       setSelectHours(
@@ -86,42 +96,50 @@ const CreatePractice = ({
     });
     return { count: count, ableMember: ableMember };
   };
-  const getFomatDate = (localeDateString) => {
-    const year = localeDateString.split(".")[0];
-    const month =
-      localeDateString.split(".")[1].length === 1
-        ? "0" + localeDateString.split(".")[1]
-        : localeDateString.split(".")[1];
-    const date =
-      localeDateString.split(".")[2].length === 1
-        ? "0" + localeDateString.split(".")[2]
-        : localeDateString.split(".")[2];
-    return `${year}-${month}-${date}`;
-  };
 
-  const createPracticeHandle = async () => {
-    const reqData = {
-      teamId: team._id,
-      date: getFomatDate(date.toLocaleDateString()),
-      time: selectHours[0] + "~" + (selectHours[selectHours.length - 1] + 1),
-      members: selectedMembers.map((member) => member._id),
-      place: place,
-    };
-    try {
-      const response = await axios.post(
-        `${serverUrl}/api/practice/create`,
-        reqData,
-        {
-          withCredentials: true,
-        }
-      );
-      alert(response.data.message);
-      setOpenCreatePractice(false);
-      await getPractice();
-    } catch (error) {
-      alert("서버 에러입니다.");
+  const editPracticeHandle = async () => {
+    if (selectHours.length !== 0) {
+      const reqData = {
+        practiceId: editPractice._id,
+        time: selectHours[0] + "~" + (selectHours[selectHours.length - 1] + 1),
+        members: selectedMembers.map((member) => member._id),
+        place: place,
+      };
+      try {
+        const response = await axios.post(
+          `${serverUrl}/api/practice/edit`,
+          reqData,
+          {
+            withCredentials: true,
+          }
+        );
+        alert(response.data.message);
+        setEditPractice("unSelect");
+        await getPractice();
+      } catch (error) {
+        alert("서버 에러입니다.");
+      }
     }
   };
+
+  useEffect(() => {
+    const getEditPractice = async () => {
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/practice/${editPractice._id}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        setSelectedMembers(response.data.practice.members);
+      } catch (error) {
+        alert("서버 에러입니다.");
+      }
+    };
+    getEditPractice();
+    setSelectHours(editDayPracticeArray());
+  }, []);
 
   return (
     <div className="createPractice">
@@ -133,7 +151,7 @@ const CreatePractice = ({
           </div>
           <div
             className="closeButton"
-            onClick={() => setOpenCreatePractice(false)}
+            onClick={() => setEditPractice("unSelect")}
           >
             <IoCloseOutline style={{ fontSize: "20px" }} />
           </div>
@@ -159,7 +177,9 @@ const CreatePractice = ({
               <div
                 onClick={() => toggleMemberSelection(member)}
                 className={`member ${
-                  selectedMembers.includes(member) ? "selected" : ""
+                  selectedMembers.some((sMem) => sMem._id === member._id)
+                    ? "selected"
+                    : ""
                 }`}
                 key={member._id}
               >
@@ -344,6 +364,30 @@ const CreatePractice = ({
         <div className="optionMenu"></div>
         <div className="endSection">
           <div className="practicePreview">
+            <div>
+              <div className="top">
+                <div className="prTime">
+                  <MdOutlineAccessTime />
+                  {editPractice.time}
+                </div>
+                <div className="prMember">
+                  <HiUserGroup />
+                  {selectedMembers.length}명
+                </div>
+              </div>
+              <div className="prPlace">
+                <MdOutlinePlace />
+                미확정
+              </div>
+              <div
+                className="clearButton"
+                onClick={() => setSelectHours(editDayPracticeArray())}
+              >
+                복구
+              </div>
+            </div>
+          </div>
+          <div className="practicePreview">
             {selectHours.length === 0 ? (
               <div className="noTimeSelected">선택된 시간이 없습니다.</div>
             ) : (
@@ -368,13 +412,15 @@ const CreatePractice = ({
               </div>
             )}
           </div>
-
           <div className="actionButtons">
             <div
-              className="createButton"
-              onClick={() => createPracticeHandle()}
+              className="clearButton"
+              onClick={() => deletePracticeHandle(editPractice._id)}
             >
-              연습 생성
+              연습 삭제
+            </div>
+            <div className="createButton" onClick={() => editPracticeHandle()}>
+              연습 수정
             </div>
           </div>
         </div>

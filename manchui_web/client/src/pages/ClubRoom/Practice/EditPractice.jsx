@@ -20,6 +20,7 @@ const CreatePractice = ({
   const [selectedMembers, setSelectedMembers] = useState(team.members || []);
   const [openTimeTable, setOpenTimeTable] = useState(3);
   const [place, setPlace] = useState("미확정");
+  const [editMemebers, setEditMembers] = useState([]);
   const [selectHours, setSelectHours] = useState([]);
   const selectedDayPracticeArray = () => {
     const data = [];
@@ -121,6 +122,11 @@ const CreatePractice = ({
       }
     }
   };
+  const resetHandle = () => {
+    setSelectedMembers(editMemebers);
+    setSelectHours(editDayPracticeArray());
+    setPlace(editPractice.place);
+  };
 
   useEffect(() => {
     const getEditPractice = async () => {
@@ -131,7 +137,7 @@ const CreatePractice = ({
             withCredentials: true,
           }
         );
-
+        setEditMembers(response.data.practice.members);
         setSelectedMembers(response.data.practice.members);
       } catch (error) {
         alert("서버 에러입니다.");
@@ -372,17 +378,14 @@ const CreatePractice = ({
                 </div>
                 <div className="prMember">
                   <HiUserGroup />
-                  {selectedMembers.length}명
+                  {editPractice.members.length}명
                 </div>
               </div>
               <div className="prPlace">
                 <MdOutlinePlace />
-                미확정
+                {editPractice.place}
               </div>
-              <div
-                className="clearButton"
-                onClick={() => setSelectHours(editDayPracticeArray())}
-              >
+              <div className="clearButton" onClick={() => resetHandle()}>
                 복구
               </div>
             </div>

@@ -33,6 +33,7 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ message: "서버 에러 발생" });
   }
 });
+//팀 삭제될 때 그 팀의 연습도 다 삭제해야함
 
 router.post("/join", async (req, res) => {
   try {
@@ -150,4 +151,5 @@ router.get("/user/:userId", async (req, res) => {
 });
 
 //팀장이 나가면 팀 삭제 or 팀장 위임 기능은 추후에...
+//팀 삭제될 때 그 팀의 연습도 다 삭제해야함
 module.exports = router;

@@ -34,6 +34,10 @@ const TeamMain = () => {
   const parmas = useParams();
   const inviteURL = `${clientUrl}/club/team/join/${parmas.id}`;
 
+  useEffect(() => {
+    setinfoMenuOpen(false);
+  }, [openCreatePractice, editPractice, selectedDay]);
+
   const clickDate = (date) => {
     setselectedDay(date);
     return;
@@ -145,6 +149,16 @@ const TeamMain = () => {
       alert(error.response.data.message);
     }
   };
+  const getTotal = () => {
+    let total = 0;
+    teamPractice.forEach((practice) => {
+      total +=
+        Number(practice.time.split("~")[1]) -
+        Number(practice.time.split("~")[0]);
+    });
+    return total;
+  };
+
   return (
     <div className="teamMain">
       <div className="teamInfo">
@@ -319,6 +333,30 @@ const TeamMain = () => {
       ) : (
         ""
       )}
+
+      <div className="teamRecord">
+        <div className="practiceTotalTime">
+          연습한 시간
+          <div className="value">
+            {getTotal()}
+            시간
+          </div>
+        </div>
+        <div className="practiceNumber">
+          연습 횟수<div className="value">{teamPractice.length}회</div>
+        </div>
+        <div className="fullMemberPractice">
+          모두 모인 횟수
+          <div className="value">
+            {
+              teamPractice.filter(
+                (practice) => practice.members.length === team.members.length
+              ).length
+            }
+            회
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -329,19 +367,17 @@ const TeamMain = () => {
 해당 날짜 선택 시
 4. 팀원 일정 작성 상태 보기
 5. 내 일정 작성 하기
-6. 연습 정보 상세보기
-8. 연습실 설정하기
+6. 연습 정보 상세보기 // 팀원, 권한
+7. 연습 수정 하기 // 권한
 
 연습 일정 추가 탭
-1. 팀원의 스케줄 확인 후 연습 시간 설정
-2. 연습장소 설정(1.개인이 입력 2. 미정상태)
+2. 연습장소 설정(1.개인이 입력 2. 미정상태) !!!!!!! 다음에 할 것 !!!!!!!!!!
 3. 등록 완료
 연습 장소 동아리 지원 시 - 임원진 계정에서 확인 가능한 페이지에서 예약후 할당
 임원진 페이지에 연습장소 요청된 연습들 볼 수 있도록 구성, 이후 예약 완료하면 임원진이 할당 및 공지
-4. 연습 멤버 추가 시 - 그 날짜의 그 멤버들의 연습도 가져오기
 
 문제1 - 다른 팀 연습 때문에 스케줄이 안될 경우 이를 확인하는 방법?
-  ㄴ 원래 가능하지만 다른 팀때문에 불가능한 시간대는 따로표기
+  ㄴ 연습 생기면 팀원 스케쥴에 추가 < 개빡셀듯;;
 */
 
 export default TeamMain;

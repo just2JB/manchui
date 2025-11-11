@@ -100,6 +100,9 @@ const CreatePractice = ({
   };
 
   const createPracticeHandle = async () => {
+    if (selectHours.length === 0) {
+      return;
+    }
     const reqData = {
       teamId: team._id,
       date: getFomatDate(date.toLocaleDateString()),

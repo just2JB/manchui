@@ -28,7 +28,12 @@ const TeamMain = () => {
   const [teamPractice, setTeamPractice] = useState([]);
   const [selectedDay, setselectedDay] = useState(new Date());
   const [infoMenuOpen, setinfoMenuOpen] = useState(false);
+  const [detailMemberOpen, setDetailMemberOpen] = useState(false);
   const [editPractice, setEditPractice] = useState("unSelect");
+  const [daySchedulNow, setDaySchedulNow] = useState({
+    confirm: [],
+    unconfirm: [],
+  });
   const { user } = useOutletContext();
   const nav = useNavigate();
   const parmas = useParams();
@@ -40,6 +45,22 @@ const TeamMain = () => {
 
   const clickDate = (date) => {
     setselectedDay(date);
+    setDaySchedulNow({
+      confirm: team.members.filter((member) =>
+        member.schedule.some(
+          (s) =>
+            new Date(s.date).toLocaleDateString() === date.toLocaleDateString()
+        )
+      ),
+      unconfirm: team.members.filter(
+        (member) =>
+          !member.schedule.some(
+            (s) =>
+              new Date(s.date).toLocaleDateString() ===
+              date.toLocaleDateString()
+          )
+      ),
+    });
     return;
   };
 
@@ -74,6 +95,23 @@ const TeamMain = () => {
           }
         );
         setTeam(response.data.team);
+        setDaySchedulNow({
+          confirm: response.data.team.members.filter((member) =>
+            member.schedule.some(
+              (s) =>
+                new Date(s.date).toLocaleDateString() ===
+                new Date().toLocaleDateString()
+            )
+          ),
+          unconfirm: response.data.team.members.filter(
+            (member) =>
+              !member.schedule.some(
+                (s) =>
+                  new Date(s.date).toLocaleDateString() ===
+                  new Date().toLocaleDateString()
+              )
+          ),
+        });
         await getPractice();
       } catch {
         alert("존재하지 않는 팀 입니다.");
@@ -156,6 +194,7 @@ const TeamMain = () => {
         Number(practice.time.split("~")[1]) -
         Number(practice.time.split("~")[0]);
     });
+
     return total;
   };
 
@@ -270,12 +309,17 @@ const TeamMain = () => {
 
           <div className="scheduleSection">
             <div className="writeState">
-              <div className="stateText">일정 종합</div>
-              <div className="state">
-                <div className="confirm">1</div>/
-                <div className="unConfirm">{team.members.length}</div>
+              <div className="" onClick={() => setDetailMemberOpen(true)}>
+                <div className="stateText">일정 종합</div>
+                <div className="state">
+                  <div className="confirm">{daySchedulNow.confirm.length}</div>/
+                  <div className="unConfirm">
+                    {daySchedulNow.unconfirm.length}
+                  </div>
+                </div>
               </div>
             </div>
+
             {team.requestSchedules.some(
               (item) => item === selectedDay.toLocaleDateString()
             ) ? (
@@ -294,6 +338,32 @@ const TeamMain = () => {
                 요청
               </div>
             )}
+            <div
+              className={`confirmMemberDetail ${
+                detailMemberOpen ? "detailOpen" : "detailClose"
+              }`}
+            >
+              <div className="membersBox">
+                <div className="confirmMembers">
+                  <h4>작성 완료</h4>
+                  {daySchedulNow.confirm.map((member) => (
+                    <div key={member._id}>{member.username}</div>
+                  ))}
+                </div>
+                <div className="unconfirmMembers">
+                  <h4 className="">미작성</h4>
+                  {daySchedulNow.unconfirm.map((member) => (
+                    <div key={member._id}>{member.username}</div>
+                  ))}
+                </div>
+              </div>
+              <div
+                className="closeDetail"
+                onClick={() => setDetailMemberOpen(false)}
+              >
+                닫기
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -336,7 +406,7 @@ const TeamMain = () => {
 
       <div className="teamRecord">
         <div className="practiceTotalTime">
-          연습한 시간
+          연습 시간
           <div className="value">
             {getTotal()}
             시간
@@ -362,6 +432,12 @@ const TeamMain = () => {
 };
 
 /* 
+   {daySchedulNow.confirm.map((member) => (
+        <div key={member._id}>{member.username}</div>
+      ))}
+      {daySchedulNow.unconfirm.map((member) => (
+        <div key={member._id}>{member.username}</div>
+      ))}
       <span className="joinUrl"> {inviteURL}</span>
 날짜 클릭 시 종합된 일정과 해당일 연습 만들 수 있는 창 띄우기( 새 페이지 말고 하위 컴퍼넌트로 오버랩하자)
 해당 날짜 선택 시

@@ -4,12 +4,7 @@ import "./TeamMain.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
-import {
-  IoMenuOutline,
-  IoCloseOutline,
-  IoTrash,
-  IoPencil,
-} from "react-icons/io5";
+import { IoMenuOutline, IoCloseOutline } from "react-icons/io5";
 import { TeamCalender } from "./TeamCalender";
 import { HiUserGroup } from "react-icons/hi";
 import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
@@ -28,6 +23,7 @@ const TeamMain = () => {
   const [teamPractice, setTeamPractice] = useState([]);
   const [selectedDay, setselectedDay] = useState(new Date());
   const [infoMenuOpen, setinfoMenuOpen] = useState(false);
+  const [practiceInfoDetail, setPracticeInfoDetail] = useState("unSelect");
   const [detailMemberOpen, setDetailMemberOpen] = useState(false);
   const [editPractice, setEditPractice] = useState("unSelect");
   const [daySchedulNow, setDaySchedulNow] = useState({
@@ -183,6 +179,7 @@ const TeamMain = () => {
       setTeamPractice(teamPractice.filter((practice) => practice._id !== id));
       alert(response.data.message);
       setEditPractice("unSelect");
+      setPracticeInfoDetail("unSelect");
     } catch (error) {
       alert(error.response.data.message);
     }
@@ -277,7 +274,7 @@ const TeamMain = () => {
                 .map((practice) => (
                   <div
                     className="practice"
-                    onClick={() => setEditPractice(practice)}
+                    onClick={() => setPracticeInfoDetail(practice)}
                     key={practice._id}
                   >
                     <div className="top">
@@ -302,7 +299,34 @@ const TeamMain = () => {
                 className="practice"
                 onClick={() => setOpenCreatePractice(true)}
               >
-                <LiaPlusSolid />
+                + 새 연습
+              </div>
+            </div>
+            <div
+              className={`practiceInfoDetail ${
+                practiceInfoDetail !== "unSelect" ? "openInfoDetail" : ""
+              } `}
+            >
+              날짜 시간 장소 멤버
+              <div className="buttonBox">
+                <div
+                  className="editPracticButton"
+                  onClick={() => setEditPractice(practiceInfoDetail)}
+                >
+                  수정하기
+                </div>
+                <div
+                  className="deletePracticeButton"
+                  onClick={() => deletePracticeHandle(practiceInfoDetail._id)}
+                >
+                  삭제하기
+                </div>
+              </div>
+              <div
+                className="closePracticeDetail"
+                onClick={() => setPracticeInfoDetail("unSelect")}
+              >
+                닫기
               </div>
             </div>
           </div>

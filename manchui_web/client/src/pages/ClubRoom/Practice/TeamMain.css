@@ -122,6 +122,8 @@
   flex-direction: column;
   justify-content: start;
   align-items: center;
+  overflow: hidden;
+  position: relative;
 }
 .teamMain .teamScheduleMenu .practiceSection .thisDayPractice {
   position: relative;
@@ -213,6 +215,24 @@
   align-content: center;
   font-size: 13px;
 }
+
+.teamMain .practiceInfoDetail {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  right: -110%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1d1d1d;
+  border-top: 1px solid #b1b1b1;
+  transition-duration: 0.3s;
+}
+.teamMain .openInfoDetail {
+  right: 0%;
+}
+
 .teamMain .confirmMemberDetail {
   width: 110%;
   height: 300px;

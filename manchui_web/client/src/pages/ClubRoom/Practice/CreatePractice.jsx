@@ -327,7 +327,7 @@ const CreatePractice = ({
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
-                    <div className="selectTimeButton">--</div>
+                    <div className="none"></div>
                   ) : (
                     <div
                       className="selectTimeButton"

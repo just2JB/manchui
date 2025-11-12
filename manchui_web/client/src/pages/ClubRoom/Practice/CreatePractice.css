@@ -194,10 +194,10 @@
 .createPractice .availabllity {
   flex: 1;
   height: 10px;
-  background-color: #353535;
+  background-color: #2a2a2a;
 }
 .createPractice .available {
-  background-color: #4caf50;
+  background-color: #00e676;
 }
 .createPractice .selectTimeButton {
   width: 28px;
@@ -269,6 +269,12 @@
 }
 .createPractice .createButton:hover {
   background-color: #922c2c;
+}
+
+.createPractice .none {
+  width: 28px;
+  padding: 3px 10px;
+  border: 1px solid #22222200;
 }
 @keyframes onLoad {
   0% {

@@ -24,6 +24,7 @@ const toKrDay = ({ day }) => {
 };
 
 const ClubRoom = () => {
+  const [swiping, setSwiping] = useState(false);
   const [loading, setLoading] = useState(false);
   const [swiperInstance, setSwiperInstance] = useState(null);
   const [user, setUser] = useState({ username: "" });
@@ -82,6 +83,7 @@ const ClubRoom = () => {
   };
   const changeSlideHandle = (e) => {
     setDayArray(schedule[e.realIndex][0], e.realIndex);
+    setSwiping(false);
   };
   const getSchedule = async (userId) => {
     try {
@@ -252,6 +254,7 @@ const ClubRoom = () => {
           </div>
 
           <Swiper
+            onSlideChangeTransitionStart={() => setSwiping(true)}
             onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
             onSwiper={handleSwiper}
             loop="true"
@@ -351,6 +354,7 @@ const ClubRoom = () => {
       ) : (
         <></>
       )}
+      <div className={`${swiping ? "swiping" : ""}`}></div>
     </div>
   );
 };

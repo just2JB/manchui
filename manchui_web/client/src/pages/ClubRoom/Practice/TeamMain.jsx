@@ -46,7 +46,13 @@ const TeamMain = () => {
 
   useEffect(() => {
     setinfoMenuOpen(false);
-  }, [openCreatePractice, editPractice, selectedDay, practiceInfoDetail]);
+  }, [
+    openCreatePractice,
+    editPractice,
+    selectedDay,
+    practiceInfoDetail,
+    detailMemberOpen,
+  ]);
 
   const clickDate = (date) => {
     setselectedDay(date);

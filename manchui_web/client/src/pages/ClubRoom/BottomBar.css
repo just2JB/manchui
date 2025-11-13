@@ -31,7 +31,9 @@
 .menu-button:hover {
   background-color: #121212;
 }
-
+.selcetMenu {
+  background-color: #121212;
+}
 @media screen and (max-width: 767px) {
   .bottomBar {
     width: 100%;

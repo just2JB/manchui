@@ -4,10 +4,19 @@ import "./TeamMain.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
-import { IoMenuOutline, IoCloseOutline } from "react-icons/io5";
+import {
+  IoMenuOutline,
+  IoCloseOutline,
+  IoTrashSharp,
+  IoPencil,
+} from "react-icons/io5";
 import { TeamCalender } from "./TeamCalender";
 import { HiUserGroup } from "react-icons/hi";
-import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
+import {
+  MdOutlineAccessTime,
+  MdOutlinePlace,
+  MdCalendarMonth,
+} from "react-icons/md";
 import { LiaPlusSolid } from "react-icons/lia";
 import CreatePractice from "./CreatePractice";
 import EditPractice from "./EditPractice";
@@ -37,7 +46,7 @@ const TeamMain = () => {
 
   useEffect(() => {
     setinfoMenuOpen(false);
-  }, [openCreatePractice, editPractice, selectedDay]);
+  }, [openCreatePractice, editPractice, selectedDay, practiceInfoDetail]);
 
   const clickDate = (date) => {
     setselectedDay(date);
@@ -58,6 +67,13 @@ const TeamMain = () => {
       ),
     });
     return;
+  };
+  const clickPractice = (practice) => {
+    if (practice._id === practiceInfoDetail._id) {
+      setPracticeInfoDetail("unSelect");
+    } else {
+      setPracticeInfoDetail(practice);
+    }
   };
 
   const getPractice = async () => {
@@ -261,6 +277,63 @@ const TeamMain = () => {
             requestSchedules={team.requestSchedules}
             teamPractice={teamPractice}
           />
+          <div
+            className={`practiceInfoDetailPop ${
+              practiceInfoDetail !== "unSelect" ? "openInfoDetail" : ""
+            } `}
+          >
+            <div className="practiceInfoDetail">
+              <div className="detailInfoBox">
+                <h3>연습 정보</h3>
+                {practiceInfoDetail !== "unSelect" ? (
+                  <div className="edtailDate">
+                    <MdCalendarMonth className="icons" />
+                    {practiceInfoDetail.date.slice(0, 4)}년{" "}
+                    {practiceInfoDetail.date.slice(5, 8)}월{" "}
+                    {practiceInfoDetail.date.slice(9, 12)}일
+                  </div>
+                ) : (
+                  ""
+                )}
+
+                <div className="edtailTime">
+                  <MdOutlineAccessTime className="icons" />
+                  {practiceInfoDetail.time}
+                </div>
+                <div className="edtailPlace">
+                  <MdOutlinePlace className="icons" />
+                  {practiceInfoDetail.place}
+                </div>
+              </div>
+              <div className="detailMembers">
+                {practiceInfoDetail !== "unSelect"
+                  ? team.members
+                      .filter((member) =>
+                        practiceInfoDetail.members.includes(member._id)
+                      )
+                      .map((member) => (
+                        <div key={member._id} className="detailMember">
+                          {member.username}
+                        </div>
+                      ))
+                  : ""}
+              </div>
+              <div className="buttonBox">
+                <div
+                  className="editPracticButton"
+                  onClick={() => setEditPractice(practiceInfoDetail)}
+                >
+                  <IoPencil />
+                </div>
+                <div
+                  className="deletePracticeButton"
+                  onClick={() => deletePracticeHandle(practiceInfoDetail._id)}
+                >
+                  <IoTrashSharp />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="teamScheduleMenu">
           <div className="practiceSection">
@@ -273,23 +346,27 @@ const TeamMain = () => {
                 )
                 .map((practice) => (
                   <div
-                    className="practice"
-                    onClick={() => setPracticeInfoDetail(practice)}
+                    className={`practice ${
+                      practice.time === practiceInfoDetail.time
+                        ? "detailOpenPractice"
+                        : ""
+                    }`}
+                    onClick={() => clickPractice(practice)}
                     key={practice._id}
                   >
                     <div className="top">
                       <div className="prTime">
-                        <MdOutlineAccessTime />
+                        <MdOutlineAccessTime className="icons" />
                         {practice.time}
                       </div>
                       <div className="prMember">
-                        <HiUserGroup />
+                        <HiUserGroup className="icons" />
                         {practice.members.length}
                       </div>
                     </div>
                     <div className="bottom">
                       <div className="prPlace">
-                        <MdOutlinePlace />
+                        <MdOutlinePlace className="icons" />
                         {practice.place}
                       </div>
                     </div>
@@ -300,33 +377,6 @@ const TeamMain = () => {
                 onClick={() => setOpenCreatePractice(true)}
               >
                 + 새 연습
-              </div>
-            </div>
-            <div
-              className={`practiceInfoDetail ${
-                practiceInfoDetail !== "unSelect" ? "openInfoDetail" : ""
-              } `}
-            >
-              날짜 시간 장소 멤버
-              <div className="buttonBox">
-                <div
-                  className="editPracticButton"
-                  onClick={() => setEditPractice(practiceInfoDetail)}
-                >
-                  수정하기
-                </div>
-                <div
-                  className="deletePracticeButton"
-                  onClick={() => deletePracticeHandle(practiceInfoDetail._id)}
-                >
-                  삭제하기
-                </div>
-              </div>
-              <div
-                className="closePracticeDetail"
-                onClick={() => setPracticeInfoDetail("unSelect")}
-              >
-                닫기
               </div>
             </div>
           </div>
@@ -456,28 +506,23 @@ const TeamMain = () => {
 };
 
 /* 
-   {daySchedulNow.confirm.map((member) => (
-        <div key={member._id}>{member.username}</div>
-      ))}
-      {daySchedulNow.unconfirm.map((member) => (
-        <div key={member._id}>{member.username}</div>
-      ))}
-      <span className="joinUrl"> {inviteURL}</span>
+
+!!!!!!연습 수정, 만들기에서 연속된 시간만 선택가능하게 만들어야함!!@!@!@!@!!!!
+
+<span className="joinUrl"> {inviteURL}</span>
 날짜 클릭 시 종합된 일정과 해당일 연습 만들 수 있는 창 띄우기( 새 페이지 말고 하위 컴퍼넌트로 오버랩하자)
 해당 날짜 선택 시
-4. 팀원 일정 작성 상태 보기
 5. 내 일정 작성 하기
-6. 연습 정보 상세보기 // 팀원, 권한
 7. 연습 수정 하기 // 권한
 
 연습 일정 추가 탭
-2. 연습장소 설정(1.개인이 입력 2. 미정상태) !!!!!!! 다음에 할 것 !!!!!!!!!!
+2. 연습장소 설정(1.개인이 입력 2. 미정상태)
 3. 등록 완료
 연습 장소 동아리 지원 시 - 임원진 계정에서 확인 가능한 페이지에서 예약후 할당
 임원진 페이지에 연습장소 요청된 연습들 볼 수 있도록 구성, 이후 예약 완료하면 임원진이 할당 및 공지
 
 문제1 - 다른 팀 연습 때문에 스케줄이 안될 경우 이를 확인하는 방법?
-  ㄴ 연습 생기면 팀원 스케쥴에 추가 < 개빡셀듯;;
+  ㄴ 연습 생기면 팀원 스케쥴에 추가
 */
 
 export default TeamMain;

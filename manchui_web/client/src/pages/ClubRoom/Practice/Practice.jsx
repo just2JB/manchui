@@ -34,7 +34,9 @@ const Practice = () => {
       <div className="teams">
         <div className="topMenu">
           <h4>내 팀</h4>
-          <IoAdd onClick={() => nav("/club/create-team")} />
+          <span>
+            <IoAdd onClick={() => nav("/club/create-team")} />새 팀
+          </span>
         </div>
         <div className="joinedList">
           {/* {

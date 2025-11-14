@@ -44,16 +44,6 @@ const TeamMain = () => {
   const parmas = useParams();
   const inviteURL = `${clientUrl}/club/team/join/${parmas.id}`;
 
-  useEffect(() => {
-    setinfoMenuOpen(false);
-  }, [
-    openCreatePractice,
-    editPractice,
-    selectedDay,
-    practiceInfoDetail,
-    detailMemberOpen,
-  ]);
-
   const clickDate = (date) => {
     setselectedDay(date);
     setDaySchedulNow({
@@ -216,7 +206,22 @@ const TeamMain = () => {
 
     return total;
   };
-
+  const shareHandler = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "만취 동아리방",
+          text: `${team.name} 참여하기`,
+          url: inviteURL,
+        });
+      } catch (error) {
+        console.error("공유 실패:", error);
+      }
+    } else {
+      navigator.clipboard.writeText(inviteURL);
+      alert("초대 링크가 클립보드에 복사되었습니다.");
+    }
+  };
   return (
     <div className="teamMain">
       <div className="teamInfo">
@@ -238,28 +243,6 @@ const TeamMain = () => {
                 <IoMenuOutline />
               </button>
             )}
-            <div className={`teamInfoMenu ${infoMenuOpen ? "openMenu" : ""}`}>
-              <div className="invite menuContent">초대하기</div>
-              <div className="edit menuContent">팀 정보 수정하기</div>
-              <div
-                className="quit menuContent"
-                onClick={() => quitTeamHandle(user._id)}
-              >
-                팀 탈퇴하기
-              </div>
-              {team.leaderId === user._id ? (
-                <div className="leaderMenu">
-                  <div
-                    className="delete menuContent"
-                    onClick={() => deleteTeamHandel()}
-                  >
-                    팀 삭제하기
-                  </div>
-                </div>
-              ) : (
-                ""
-              )}
-            </div>
           </div>
         </div>
 
@@ -495,16 +478,32 @@ const TeamMain = () => {
         <div className="practiceNumber">
           연습 횟수<div className="value">{teamPractice.length}회</div>
         </div>
-        <div className="fullMemberPractice">
-          모두 모인 횟수
-          <div className="value">
-            {
-              teamPractice.filter(
-                (practice) => practice.members.length === team.members.length
-              ).length
-            }
-            회
+      </div>
+      <div className={`teamInfoMenu ${infoMenuOpen ? "openMenu" : ""}`}>
+        <div className="closeBack" onClick={() => setinfoMenuOpen(false)}></div>
+        <div className="menubuttons">
+          <div className="invite menuContent" onClick={() => shareHandler()}>
+            초대하기
           </div>
+          <div className="edit menuContent">팀 정보 수정하기</div>
+          <div
+            className="quit menuContent"
+            onClick={() => quitTeamHandle(user._id)}
+          >
+            팀 탈퇴하기
+          </div>
+          {team.leaderId === user._id ? (
+            <div className="leaderMenu">
+              <div
+                className="delete menuContent"
+                onClick={() => deleteTeamHandel()}
+              >
+                팀 삭제하기
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </div>
@@ -516,16 +515,41 @@ const TeamMain = () => {
 !!!!!!연습 수정, 만들기에서 연속된 시간만 선택가능하게 만들어야함!!@!@!@!@!!!!
 
 <span className="joinUrl"> {inviteURL}</span>
+<div className="fullMemberPractice">
+          모두 모인 횟수
+          <div className="value">
+            {
+              teamPractice.filter(
+                (practice) => practice.members.length === team.members.length
+              ).length
+            }
+            회
+          </div>
+</div>
 날짜 클릭 시 종합된 일정과 해당일 연습 만들 수 있는 창 띄우기( 새 페이지 말고 하위 컴퍼넌트로 오버랩하자)
 해당 날짜 선택 시
 5. 내 일정 작성 하기
 7. 연습 수정 하기 // 권한
+8. 일정 요청이 필요할까??? - 필요하다면 토글 버튼 같은걸 놓자
+
 
 연습 일정 추가 탭
 2. 연습장소 설정(1.개인이 입력 2. 미정상태)
 3. 등록 완료
 연습 장소 동아리 지원 시 - 임원진 계정에서 확인 가능한 페이지에서 예약후 할당
 임원진 페이지에 연습장소 요청된 연습들 볼 수 있도록 구성, 이후 예약 완료하면 임원진이 할당 및 공지
+
+해야할 것!!
+1. 초대기능 구현
+
+2. 팀 정보 수정 구현
+ㄴ 팀원 퇴출, 리더 변경, 삭제하기
+팀 탈퇴 하고 싶으면 리더 변경 해야하게 바꾸기
+
+3. 연습일정 선택중 연속 시간만 선택가능하게 바꿔야함
+
+4. 연습 모아보기 기능 만들기 내것만 보기 만취 전체 보기 등 새로 구성해보기 ex에타?
+5. 30분 단위로 예약 해야하는가?? 
 
 문제1 - 다른 팀 연습 때문에 스케줄이 안될 경우 이를 확인하는 방법?
   ㄴ 연습 생기면 팀원 스케쥴에 추가

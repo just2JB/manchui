@@ -5,7 +5,7 @@ const Team = require("../models/Team");
 
 router.post("/create", async (req, res) => {
   try {
-    const { name, userId } = req.body;
+    const { name, comment, userId } = req.body;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -14,6 +14,7 @@ router.post("/create", async (req, res) => {
       name: name,
       leaderId: user._id,
       members: [user._id],
+      comment: comment,
     });
     await team.save();
     res.status(201).json({ message: "팀 생성이 완료되었습니다" });

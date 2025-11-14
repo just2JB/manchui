@@ -1,0 +1,6 @@
+.createTeam {
+  background-color: #121212;
+  color: #f5f5f5;
+  width: 100%;
+  height: calc(100vh - 70px);
+}

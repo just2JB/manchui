@@ -37,8 +37,10 @@ const CreateTeam = () => {
   };
   return (
     <div className="createTeam">
-      {teamData.name}
+      <label>팀 이름</label>
       <input name="name" onChange={(e) => handleChange(e)} />
+      <label>설명</label>
+      <input name="comment" onChange={(e) => handleChange(e)} />
       <button onClick={() => handleCreate()}>만들기</button>
     </div>
   );

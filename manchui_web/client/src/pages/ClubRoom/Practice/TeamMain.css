@@ -233,7 +233,7 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: #1d1d1d;
+  background-color: #1d1d1d00;
   border-radius: 10px;
   transition-duration: 0.3s;
   overflow: hidden;
@@ -311,7 +311,7 @@
 
 .teamMain .confirmMemberDetail {
   width: 110%;
-  height: 300px;
+  height: 0px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -320,9 +320,10 @@
   padding: 10px 5px 0px 5px;
   background-color: #1d1d1d;
   border-top: 1px solid #b1b1b1;
-  transition-duration: 0.3s;
+  transition-duration: 0.5s;
 }
 .teamMain .detailOpen {
+  height: 300px;
   bottom: -10px;
 }
 .teamMain .detailClose {

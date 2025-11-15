@@ -123,22 +123,22 @@ const TeamMain = () => {
           memberSchedules: response.data.memberSchedules,
         });
         setDaySchedulNow({
-          confirm: team.members.filter((member) =>
-            team.memberSchedules
+          confirm: response.data.team.members.filter((member) =>
+            response.data.memberSchedules
               .filter(
                 (schedule) =>
                   new Date(schedule.date).toLocaleDateString() ===
-                  date.toLocaleDateString()
+                  new Date().toLocaleDateString()
               )
               .some((schedule) => schedule.userId === member._id)
           ),
-          unconfirm: team.members.filter(
+          unconfirm: response.data.team.members.filter(
             (member) =>
-              !team.memberSchedules
+              !response.data.memberSchedules
                 .filter(
                   (schedule) =>
                     new Date(schedule.date).toLocaleDateString() ===
-                    date.toLocaleDateString()
+                    new Date().toLocaleDateString()
                 )
                 .some((schedule) => schedule.userId === member._id)
           ),
@@ -233,8 +233,8 @@ const TeamMain = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "만취 동아리방",
-          text: `${team.name} 참여하기`,
+          title: "만취에서 연습하기",
+          text: `[${team.name}] 참여`,
           url: inviteURL,
         });
       } catch (error) {
@@ -315,7 +315,7 @@ const TeamMain = () => {
                       ? `${practiceInfoDetail.time.split("~")[0]}:00`
                       : `${practiceInfoDetail.time.split("~")[0] - 0.5}:30`}
                     ~
-                    {(practiceInfoDetail.time.split("~")[0] * 2) % 2 === 0
+                    {(practiceInfoDetail.time.split("~")[1] * 2) % 2 === 0
                       ? `${practiceInfoDetail.time.split("~")[1]}:00`
                       : `${practiceInfoDetail.time.split("~")[1] - 0.5}:30`}
                   </div>
@@ -384,7 +384,7 @@ const TeamMain = () => {
                           ? `${practice.time.split("~")[0]}:00`
                           : `${practice.time.split("~")[0] - 0.5}:30`}
                         ~
-                        {(practice.time.split("~")[0] * 2) % 2 === 0
+                        {(practice.time.split("~")[1] * 2) % 2 === 0
                           ? `${practice.time.split("~")[1]}:00`
                           : `${practice.time.split("~")[1] - 0.5}:30`}
                       </div>

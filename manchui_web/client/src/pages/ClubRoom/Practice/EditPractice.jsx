@@ -392,7 +392,7 @@ const CreatePractice = ({
                     ? `${editPractice.time.split("~")[0]}:00`
                     : `${editPractice.time.split("~")[0] - 0.5}:30`}
                   ~
-                  {(editPractice.time.split("~")[0] * 2) % 2 === 0
+                  {(editPractice.time.split("~")[1] * 2) % 2 === 0
                     ? `${editPractice.time.split("~")[1]}:00`
                     : `${editPractice.time.split("~")[1] - 0.5}:30`}
                 </div>

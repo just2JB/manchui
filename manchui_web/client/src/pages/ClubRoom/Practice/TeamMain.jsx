@@ -76,7 +76,18 @@ const TeamMain = () => {
       setPracticeInfoDetail(practice);
     }
   };
-
+  const getFomatDate = (localeDateString) => {
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
   const getPractice = async () => {
     try {
       const response = await axios.get(
@@ -449,11 +460,26 @@ const TeamMain = () => {
                   ))}
                 </div>
               </div>
-              <div
-                className="closeDetail"
-                onClick={() => setDetailMemberOpen(false)}
-              >
-                닫기
+              <div className="memberDetailButtons">
+                <div
+                  className="editSchedule"
+                  onClick={() =>
+                    nav(
+                      `/club/edit-schedule/${getFomatDate(
+                        selectedDay.toLocaleDateString()
+                      )}`
+                    )
+                  }
+                >
+                  내 일정 편집
+                </div>
+
+                <div
+                  className="closeDetail"
+                  onClick={() => setDetailMemberOpen(false)}
+                >
+                  닫기
+                </div>
               </div>
             </div>
           </div>

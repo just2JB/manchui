@@ -23,10 +23,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "댄서",
   },
-  schedule: {
-    type: Array,
-    default: [],
-  },
 });
 
 const User = mongoose.model("User", userSchema);

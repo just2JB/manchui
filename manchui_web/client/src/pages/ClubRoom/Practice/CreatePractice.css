@@ -105,7 +105,7 @@
 }
 .createPractice .openThisTable {
   transition-duration: 0.5s;
-  height: 360px;
+  height: 390px;
 }
 .createPractice .timeOpenContainer {
   position: absolute;
@@ -139,12 +139,14 @@
 .createPractice .timeTable {
   align-items: center;
   width: 100%;
+  height: calc(100% - 40px);
   position: absolute;
   bottom: 0px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   z-index: 4;
+  overflow-y: scroll;
 }
 .createPractice .timeCell {
   background-color: #1a1a1a;
@@ -231,6 +233,9 @@
   font-size: 16px;
   font-weight: 250;
 }
+.createPractice .editPreview {
+  font-size: 14px;
+}
 .createPractice .practicePreview .top {
   display: flex;
   flex-direction: row;
@@ -248,7 +253,8 @@
 .createPractice .clearButton {
   width: 100%;
   text-align: center;
-  padding: 10px 0px;
+  margin-top: 5px;
+  padding: 6px 0px;
   border: 1px solid #333333;
   border-radius: 5px;
   cursor: pointer;
@@ -269,6 +275,16 @@
 }
 .createPractice .createButton:hover {
   background-color: #922c2c;
+}
+.createPractice .deleteButton {
+  width: 100%;
+  text-align: center;
+  padding: 10px 0px;
+  background-color: #2a2a2a;
+  border-radius: 5px;
+  cursor: pointer;
+  transition-duration: 0.1s;
+  color: #ffffff;
 }
 
 .createPractice .none {

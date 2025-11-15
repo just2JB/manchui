@@ -28,7 +28,8 @@ const EditSchedule = () => {
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
   const [schedule, setSchedule] = useState([
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ]);
   const [isConfirem, setIsConfirem] = useState();
 
@@ -41,6 +42,18 @@ const EditSchedule = () => {
     }
     setSchedule(status);
   };
+  const changeStatus1h = (index) => {
+    const status = [...schedule];
+    if (status[index] === 0 || status[index + 1] === 0) {
+      status[index] = 1;
+      status[index + 1] = 1;
+    } else {
+      status[index] = 0;
+      status[index + 1] = 0;
+    }
+
+    setSchedule(status);
+  };
   const saveSchedule = async (category) => {
     setLoading(true);
 
@@ -51,7 +64,10 @@ const EditSchedule = () => {
       times: schedule,
     };
     if (!schedule.includes(1)) {
-      reqData.times = [];
+      reqData.times = [
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      ];
     }
     try {
       const response = await axios.post(`${serverUrl}/api/schedule`, reqData, {
@@ -115,7 +131,8 @@ const EditSchedule = () => {
             onClick={() =>
               setSchedule([
                 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0,
               ])
             }
           >
@@ -125,7 +142,10 @@ const EditSchedule = () => {
       </div>
       <div className="timeSlotsContainer">
         <div className="timeSlots">
-          {schedule.map((item, index) => (
+          {[
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0,
+          ].map((item, index) => (
             <div key={index} className="timeSlot">
               <div className="time">
                 <div className="timeText">{index}</div>
@@ -133,10 +153,28 @@ const EditSchedule = () => {
 
               <div className="content">
                 <div className="line"></div>
-                <div
-                  onClick={() => changeStatus(index)}
-                  className={`status ${item === 1 ? "possible" : ""} `}
-                ></div>
+                <div className="selcetButton">
+                  <div
+                    onClick={() => changeStatus1h(index * 2)}
+                    className={`allSelectButton ${
+                      schedule[index * 2 + 1] === 1 && schedule[index * 2] === 1
+                        ? "possible"
+                        : ""
+                    }`}
+                  ></div>
+                  <div
+                    onClick={() => changeStatus(index * 2)}
+                    className={`status status0 ${
+                      schedule[index * 2] === 1 ? "possible" : ""
+                    } `}
+                  ></div>
+                  <div
+                    onClick={() => changeStatus(index * 2 + 1)}
+                    className={`status status30 ${
+                      schedule[index * 2 + 1] === 1 ? "possible" : ""
+                    } `}
+                  ></div>
+                </div>
               </div>
             </div>
           ))}

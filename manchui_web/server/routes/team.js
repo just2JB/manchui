@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const Team = require("../models/Team");
+const Schedule = require("../models/Schedule");
 
 router.post("/create", async (req, res) => {
   try {
@@ -123,11 +124,18 @@ router.get("/:teamId", async (req, res) => {
     if (!team) {
       return res.status(404).json({ message: "팀 찾을 수 없습니다." });
     }
+    const schedules = await Schedule.find();
+    const confirmScheduls = schedules.filter(
+      (schedule) => schedule.category !== "temp"
+    );
+    const memberSchedules = confirmScheduls.filter((schedule) =>
+      team.members.includes(schedule.userId)
+    );
 
     const memberDetails = await User.find({ _id: { $in: team.members } });
     team.members = memberDetails;
 
-    res.json({ team: team });
+    res.json({ team: team, memberSchedules: memberSchedules });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }

@@ -48,18 +48,23 @@ const TeamMain = () => {
     setselectedDay(date);
     setDaySchedulNow({
       confirm: team.members.filter((member) =>
-        member.schedule.some(
-          (s) =>
-            new Date(s.date).toLocaleDateString() === date.toLocaleDateString()
-        )
+        team.memberSchedules
+          .filter(
+            (schedule) =>
+              new Date(schedule.date).toLocaleDateString() ===
+              date.toLocaleDateString()
+          )
+          .some((schedule) => schedule.userId === member._id)
       ),
       unconfirm: team.members.filter(
         (member) =>
-          !member.schedule.some(
-            (s) =>
-              new Date(s.date).toLocaleDateString() ===
-              date.toLocaleDateString()
-          )
+          !team.memberSchedules
+            .filter(
+              (schedule) =>
+                new Date(schedule.date).toLocaleDateString() ===
+                date.toLocaleDateString()
+            )
+            .some((schedule) => schedule.userId === member._id)
       ),
     });
     return;
@@ -102,22 +107,29 @@ const TeamMain = () => {
             withCredentials: true,
           }
         );
-        setTeam(response.data.team);
+        setTeam({
+          ...response.data.team,
+          memberSchedules: response.data.memberSchedules,
+        });
         setDaySchedulNow({
-          confirm: response.data.team.members.filter((member) =>
-            member.schedule.some(
-              (s) =>
-                new Date(s.date).toLocaleDateString() ===
-                new Date().toLocaleDateString()
-            )
-          ),
-          unconfirm: response.data.team.members.filter(
-            (member) =>
-              !member.schedule.some(
-                (s) =>
-                  new Date(s.date).toLocaleDateString() ===
-                  new Date().toLocaleDateString()
+          confirm: team.members.filter((member) =>
+            team.memberSchedules
+              .filter(
+                (schedule) =>
+                  new Date(schedule.date).toLocaleDateString() ===
+                  date.toLocaleDateString()
               )
+              .some((schedule) => schedule.userId === member._id)
+          ),
+          unconfirm: team.members.filter(
+            (member) =>
+              !team.memberSchedules
+                .filter(
+                  (schedule) =>
+                    new Date(schedule.date).toLocaleDateString() ===
+                    date.toLocaleDateString()
+                )
+                .some((schedule) => schedule.userId === member._id)
           ),
         });
         await getPractice();
@@ -285,10 +297,21 @@ const TeamMain = () => {
                   ""
                 )}
 
-                <div className="edtailTime">
-                  <MdOutlineAccessTime className="icons" />
-                  {practiceInfoDetail.time}
-                </div>
+                {practiceInfoDetail !== "unSelect" ? (
+                  <div className="edtailTime">
+                    <MdOutlineAccessTime className="icons" />
+                    {(practiceInfoDetail.time.split("~")[0] * 2) % 2 === 0
+                      ? `${practiceInfoDetail.time.split("~")[0]}:00`
+                      : `${practiceInfoDetail.time.split("~")[0] - 0.5}:30`}
+                    ~
+                    {(practiceInfoDetail.time.split("~")[0] * 2) % 2 === 0
+                      ? `${practiceInfoDetail.time.split("~")[1]}:00`
+                      : `${practiceInfoDetail.time.split("~")[1] - 0.5}:30`}
+                  </div>
+                ) : (
+                  ""
+                )}
+
                 <div className="edtailPlace">
                   <MdOutlinePlace className="icons" />
                   {practiceInfoDetail.place}
@@ -346,7 +369,13 @@ const TeamMain = () => {
                     <div className="top">
                       <div className="prTime">
                         <MdOutlineAccessTime className="icons" />
-                        {practice.time}
+                        {(practice.time.split("~")[0] * 2) % 2 === 0
+                          ? `${practice.time.split("~")[0]}:00`
+                          : `${practice.time.split("~")[0] - 0.5}:30`}
+                        ~
+                        {(practice.time.split("~")[0] * 2) % 2 === 0
+                          ? `${practice.time.split("~")[1]}:00`
+                          : `${practice.time.split("~")[1] - 0.5}:30`}
                       </div>
                       <div className="prMember">
                         <HiUserGroup className="icons" />

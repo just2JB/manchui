@@ -89,17 +89,49 @@
   border-radius: 5px;
   flex: 1;
 }
-.editSchedule .timeSlot .content .status {
-  width: 100px;
+.editSchedule .selcetButton {
   height: 100%;
+  width: 100px;
+  position: relative;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.editSchedule .timeSlot .content .status {
+  width: 80px;
+  height: 45%;
   text-align: center;
-  border-radius: 5px;
   border: 1px solid #5a5a5a;
   cursor: pointer;
 }
+.editSchedule .status0 {
+  border-radius: 5px 0px 0px 0px;
+}
+.editSchedule .status30 {
+  border-radius: 0px 0px 0px 5px;
+}
+
 .editSchedule .content .status.possible {
   background-color: #a83737;
-  border: none;
+  border: 1px solid #a83737;
+  height: 47%;
+  transition-duration: 0.1s;
+}
+.editSchedule .allSelectButton {
+  position: absolute;
+  right: -20px;
+  height: 94%;
+  width: 35px;
+  border: 1px solid #5a5a5a;
+  cursor: pointer;
+  border-radius: 0px 5px 5px 0px;
+  z-index: 100;
+}
+.editSchedule .allSelectButton.possible {
+  background-color: #a83737;
+  border: 1px solid #a83737;
+
   transition-duration: 0.1s;
 }
 .editSchedule .scheduleMenuBar {

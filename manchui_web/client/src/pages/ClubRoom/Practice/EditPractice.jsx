@@ -6,7 +6,7 @@ import { IoCloseOutline, IoFilter } from "react-icons/io5";
 import { HiUserGroup } from "react-icons/hi";
 import { MdOutlineAccessTime, MdOutlinePlace } from "react-icons/md";
 
-const arrayOfHours = Array.from({ length: 24 }, (_, i) => i);
+const arrayOfHours = Array.from({ length: 48 }, (_, i) => i);
 
 const CreatePractice = ({
   setEditPractice,
@@ -21,28 +21,36 @@ const CreatePractice = ({
   const [openTimeTable, setOpenTimeTable] = useState(3);
   const [place, setPlace] = useState("미확정");
   const [editMemebers, setEditMembers] = useState([]);
+  const [selectDaySchedules, setSelectDaySchedules] = useState(
+    team.memberSchedules.filter(
+      (schedule) =>
+        new Date(schedule.date).toLocaleDateString() ===
+        new Date(editPractice.date).toLocaleDateString()
+    )
+  );
   const [selectHours, setSelectHours] = useState([]);
   const selectedDayPracticeArray = () => {
     const data = [];
     selectedDayPractice.forEach((practice) => {
       const time = practice.time.split("~");
-      for (let i = 0; i < Number(time[1]) - Number(time[0]); i++) {
+      for (let i = 0; i < Number(time[1] * 2) - Number(time[0] * 2); i++) {
         if (practice._id !== editPractice._id) {
-          data.push(Number(time[0]) + i);
+          data.push(Number(time[0] * 2) + i);
         }
       }
     });
     return data;
   };
+
   const editDayPracticeArray = () => {
     const data = [];
     const time = editPractice.time.split("~");
-    for (let i = 0; i < Number(time[1]) - Number(time[0]); i++) {
-      data.push(Number(time[0]) + i);
+    for (let i = 0; i < Number(time[1] * 2) - Number(time[0] * 2); i++) {
+      data.push(Number(time[0] * 2) + i);
     }
-
     return data;
   };
+
   const [reservedTime, setReservedTime] = useState(
     selectedDayPracticeArray() || []
   );
@@ -74,35 +82,34 @@ const CreatePractice = ({
       setSelectedMembers(team.members);
     }
   };
-
   const countAbleMembers = (hour) => {
     if (selectedMembers.length === 0) {
       return { count: 0, ableMember: [] };
     }
     let count = 0;
     const ableMember = [];
-    selectedMembers.forEach((member) => {
-      const scheduleForDate = member.schedule.find(
-        (s) =>
-          new Date(s.date).toLocaleDateString() === date.toLocaleDateString()
-      );
+    selectDaySchedules.forEach((schedule) => {
       if (
-        scheduleForDate &&
-        scheduleForDate.category === "confirm" &&
-        scheduleForDate.times[hour] === 1
+        schedule &&
+        schedule.category !== "temp" &&
+        schedule.times[hour] === 1
       ) {
         count += 1;
-        ableMember.push(member);
+        ableMember.push(
+          team.members.find((member) => member._id === schedule.userId)
+        );
       }
     });
     return { count: count, ableMember: ableMember };
   };
-
   const editPracticeHandle = async () => {
     if (selectHours.length !== 0) {
       const reqData = {
         practiceId: editPractice._id,
-        time: selectHours[0] + "~" + (selectHours[selectHours.length - 1] + 1),
+        time:
+          selectHours[0] / 2 +
+          "~" +
+          (selectHours[selectHours.length - 1] / 2 + 0.5),
         members: selectedMembers.map((member) => member._id),
         place: place,
       };
@@ -211,14 +218,16 @@ const CreatePractice = ({
               <div className="moreInfo"></div>
             </div>
             <div className="timeTable">
-              {arrayOfHours.slice(0, 8).map((hour) => (
+              {arrayOfHours.slice(0, 16).map((hour) => (
                 <div
                   className={`timeCell ${
                     selectHours.includes(hour) ? "select" : ""
                   } ${reservedTime.includes(hour) ? "reserved" : ""}`}
                   key={hour}
                 >
-                  <div className="timeText">{hour}:00</div>
+                  <div className="timeText">
+                    {hour % 2 === 0 ? `${hour / 2}:00` : `${(hour - 1) / 2}:30`}
+                  </div>
 
                   <div className="availabilityIndicator">
                     <div className="ableCount">
@@ -267,14 +276,17 @@ const CreatePractice = ({
               <div className="moreInfo"></div>
             </div>
             <div className="timeTable">
-              {arrayOfHours.slice(8, 16).map((hour) => (
+              {arrayOfHours.slice(16, 32).map((hour) => (
                 <div
                   className={`timeCell ${
                     selectHours.includes(hour) ? "select" : ""
                   } ${reservedTime.includes(hour) ? "reserved" : ""}`}
                   key={hour}
                 >
-                  <div className="timeText">{hour}:00</div>
+                  <div className="timeText">
+                    {" "}
+                    {hour % 2 === 0 ? `${hour / 2}:00` : `${(hour - 1) / 2}:30`}
+                  </div>
 
                   <div className="availabilityIndicator">
                     <div className="ableCount">
@@ -323,14 +335,16 @@ const CreatePractice = ({
               <div className="moreInfo"></div>
             </div>
             <div className="timeTable">
-              {arrayOfHours.slice(16, 24).map((hour) => (
+              {arrayOfHours.slice(32, 48).map((hour) => (
                 <div
                   className={`timeCell ${
                     selectHours.includes(hour) ? "select" : ""
                   } ${reservedTime.includes(hour) ? "reserved" : ""}`}
                   key={hour}
                 >
-                  <div className="timeText">{hour}:00</div>
+                  <div className="timeText">
+                    {hour % 2 === 0 ? `${hour / 2}:00` : `${(hour - 1) / 2}:30`}
+                  </div>
 
                   <div className="availabilityIndicator">
                     <div className="ableCount">
@@ -370,20 +384,26 @@ const CreatePractice = ({
         <div className="optionMenu"></div>
         <div className="endSection">
           <div className="practicePreview">
-            <div>
+            <div className="editPreview">
               <div className="top">
                 <div className="prTime">
                   <MdOutlineAccessTime />
-                  {editPractice.time}
-                </div>
-                <div className="prMember">
-                  <HiUserGroup />
-                  {editPractice.members.length}명
+                  {(editPractice.time.split("~")[0] * 2) % 2 === 0
+                    ? `${editPractice.time.split("~")[0]}:00`
+                    : `${editPractice.time.split("~")[0] - 0.5}:30`}
+                  ~
+                  {(editPractice.time.split("~")[0] * 2) % 2 === 0
+                    ? `${editPractice.time.split("~")[1]}:00`
+                    : `${editPractice.time.split("~")[1] - 0.5}:30`}
                 </div>
               </div>
               <div className="prPlace">
                 <MdOutlinePlace />
                 {editPractice.place}
+              </div>
+              <div className="prMember">
+                <HiUserGroup />
+                {editPractice.members.length}명
               </div>
               <div className="clearButton" onClick={() => resetHandle()}>
                 복구
@@ -394,20 +414,27 @@ const CreatePractice = ({
             {selectHours.length === 0 ? (
               <div className="noTimeSelected">선택된 시간이 없습니다.</div>
             ) : (
-              <div>
+              <div className="editPreview">
                 <div className="top">
                   <div className="prTime">
                     <MdOutlineAccessTime />
-                    {selectHours[0]}~{selectHours[selectHours.length - 1] + 1}
-                  </div>
-                  <div className="prMember">
-                    <HiUserGroup />
-                    {selectedMembers.length}명
+                    {selectHours[0] % 2 === 0
+                      ? `${selectHours[0] / 2}:00`
+                      : `${selectHours[0] / 2 - 0.5}:30`}
+                    ~
+                    {selectHours[selectHours.length - 1] % 2 === 0
+                      ? `${selectHours[selectHours.length - 1] / 2}:30`
+                      : `${selectHours[selectHours.length - 1] / 2 + 0.5}:00`}
                   </div>
                 </div>
+
                 <div className="prPlace">
                   <MdOutlinePlace />
                   미확정
+                </div>
+                <div className="prMember">
+                  <HiUserGroup />
+                  {selectedMembers.length}명
                 </div>
                 <div className="clearButton" onClick={() => setSelectHours([])}>
                   모두해제
@@ -417,7 +444,7 @@ const CreatePractice = ({
           </div>
           <div className="actionButtons">
             <div
-              className="clearButton"
+              className="deleteButton"
               onClick={() => deletePracticeHandle(editPractice._id)}
             >
               연습 삭제

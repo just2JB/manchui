@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Schedule = require("../models/Schedule");
 
 router.post("/verify-token", async (req, res) => {
   const token = req.cookies.token;
@@ -27,13 +28,25 @@ router.post("/", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
     }
-    const filteredSchedules = user.schedule.filter(
-      (item) => item.date !== date
+    const schedules = await Schedule.find();
+    const sameDateSchedule = schedules.find(
+      (schedule) => (schedule.userId === userId) & (schedule.date === date)
     );
+    if (sameDateSchedule) {
+      sameDateSchedule.times = times;
+      sameDateSchedule.category = category;
 
-    filteredSchedules.push({ date, category, times });
-    user.schedule = filteredSchedules;
-    await user.save();
+      await sameDateSchedule.save();
+    } else {
+      const schedule = new Schedule({
+        userId: userId,
+        date: date,
+        times: times,
+        category: category,
+      });
+      await schedule.save();
+    }
+
     res.status(201).json({ message: "스케줄이 저장되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
@@ -46,18 +59,19 @@ router.get("/:userId", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
     }
-    const thisWeek = new Date().setDate(
-      new Date().getDate() - new Date().getDay() - 1
+
+    const schedules = await Schedule.find();
+    const userSchedules = schedules.filter(
+      (schedule) => schedule.userId === req.params.userId
     );
-    const filteredSchedules = user.schedule.filter(
-      (item) => new Date(item.date) > thisWeek
-    );
-    user.schedule = filteredSchedules;
-    await user.save();
-    res.json(user.schedule);
+    res.json(userSchedules);
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
 
 module.exports = router;
+
+/*    const thisWeek = new Date().setDate(
+      new Date().getDate() - new Date().getDay() - 1
+    );*/

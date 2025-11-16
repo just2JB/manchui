@@ -15,6 +15,11 @@ const BottomBar = () => {
 
   return (
     <div className="bottomBar">
+      {location.pathname.includes("/club/team/join") ? (
+        <div className="inviteLinkBottom"></div>
+      ) : (
+        ""
+      )}
       <Link
         className={`menu-button ${
           location.pathname === "/club" ? "selcetMenu" : ""

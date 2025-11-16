@@ -12,6 +12,10 @@
   user-select: none;
   z-index: 10;
 }
+.inviteLink {
+  background-color: #121212;
+  border-bottom: none;
+}
 .out {
   padding: 3%;
   width: 100px;

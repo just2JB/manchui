@@ -561,6 +561,7 @@ const TeamMain = () => {
           )}
         </div>
       </div>
+      <span className="joinUrl"> {inviteURL}</span>
     </div>
   );
 };

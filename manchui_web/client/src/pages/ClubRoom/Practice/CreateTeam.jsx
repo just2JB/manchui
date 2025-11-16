@@ -8,6 +8,7 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const CreateTeam = () => {
   const [teamData, setTeamData] = useState({});
+  const [loading, setLoading] = useState(false);
   const { user } = useOutletContext();
   const nav = useNavigate();
   const handleChange = (e) => {
@@ -16,7 +17,9 @@ const CreateTeam = () => {
       [e.target.name]: e.target.value,
     });
   };
-  const handleCreate = async () => {
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    setLoading(true);
     if (teamData.name) {
       const resData = { ...teamData, userId: user._id };
       try {
@@ -32,16 +35,26 @@ const CreateTeam = () => {
       } catch (error) {
         alert("서버 에러입니다.");
       } finally {
+        setLoading(false);
       }
     }
   };
   return (
     <div className="createTeam">
-      <label>팀 이름</label>
-      <input name="name" onChange={(e) => handleChange(e)} />
-      <label>설명</label>
-      <input name="comment" onChange={(e) => handleChange(e)} />
-      <button onClick={() => handleCreate()}>만들기</button>
+      <form onSubmit={(e) => handleCreate(e)} className="createTeamForm">
+        <label>팀 이름</label>
+        <div className="inputBox">
+          <input name="name" onChange={(e) => handleChange(e)} />
+          <button type="submit">만들기</button>
+        </div>
+      </form>
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };

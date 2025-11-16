@@ -70,15 +70,41 @@ const TeamJoin = () => {
   }, []);
   return (
     <div className="teamJoin">
-      {isLogin ? (
+      <div className="container">
         <div>
-          {user.username}님 Team {teamName}에 가입하기
-          <button onClick={() => joinTeamHandle(user._id)}>가입하기</button>
+          <img
+            src="/logos/longLogo_red.png"
+            alt="Logo"
+            className="inviteLogo"
+          />
+          <div className="teamnameText">{teamName} 참여하기</div>
         </div>
-      ) : (
-        <div>로그인하고 Team {teamName}에 가입하기</div>
-      )}
 
+        {isLogin ? (
+          <div className="login">
+            <div className="usernameText">{user.username}님을 초대합니다.</div>
+            <button
+              className="joinButton"
+              onClick={() => joinTeamHandle(user._id)}
+            >
+              참여하기
+            </button>
+            <button className="joinButton" onClick={() => nav("/club")}>
+              만취 홈페이지
+            </button>
+            <div className="anotherAccount" onClick={() => setAuthIsOpen(true)}>
+              다른 계정으로 로그인
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="usernameText">로그인후 참여하기</div>
+            <button className="joinButton" onClick={() => setAuthIsOpen(true)}>
+              로그인
+            </button>
+          </div>
+        )}
+      </div>
       {authIsOpen ? (
         <AuthWindow
           setIsLogin={setIsLogin}

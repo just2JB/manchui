@@ -19,9 +19,9 @@ const CreatePractice = ({
   const [selectedMembers, setSelectedMembers] = useState(team.members || []);
   const [openTimeTable, setOpenTimeTable] = useState(3);
   const [place, setPlace] = useState("미확정");
-  //장소 작성 기능 추가 해야함
-  const [selectHours, setSelectHours] = useState([]);
 
+  const [selectHours, setSelectHours] = useState([]);
+  const [anchor, setAnchor] = useState(-1);
   const [selectDaySchedules, setSelectDaySchedules] = useState(
     team.memberSchedules.filter(
       (schedule) =>
@@ -51,15 +51,32 @@ const CreatePractice = ({
     }
   };
 
-  //연속된 시간만 선택 가능하게 해야해!!@#!@#!@#!$@#$@ㅁㄴ
-  //해결하면 Edit에도 같이 기능 적용할 것
   const toggleHourSelection = (hour) => {
-    if (selectHours.includes(hour)) {
-      setSelectHours(
-        selectHours.filter((h) => h !== hour).sort((a, b) => a - b)
-      );
+    if (selectHours.length < 1) {
+      setAnchor(hour);
+      setSelectHours([hour]);
+      return;
+    }
+    if (hour < anchor) {
+      setAnchor(hour);
+      setSelectHours([hour]);
+      return;
+    } else if (hour > anchor) {
+      let newHours = [];
+      for (let i = 0; i < hour - anchor + 1; i++) {
+        newHours.push(anchor + i);
+        if (reservedTime.includes(anchor + i)) {
+          alert("중간에 선택불가능한 시간이 있습니다.");
+          return;
+        }
+      }
+
+      setSelectHours(newHours);
+      return;
     } else {
-      setSelectHours([...selectHours, hour].sort((a, b) => a - b));
+      setSelectHours([]);
+      setAnchor(-1);
+      return;
     }
   };
 
@@ -360,35 +377,42 @@ const CreatePractice = ({
         <div className="optionMenu"></div>
         <div className="endSection">
           <div className="practicePreview">
-            {selectHours.length === 0 ? (
-              <div className="noTimeSelected">선택된 시간이 없습니다.</div>
-            ) : (
-              <div>
-                <div className="top">
-                  <div className="prTime">
-                    <MdOutlineAccessTime />
-                    {selectHours[0] % 2 === 0
-                      ? `${selectHours[0] / 2}:00`
-                      : `${selectHours[0] / 2 - 0.5}:30`}
-                    ~
-                    {selectHours[selectHours.length - 1] % 2 === 0
-                      ? `${selectHours[selectHours.length - 1] / 2}:30`
-                      : `${selectHours[selectHours.length - 1] / 2 + 0.5}:00`}
-                  </div>
-                  <div className="prMember">
-                    <HiUserGroup />
-                    {selectedMembers.length}명
-                  </div>
+            <div>
+              <div className="top">
+                <div className="prTime">
+                  <MdOutlineAccessTime />
+                  {selectHours.length === 0 ? (
+                    <span className="noTimeSelected">
+                      선택된 시간이 없습니다.
+                    </span>
+                  ) : (
+                    <span>
+                      {selectHours[0] % 2 === 0
+                        ? `${selectHours[0] / 2}:00`
+                        : `${selectHours[0] / 2 - 0.5}:30`}
+                      ~
+                      {selectHours[selectHours.length - 1] % 2 === 0
+                        ? `${selectHours[selectHours.length - 1] / 2}:30`
+                        : `${selectHours[selectHours.length - 1] / 2 + 0.5}:00`}
+                    </span>
+                  )}
                 </div>
-                <div className="prPlace">
-                  <MdOutlinePlace />
-                  미확정
-                </div>
-                <div className="clearButton" onClick={() => setSelectHours([])}>
-                  모두해제
+                <div className="prMember">
+                  <HiUserGroup />
+                  {selectedMembers.length}명
                 </div>
               </div>
-            )}
+              <div className="prPlace">
+                <span>
+                  <MdOutlinePlace />
+                  {place}
+                </span>
+                <div className="">연습실 보기</div>
+              </div>
+              <div className="clearButton" onClick={() => setSelectHours([])}>
+                모두해제
+              </div>
+            </div>
           </div>
 
           <div className="actionButtons">

@@ -29,6 +29,7 @@ const CreatePractice = ({
     )
   );
   const [selectHours, setSelectHours] = useState([]);
+
   const selectedDayPracticeArray = () => {
     const data = [];
     selectedDayPractice.forEach((practice) => {
@@ -50,7 +51,7 @@ const CreatePractice = ({
     }
     return data;
   };
-
+  const [anchor, setAnchor] = useState(-1);
   const [reservedTime, setReservedTime] = useState(
     selectedDayPracticeArray() || []
   );
@@ -63,17 +64,34 @@ const CreatePractice = ({
     }
   };
 
-  //연속된 시간만 선택 가능하게 해야해!!@#!@#!@#!$@#$@ㅁㄴ
   const toggleHourSelection = (hour) => {
-    if (selectHours.includes(hour)) {
-      setSelectHours(
-        selectHours.filter((h) => h !== hour).sort((a, b) => a - b)
-      );
+    if (selectHours.length < 1) {
+      setAnchor(hour);
+      setSelectHours([hour]);
+      return;
+    }
+    if (hour < anchor) {
+      setAnchor(hour);
+      setSelectHours([hour]);
+      return;
+    } else if (hour > anchor) {
+      let newHours = [];
+      for (let i = 0; i < hour - anchor + 1; i++) {
+        newHours.push(anchor + i);
+        if (reservedTime.includes(anchor + i)) {
+          alert("중간에 선택불가능한 시간이 있습니다.");
+          return;
+        }
+      }
+
+      setSelectHours(newHours);
+      return;
     } else {
-      setSelectHours([...selectHours, hour].sort((a, b) => a - b));
+      setSelectHours([]);
+      setAnchor(-1);
+      return;
     }
   };
-
   const selectAllMembers = () => {
     if (selectedMembers.length === team.members.length) {
       setSelectedMembers([]);
@@ -132,6 +150,7 @@ const CreatePractice = ({
   const resetHandle = () => {
     setSelectedMembers(editMemebers);
     setSelectHours(editDayPracticeArray());
+    setAnchor(editDayPracticeArray()[0]);
     setPlace(editPractice.place);
   };
 
@@ -146,6 +165,7 @@ const CreatePractice = ({
         );
         setEditMembers(response.data.practice.members);
         setSelectedMembers(response.data.practice.members);
+        setAnchor(editDayPracticeArray()[0]);
       } catch (error) {
         alert("서버 에러입니다.");
       }

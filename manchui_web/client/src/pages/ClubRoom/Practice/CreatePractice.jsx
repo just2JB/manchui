@@ -239,7 +239,9 @@ const CreatePractice = ({
                             ? "available"
                             : ""
                         }`}
-                      ></div>
+                      >
+                        <div className="hoverName">{member.username}</div>
+                      </div>
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
@@ -296,7 +298,9 @@ const CreatePractice = ({
                             ? "available"
                             : ""
                         }`}
-                      ></div>
+                      >
+                        <div className="hoverName">{member.username}</div>
+                      </div>
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
@@ -329,7 +333,7 @@ const CreatePractice = ({
               <div className="moreInfo"></div>
             </div>
             <div className="timeTable">
-              {arrayOfHours.slice(34, 48).map((hour) => (
+              {arrayOfHours.slice(32, 48).map((hour) => (
                 <div
                   className={`timeCell ${
                     selectHours.includes(hour) ? "select" : ""
@@ -345,7 +349,7 @@ const CreatePractice = ({
                     </div>
                     {selectedMembers.map((member) => (
                       <div
-                        key={member.username}
+                        key={member._id}
                         className={`availabllity ${
                           countAbleMembers(hour).ableMember.some(
                             (item) => item._id === member._id
@@ -353,7 +357,9 @@ const CreatePractice = ({
                             ? "available"
                             : ""
                         }`}
-                      ></div>
+                      >
+                        <div className="hoverName">{member.username}</div>
+                      </div>
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
@@ -382,9 +388,7 @@ const CreatePractice = ({
                 <div className="prTime">
                   <MdOutlineAccessTime />
                   {selectHours.length === 0 ? (
-                    <span className="noTimeSelected">
-                      선택된 시간이 없습니다.
-                    </span>
+                    <span className="noTimeSelected">선택 안됨</span>
                   ) : (
                     <span>
                       {selectHours[0] % 2 === 0

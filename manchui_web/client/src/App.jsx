@@ -31,6 +31,7 @@ import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
 import TeamJoin from "./pages/ClubRoom/Practice/TeamJoin";
+import EditTeam from "./pages/ClubRoom/Practice/EditTeam";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -174,11 +175,11 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: "practice", element: <Practice /> },
-          { path: "create-team", element: <CreateTeam /> },
-          { path: "team-main/:id", element: <TeamMain /> },
+          { path: "practice/create-team", element: <CreateTeam /> },
+          { path: "practice/edit-team/:id", element: <EditTeam /> },
+          { path: "practice/team-main/:id", element: <TeamMain /> },
           { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
-
           { path: "edit-schedule/:date", element: <EditSchedule /> },
         ],
       },

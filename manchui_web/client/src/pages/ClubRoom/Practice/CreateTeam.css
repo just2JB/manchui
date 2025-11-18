@@ -22,7 +22,7 @@
 }
 .createTeam .inputBox {
   position: relative;
-  width: 100%;
+  width: 80%;
   display: flex;
   gap: 5px;
 }
@@ -50,15 +50,3 @@
   padding: 5px;
   height: 35px;
 }
-
-@keyframes startCreate {
-  0% {
-    transform: translateY(100px);
-    width: 150px;
-  }
-  100% {
-    transform: translateY(0px);
-    width: 300px;
-  }
-}
-

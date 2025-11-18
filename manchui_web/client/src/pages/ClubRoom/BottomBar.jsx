@@ -39,7 +39,7 @@ const BottomBar = () => {
       </Link>
       <Link
         className={`menu-button ${
-          location.pathname === "/club/practice" ? "selcetMenu" : ""
+          location.pathname.includes("/club/practice") ? "selcetMenu" : ""
         }`}
         to="/club/practice"
       >

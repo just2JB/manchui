@@ -22,12 +22,14 @@ import CreatePractice from "./CreatePractice";
 import EditPractice from "./EditPractice";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
+
 const TeamMain = () => {
   const [team, setTeam] = useState({
     name: "",
     members: [],
     requestSchedules: [],
   });
+  const [comment, setComment] = useState();
   const [openCreatePractice, setOpenCreatePractice] = useState(false);
   const [teamPractice, setTeamPractice] = useState([]);
   const [selectedDay, setselectedDay] = useState(new Date());
@@ -108,7 +110,28 @@ const TeamMain = () => {
       alert("연습을 불러올 수 없습니다.");
     }
   };
-
+  const handelCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+  const submitCommentHandle = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/team/edit`,
+        {
+          teamId: team._id,
+          name: team.name,
+          comment: comment,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      alert(response.data.message);
+    } catch {
+      alert("서버 오류입니다.");
+    }
+  };
   useEffect(() => {
     const getMyTeams = async () => {
       try {
@@ -122,6 +145,7 @@ const TeamMain = () => {
           ...response.data.team,
           memberSchedules: response.data.memberSchedules,
         });
+        setComment(response.data.team.comment);
         setDaySchedulNow({
           confirm: response.data.team.members.filter((member) =>
             response.data.memberSchedules
@@ -277,9 +301,17 @@ const TeamMain = () => {
             </div>
           ))}
         </div>
-        <div className="comment">
-          <div className="commentContent">{team.comment}</div>
-        </div>
+
+        <form className="comment" onSubmit={(e) => submitCommentHandle(e)}>
+          <div className="commentContent">
+            {comment}
+            <input
+              className="commentInput"
+              value={comment}
+              onChange={(e) => handelCommentChange(e)}
+            ></input>
+          </div>
+        </form>
       </div>
       <div className="teamSchedule">
         <div className="teamCalender">
@@ -540,7 +572,12 @@ const TeamMain = () => {
           <div className="invite menuContent" onClick={() => shareHandler()}>
             초대하기
           </div>
-          <div className="edit menuContent">팀 정보 수정하기</div>
+          <div
+            className="edit menuContent"
+            onClick={() => nav(`/club/practice/edit-team/:${team._id}`)}
+          >
+            팀 관리
+          </div>
           <div
             className="quit menuContent"
             onClick={() => quitTeamHandle(user._id)}
@@ -561,7 +598,6 @@ const TeamMain = () => {
           )}
         </div>
       </div>
-      <span className="joinUrl"> {inviteURL}</span>
     </div>
   );
 };

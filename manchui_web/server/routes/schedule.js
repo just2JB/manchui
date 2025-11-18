@@ -61,6 +61,7 @@ router.get("/:userId", async (req, res) => {
     }
 
     const schedules = await Schedule.find();
+
     const userSchedules = schedules.filter(
       (schedule) => schedule.userId === req.params.userId
     );

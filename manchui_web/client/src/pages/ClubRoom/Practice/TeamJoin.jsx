@@ -4,16 +4,19 @@ import "./TeamJoin.css";
 import axios from "axios";
 import AuthWindow from "../AuthWindow/AuthWindow";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
+import Loading from "../../../components/Loading/Loading";
 //false라면 로그인 창 띄우고 버튼 눌러 가입 가입 후 연습 탭으로 이동
 //clubRoom처럼 구성하면 될 거 같아요 알죠?
 const TeamJoin = () => {
   const [user, setUser] = useState({ username: "" });
   const [teamName, setTeamName] = useState("");
+  const [loading, setLoading] = useState(false);
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
   const parmas = useParams();
   const nav = useNavigate();
   const joinTeamHandle = async (userId) => {
     try {
+      setLoading(true);
       const response = await axios.post(
         `${serverUrl}/api/team/join`,
         {
@@ -28,6 +31,8 @@ const TeamJoin = () => {
       nav("/club/practice");
     } catch (error) {
       alert(error.response.data.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,17 +95,20 @@ const TeamJoin = () => {
               참여하기
             </button>
             <button className="joinButton" onClick={() => nav("/club")}>
-              만취 홈페이지
+              만취 홈
             </button>
             <div className="anotherAccount" onClick={() => setAuthIsOpen(true)}>
               다른 계정으로 로그인
             </div>
           </div>
         ) : (
-          <div>
+          <div className="login">
             <div className="usernameText">로그인후 참여하기</div>
             <button className="joinButton" onClick={() => setAuthIsOpen(true)}>
               로그인
+            </button>
+            <button className="joinButton" onClick={() => nav("/club")}>
+              만취 홈
             </button>
           </div>
         )}
@@ -111,6 +119,13 @@ const TeamJoin = () => {
           setUser={setUser}
           setAuthIsOpen={setAuthIsOpen}
         />
+      ) : (
+        <></>
+      )}
+      {loading ? (
+        <div>
+          <Loading />
+        </div>
       ) : (
         <></>
       )}

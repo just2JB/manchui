@@ -263,7 +263,9 @@ const CreatePractice = ({
                             ? "available"
                             : ""
                         }`}
-                      ></div>
+                      >
+                        <div className="hoverName">{member.username}</div>
+                      </div>
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
@@ -322,7 +324,9 @@ const CreatePractice = ({
                             ? "available"
                             : ""
                         }`}
-                      ></div>
+                      >
+                        <div className="hoverName">{member.username}</div>
+                      </div>
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
@@ -380,7 +384,9 @@ const CreatePractice = ({
                             ? "available"
                             : ""
                         }`}
-                      ></div>
+                      >
+                        <div className="hoverName">{member.username}</div>
+                      </div>
                     ))}
                   </div>
                   {reservedTime.includes(hour) ? (
@@ -432,7 +438,7 @@ const CreatePractice = ({
           </div>
           <div className="practicePreview">
             {selectHours.length === 0 ? (
-              <div className="noTimeSelected">선택된 시간이 없습니다.</div>
+              <div className="noTimeSelected">선택 안됨</div>
             ) : (
               <div className="editPreview">
                 <div className="top">

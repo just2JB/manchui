@@ -35,7 +35,7 @@ const Practice = () => {
         <div className="topMenu">
           <h4>내 팀</h4>
           <span>
-            <IoAdd onClick={() => nav("/club/create-team")} />새 팀
+            <IoAdd onClick={() => nav("/club/practice/create-team")} />새 팀
           </span>
         </div>
         <div className="joinedList">
@@ -51,7 +51,7 @@ const Practice = () => {
             <div
               className="joinedTeam"
               key={item._id}
-              onClick={() => nav(`/club/team-main/:${item._id}`)}
+              onClick={() => nav(`/club/practice/team-main/:${item._id}`)}
             >
               <div className="teamName">{item.name}</div>
               <div className="toTeamMain">{">"}</div>

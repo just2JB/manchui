@@ -6,6 +6,7 @@ import {
   LiaFlag,
   LiaCalendarCheckSolid,
 } from "react-icons/lia";
+import { AiOutlineFieldTime } from "react-icons/ai";
 import { RiMenuAddLine } from "react-icons/ri";
 import { Link, useLocation } from "react-router-dom";
 import "./BottomBar.css";
@@ -20,14 +21,7 @@ const BottomBar = () => {
       ) : (
         ""
       )}
-      <Link
-        className={`menu-button ${
-          location.pathname === "/club" ? "selcetMenu" : ""
-        }`}
-        to="/club"
-      >
-        <LiaHomeSolid className="button-icon" />홈
-      </Link>
+
       <Link
         className={`menu-button ${
           location.pathname === "/club/reservation" ? "selcetMenu" : ""
@@ -43,8 +37,16 @@ const BottomBar = () => {
         }`}
         to="/club/practice"
       >
-        <RiMenuAddLine className="button-icon" />
+        <AiOutlineFieldTime className="button-icon" />
         연습
+      </Link>
+      <Link
+        className={`menu-button ${
+          location.pathname === "/club" ? "selcetMenu" : ""
+        }`}
+        to="/club"
+      >
+        <LiaHomeSolid className="button-icon" />홈
       </Link>
       <Link
         className={`menu-button ${
@@ -56,12 +58,12 @@ const BottomBar = () => {
       </Link>
       <Link
         className={`menu-button ${
-          location.pathname === "/club/mypage" ? "selcetMenu" : ""
+          location.pathname === "/club/schedule" ? "selcetMenu" : ""
         }`}
-        to="/club/mypage"
+        to="/club/schedule"
       >
-        <LiaAddressCard className="button-icon" />
-        마이 페이지
+        <RiMenuAddLine className="button-icon" />
+        일정 작성
       </Link>
     </div>
   );

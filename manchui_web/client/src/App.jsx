@@ -31,6 +31,7 @@ import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
 import BottomBar from "./pages/ClubRoom/BottomBar";
+import Schedule from "./pages/ClubRoom/Schedule/Schedule";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
@@ -178,6 +179,7 @@ const router = createBrowserRouter([
           { path: "team/edit-team/:id", element: <EditTeam /> },
           { path: "team/team-main/:id", element: <TeamMain /> },
           { path: "reservation", element: <Reservation /> },
+          { path: "schedule", element: <Schedule /> },
           { path: "mypage", element: <Mypage /> },
           { path: "edit-schedule/:date", element: <EditSchedule /> },
         ],

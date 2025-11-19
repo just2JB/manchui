@@ -6,14 +6,19 @@ const User = require("../models/User");
 
 router.post("/signup", async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, Identification } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(401).json({ message: "이미 가입된 이메일 입니다." });
     }
+    const existingIdentification = await User.findOne({ Identification });
+    if (existingIdentification) {
+      return res.status(401).json({ message: "중복되는 아이디 입니다." });
+    }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = new User({
+      Identification,
       username,
       email,
       password: hashedPassword,

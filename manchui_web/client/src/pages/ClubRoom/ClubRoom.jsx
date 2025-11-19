@@ -227,7 +227,7 @@ const ClubRoom = () => {
                 />
               </div>
               <div className="userText">
-                <div className="aka">{user.aka} </div>
+                <div className="Identification">{user.Identification} </div>
                 <div className="username">{user.username} </div>
                 <div className="position">직책: {user.position}</div>
               </div>

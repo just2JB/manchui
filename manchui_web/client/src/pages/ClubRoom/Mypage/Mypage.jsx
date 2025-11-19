@@ -6,7 +6,7 @@ const Mypage = () => {
   const { user } = useOutletContext();
   const [formData, setFormData] = useState({
     username: "",
-    aka: "",
+    Identification: "",
     password: "",
     changePassword: "",
     checkPassword: "",
@@ -35,13 +35,13 @@ const Mypage = () => {
             onChange={handleChange}
           />
         </div>
-        <div className="aka">
+        <div className="Identification">
           <label>별명</label>
           <input
             type="text"
-            name="aka"
-            value={formData.aka}
-            placeholder={user.aka}
+            name="Identification"
+            value={formData.Identification}
+            placeholder={user.Identification}
             onChange={handleChange}
           />
         </div>

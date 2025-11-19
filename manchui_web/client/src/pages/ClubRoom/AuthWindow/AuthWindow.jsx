@@ -14,6 +14,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
     passwordCheck: "",
     username: "",
     clubcode: "",
+    Identification: "",
   });
 
   const handleChange = (e) => {
@@ -63,7 +64,7 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
         );
         if (response.status === 201) {
           alert("계정 생성이 성공 되었습니다.");
-          setFormData({ email: formData.email, password:""});
+          setFormData({ email: formData.email, password: "" });
           setCurrentWork("login");
         }
       } catch (error) {
@@ -122,6 +123,16 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
                 type="email"
                 name="email"
                 value={formData.email}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="Identification">
+              <label>아이디</label>
+              <input
+                type="Identification"
+                name="Identification"
+                value={formData.Identification}
                 required
                 onChange={handleChange}
               />

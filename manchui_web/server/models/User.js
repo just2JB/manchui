@@ -15,9 +15,8 @@ const userSchema = new mongoose.Schema({
     required: true,
     select: false,
   },
-  aka: {
+  Identification: {
     type: String,
-    default: "신규부원",
   },
   position: {
     type: String,

@@ -43,16 +43,16 @@ const BottomBar = () => {
         }`}
         to="/club/practice"
       >
-        <LiaFlag className="button-icon" />
+        <RiMenuAddLine className="button-icon" />
         연습
       </Link>
       <Link
         className={`menu-button ${
-          location.pathname === "/club/ww" ? "selcetMenu" : ""
+          location.pathname.includes("/club/team") ? "selcetMenu" : ""
         }`}
-        to="/club"
+        to="/club/team"
       >
-        <RiMenuAddLine className="button-icon" />빈 블럭
+        <LiaFlag className="button-icon" />팀
       </Link>
       <Link
         className={`menu-button ${

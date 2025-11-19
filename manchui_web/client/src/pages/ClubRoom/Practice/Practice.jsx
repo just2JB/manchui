@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate, useOutletContext } from "react-router-dom";
 import "./Practice.css";
 import { IoAdd } from "react-icons/io5";
+import { BsBoxArrowInRight } from "react-icons/bs";
 import { useEffect } from "react";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
@@ -13,8 +14,27 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const Practice = () => {
   const [myTeams, setMyTeams] = useState([]);
+  const [practices, setPractices] = useState([]);
+  const [seePractices, setSeePractices] = useState([]);
+  const [selcetDay, setSelcetDay] = useState(new Date());
   const { user } = useOutletContext();
   const nav = useNavigate();
+  const nextDate = (num) => {
+    const nextDate = new Date();
+    nextDate.setDate(selcetDay.getDate() + num);
+    setSelcetDay(nextDate);
+  };
+
+  const changeUser = (userId) => {
+    if (userId === "All") {
+      return setSeePractices(practices);
+    }
+    const filteredPractices = practices.filter((practice) =>
+      practice.members.includes(userId)
+    );
+    return setSeePractices(filteredPractices);
+  };
+
   useEffect(() => {
     const getMyTeams = async () => {
       try {
@@ -25,50 +45,90 @@ const Practice = () => {
           }
         );
         setMyTeams(response.data.myTeam);
-      } catch {}
+      } catch {
+        alert(error.response.data.message);
+      }
     };
+    const getPractices = async () => {
+      try {
+        const response = await axios.get(`${serverUrl}/api/practice`, {
+          withCredentials: true,
+        });
+        const sortedPractices = response.data.practices.sort((a, b) => {
+          const aFirst = a.time.split("~")[0];
+          const bFirst = b.time.split("~")[0];
+          if (aFirst > bFirst) return 1;
+          if (aFirst === bFirst) return 0;
+          if (aFirst < bFirst) return -1;
+        });
+        setPractices(sortedPractices);
+        setSeePractices(sortedPractices);
+      } catch {
+        alert(error.response.data.message);
+      }
+    };
+    getPractices();
     getMyTeams();
   }, []);
   return (
     <div className="practice">
-      <div className="teams">
-        <div className="topMenu">
-          <h4>내 팀</h4>
-          <span>
-            <IoAdd onClick={() => nav("/club/practice/create-team")} />새 팀
-          </span>
-        </div>
-        <div className="joinedList">
-          {/* {
-            <div className="noTeam">
-              가입되어있는 팀이 없습니다. 팀을 만들어 시작해보세요!
-              <button onClick={() => nav("/club/create-team")}>
-                팀 만들기
-              </button>
-            </div>
-          } */}
-          {myTeams.map((item) => (
-            <div
-              className="joinedTeam"
-              key={item._id}
-              onClick={() => nav(`/club/practice/team-main/:${item._id}`)}
-            >
-              <div className="teamName">{item.name}</div>
-              <div className="toTeamMain">{">"}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <div className="weekSelector">엄;</div>
       <div className="myPractice">
-        <div className="topMenu">
-          <h4>내 연습</h4>
-          <div className="">월 별로 보기, 리스트로 보기</div>
+        <div className="topMenu"></div>
+        <div className="practicesBottom">
+          <div className="listControler">
+            <div onClick={() => nextDate(-1)}>전날</div>
+            <div onClick={() => changeUser(user._id)} className="">
+              내 연습만 보기
+            </div>
+            <div onClick={() => changeUser("All")} className="">
+              모두 보기
+            </div>
+            <div onClick={() => nextDate(1)}>다음날</div>
+          </div>
+          <div className="practiceList">
+            <div>{selcetDay.toLocaleDateString()}</div>
+            <div className="listPracticeCard listIndex">
+              <div>팀</div>
+              <div>시간</div>
+              <div>연습실</div>
+            </div>
+            {seePractices
+              .filter(
+                (practice) =>
+                  new Date(practice.date).toLocaleDateString() ===
+                  selcetDay.toLocaleDateString()
+              )
+              .map((practice) => (
+                <div key={practice._id} className="listPracticeCard">
+                  <div>{practice.teamName}</div>
+                  <div>
+                    {(practice.time.split("~")[0] * 2) % 2 === 0
+                      ? `${practice.time.split("~")[0]}:00`
+                      : `${practice.time.split("~")[0] - 0.5}:30`}
+                    ~
+                    {(practice.time.split("~")[1] * 2) % 2 === 0
+                      ? `${practice.time.split("~")[1]}:00`
+                      : `${practice.time.split("~")[1] - 0.5}:30`}
+                  </div>
+
+                  <div>{practice.place}</div>
+                </div>
+              ))}
+          </div>
         </div>
-        <div className="practiceList"></div>
-        <div className="practiceCalender"></div>
       </div>
     </div>
   );
 };
 
 export default Practice;
+
+
+/*
+1. 주간 선택, 보기를 만들어서 원하는 날짜 볼 수 있게 하기
+2. 연습들 리스트로 보이기
+3. 연습 생성 플로트 시키기
+4. 연습 생성 누르면  / [새로운 팀 만들기 => 팀 만들기] / [기존팀에서 만들기 => 팀 페이지로 이동]
+
+*/ 

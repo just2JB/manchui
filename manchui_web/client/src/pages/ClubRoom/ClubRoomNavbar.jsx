@@ -59,15 +59,15 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
                 <h2 className="title-text">동아리방 예약</h2>
               ) : location.pathname === "/club/practice" ? (
                 <h2 className="title-text">연습</h2>
-              ) : location.pathname === "/club/practice/create-team" ? (
+              ) : location.pathname === "/club/team" ? (
+                <h2 className="title-text">팀</h2>
+              ) : location.pathname === "/club/team/create-team" ? (
                 <h2 className="title-text">팀 만들기</h2>
-              ) : location.pathname.includes("/club/practice/edit-team") ? (
+              ) : location.pathname.includes("/club/team/edit-team") ? (
                 <h2 className="title-text">팀 관리</h2>
-              ) : location.pathname.includes("/club/practice/team/join") ? (
-                <h2 className="title-text">팀 가입</h2>
               ) : location.pathname.includes("/club/edit-schedule") ? (
                 <h2 className="title-text">일정 작성</h2>
-              ) : location.pathname.includes("/club/practice/team-main") ? (
+              ) : location.pathname.includes("/club/team/team-main") ? (
                 <h2 className="title-text">팀 메인</h2>
               ) : location.pathname === "/club/schedule" ? (
                 <h2 className="title-text">일정 등록</h2>

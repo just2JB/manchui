@@ -261,6 +261,8 @@ const ClubRoom = () => {
             className="swiper"
             slidesPerView={1}
             spaceBetween={1}
+            resistanceRatio={0}
+            speed={400}
           >
             {schedule.map((array, index) => (
               <SwiperSlide className="swiperBox" key={index}>
@@ -360,7 +362,6 @@ const ClubRoom = () => {
 };
 
 export default ClubRoom;
-
 
 /*
 해야할 것:

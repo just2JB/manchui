@@ -3,6 +3,8 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import "./TeamMain.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
+import EditTeamPractice from "./EditTeamPractice";
+import CreateTeamPractice from "./CreateTeamPractice";
 import { useState } from "react";
 import {
   IoMenuOutline,
@@ -17,12 +19,8 @@ import {
   MdOutlinePlace,
   MdCalendarMonth,
 } from "react-icons/md";
-import { LiaPlusSolid } from "react-icons/lia";
-import CreatePractice from "./CreatePractice";
-import EditPractice from "./EditPractice";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const clientUrl = import.meta.env.VITE_CLIENT_URL;
-
 const TeamMain = () => {
   const [team, setTeam] = useState({
     name: "",
@@ -300,6 +298,9 @@ const TeamMain = () => {
               {member.username}
             </div>
           ))}
+          <div className="member inviteMember" onClick={() => shareHandler()}>
+            초대하기
+          </div>
         </div>
 
         <form className="comment" onSubmit={(e) => submitCommentHandle(e)}>
@@ -519,7 +520,7 @@ const TeamMain = () => {
       </div>
 
       {openCreatePractice ? (
-        <CreatePractice
+        <CreateTeamPractice
           setOpenCreatePractice={setOpenCreatePractice}
           selectedDay={selectedDay}
           team={team}
@@ -536,7 +537,7 @@ const TeamMain = () => {
         ""
       )}
       {editPractice !== "unSelect" ? (
-        <EditPractice
+        <EditTeamPractice
           setEditPractice={setEditPractice}
           editPractice={editPractice}
           team={team}

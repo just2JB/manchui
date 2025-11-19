@@ -59,6 +59,30 @@ router.get("/:id", async (req, res) => {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
   }
 });
+router.get("/", async (req, res) => {
+  try {
+    const practices = await Practice.find();
+    const teams = await Team.find();
+    const detailPractices = [];
+    practices.forEach((practice) => {
+      const team = teams.find((t) => String(t._id) === practice.teamId);
+      if (!team) {
+      } else {
+        detailPractices.push({
+          _id: practice._id,
+          time: practice.time,
+          date: practice.date,
+          place: practice.place,
+          members: practice.members,
+          teamName: team.name,
+        });
+      }
+    });
+    res.json({ practices: detailPractices });
+  } catch (error) {
+    res.status(501).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
 
 router.delete("/:id", async (req, res) => {
   try {

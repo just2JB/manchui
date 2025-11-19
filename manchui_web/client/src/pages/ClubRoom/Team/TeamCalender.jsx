@@ -138,6 +138,8 @@ export const TeamCalender = ({
         className="swiper"
         spaceBetween={50}
         slidesPerView={1}
+        resistanceRatio={0}
+        speed={400}
       >
         {calenders.map((item, index) => (
           <SwiperSlide key={index}>

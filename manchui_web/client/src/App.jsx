@@ -19,20 +19,18 @@ import Join from "./pages/Join/Join";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
-
 import Practice from "./pages/ClubRoom/Practice/Practice";
-import CreateTeam from "./pages/ClubRoom/Practice/CreateTeam";
-import TeamMain from "./pages/ClubRoom/Practice/TeamMain";
-import BottomBar from "./pages/ClubRoom/BottomBar";
-
+import CreateTeam from "./pages/ClubRoom/Team/CreateTeam";
+import TeamMain from "./pages/ClubRoom/Team/TeamMain";
+import TeamJoin from "./pages/ClubRoom/Team/TeamJoin";
+import EditTeam from "./pages/ClubRoom/Team/EditTeam";
+import Team from "./pages/ClubRoom/Team/Team";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
-import TeamJoin from "./pages/ClubRoom/Practice/TeamJoin";
-import EditTeam from "./pages/ClubRoom/Practice/EditTeam";
-
+import BottomBar from "./pages/ClubRoom/BottomBar";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
@@ -175,9 +173,10 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { path: "practice", element: <Practice /> },
-          { path: "practice/create-team", element: <CreateTeam /> },
-          { path: "practice/edit-team/:id", element: <EditTeam /> },
-          { path: "practice/team-main/:id", element: <TeamMain /> },
+          { path: "team", element: <Team /> },
+          { path: "team/create-team", element: <CreateTeam /> },
+          { path: "team/edit-team/:id", element: <EditTeam /> },
+          { path: "team/team-main/:id", element: <TeamMain /> },
           { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
           { path: "edit-schedule/:date", element: <EditSchedule /> },

@@ -210,3 +210,4 @@ const AuthWindow = ({ setUser, setAuthIsOpen, setIsLogin }) => {
 };
 
 export default AuthWindow;
+//계정 생성 시 아이디 꼭 넣게 하자

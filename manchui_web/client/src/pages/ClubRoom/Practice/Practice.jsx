@@ -118,6 +118,7 @@ const Practice = () => {
           </div>
         </div>
       </div>
+      <div className="floatAddPractice">+새 연습</div>
     </div>
   );
 };

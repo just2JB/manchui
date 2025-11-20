@@ -16,14 +16,12 @@ router.post("/signup", async (req, res) => {
       return res.status(401).json({ message: "중복되는 아이디 입니다." });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = new User({
       Identification,
       username,
       email,
       password: hashedPassword,
     });
-
     await user.save();
     res.status(201).json({ message: "계정 생성이 완료되었습니다." });
   } catch (error) {

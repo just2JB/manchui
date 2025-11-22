@@ -1,12 +1,18 @@
 import axios from "axios";
-import React from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import React, { useState } from "react";
+import {
+  Link,
+  useNavigate,
+  useLocation,
+  useOutletContext,
+} from "react-router-dom";
 import "./ClubRoomNavbar.css";
-import { IoIosLogOut, IoIosLogIn, IoMdArrowBack } from "react-icons/io";
+import { IoIosMenu, IoMdArrowBack } from "react-icons/io";
 import { LuSquareArrowOutUpLeft } from "react-icons/lu";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
+  const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
 
   const nav = useNavigate();
@@ -78,26 +84,55 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
               )}
             </div>
           </div>
-
-          <div className="button">
-            {isLogin ? (
-              <>
-                <div className="logout" onClick={handleLogout}>
-                  <IoIosLogOut className="navIcons" />
-                </div>
-              </>
-            ) : (
-              <>
+          <div className="button" onClick={() => setMenuOpen(true)}>
+            <IoIosMenu />
+          </div>
+          <div className={`menu ${menuOpen ? "openMenu" : ""}`}>
+            <div className="topMenu">
+              <div className="menuLogoBox">
+                <img
+                  src="/logos/longLogo_white.png"
+                  alt="Logo"
+                  className="menuLogo"
+                />
+              </div>
+              <div className="closeMenu" onClick={() => setMenuOpen(false)}>
+                x
+              </div>
+            </div>
+            <div className="bottomMenu" onClick={() => setMenuOpen(false)}>
+              <div className="menubutton homePage" onClick={() => nav("/")}>
+                홈페이지
+              </div>
+              <div className="menubutton contectDev">개발자 문의</div>
+              <div
+                className="menubutton adminPage"
+                onClick={() => nav("/admin")}
+              >
+                관리자 페이지
+              </div>
+              <div
+                className="menubutton myPage"
+                onClick={() => nav("/club/mypage")}
+              >
+                내 정보 수정
+              </div>
+              {isLogin ? (
                 <div
-                  className="login"
-                  onClick={() => {
-                    setAuthIsOpen(true);
-                  }}
+                  className="menubutton logout"
+                  onClick={() => handleLogout()}
                 >
-                  <IoIosLogIn className="navIcons" />
+                  로그아웃
                 </div>
-              </>
-            )}
+              ) : (
+                <div
+                  className="menubutton logout"
+                  onClick={() => setAuthIsOpen(true)}
+                >
+                  로그인
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}

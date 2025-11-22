@@ -77,13 +77,34 @@
 .teamMain .joinUrl {
   user-select: all;
 }
+
 .teamMain .members {
   color: #b1b1b1;
-  height: 25px;
+  height: max-content;
   align-items: center;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
   flex-direction: row;
   gap: 5px;
+  width: 100%;
+}
+.teamMain .memberLength {
+  width: max-content;
+  margin-right: 5px;
+}
+
+.teamMain .members .member {
+  background-color: rgb(36, 36, 36);
+  padding: 2px;
+  font-size: 12px;
+  border-radius: 10px;
+  padding: 4px;
+}
+.teamMain .members .inviteMember {
+  width: max-content;
+  border-left: 1px solid #b1b1b1;
+  border-radius: 0px;
+  background-color: #121212;
 }
 .teamMain .commentContent {
   color: #b1b1b1;
@@ -109,18 +130,6 @@
 .teamMain .commentInput:focus {
   background-color: #0a0a0a;
   color: #b1b1b1;
-}
-.teamMain .members .member {
-  background-color: rgb(36, 36, 36);
-  padding: 2px;
-  font-size: 12px;
-  border-radius: 10px;
-  padding: 4px;
-}
-.teamMain .members .inviteMember {
-  border-left: 1px solid #b1b1b1;
-  border-radius: 0px;
-  background-color: #121212;
 }
 .teamMain .teamSchedule {
   margin: 10px;

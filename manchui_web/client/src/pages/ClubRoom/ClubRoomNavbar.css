@@ -1,5 +1,5 @@
 .topBar {
-  position: fixed;
+  position: absolute;
   top: 0px;
   display: flex;
   justify-content: space-between;
@@ -10,7 +10,7 @@
   background-color: #0c0c0c;
   border-bottom: 1px solid #222222;
   user-select: none;
-  z-index: 10;
+  z-index: 810;
 }
 .inviteLink {
   background-color: #121212;
@@ -60,9 +60,48 @@
 .ClubRoomNavbar .navIcons {
   font-size: 15px;
 }
-
+.ClubRoomNavbar .menu {
+  position: fixed;
+  top: 0px;
+  right: -70%;
+  width: 70%;
+  height: 100vh;
+  background-color: #0c0c0c;
+  color: #b1b1b1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition-duration: 0.3s;
+}
+.ClubRoomNavbar .openMenu {
+  right: 0px;
+}
+.ClubRoomNavbar .topMenu {
+  margin-top: 20px;
+  justify-items: center;
+  position: relative;
+}
+.ClubRoomNavbar .closeMenu {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 25px;
+}
+.ClubRoomNavbar .menu .menubutton {
+  border-top: 1px solid #333333;
+  padding: 30px;
+}
+.ClubRoomNavbar .menu .menuLogoBox {
+  width: 150px;
+}
+.ClubRoomNavbar .menu .menuLogo {
+  width: 100%;
+}
 @media screen and (max-width: 767px) {
   .topBar {
+    width: 100%;
+  }
+  .ClubRoomNavbar {
     width: 100%;
   }
 }

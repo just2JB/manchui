@@ -125,12 +125,12 @@ function ClubRoomLayout() {
   return (
     <>
       <div className="clubRoomLayout">
+        <ClubRoomNavbar
+          isLogin={isLogin}
+          setIsLogin={setIsLogin}
+          setAuthIsOpen={setAuthIsOpen}
+        />
         <div className="clubRoombody">
-          <ClubRoomNavbar
-            isLogin={isLogin}
-            setIsLogin={setIsLogin}
-            setAuthIsOpen={setAuthIsOpen}
-          />
           <Outlet
             context={{
               isLogin,

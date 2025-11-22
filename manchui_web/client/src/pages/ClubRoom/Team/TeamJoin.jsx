@@ -28,7 +28,7 @@ const TeamJoin = () => {
         }
       );
       alert(response.data.message);
-      nav("/club/practice");
+      nav("/club/team");
     } catch (error) {
       alert(error.response.data.message);
     } finally {

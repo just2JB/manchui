@@ -13,7 +13,7 @@
   background-color: #0c0c0c;
   margin-top: 35px;
   user-select: none;
-  z-index: 2;
+  z-index: 100;
 }
 
 @media screen and (max-width: 767px) {

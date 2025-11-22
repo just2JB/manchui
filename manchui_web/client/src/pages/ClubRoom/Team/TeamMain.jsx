@@ -290,16 +290,19 @@ const TeamMain = () => {
             )}
           </div>
         </div>
-
-        <div className="members">
-          팀원: {team.members.length}명
-          {team.members.map((member) => (
-            <div className="member" key={member._id}>
-              {member.username}
+        <div className="memberSection">
+          <div className="memberLength"> 팀원: {team.members.length}명</div>
+          <div className="members">
+            {team.members.map((member) => (
+              <div className="member" key={member._id}>
+                {member.username.length > 3
+                  ? member.username.slice(0, 3) + ".."
+                  : member.username}
+              </div>
+            ))}
+            <div className="member inviteMember" onClick={() => shareHandler()}>
+              초대하기
             </div>
-          ))}
-          <div className="member inviteMember" onClick={() => shareHandler()}>
-            초대하기
           </div>
         </div>
 
@@ -575,7 +578,7 @@ const TeamMain = () => {
           </div>
           <div
             className="edit menuContent"
-            onClick={() => nav(`/club/practice/edit-team/:${team._id}`)}
+            onClick={() => nav(`/club/team/edit-team/:${team._id}`)}
           >
             팀 관리
           </div>

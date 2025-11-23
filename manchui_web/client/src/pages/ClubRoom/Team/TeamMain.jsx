@@ -168,7 +168,7 @@ const TeamMain = () => {
         await getPractice();
       } catch {
         alert("존재하지 않는 팀 입니다.");
-        nav("/club/practice");
+        nav("/club/team");
       }
     };
     getMyTeams();

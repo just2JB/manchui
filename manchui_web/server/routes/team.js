@@ -167,8 +167,12 @@ router.get("/:teamId", async (req, res) => {
 
     const memberDetails = await User.find({ _id: { $in: team.members } });
     team.members = memberDetails;
-
     res.json({ team: team, memberSchedules: memberSchedules });
+
+    team.members = team.members.map((member) => {
+      return member._id;
+    });
+    await team.save();
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
@@ -181,7 +185,6 @@ router.get("/user/:userId", async (req, res) => {
       return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
     }
     const teams = await Team.find();
-
     const myTeam = teams.filter((team) =>
       team.members.some((member) => String(member) === String(user._id))
     );

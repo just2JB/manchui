@@ -193,7 +193,9 @@ const CreatePractice = ({
                 }`}
                 key={member._id}
               >
-                {member.username}
+                {member.username.length > 3
+                  ? member.username.slice(0, 3) + ".."
+                  : member.username}
               </div>
             ))}
           </div>

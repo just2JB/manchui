@@ -66,7 +66,6 @@ router.post("/logout", async (req, res) => {
     if (!token) {
       return res.status(400).json({ message: "이미 로그아웃된 상태입니다." });
     }
-
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       const user = await User.findById(decoded.userId);
@@ -112,6 +111,66 @@ router.post("/verify-token", async (req, res) => {
     return res
       .status(401)
       .json({ isVaild: false, message: "유효하지 않은 토큰" });
+  }
+});
+
+router.post("/edit/:data", async (req, res) => {
+  try {
+    const { userId, formData } = req.body;
+    const dataName = req.params.data;
+    const user = await User.findById(userId).select("+password");
+    if (!user) {
+      return res.status(404).json({ message: "계정을 찾을 수 없습니다." });
+    }
+    if (dataName === "password") {
+      const changePassword = formData.changePassword;
+      const checkPassword = formData.checkPassword;
+      const isValidPassword = await bcrypt.compare(
+        formData.password,
+        user.password
+      );
+
+      if (!isValidPassword) {
+        return res.status(401).json({ message: "비밀번호가 틀렸습니다." });
+      }
+      if (checkPassword !== changePassword) {
+        return res
+          .status(401)
+          .json({ message: "변경될 비밀번호와 확인 비밀번호가 다릅니다." });
+      }
+      const hashedPassword = await bcrypt.hash(changePassword, 10);
+      user.password = hashedPassword;
+      await user.save();
+      res.status(201).json({ message: "수정되었습니다" });
+    }
+
+    if (dataName === "Identification") {
+      const Identification = formData.Identification;
+      const existingIdentification = await User.findOne({ Identification });
+      if (existingIdentification) {
+        return res.status(401).json({ message: "중복되는 아이디 입니다." });
+      }
+    }
+
+    user[dataName] = formData[dataName];
+    await user.save();
+    res.status(201).json({ message: "수정되었습니다" });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+router.post("/delete/:id", async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      return res.status(404).json({ message: "계정을 찾을 수 없습니다." });
+    }
+
+    res.json({ message: "계정이 삭제되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
   }
 });
 

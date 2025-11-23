@@ -75,10 +75,10 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
                 <h2 className="title-text">일정 작성</h2>
               ) : location.pathname.includes("/club/team/team-main") ? (
                 <h2 className="title-text">팀 메인</h2>
-              ) : location.pathname === "/club/schedule" ? (
+              ) : location.pathname.includes("/club/schedule") ? (
                 <h2 className="title-text">일정 등록</h2>
-              ) : location.pathname === "/club/mypage" ? (
-                <h2 className="title-text">마이페이지</h2>
+              ) : location.pathname.includes("/club/mypage") ? (
+                <h2 className="title-text">프로필</h2>
               ) : (
                 <h2 className="title-text">없는 페이지입니다?</h2>
               )}
@@ -115,7 +115,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
                 className="menubutton myPage"
                 onClick={() => nav("/club/mypage")}
               >
-                내 정보 수정
+                내 프로필
               </div>
               {isLogin ? (
                 <div

@@ -19,6 +19,7 @@ import Join from "./pages/Join/Join";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
+import EditUser from "./pages/ClubRoom/Mypage/EditUser";
 import Practice from "./pages/ClubRoom/Practice/Practice";
 import CreateTeam from "./pages/ClubRoom/Team/CreateTeam";
 import TeamMain from "./pages/ClubRoom/Team/TeamMain";
@@ -68,7 +69,11 @@ function ProtectedRoute() {
   if (isAuthenticated === null) {
     return null;
   }
-  return isAuthenticated ? <Outlet context={{ user }} /> : notAuth();
+  return isAuthenticated ? (
+    <Outlet context={{ user, setIsLogin }} />
+  ) : (
+    notAuth()
+  );
 }
 
 function AdminRoute() {
@@ -181,6 +186,7 @@ const router = createBrowserRouter([
           { path: "reservation", element: <Reservation /> },
           { path: "schedule", element: <Schedule /> },
           { path: "mypage", element: <Mypage /> },
+          { path: "mypage/:data", element: <EditUser /> },
           { path: "edit-schedule/:date", element: <EditSchedule /> },
         ],
       },

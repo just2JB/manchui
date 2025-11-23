@@ -83,7 +83,7 @@
   height: max-content;
   align-items: center;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
   flex-direction: row;
   gap: 5px;
   width: 100%;
@@ -95,6 +95,7 @@
 
 .teamMain .members .member {
   background-color: rgb(36, 36, 36);
+  text-align: center;
   padding: 2px;
   font-size: 12px;
   border-radius: 10px;

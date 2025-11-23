@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import "./Mypage.css";
+import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import axios from "axios";
+import Loading from "../../../components/Loading/Loading";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const Mypage = () => {
-  const { user } = useOutletContext();
+  const { user, setIsLogin } = useOutletContext();
   const [formData, setFormData] = useState({
     username: "",
     Identification: "",
@@ -11,75 +15,76 @@ const Mypage = () => {
     changePassword: "",
     checkPassword: "",
   });
-
+  const [selectedForm, setSelectedForm] = useState("unSelcet");
+  const nav = useNavigate();
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    if (selectedForm === "Identification") {
+      setFormData({
+        ...formData,
+        [e.target.name]: "@" + e.target.value.split("@").join(""),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+    }
+  };
+
+  const deleteUserHandle = async () => {
+    if (confirm("정말로 삭제하시겠습니까")) {
+      try {
+        const response = await axios.post(
+          `${serverUrl}/api/auth/delete/${user._id}`,
+          {},
+          { withCredentials: true }
+        );
+        alert(response.data.message);
+        nav("/club");
+        setIsLogin(false);
+      } catch (error) {
+        alert(error.response.data.message);
+      } finally {
+      }
+      setIsLogin(false);
+    }
   };
   return (
     <div className="mypage">
-      <form className="changeInfo">
-        <div className="email">
-          <label>이메일</label>
-          <input type="email" name="email" value={user.email} disabled />
+      <div className="profil">
+        <div className="userImage">
+          <img src="/profilIcon.png" alt="Logo" className="profilImage" />
         </div>
-        <div className="username">
-          <label>이름</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            placeholder={user.username}
-            onChange={handleChange}
-          />
+        <div className="username">{user.username}</div>
+        <div className="userInfo">
+          <div className="userName">{user.Identification}</div>
+          <div className="infoCircle"></div>
+          <div className="userPosition">만취 {user.position}</div>
         </div>
-        <div className="Identification">
-          <label>별명</label>
-          <input
-            type="text"
-            name="Identification"
-            value={formData.Identification}
-            placeholder={user.Identification}
-            onChange={handleChange}
-          />
+      </div>
+      <div className="list">
+        <div
+          className="changeName"
+          onClick={() => nav("/club/mypage/:username")}
+        >
+          이름 <MdOutlineKeyboardArrowRight className="arrowRight" />
         </div>
-        <button type="submit">정보 수정</button>
-      </form>
-      <form className="changePassword">
-        <div className="password">
-          <label>현재 비밀번호</label>
-          <input
-            type="password"
-            name="password"
-            value={formData.password}
-            required
-            onChange={handleChange}
-          />
+        <div
+          className="changeIdentification"
+          onClick={() => nav("/club/mypage/:Identification")}
+        >
+          아이디 <MdOutlineKeyboardArrowRight className="arrowRight" />
         </div>
-        <div className="password">
-          <label>변경할 비밀번호</label>
-          <input
-            type="password"
-            name="changePassword"
-            value={formData.changePassword}
-            required
-            onChange={handleChange}
-          />
+        <div
+          className="changePassword"
+          onClick={() => nav("/club/mypage/:password")}
+        >
+          비밀번호 <MdOutlineKeyboardArrowRight className="arrowRight" />
         </div>
-        <div className="password-check">
-          <label>비밀번호 확인</label>
-          <input
-            type="password"
-            name="checkPassword"
-            value={formData.checkPassword}
-            required
-            onChange={handleChange}
-          />
+        <div className="deleteAccount" onClick={() => deleteUserHandle()}>
+          계정 삭제 <MdOutlineKeyboardArrowRight className="arrowRight" />
         </div>
-        <button type="submit">비밀번호 변경</button>
-      </form>
+      </div>
     </div>
   );
 };

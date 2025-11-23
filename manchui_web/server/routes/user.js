@@ -167,7 +167,11 @@ router.post("/delete/:id", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "계정을 찾을 수 없습니다." });
     }
-
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     res.json({ message: "계정이 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });

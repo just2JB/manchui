@@ -1,35 +1,38 @@
 .practice {
-  color: #f5f5f5;
-  background-color: #0c0c0c;
+  color: var(--text-primary);
+  background-color: var(--background-dark);
   width: 100%;
   height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
   position: relative;
 }
+.practice .topMenu {
+  display: flex;
+  flex-direction: column;
+  margin: 0px 7px 0px 7px;
+  padding: 10px 5px 10px 5px;
+  background-color: var(--box-1);
+  border-radius: 0px 0px 10px 10px;
+}
 .practice .weekSelector {
   height: 90px;
-  border: 1px solid #333333;
   border-radius: 10px;
   overflow: hidden;
   position: sticky;
   top: 0px;
 }
-
 .practice .weekSwiper {
   height: 100%;
   width: 100%;
 }
-
 .practice .weekSlide {
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
 }
-
 .practice .weeks {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-
   height: 100%;
 }
 .practice .weekDay {
@@ -39,7 +42,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
 }
 
 .practice .datePractices {
@@ -55,15 +58,9 @@
   width: 8px;
   height: 8px;
   border-radius: 20px;
-  background-color: #b1b1b1;
+  background-color: var(--text-gray);
 }
-.practice .topMenu {
-  display: flex;
-  flex-direction: column;
-  padding: 10px 10px 10px 10px;
 
-  border: 1px solid #b1b1b1;
-}
 .practice .listControler {
   margin-top: 5px;
   display: flex;
@@ -71,7 +68,7 @@
 }
 .practice .controlButton {
   border-radius: 5px;
-  background-color: #1d1d1d;
+  background-color: var(--box-2);
   font-size: 14px;
   font-weight: 250;
   padding: 4px;
@@ -93,7 +90,7 @@
   flex-direction: column;
   padding: 5px 5px 80px 5px;
   margin: 5px;
-  gap: 10px;
+  gap: 5px;
   border-radius: 5px;
   position: relative;
 }
@@ -105,7 +102,7 @@
   font-weight: 200;
 }
 .practice .listPracticeCard {
-  background-color: #1d1d1d;
+  background-color: var(--box-2);
   padding: 10px 5px;
   border-radius: 5px;
   display: flex;
@@ -114,7 +111,7 @@
   font-weight: 250;
 }
 .practice .listIndex {
-  background-color: #1d1d1d00;
+  background-color: var(--box-2) 00;
   padding: 0px;
 }
 
@@ -123,15 +120,19 @@
   text-align: center;
 }
 .practice .practiceCard {
-  background-color: #121212;
-  border: 1px solid #121212;
-  border-radius: 5px;
-  color: #b1b1b1;
+  background-color: #00000000;
+  border: 1px solid #00000000;
+  color: var(--text-gray);
+
+  overflow: hidden;
 }
 .practice .selectDateCard {
-  background-color: #a83737;
-  border: 1px solid #a83737;
-  color: #f5f5f5;
+  background-color: #00000000;
+  border-radius: 15px;
+  padding: 5px;
+  border: 1px groove var(--text-gray);
+  color: var(--text-primary);
+
   transition-duration: 0.3s;
 }
 
@@ -139,11 +140,10 @@
   position: absolute;
   right: 15px;
   bottom: 20px;
-  background-color: #333333;
+  background-color: var(--brand-red);
   font-size: 15px;
   padding: 5px;
   border-radius: 10px;
-  box-shadow: 1px 1px #5e5e5e3f;
 }
 
 .practice .newPractice {
@@ -151,7 +151,7 @@
   bottom: 0px;
   width: 100%;
   height: 100%;
-  background-color: #12121200;
+  background-color: #00000000;
   display: flex;
   flex-direction: column;
   animation-name: popNewPractice;
@@ -159,13 +159,13 @@
 }
 .practice .closeSection {
   flex: 1;
-  background-color: #a8373700;
+  background-color: #00000000;
 }
 .practice .buttonBox {
   display: flex;
-  border-top: 1px solid #333333;
+  border-top: 1px solid var(--primary-200);
   border-radius: 10px;
-  background-color: #1d1d1d;
+  background-color: var(--box-2);
   justify-content: space-around;
   align-items: center;
   width: 100%;
@@ -174,10 +174,9 @@
 .practice .buttonBox > button {
   height: 100px;
   width: 150px;
-  background-color: #333333;
-  color: #f5f5f5;
+  background-color: var(--primary-200);
+  color: var(--text-primary);
   font-size: 13px;
-  font-weight: 200;
   border: none;
   border-radius: 5px;
 }

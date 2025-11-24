@@ -47,7 +47,7 @@ const Mypage = () => {
         { withCredentials: true }
       );
       alert(response.data.message);
-      nav("/club");
+      nav("/club/mypage");
     } catch (error) {
       alert(error.response.data.message);
     } finally {

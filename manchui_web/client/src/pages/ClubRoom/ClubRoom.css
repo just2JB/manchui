@@ -1,6 +1,6 @@
 .club-room {
   width: 100%;
-  color: #f5f5f5;
+  color: var(--text-primary);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -26,7 +26,7 @@
 .club-room .menuIcon {
   width: 15px;
   height: 15px;
-  color: #ebebeb;
+  color: var(--text-gray);
 }
 .club-room .menuContent {
   position: absolute;
@@ -36,7 +36,7 @@
   justify-content: space-between;
   gap: 10px;
   align-items: center;
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
 }
 .club-room .profilMenuOn {
   right: 0px;
@@ -74,8 +74,8 @@
   height: 300px;
   margin-top: 10px;
   padding: 5px;
-  border: 1px solid #3333331f;
-  color: #f5f5f5;
+
+  color: var(--text-primary);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -84,7 +84,7 @@
   display: flex;
   gap: 10px;
   height: 100px;
-  border-bottom: 1px solid #5f5f5f;
+  border-bottom: 1px solid var(--primary-200);
 }
 .my-info .userImage {
   margin-left: 10px;
@@ -92,7 +92,7 @@
   border-radius: 20px;
   height: 80px;
   width: 80px;
-  background-color: #e0e0e041;
+  background-color: var(--primary-200);
   overflow: hidden;
 }
 .club-room .defaultImage {
@@ -108,7 +108,7 @@
 .club-room .Identification {
   font-size: 12px;
 }
- .user .username {
+.user .username {
   font-size: x-large;
   font-weight: 500;
 }
@@ -123,7 +123,7 @@
   width: 100%;
   display: flex;
   justify-content: space-around;
-  background-color: #96151500;
+  background-color: #00000000;
 }
 .club-room > .content > .schedule {
   width: 95%;
@@ -141,9 +141,8 @@
   font-size: 12px;
   text-align: center;
   font-weight: 300;
-
   align-items: center;
-  color: #f0f0f0bd;
+  color: var(--text-gray);
 }
 .club-room .topMenu > div {
   display: flex;
@@ -153,20 +152,20 @@
   align-items: center;
 }
 .club-room .topMenu .createSchedule {
-  color: #f0f0f0bd;
+  color: var(--text-gray);
   text-decoration: none;
 }
 .club-room .topMenu > div > .month {
   border-radius: 10px;
   width: 30px;
-  background-color: #a83737;
+  background-color: var(--brand-red);
   font-size: 12px;
   text-align: center;
   font-weight: 300;
   align-content: center;
 }
 .club-room .swiper {
-  border: 1px solid #333333;
+  border: 1px solid var(--box-3);
   border-radius: 10px;
   margin-top: 10px;
   height: 150px;
@@ -199,25 +198,25 @@
   position: relative;
   font-size: 14px;
   font-weight: 300;
-  background-color: #1f1f1f5e;
+  background-color: var(--box-1);
   overflow: hidden;
 }
 .club-room .sunday {
-  color: #a83737;
+  color: var(--brand-red);
 }
 .club-room .isToday .sunday {
-  color: #0c0c0c;
+  color: var(--background-dark);
 }
 .club-room .saturday {
   color: #2c3dff;
 }
 .club-room .isToday .saturday {
-  color: #0c0c0c;
+  color: var(--text-gray);
 }
 .club-room .isToday {
   border-radius: 50px;
-  background-color: #ff3333;
-  color: #0c0c0c;
+  background-color: var(--brand-red);
+  color: var(--background-dark);
   font-weight: 600;
 }
 .club-room .days .top {
@@ -234,7 +233,7 @@
   width: 10px;
   height: 30px;
   border-radius: 5px;
-  background-color: #a83737;
+  background-color: var(--brand-red);
 }
 .club-room .notWritten {
   width: 10px;
@@ -246,10 +245,9 @@
   width: 10px;
   height: 30px;
   border-radius: 5px;
-  background: linear-gradient(#333333 70%, #a83737);
+  background: linear-gradient(#333333 70%, var(--brand-red));
 }
 .club-room .days .bottom {
-  border-top: 2px dotted #5f5f5f;
   height: 25px;
   width: 100%;
   display: flex;
@@ -260,7 +258,7 @@
 .club-room .editSchedule {
   position: absolute;
   top: 0px;
-  background-color: #1f1f1f9d;
+  background-color: var(--primary-200);
   padding: 3px 5px 30px 5px;
   display: flex;
   justify-content: center;

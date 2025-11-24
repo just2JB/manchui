@@ -1,6 +1,6 @@
 .mypage {
-  color: #f5f5f5;
-  background-color: #0c0c0c;
+  color: var(--text-primary);
+  background-color: var(--background-dark);
   width: 100%;
   height: calc(100vh - 70px);
   display: flex;
@@ -15,7 +15,7 @@
 }
 .mypage .userImage {
   margin-top: 20%;
-  background-color: #2c2c2c;
+  background-color: var(--primary-200);
   border-radius: 100px;
   width: 100px;
   height: 100px;
@@ -35,7 +35,7 @@
   position: relative;
   margin-bottom: 30px;
   align-content: center;
-  color: #b1b1b1;
+  color: var(--text-gray);
   height: 15px;
 }
 .mypage .userPosition {
@@ -54,7 +54,7 @@
   margin-top: 50%;
   width: 3px;
   height: 3px;
-  background-color: #b1b1b1;
+  background-color: var(--text-gray);
   border-radius: 100px;
 }
 .mypage .list {
@@ -62,13 +62,13 @@
   margin: 10px;
   flex-direction: column;
   justify-content: space-around;
-  border: 1px solid #2c2c2c;
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   flex: 0.6;
   overflow: hidden;
 }
 .mypage .list > div {
-  color: #b1b1b1;
+  color: var(--text-gray);
   font-size: 15px;
   padding: 10px;
   position: relative;
@@ -77,7 +77,7 @@
   align-content: center;
 }
 .mypage .list > div:hover {
-  background-color: #1d1d1d;
+  background-color: var(--box-2);
 }
 .mypage .arrowRight {
   position: absolute;
@@ -86,8 +86,8 @@
 }
 
 .editUser .popForm {
-  color: #f5f5f5;
-  background-color: #0c0c0c;
+  color: var(--text-primary);
+  background-color: var(--background-dark);
   width: 100%;
   height: calc(100vh - 70px);
   display: flex;
@@ -96,12 +96,6 @@
   padding-top: 15px;
   justify-content: space-between;
 }
-.editUser .closeButton {
-  border: none;
-  background-color: #0c0c0c00;
-  color: #f1f1f1;
-  font-size: 24px;
-}
 .editUser .formHead {
   font-size: 23px;
   font-weight: 500;
@@ -109,38 +103,37 @@
 }
 .editUser .formExplanation {
   font-size: 14px;
-  color: #b1b1b1;
+  color: var(--text-gray);
   padding: 0px 10px 5px 10px;
 }
 .editUser .formInputBox {
   margin-top: 10px;
-  border: 1px solid #333333;
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   margin: 5px;
   padding: 10px;
   align-content: center;
   display: flex;
   flex-direction: column;
-  color: #b1b1b1;
+  color: var(--text-gray);
 }
 
 .editUser .formInput {
-  background-color: #0c0c0c00;
+  background-color: #00000000;
   height: 30px;
   border: none;
-  color: #b1b1b1;
+  color: var(--text-gray);
   font-size: 16px;
 }
 .editUser .formInput:focus {
   border: none;
   outline: none;
 }
-
 .editUser .submitButton {
-  border: 1px solid #0c0c0c00;
-  background-color: #a83737;
+  border: 1px solid #00000000;
+  background-color: var(--brand-red);
   border-radius: 10px;
   padding: 7px 5px 7px 5px;
   margin: 10px 10px 30px 10px;
-  color: #f1f1f1;
+  color: var(--text-primary);
 }

@@ -1,44 +1,46 @@
-.team {
-  color: #f5f5f5;
-  background-color: #121212;
+.teamPage {
+  color: var(--text-primary);
+  background-color: var(--background-dark);
   width: 100%;
   height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
+  padding-top: 5px;
 }
-.team .teams {
-  margin-bottom: 10px;
-  border-top: 1px solid #333333;
-}
-.team .topMenu {
+.teamPage .topMenu {
   display: flex;
   justify-content: space-between;
   padding: 0px 10px;
-  padding-top: 10px;
+  margin: 10px;
 }
-.team .topMenu > h4 {
-  font-size: 18px;
+.teamPage .topMenu > h4 {
+  font-size: 20px;
   font-weight: 300;
 }
-.team .listContainer {
-  overflow-y: scroll;
+.teamPage .newTeamButton {
+  background-color: var(--brand-red);
+  padding: 4px;
+  border-radius: 10px;
 }
-.team .joinedList {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+.teamPage .listContainer {
+  overflow-y: scroll;
+  margin: 0px 10px;
+}
+.teamPage .joinedList {
+  display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 7px;
   padding: 5px 10px;
 }
-.team .joinedTeam {
+.teamPage .joinedTeam {
   display: flex;
   padding: 0px 7px;
   justify-content: space-between;
   align-items: center;
-  height: 50px;
+  height: 70px;
   border-radius: 5px;
-  background-color: #1d1d1d;
-  color: #b1b1b1;
-  font-size: 14px;
+  color: var(--text-primary);
+  background-color: var(--box-2);
+  font-size: 18px;
   font-weight: 250;
 }

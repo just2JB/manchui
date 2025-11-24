@@ -1,9 +1,9 @@
 .editTeam {
-  color: #f5f5f5;
+  color: var(--text-primary);
   width: 100%;
   height: calc(100vh - 70px);
   overflow-wrap: break-word;
-  background-color: #121212;
+  background-color: var(--background-dark);
   position: relative;
 }
 @media screen and (max-width: 767px) {

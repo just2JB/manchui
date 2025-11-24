@@ -1,5 +1,5 @@
 .editSchedule {
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
 }
 .editSchedule .dateContainer {
   height: 60px;
@@ -8,12 +8,12 @@
   justify-content: space-between;
   align-items: end;
   user-select: none;
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
 }
 .editSchedule .date {
   font-size: 20px;
   font-weight: 200;
-  color: white;
+  color: var(--text-gray);
 }
 .editSchedule .clear {
   display: flex;
@@ -21,8 +21,8 @@
   font-weight: 300;
 }
 .editSchedule .clearButton {
-  background-color: #0c0c0c;
-  color: #cacaca;
+  background-color: var(--background-dark);
+  color: var(--text-gray);
   border: none;
   margin-bottom: 3px;
 }
@@ -31,14 +31,14 @@
   font-size: 13px;
   font-weight: 300;
   padding: 2px 5px;
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
   border: none;
   cursor: pointer;
-  color: white;
+  color: var(--text-gray);
 }
 .editSchedule .timeSlotsContainer {
-  border-top: 1px solid #3a3a3a;
-  border-bottom: 1px solid #3a3a3a;
+  border-top: 1px solid var(--background-dark);
+  border-bottom: 1px solid var(--background-dark);
   max-height: calc(100vh - 230px);
   overflow-y: auto;
   margin-right: 30px;
@@ -49,7 +49,7 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
 }
 .editSchedule .timeSlot {
   height: 40px;
@@ -59,18 +59,18 @@
 }
 .editSchedule .timeSlot .time {
   position: relative;
-  color: white;
+  color: var(--text-gray);
   text-align: center;
   line-height: 40px;
   flex: 0.7;
-  border-right: 1px solid rgba(128, 128, 128, 0.452);
+  border-right: 1px solid var(--primary-200);
   border-radius: 0px 10px 10px 0px;
-  background-color: #18181859;
+  background-color: var(--box-1);
 }
 .editSchedule .timeSlot .timeText {
   position: absolute;
   right: 15px;
-  color: #cacaca;
+  color: var(--text-gray);
   border-radius: 5px;
   font-size: 14px;
   font-weight: 400;
@@ -80,12 +80,12 @@
   justify-content: space-between;
   align-items: center;
   flex: 0.5;
-  color: white;
+  color: var(--text-gray);
   line-height: 70px;
 }
 .editSchedule .timeSlot .content .line {
   height: 1%;
-  background-color: #3a3a3a;
+  background-color: var(--primary-200);
   border-radius: 5px;
   flex: 1;
 }
@@ -102,7 +102,7 @@
   width: 80px;
   height: 45%;
   text-align: center;
-  border: 1px solid #5a5a5a;
+  border: 1px solid var(--primary-200);
   cursor: pointer;
 }
 .editSchedule .status0 {
@@ -113,8 +113,8 @@
 }
 
 .editSchedule .content .status.possible {
-  background-color: #a83737;
-  border: 1px solid #a83737;
+  background-color: var(--brand-red);
+  border: 1px solid var(--brand-red);
   height: 47%;
   transition-duration: 0.1s;
 }
@@ -123,14 +123,14 @@
   right: -20px;
   height: 94%;
   width: 35px;
-  border: 1px solid #5a5a5a;
+  border: 1px solid var(--primary-200);
   cursor: pointer;
   border-radius: 0px 5px 5px 0px;
   z-index: 100;
 }
 .editSchedule .allSelectButton.possible {
-  background-color: #a83737;
-  border: 1px solid #a83737;
+  background-color: var(--brand-red);
+  border: 1px solid var(--brand-red);
 
   transition-duration: 0.1s;
 }
@@ -161,9 +161,9 @@
   padding: 10px 0px;
   border-radius: 5px;
   cursor: pointer;
-  background-color: #3a3a3a00;
-  color: white;
-  border: 1px solid #f1f1f173;
+  background-color: #00000000;
+  color: var(--text-gray);
+  border: 1px solid var(--primary-200);
 }
 
 .editSchedule .floatView {
@@ -189,14 +189,14 @@
   line-height: 40px;
   font-size: large;
   font-weight: 600;
-  color: white;
+  color: var(--text-gray);
 }
 .editSchedule .floatTimeStatus {
   width: 100%;
   height: 100%;
 }
 .editSchedule .possible {
-  background-color: #a83737af;
+  background-color: var(--brand-red);
   transition-duration: 0.3s;
 }
 @media screen and (max-width: 767px) {

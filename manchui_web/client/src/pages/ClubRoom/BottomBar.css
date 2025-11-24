@@ -1,8 +1,8 @@
 .bottomBar {
   position: fixed;
   bottom: 0px;
-  background-color: #0c0c0c;
-  border-top: 1px solid #b6b6b62c;
+  background-color: var(--background-dark);
+  border-top: 1px solid var(--primary-300);
   width: 700px;
   height: 45px;
   display: flex;
@@ -16,8 +16,8 @@
   left: 0px;
   width: 100%;
   height: 100%;
-  background-color: #121212;
-  border-top: 1px solid #121212;
+  background-color: var(--box-1);
+  border-top: 1px solid var(--box-1);
   z-index: 800;
 }
 .menu-button {
@@ -38,10 +38,10 @@
   font-size: 18px;
 }
 .menu-button:hover {
-  background-color: #121212;
+  background-color: var(--box-1);
 }
 .selcetMenu {
-  background-color: #121212;
+  background-color: var(--box-1);
 }
 @media screen and (max-width: 767px) {
   .bottomBar {

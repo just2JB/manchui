@@ -46,15 +46,26 @@ const Practice = () => {
           withCredentials: true,
         });
         const dateSorted = response.data.practices.sort((a, b) => {
-          if (a.date > b.date) return 1;
-          if (a.date === b.date) {
+          if (
+            Number(a.date.split("- ").join("")) >
+            Number(b.date.split("- ").join(""))
+          )
+            return 1;
+          if (
+            Number(a.date.split("- ").join("")) ===
+            Number(b.date.split("- ").join(""))
+          ) {
             const aFirst = a.time.split("~")[0];
             const bFirst = b.time.split("~")[0];
             if (aFirst > bFirst) return 1;
             if (aFirst === bFirst) return 0;
             if (aFirst < bFirst) return -1;
           }
-          if (a.date < b.date) return -1;
+          if (
+            Number(a.date.split("- ").join("")) <
+            Number(b.date.split("- ").join(""))
+          )
+            return -1;
         });
         setPractices(dateSorted);
         setSeePractices(dateSorted);

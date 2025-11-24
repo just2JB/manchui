@@ -27,10 +27,10 @@
   height: 100%;
   border-collapse: collapse;
   padding: 3px;
-  background-color: #12121200;
+  background-color: #00000000;
 }
 .teamCalender thead td {
-  color: #f5f5f5;
+  color: var(--text-primary);
   font-weight: 300;
   text-align: center;
 }
@@ -38,11 +38,11 @@
   text-align: center;
   font-size: 12px;
   font-weight: 150;
-  color: rgba(255, 255, 255, 0.37);
+  color: var(--primary-200);
   position: relative;
 }
 .teamCalender .this-month {
-  color: #f5f5f5;
+  color: var(--text-primary);
 }
 .teamCalender .today {
   position: absolute;
@@ -51,7 +51,7 @@
   height: 50%;
   width: 80%;
   border-radius: 100px;
-  background-color: rgb(110, 110, 110);
+  background-color: var(--primary-200);
 
   align-content: center;
 }
@@ -62,7 +62,7 @@
   height: 50%;
   width: 80%;
   border-radius: 100px;
-  background-color: #a83737;
+  background-color: var(--brand-red);
   align-content: center;
 }
 .teamCalender .dateSchedule {
@@ -73,7 +73,7 @@
   width: 70%;
   height: 6px;
   border-radius: 10px;
-  background-color: rgba(255, 255, 255, 0.137);
+  background-color: var(--primary-200);
   display: flex;
   flex-direction: row;
   justify-content: space-around;
@@ -91,7 +91,7 @@
 }
 .teamCalender .swiper {
   height: 100%;
-  background-color: rgba(94, 22, 22, 0);
+  background-color: rgba(0, 0, 0, 0);
   position: relative;
 }
 .teamCalender .swiping {

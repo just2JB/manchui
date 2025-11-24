@@ -10,7 +10,7 @@
 .clubRoombody {
   width: 700px;
   min-height: calc(100vh - 40px);
-  background-color: #0c0c0c;
+  background-color: var(--background-dark);
   margin-top: 35px;
   user-select: none;
   z-index: 100;

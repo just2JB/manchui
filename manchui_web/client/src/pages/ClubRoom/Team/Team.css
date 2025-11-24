@@ -18,7 +18,7 @@
   font-weight: 300;
 }
 .teamPage .newTeamButton {
-  background-color: var(--brand-red);
+  background-color: var(--box-2);
   padding: 4px;
   border-radius: 10px;
 }
@@ -32,15 +32,24 @@
   gap: 7px;
   padding: 5px 10px;
 }
+
 .teamPage .joinedTeam {
+  position: relative;
   display: flex;
-  padding: 0px 7px;
+  padding: 0px 3%;
   justify-content: space-between;
   align-items: center;
   height: 70px;
   border-radius: 5px;
-  color: var(--text-primary);
-  background-color: var(--box-2);
+  color: var(--text-gray);
+  background-color: var(--box-1);
   font-size: 18px;
   font-weight: 250;
+}
+.teamPage .labelColor {
+  position: absolute;
+  background-color: var(--brand-red);
+  left: 0px;
+  height: 100%;
+  width: 2%;
 }

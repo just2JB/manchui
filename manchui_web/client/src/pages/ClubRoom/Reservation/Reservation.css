@@ -1,107 +1,88 @@
 .reservation {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 70px);
   overflow: hidden;
   color: var(--text-primary);
   user-select: none;
   background-color: var(--background-dark);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(128, 128, 128, 0.452) transparent;
-}
-
-.reserv-calendar-section {
-  height: 50vh;
-  padding: 10px;
-}
-
-.info-section {
-  margin-top: 30px;
-  position: relative;
-  width: 100%;
-}
-.my-reservation {
-  width: 100%;
-  height: 30vh;
-  color: var(--text-primary);
-  z-index: 100;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  align-content: flex-end;
-}
-.myText {
-  align-content: center;
-  display: inline-block;
-  border-radius: 5px;
-  width: 200px;
-  height: 30px;
-  font-weight: 250;
-}
-.my-reservation-list {
-  margin-top: 20px;
-  width: 90%;
-  height: 100%;
-  overflow-x: scroll;
-
-  border-radius: 10px;
-  padding: 0px;
-  align-content: center;
-}
-
-.card-bar {
-  width: max-content;
-}
-
-.card {
-  display: inline-block;
-  margin: 0px 10px 0px 10px;
-  height: 19vh;
-}
-
-.card-inner {
-  height: 100%;
-  width: 120px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background-color: rgba(14, 14, 14, 0.979);
-  border: 1px solid rgba(255, 255, 255, 0.815);
+}
+.reservation ::-webkit-scrollbar {
+  width: 0px;
+  height: 15px;
+}
+.reserv-calendar-section {
+  margin: 10px 20px 0px 20px;
+  border-radius: 10px;
+  padding: 10px 5px 10px 5px;
+  height: 500px;
+}
+
+.info-section {
+  position: relative;
+  overflow: hidden;
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  margin: 10px 0px 10px 0px;
+  padding: 10px;
+}
+.reservationText {
+  font-size: 20px;
+  padding: 5px;
+}
+.my-reservation {
+  color: var(--text-primary);
+  z-index: 100;
+  text-align: center;
+  overflow-y: scroll;
+}
+.card-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card-inner {
+  background-color: var(--box-1);
+  padding: 0px 10px;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   border-radius: 10px;
   overflow: hidden;
   align-items: center;
   font-weight: 200;
 }
 .card-date {
-  margin-top: 7%;
   padding: 3px;
   font-size: 15px;
-  width: 70%;
-  background-color: rgba(124, 124, 124, 0.308);
   border-radius: 5px;
   user-select: text;
 }
 .card-buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: row;
+  gap: 10px;
 }
 .cancle-reservation {
   color: var(--text-primary);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  background-color: rgba(95, 4, 4, 0.377);
+  background-color: var(--brand-red);
+  border: none;
   height: 25px;
   width: 100px;
   border-radius: 10px;
   align-content: center;
-  margin-bottom: 5%;
   cursor: pointer;
 }
 .share {
-  color: rgb(231, 231, 231);
-  margin-bottom: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  background-color: rgba(63, 63, 63, 0.87);
+  color: var(--text-primary);
+  border: none;
+  background-color: var(--primary-200);
   height: 25px;
   width: 35px;
   border-radius: 10px;
@@ -111,49 +92,44 @@
 .share-icon {
   margin-top: 2px;
 }
+
 .date-info {
   position: absolute;
-  top: -20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  top: 0px;
+  left: 0px;
   width: 100%;
-  height: 300px;
-  text-align: center;
+  height: 100%;
   align-content: center;
-  overflow: hidden;
-  border-top: 1px solid gray;
-  border-radius: 10px;
   padding-top: 10px;
-  padding-bottom: 100px;
-  background-color: var(--background-dark);
-  animation-name: openInfo;
-  animation-duration: 0.2s;
-  animation-timing-function: ease-in-out;
+  background-color: var(--box-1);
   user-select: none;
   z-index: 550;
 }
+.date-info ::-webkit-scrollbar {
+  width: 20px;
+  height: 15px;
+}
 .reservation .dateText {
-  align-content: center;
-  font-size: medium;
+  margin-top: 10px;
+  padding: 5px;
+  font-size: 20px;
   font-weight: 300;
-  display: inline-block;
-  background-color: rgba(161, 24, 14, 0.308);
-  border-radius: 5px;
-  width: 200px;
-  height: 30px;
 }
 .close-info {
   position: absolute;
   height: 25px;
   width: 25px;
-  top: 18px;
-  right: 10px;
-  color: gray;
+  padding: 10px;
+  top: 0px;
+  right: 0px;
 }
 .board {
-  margin: 5px;
   overflow-x: scroll;
-  height: 90px;
+  flex: 1;
   align-content: flex-end;
-  border: 1px solid gray;
   border-radius: 5px;
 }
 .board-times {
@@ -205,15 +181,13 @@
   justify-content: center;
 }
 .make-button {
-  margin-top: 50px;
-  margin-bottom: 50px;
-
-  background-color: rgba(161, 24, 14, 0.308);
-  border: 1px solid rgb(112, 25, 25);
+  background-color: var(--brand-red);
+  border: 1px solid var(--brand-red);
   width: 200px;
   height: 50px;
   border-radius: 10px;
   align-content: center;
+  margin-bottom: 30px;
 }
 
 .make-button:hover {
@@ -222,19 +196,11 @@
   background-color: rgb(17, 17, 17);
   cursor: pointer;
 }
+
 @keyframes reservTime {
   0% {
     background-color: rgba(143, 124, 124, 0.555);
   }
   100% {
-  }
-}
-
-@keyframes openInfo {
-  0% {
-    top: 400px;
-  }
-  100% {
-    top: -10px;
   }
 }

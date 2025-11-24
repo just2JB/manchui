@@ -5,7 +5,7 @@ import "swiper/swiper-bundle.css";
 
 export const Calender = ({ selectedDay, clickDate }) => {
   const [swiperInstance, setSwiperInstance] = useState(null);
-
+  const [swiping, setSwiping] = useState(false);
   const getFirstDate = (date) => {
     const firstDate = new Date(date);
     firstDate.setDate(1);
@@ -68,6 +68,7 @@ export const Calender = ({ selectedDay, clickDate }) => {
   };
   const changeSlideHandle = (e) => {
     setCalenderArray(calenders[e.realIndex][2][0].date, e.realIndex);
+    setSwiping(false);
   };
   const clickDateHandle = (date) => {
     clickDate(date);
@@ -125,6 +126,7 @@ export const Calender = ({ selectedDay, clickDate }) => {
         </thead>
       </table>
       <Swiper
+        onSlideChangeTransitionStart={() => setSwiping(true)}
         onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
         onSwiper={handleSwiper}
         loop="true"
@@ -147,14 +149,16 @@ export const Calender = ({ selectedDay, clickDate }) => {
                         {data.date.getDate()}
 
                         {data.date.toDateString() ===
-                        selectedDay.toDateString() ? (
-                          <div className="selectedDay"></div>
+                        new Date().toDateString() ? (
+                          <div className="today">{data.date.getDate()}</div>
                         ) : (
                           ""
                         )}
                         {data.date.toDateString() ===
-                        new Date().toDateString() ? (
-                          <div className="today"></div>
+                        selectedDay.toDateString() ? (
+                          <div className="selectedDay">
+                            {data.date.getDate()}
+                          </div>
                         ) : (
                           ""
                         )}
@@ -168,6 +172,7 @@ export const Calender = ({ selectedDay, clickDate }) => {
           </SwiperSlide>
         ))}
       </Swiper>
+      <div className={`${swiping ? "swiping" : ""}`}></div>
     </div>
   );
 };

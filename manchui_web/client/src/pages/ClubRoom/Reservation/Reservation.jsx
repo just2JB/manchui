@@ -14,6 +14,7 @@ const Reservation = () => {
   const [reservationData, setReservationData] = useState([]);
   const [selectedDay, setselectedDay] = useState(new Date());
   const [makeTime, setMakeTime] = useState([]);
+  const [anchor, setAnchor] = useState(-1);
   const [openInfo, setOpenInfo] = useState(false);
   const [dayData, setDayData] = useState(
     reservationData.filter(
@@ -31,19 +32,33 @@ const Reservation = () => {
     return timeList;
   };
 
-  const clickTime = (time) => {
-    for (let item of dayData) {
-      if (item.time.includes(time)) {
-        return;
+  const toggleHourSelection = (hour) => {
+    if (makeTime.length < 1) {
+      setAnchor(hour);
+      setMakeTime([hour]);
+      return;
+    }
+    if (hour < anchor) {
+      setAnchor(hour);
+      setMakeTime([hour]);
+      return;
+    } else if (hour > anchor) {
+      let newHours = [];
+      for (let i = 0; i < hour - anchor + 1; i++) {
+        newHours.push(anchor + i);
+        for (let item of dayData) {
+          if (item.time.includes(anchor + i)) {
+            return;
+          }
+        }
       }
-    }
-    let timeArray = [...makeTime];
-    if (makeTime.includes(time)) {
-      timeArray = timeArray.filter((item) => item !== time);
+      setMakeTime(newHours);
+      return;
     } else {
-      timeArray.push(time);
+      setMakeTime([]);
+      setAnchor(-1);
+      return;
     }
-    setMakeTime(timeArray);
   };
 
   const clickDate = (date) => {
@@ -138,87 +153,87 @@ const Reservation = () => {
       <div className="reserv-calendar-section">
         <Calender selectedDay={selectedDay} clickDate={clickDate} />
       </div>
+
       <div className="info-section">
+        <div className="reservationText">나의 예약</div>
+
         <div className="my-reservation">
-          <h4 className="myText">{user.username} 님의 예약</h4>
-          <div className="my-reservation-list">
-            <div className="card-bar">
-              {reservationData.map((data, index) =>
-                data.agentId === user._id ? (
-                  <div key={index} className="card">
-                    <div className="card-inner">
-                      <div className="card-date">{`${data.date}`}</div>
-                      <div className="card-time">{`${Math.min(
-                        ...data.time
-                      )} - ${Math.max(...data.time) + 1}`}</div>
-                      <div className="card-buttons">
-                        <button
-                          className="cancle-reservation"
-                          onClick={() => deleteHandle(data)}
-                        >
-                          예약 취소
-                        </button>
-                        <button className="share">
-                          <IoMdShare className="share-icon" />
-                        </button>
-                      </div>
+          <div className="card-bar">
+            {reservationData.map((data, index) =>
+              data.agentId === user._id ? (
+                <div key={index} className="card">
+                  <div className="card-inner">
+                    <div className="card-date">{`${data.date}`}</div>
+                    <div className="card-time">{`${Math.min(
+                      ...data.time
+                    )}시 - ${Math.max(...data.time) + 1}시`}</div>
+                    <div className="card-buttons">
+                      <button
+                        className="cancle-reservation"
+                        onClick={() => deleteHandle(data)}
+                      >
+                        예약 취소
+                      </button>
+                      <button className="share">
+                        <IoMdShare className="share-icon" />
+                      </button>
                     </div>
                   </div>
-                ) : null
-              )}
-            </div>
-          </div>
-        </div>
-        {openInfo ? (
-          <div className="date-info">
-            <h5 className="dateText">
-              {`${selectedDay.getFullYear()}년 ${
-                selectedDay.getMonth() + 1
-              }월 ${selectedDay.getDate()}일`}
-            </h5>
-            <IoCloseOutline
-              className="close-info"
-              onClick={() => setOpenInfo(false)}
-            />
+                </div>
+              ) : null
+            )}
+          </div>{" "}
+          {openInfo ? (
+            <div className="date-info">
+              <h5 className="dateText">
+                {`${selectedDay.getFullYear()}년 ${
+                  selectedDay.getMonth() + 1
+                }월 ${selectedDay.getDate()}일`}{" "}
+              </h5>
+              <IoCloseOutline
+                className="close-info"
+                onClick={() => setOpenInfo(false)}
+              />
 
-            <div className="board">
-              <div className="board-times">
-                {makeTimeArray([]).map((item, index) => (
-                  <div
-                    key={index}
-                    className="time"
-                    onClick={() => clickTime(index)}
-                  >
-                    <div className="time-number">{index}</div>
-                    {makeTime.includes(index) ? (
-                      <div
-                        className="
+              <div className="board">
+                <div className="board-times">
+                  {makeTimeArray([]).map((item, index) => (
+                    <div
+                      key={index}
+                      className="time"
+                      onClick={() => toggleHourSelection(index)}
+                    >
+                      <div className="time-number">{index}</div>
+                      {makeTime.includes(index) ? (
+                        <div
+                          className="
               selected-time"
-                      ></div>
-                    ) : null}
-                    {dayData.map((data) => (
-                      <div key={data.time} className="reserved-outdiv">
-                        {data.time.includes(index) ? (
-                          <div
-                            className="
+                        ></div>
+                      ) : null}
+                      {dayData.map((data) => (
+                        <div key={data.time} className="reserved-outdiv">
+                          {data.time.includes(index) ? (
+                            <div
+                              className="
                 reserved"
-                          ></div>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ))}
+                            ></div>
+                          ) : null}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="make-reservation">
+                <div className="make-button" onClick={makeHandle}>
+                  예약하기
+                </div>
               </div>
             </div>
-            <div className="make-reservation">
-              <div className="make-button" onClick={makeHandle}>
-                예약하기
-              </div>
-            </div>
-          </div>
-        ) : (
-          <></>
-        )}
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -53,7 +53,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
           </div>
           <div className="title">
             <div>
-              {location.pathname === "/club" ? (
+              {location.pathname !== "이미지만띄우기" ? (
                 <Link className="logo" to="/club">
                   <img
                     src="/logos/longLogo_white.png"

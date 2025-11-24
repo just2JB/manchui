@@ -19,7 +19,6 @@ const CreatePractice = ({
   const [selectedMembers, setSelectedMembers] = useState(team.members || []);
   const [openTimeTable, setOpenTimeTable] = useState(3);
   const [place, setPlace] = useState("미확정");
-
   const [selectHours, setSelectHours] = useState([]);
   const [anchor, setAnchor] = useState(-1);
   const [selectDaySchedules, setSelectDaySchedules] = useState(

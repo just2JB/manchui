@@ -38,7 +38,10 @@ const Team = () => {
     <div className="teamPage">
       <div className="topMenu">
         <h4>내 팀</h4>
-        <span className="newTeamButton" onClick={() => nav("/club/team/create-team")}>
+        <span
+          className="newTeamButton"
+          onClick={() => nav("/club/team/create-team")}
+        >
           <IoAdd />새 팀
         </span>
       </div>
@@ -50,6 +53,7 @@ const Team = () => {
               key={item._id}
               onClick={() => nav(`/club/team/team-main/:${item._id}`)}
             >
+              <div className="labelColor"></div>
               <div className="teamName">{item.name}</div>
               <div className="toTeamMain">
                 <MdOutlineKeyboardArrowRight />

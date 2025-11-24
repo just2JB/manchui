@@ -188,10 +188,10 @@ const TeamMain = () => {
         }
       );
       alert(response.data.message);
-      nav("/club/practice");
+      nav("/club/team");
     } catch (error) {
       alert(error.response.data.message);
-      nav("/club/practice");
+      nav("/club/team");
     }
   };
   const deleteTeamHandel = async () => {
@@ -204,7 +204,7 @@ const TeamMain = () => {
         }
       );
       alert(response.data.message);
-      nav("/club/practice");
+      nav("/club/team");
     } catch {
       alert(error.response.data.message);
     }

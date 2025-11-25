@@ -63,18 +63,26 @@
 .ClubRoomNavbar .menu {
   position: fixed;
   top: 0px;
-  right: -70%;
-  width: 490px;
+  left: 100%;
   height: 100vh;
-  background-color: var(--background-dark);
+  width: 100vw;
+
   color: var(--text-gray);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: space-between;
   transition-duration: 0.3s;
 }
 .ClubRoomNavbar .openMenu {
-  right: 0px;
+  left: 0px;
+}
+.ClubRoomNavbar .menuMenu {
+  background-color: var(--background-dark);
+  width: 300px;
+}
+.ClubRoomNavbar .closeSection {
+  flex: 1;
+  background-color: #00000000;
 }
 .ClubRoomNavbar .topMenu {
   margin-top: 20px;
@@ -103,8 +111,5 @@
   }
   .ClubRoomNavbar {
     width: 100%;
-  }
-  .ClubRoomNavbar .menu {
-    width: 70%;
   }
 }

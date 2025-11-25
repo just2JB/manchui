@@ -271,7 +271,16 @@ const TeamMain = () => {
     <div className="teamMain">
       <div className="teamInfo">
         <div className="tmamInfoTop">
-          <div className="name">{team.name}</div>
+          <div className="name">
+            <span
+              style={{
+                padding: "2px",
+                marginRight: "3px",
+                backgroundColor: `${team.teamColor}`,
+              }}
+            ></span>
+            {team.name}
+          </div>
           <div className="menuDiv">
             {infoMenuOpen ? (
               <button

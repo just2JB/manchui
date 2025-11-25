@@ -19,6 +19,10 @@ const teamSchema = new mongoose.Schema({
     type: Array,
     default: [],
   },
+  teamColor: {
+    type: String,
+    default: "#ffffff",
+  },
 });
 
 const Team = mongoose.model("Team", teamSchema);

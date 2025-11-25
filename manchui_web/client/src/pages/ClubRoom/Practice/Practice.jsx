@@ -144,6 +144,14 @@ const Practice = () => {
                   ""
                 )}
                 <div className="listPracticeCard">
+                  <span
+                    style={{
+                      padding: "2px",
+                      marginRight: "3px",
+                      borderRadius: "5px",
+                      backgroundColor: `${practice.teamColor}`,
+                    }}
+                  ></span>
                   <div>{practice.teamName}</div>
                   <div>
                     {(practice.time.split("~")[0] * 2) % 2 === 0

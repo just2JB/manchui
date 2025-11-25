@@ -75,6 +75,7 @@ router.get("/", async (req, res) => {
           place: practice.place,
           members: practice.members,
           teamName: team.name,
+          teamColor: team.teamColor,
         });
       }
     });

@@ -53,17 +53,25 @@ const CreateTeam = () => {
               onChange={(e) => handleChange(e)}
             />
           </div>
-          <div className="inputBox teamName">
-            <div className="inputText comment">설명</div>
+          <div className="inputBox comment">
+            <div className="inputText ">설명</div>
             <input
               className="formInput"
               name="comment"
               onChange={(e) => handleChange(e)}
             />
           </div>
-          <div className="memberSection">
-            
+          <div className="inputBox teamColor">
+            <div className="inputText ">팀 색상</div>
+            <input
+              defaultValue="#ffffff"
+              type="color"
+              className="inputColor"
+              name="teamColor"
+              onChange={(e) => handleChange(e)}
+            />
           </div>
+          <div className="memberSection"></div>
         </div>
         <button className="submitButton" type="submit">
           만들기

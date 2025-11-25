@@ -9,10 +9,7 @@
   flex-direction: column;
   justify-content: space-between;
 }
-.reservation ::-webkit-scrollbar {
-  width: 0px;
-  height: 15px;
-}
+
 .reserv-calendar-section {
   margin: 10px 20px 0px 20px;
   border-radius: 10px;
@@ -22,14 +19,13 @@
 
 .info-section {
   position: relative;
-  overflow: hidden;
   flex: 1;
   position: relative;
   display: flex;
   flex-direction: column;
   border-radius: 10px;
-  margin: 10px 0px 10px 0px;
-  padding: 10px;
+  margin: 10px 0px 10px 00px;
+  padding: 20px;
 }
 .reservationText {
   font-size: 20px;
@@ -104,14 +100,17 @@
   height: 100%;
   align-content: center;
   padding-top: 10px;
-  background-color: var(--box-1);
+  background-color: var(--background-dark);
+
+  border-radius: 10px;
   user-select: none;
   z-index: 550;
+  scrollbar-width: thin;
+  scrollbar-color: var(--box-2) transparent;
+  animation-name: dateInfo;
+  animation-duration: 0.3s;
 }
-.date-info ::-webkit-scrollbar {
-  width: 20px;
-  height: 15px;
-}
+
 .reservation .dateText {
   margin-top: 10px;
   padding: 5px;
@@ -143,7 +142,7 @@
   width: 40px;
   margin: 2px;
   border-radius: 5px;
-  background-color: rgba(209, 209, 209, 0.342);
+  background-color: var(--primary-300);
   align-content: center;
 }
 .time-number {
@@ -202,5 +201,19 @@
     background-color: rgba(143, 124, 124, 0.555);
   }
   100% {
+  }
+}
+@keyframes dateInfo {
+  0% {
+    top: 400px;
+  }
+  100% {
+    top: 0px;
+  }
+}
+@media screen and (max-width: 767px) {
+  .reservation ::-webkit-scrollbar {
+    width: 0px;
+    height: 15px;
   }
 }

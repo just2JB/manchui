@@ -48,6 +48,15 @@
   border: none;
   outline: none;
 }
+.createTeam .teamColor {
+  width: max-content;
+}
+.createTeam .inputColor {
+  background-color: #00000000;
+  border: none;
+  height: 40px;
+  width: 40px;
+}
 
 .createTeam .submitButton {
   border: 1px solid #00000000;

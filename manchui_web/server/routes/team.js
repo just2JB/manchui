@@ -6,7 +6,7 @@ const Schedule = require("../models/Schedule");
 
 router.post("/create", async (req, res) => {
   try {
-    const { name, comment, userId } = req.body;
+    const { name, comment, userId, teamColor } = req.body;
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "유저를 찾을 수 없습니다." });
@@ -16,6 +16,7 @@ router.post("/create", async (req, res) => {
       leaderId: user._id,
       members: [user._id],
       comment: comment,
+      teamColor: teamColor,
     });
     await team.save();
     res.status(201).json({ message: "팀 생성이 완료되었습니다" });

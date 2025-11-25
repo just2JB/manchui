@@ -53,7 +53,10 @@ const Team = () => {
               key={item._id}
               onClick={() => nav(`/club/team/team-main/:${item._id}`)}
             >
-              <div className="labelColor"></div>
+              <div
+                className="labelColor"
+                style={{ backgroundColor: `${item.teamColor}` }}
+              ></div>
               <div className="teamName">{item.name}</div>
               <div className="toTeamMain">
                 <MdOutlineKeyboardArrowRight />

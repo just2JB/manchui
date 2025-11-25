@@ -240,3 +240,5 @@ const Reservation = () => {
 };
 
 export default Reservation;
+
+// 예약 제한이랑 거시기 뭐냐 공유기능 만들어야함

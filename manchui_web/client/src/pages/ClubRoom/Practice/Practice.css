@@ -83,12 +83,26 @@
   justify-content: end;
   gap: 10px;
 }
-.practice .controlButton {
-  border-radius: 5px;
+.practice .seeSelect {
+  position: relative;
+}
+.practice .seeOption {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  transition-duration: 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
   background-color: var(--primary-200);
+  width: max-content;
+}
+.practice .controlButton {
+  text-align: end;
   font-size: 14px;
   font-weight: 250;
-  padding: 4px;
+  padding: 3px 10px;
 }
 .practice .myPractice {
   flex: 1;

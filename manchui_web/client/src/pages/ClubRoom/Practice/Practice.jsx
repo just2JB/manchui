@@ -26,11 +26,13 @@ const toKrDay = ({ day }) => {
   else if (day === 6) return <div className={`day saturday`}>토</div>;
 };
 const Practice = () => {
+  const [seeSelect, setSeeSelect] = useState(false);
   const [swiping, setSwiping] = useState(false);
   const [swiperInstance, setSwiperInstance] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
   const [practices, setPractices] = useState([]);
   const [seePractices, setSeePractices] = useState([]);
+  const [seeOption, setSeeOption] = useState("내 연습");
   const [selcetDay, setSelcetDay] = useState(new Date());
   const [weekPractice, setWeekPractice] = useState([[], [], []]);
   const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -79,6 +81,7 @@ const Practice = () => {
     if (swiperInstance) {
       setDayArray(new Date(), swiperInstance.realIndex);
     }
+    setSelcetDay(new Date());
   };
   const toFomatDate = (date) => {
     const FomatDate = `${date.getFullYear()}-${String(
@@ -87,15 +90,18 @@ const Practice = () => {
     return FomatDate;
   };
 
-  const changeUser = (userId) => {
-    if (userId === "All") {
-      return setSeePractices(practices);
+  useEffect(() => {
+    if (seeOption === "내 연습") {
+      const filteredPractices = practices.filter((practice) =>
+        practice.members.includes(user._id)
+      );
+      setSeePractices(filteredPractices);
+    } else if (seeOption === "전체 연습") {
+      setSeePractices(practices);
+    } else {
+      setSeePractices([]);
     }
-    const filteredPractices = practices.filter((practice) =>
-      practice.members.includes(userId)
-    );
-    return setSeePractices(filteredPractices);
-  };
+  }, [practices, seeOption]);
 
   useEffect(() => {
     setDayArray(new Date(), 0);
@@ -127,7 +133,6 @@ const Practice = () => {
             return -1;
         });
         setPractices(dateSorted);
-        setSeePractices(dateSorted);
       } catch {
         alert(error.response.data.message);
       }
@@ -172,9 +177,9 @@ const Practice = () => {
                       <div className="datePractices">
                         {seePractices
                           .filter((prac) => prac.date === toFomatDate(date))
-                          .map((practice) => (
+                          .map((practice, index) => (
                             <div
-                              key={practice.teamId}
+                              key={index}
                               className="datePracticeObject"
                             ></div>
                           ))}
@@ -187,11 +192,31 @@ const Practice = () => {
           </Swiper>
         </div>
         <div className="listControler">
-          <div className="controlButton" onClick={() => changeUser(user._id)}>
-            내 연습만 보기
-          </div>
-          <div className="controlButton" onClick={() => changeUser("All")}>
-            모두 보기
+          <div
+            className="seeSelect"
+            onClick={() =>
+              seeSelect ? setSeeSelect(false) : setSeeSelect(true)
+            }
+          >
+            {seeOption}
+            {seeSelect ? (
+              <div className={`seeOption`}>
+                <div
+                  className="controlButton"
+                  onClick={() => setSeeOption("내 연습")}
+                >
+                  내 연습
+                </div>
+                <div
+                  className="controlButton"
+                  onClick={() => setSeeOption("전체 연습")}
+                >
+                  전체 연습
+                </div>
+              </div>
+            ) : (
+              ""
+            )}
           </div>
         </div>
       </div>

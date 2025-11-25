@@ -109,6 +109,7 @@ const CreatePractice = ({
     return { count: count, ableMember: ableMember };
   };
   const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
     const year = localeDateString.split(".")[0];
     const month =
       localeDateString.split(".")[1].length === 1
@@ -120,7 +121,6 @@ const CreatePractice = ({
         : localeDateString.split(".")[2];
     return `${year}-${month}-${date}`;
   };
-
   const createPracticeHandle = async () => {
     if (selectHours.length === 0) {
       return;

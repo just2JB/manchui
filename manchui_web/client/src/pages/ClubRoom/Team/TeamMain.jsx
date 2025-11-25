@@ -77,6 +77,7 @@ const TeamMain = () => {
     }
   };
   const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
     const year = localeDateString.split(".")[0];
     const month =
       localeDateString.split(".")[1].length === 1

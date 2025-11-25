@@ -12,7 +12,7 @@
   flex-direction: column;
   margin: 0px 7px 0px 7px;
   padding: 10px 5px 10px 5px;
-  background-color: var(--box-1);
+  background-color: var(--box-2);
   border-radius: 0px 0px 10px 10px;
 }
 .practice .weekSelector {
@@ -22,9 +22,14 @@
   position: sticky;
   top: 0px;
 }
+.practice .weekInfo {
+  font-size: 18px;
+  text-align: center;
+}
 .practice .weekSwiper {
   height: 100%;
   width: 100%;
+  background-color: var(--box-1);
 }
 .practice .weekSlide {
   background-color: var(--background-dark);
@@ -42,7 +47,18 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  background-color: var(--background-dark);
+  background-color: var(--box-1);
+}
+.practice .dateText {
+  font-size: 14px;
+  color: var(--text-gray);
+}
+.practice .sunday {
+  color: var(--brand-red);
+}
+
+.practice .saturday {
+  color: #2c3dff;
 }
 
 .practice .datePractices {
@@ -64,11 +80,12 @@
 .practice .listControler {
   margin-top: 5px;
   display: flex;
-  justify-content: space-around;
+  justify-content: end;
+  gap: 10px;
 }
 .practice .controlButton {
   border-radius: 5px;
-  background-color: var(--box-2);
+  background-color: var(--primary-200);
   font-size: 14px;
   font-weight: 250;
   padding: 4px;
@@ -98,7 +115,7 @@
   text-align: center;
   margin-top: 10px;
   margin-bottom: 5px;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 200;
 }
 .practice .listPracticeCard {
@@ -127,10 +144,6 @@
   overflow: hidden;
 }
 .practice .selectDateCard {
-  background-color: #00000000;
-  border-radius: 15px;
-  padding: 5px;
-  border: 1px groove var(--text-gray);
   color: var(--text-primary);
 }
 
@@ -178,7 +191,14 @@
   border: none;
   border-radius: 5px;
 }
-
+.practice .swiping {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  z-index: 200;
+}
 @keyframes popNewPractice {
   0% {
     bottom: -200px;

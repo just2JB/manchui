@@ -33,6 +33,11 @@ const Reservation = () => {
   };
 
   const toggleHourSelection = (hour) => {
+    for (let item of dayData) {
+      if (item.time.includes(hour)) {
+        return;
+      }
+    }
     if (makeTime.length < 1) {
       setAnchor(hour);
       setMakeTime([hour]);

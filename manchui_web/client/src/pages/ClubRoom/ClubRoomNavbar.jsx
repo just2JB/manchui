@@ -7,7 +7,7 @@ import {
   useOutletContext,
 } from "react-router-dom";
 import "./ClubRoomNavbar.css";
-import { IoIosMenu, IoMdArrowBack } from "react-icons/io";
+import { IoIosMenu, IoMdArrowBack, IoIosClose } from "react-icons/io";
 import { LuSquareArrowOutUpLeft } from "react-icons/lu";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -41,15 +41,9 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
       ) : (
         <div className="topBar">
           <div className="out">
-            {location.pathname === "/club" ? (
-              <Link to="/">
-                <LuSquareArrowOutUpLeft className="navIcons" />
-              </Link>
-            ) : (
-              <div onClick={() => nav(-1)}>
-                <IoMdArrowBack className="navIcons" />
-              </div>
-            )}
+            <div onClick={() => nav(-1)}>
+              <IoMdArrowBack className="navIcons" />
+            </div>
           </div>
           <div className="title">
             <div>
@@ -103,7 +97,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
                   />
                 </div>
                 <div className="closeMenu" onClick={() => setMenuOpen(false)}>
-                  x
+                  <IoIosClose />
                 </div>
               </div>
               <div className="bottomMenu" onClick={() => setMenuOpen(false)}>

@@ -1,14 +1,16 @@
 .bottomBar {
   position: fixed;
   bottom: 0px;
-  background-color: var(--background-dark);
-  border-top: 1px solid var(--primary-300);
-  width: 700px;
+  background-color: var(--box-1);
+  width: 680px;
   height: 45px;
   display: flex;
   justify-content: space-between;
   z-index: 400;
   user-select: none;
+  overflow: hidden;
+  border-radius: 20px 20px 0px 0px;
+  border: 1px solid var(--box-2);
 }
 .bottomBar .inviteLinkBottom {
   position: absolute;
@@ -16,35 +18,183 @@
   left: 0px;
   width: 100%;
   height: 100%;
-  background-color: var(--box-1);
-  border-top: 1px solid var(--box-1);
+  background-color: var(--background-dark);
   z-index: 800;
 }
 .menu-button {
-  padding-bottom: 3px;
+  position: relative;
+  flex: 1;
+  text-decoration: none;
+  color: var(--primary-300);
+  font-size: small;
+  font-weight: 200;
+  transition-duration: 0.3s;
+}
+.menu-button:hover {
+  color: var(--brand-red);
+}
+
+.menu-button .button-icon {
+  font-size: 16px;
+}
+
+.bottomBar .buttonText {
+  align-content: center;
+  text-align: center;
   display: flex;
+  bottom: 4px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
   justify-content: end;
   flex-direction: column;
   align-items: center;
-  flex: 1;
-  text-decoration: none;
-  align-content: center;
-  text-align: center;
-  font-size: small;
-  font-weight: 200;
-  color: #979797c2;
+  position: absolute;
+  z-index: 20;
 }
-.menu-button .button-icon {
-  font-size: 18px;
+.bottomBar .selcetMenu {
+  color: var(--text-gray);
+  font-size: 14px;
+  font-weight: 400;
 }
-.menu-button:hover {
-  background-color: var(--box-1);
+.selcetMenu .button-icon {
+  font-size: 19px;
+  color: var(--text-gray);
 }
-.selcetMenu {
-  background-color: var(--box-1);
+.bottomBar .firstButton {
+  position: relative;
 }
+.bottomBar .indexBox {
+  top: 0px;
+  position: absolute;
+  width: 100%;
+  background-color: rgba(127, 255, 212, 0);
+  height: 100%;
+  align-items: center;
+  align-content: end;
+  justify-items: center;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+.bottomBar .circle {
+  background-color: var(--box-2);
+  width: 80%;
+  height: 100%;
+  border-radius: 20px;
+  z-index: 1;
+  animation-duration: 0.7s;
+}
+.bottomBar .index1 {
+  left: 0px;
+}
+.bottomBar .index2 {
+  left: 100%;
+}
+.bottomBar .index3 {
+  left: 200%;
+}
+.bottomBar .index4 {
+  left: 300%;
+}
+.bottomBar .index5 {
+  left: 400%;
+}
+.index1 > .circle {
+  animation-name: move;
+}
+.index2 > .circle {
+  animation-name: move2;
+}
+.index3 > .circle {
+  animation-name: move3;
+}
+.index4 > .circle {
+  animation-name: move4;
+}
+.index5 > .circle {
+  animation-name: move5;
+}
+
 @media screen and (max-width: 767px) {
   .bottomBar {
-    width: 100%;
+    width: 98%;
+    margin: 0px 1%;
+  }
+}
+
+@keyframes move {
+  0% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    background-color: var(--brand-red);
+  }
+  100% {
+  }
+}
+
+@keyframes move2 {
+  0% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    background-color: var(--brand-red);
+  }
+  100% {
+  }
+}
+@keyframes move3 {
+  0% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    background-color: var(--brand-red);
+  }
+  100% {
+  }
+}
+@keyframes move4 {
+  0% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    background-color: var(--brand-red);
+  }
+  100% {
+  }
+}
+@keyframes move5 {
+  0% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+    border-radius: 100px;
+    background-color: var(--brand-red);
+  }
+  100% {
   }
 }

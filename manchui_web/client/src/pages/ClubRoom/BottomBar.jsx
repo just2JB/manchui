@@ -30,7 +30,14 @@ const BottomBar = () => {
   }, [location]);
 
   return (
-    <div className="bottomBar">
+    <div
+      className="bottomBar"
+      style={{
+        border: `${
+          location.pathname.includes("/club/team/join") ? "none" : ""
+        }`,
+      }}
+    >
       {location.pathname.includes("/club/team/join") ? (
         <div className="inviteLinkBottom"></div>
       ) : (

@@ -13,7 +13,7 @@
   z-index: 810;
 }
 .inviteLink {
-  background-color: var(--box-1);
+  background-color: var(--background-dark);
   border-bottom: none;
 }
 .out {

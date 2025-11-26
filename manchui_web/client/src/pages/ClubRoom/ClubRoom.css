@@ -6,7 +6,6 @@
   justify-content: space-between;
 }
 .my-info {
-  margin-top: 17px;
   align-items: center;
   width: 100%;
   display: flex;
@@ -55,15 +54,10 @@
   position: absolute;
   width: 95%;
   height: 310px;
-  top: 34px;
+
   z-index: 1;
   border-radius: 10px;
   overflow: hidden;
-}
-.club-room .my-info .topMenu {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }
 .my-info .profil {
   width: 95%;
@@ -74,7 +68,6 @@
   height: 300px;
   margin-top: 10px;
   padding: 5px;
-
   color: var(--text-primary);
   border-radius: 10px;
   display: flex;
@@ -111,188 +104,4 @@
 .user .username {
   font-size: x-large;
   font-weight: 500;
-}
-.profilCard .nextPractice {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.club-room .content {
-  margin-top: 15px;
-  align-items: center;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  background-color: #00000000;
-}
-.club-room > .content > .schedule {
-  width: 95%;
-  padding: 5px;
-}
-.club-room .schedule > .topMenu {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-.club-room .topMenu > .right {
-  display: flex;
-  flex-direction: row;
-  gap: calc(5px + 1vw);
-  font-size: 12px;
-  text-align: center;
-  font-weight: 300;
-  align-items: center;
-  color: var(--text-gray);
-}
-.club-room .topMenu > div {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  gap: 5px;
-  align-items: center;
-}
-.club-room .topMenu .createSchedule {
-  color: var(--text-gray);
-  text-decoration: none;
-}
-.club-room .topMenu > div > .month {
-  border-radius: 10px;
-  width: 30px;
-  background-color: var(--brand-red);
-  font-size: 12px;
-  text-align: center;
-  font-weight: 300;
-  align-content: center;
-}
-.club-room .swiper {
-  border: 1px solid var(--box-3);
-  border-radius: 10px;
-  margin-top: 10px;
-  height: 150px;
-  width: 100%;
-  overflow: hidden;
-}
-
-.club-room .swiper .swiperBox {
-  align-items: center;
-  height: 150px;
-  align-content: center;
-  width: calc(700px * 0.95);
-}
-.club-room .swiper .swipeContent {
-  display: flex;
-  padding: 0px 5px 0px 5px;
-  gap: 1vw;
-  justify-content: space-between;
-}
-.club-room .days {
-  text-align: center;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0px 0px 5px 0px;
-  justify-content: space-between;
-  height: 130px;
-  border-radius: 10px;
-  position: relative;
-  font-size: 14px;
-  font-weight: 300;
-  background-color: var(--box-1);
-  overflow: hidden;
-}
-.club-room .sunday {
-  color: var(--brand-red);
-}
-.club-room .isToday .sunday {
-  color: var(--background-dark);
-}
-.club-room .saturday {
-  color: #2c3dff;
-}
-.club-room .isToday .saturday {
-  color: var(--text-gray);
-}
-.club-room .isToday {
-  border-radius: 50px;
-  background-color: var(--brand-red);
-  color: var(--background-dark);
-  font-weight: 600;
-}
-.club-room .days .top {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 40px;
-  height: 37px;
-  padding-top: 3px;
-  gap: 3px;
-}
-
-.club-room .confirm {
-  width: 10px;
-  height: 30px;
-  border-radius: 5px;
-  background-color: var(--brand-red);
-}
-.club-room .notWritten {
-  width: 10px;
-  height: 30px;
-  border-radius: 5px;
-  background-color: #333333;
-}
-.club-room .temp {
-  width: 10px;
-  height: 30px;
-  border-radius: 5px;
-  background: linear-gradient(#333333 70%, var(--brand-red));
-}
-.club-room .days .bottom {
-  height: 25px;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-.club-room .editSchedule {
-  position: absolute;
-  top: 0px;
-  background-color: var(--primary-200);
-  padding: 3px 5px 30px 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 20px;
-  color: #ebebeb;
-  cursor: pointer;
-}
-.club-room .explanation {
-  margin-top: 10px;
-  width: 100%;
-  display: flex;
-  gap: 5px;
-  justify-content: end;
-}
-.club-room .explanation > div {
-  font-size: 12px;
-  color: #f0f0f0bd;
-  align-content: center;
-  align-items: center;
-  display: flex;
-  gap: 2px;
-}
-.club-room .swiping {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  z-index: 200;
-}
-@media screen and (max-width: 767px) {
-  .club-room .swiper .swiperBox {
-    width: 95vw;
-  }
 }

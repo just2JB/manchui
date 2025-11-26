@@ -3,7 +3,7 @@
   min-height: 100vh;
   display: flex;
   justify-content: center;
-  background-color: var(--background-dark);
+  background-color: #050505;
   user-select: none;
 }
 
@@ -21,4 +21,5 @@
     width: 100%;
     position: fixed;
   }
+
 }

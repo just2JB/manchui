@@ -346,9 +346,7 @@ const TeamMain = () => {
                 {practiceInfoDetail !== "unSelect" ? (
                   <div className="edtailDate">
                     <MdCalendarMonth className="icons" />
-                    {practiceInfoDetail.date.slice(0, 4)}년{" "}
-                    {practiceInfoDetail.date.slice(5, 8)}월{" "}
-                    {practiceInfoDetail.date.slice(9, 12)}일
+                    {practiceInfoDetail.date}
                   </div>
                 ) : (
                   ""

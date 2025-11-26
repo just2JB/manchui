@@ -11,20 +11,18 @@
   display: flex;
   flex-direction: column;
   margin: 0px 7px 0px 7px;
-  padding: 10px 5px 10px 5px;
-  background-color: var(--box-2);
+  padding: 10px 0px 10px 0px;
   border-radius: 0px 0px 10px 10px;
 }
 .practice .weekSelector {
   height: 90px;
-  border-radius: 10px;
   overflow: hidden;
   position: sticky;
-  top: 0px;
 }
 .practice .weekInfo {
   font-size: 18px;
   text-align: center;
+  margin-bottom: 5px;
 }
 .practice .weekSwiper {
   height: 100%;
@@ -36,6 +34,7 @@
 }
 .practice .weeks {
   display: flex;
+  gap: 3px;
   flex-direction: row;
   justify-content: space-between;
   height: 100%;
@@ -47,7 +46,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  background-color: var(--box-1);
+  border: 1px solid var(--primary-200);
+  border-radius: 5px;
 }
 .practice .dateText {
   font-size: 14px;
@@ -71,14 +71,15 @@
 }
 
 .practice .datePracticeObject {
-  width: 8px;
-  height: 8px;
+  width: 5px;
+  height: 5px;
   border-radius: 20px;
-  background-color: var(--text-gray);
+  background-color: var(--accent-200);
 }
 
 .practice .listControler {
-  margin-top: 5px;
+  border-bottom: 1px solid var(--primary-200);
+  margin-top: 10px;
   display: flex;
   justify-content: end;
   gap: 10px;

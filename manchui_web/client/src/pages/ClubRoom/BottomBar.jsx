@@ -56,7 +56,7 @@ const BottomBar = () => {
         </div>
         <div className="buttonText">
           <LiaCalendarCheckSolid className="button-icon" />
-          동방 예약
+          연습실 예약
         </div>
       </Link>
       <Link

@@ -147,50 +147,6 @@ const Practice = () => {
   return (
     <div className="practice">
       <div className="topMenu">
-        <div className="weekInfo">{month}월</div>
-        <div className="weekSelector">
-          <Swiper
-            onSlideChangeTransitionStart={() => setSwiping(true)}
-            onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
-            onSwiper={handleSwiper}
-            className="weekSwiper"
-            loop="true"
-            slidesPerView={1}
-            spaceBetween={10}
-            resistanceRatio={0}
-            speed={400}
-          >
-            {weekPractice.map((week) => (
-              <SwiperSlide key={week[0]} className="weekSlide">
-                <div className="weeks">
-                  {week.map((date) => (
-                    <div
-                      key={date}
-                      className="weekDay mok"
-                      onClick={() => setSelcetDay(date)}
-                    >
-                      <div className="dateText">
-                        {toKrDay({ day: date.getDay() })}
-                        {date.getDate()}
-                      </div>
-
-                      <div className="datePractices">
-                        {seePractices
-                          .filter((prac) => prac.date === toFomatDate(date))
-                          .map((practice, index) => (
-                            <div
-                              key={index}
-                              className="datePracticeObject"
-                            ></div>
-                          ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
         <div className="listControler">
           <div
             className="seeSelect"
@@ -307,4 +263,50 @@ export default Practice;
 5. 월간 선택, 보기 만들어서 한눈에 보기
 6. 스케줄 작성 페이지 만들고 홈, 스케줄 페이지에 에 팀 스케줄 요청된 날짜 강조해주는 효과 만들기
 7. 연습데이터가 나중엔 개 많을거니까 잘라서 가져오게 바꿔야할듯 (ALL) (date~date)
+
+
+<div className="weekInfo">{month}월</div>
+        <div className="weekSelector">
+          <Swiper
+            onSlideChangeTransitionStart={() => setSwiping(true)}
+            onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
+            onSwiper={handleSwiper}
+            className="weekSwiper"
+            loop="true"
+            slidesPerView={1}
+            spaceBetween={10}
+            resistanceRatio={0}
+            speed={400}
+          >
+            {weekPractice.map((week) => (
+              <SwiperSlide key={week[0]} className="weekSlide">
+                <div className="weeks">
+                  {week.map((date) => (
+                    <div
+                      key={date}
+                      className="weekDay mok"
+                      onClick={() => setSelcetDay(date)}
+                    >
+                      <div className="dateText">
+                        {toKrDay({ day: date.getDay() })}
+                        {date.getDate()}
+                      </div>
+
+                      <div className="datePractices">
+                        {seePractices
+                          .filter((prac) => prac.date === toFomatDate(date))
+                          .map((practice, index) => (
+                            <div
+                              key={index}
+                              className="datePracticeObject"
+                            ></div>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
 */

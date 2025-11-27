@@ -177,7 +177,7 @@ const Reservation = () => {
                         className="cancle-reservation"
                         onClick={() => deleteHandle(data)}
                       >
-                        예약 취소
+                        취소
                       </button>
                       <button className="share">
                         <IoMdShare className="share-icon" />

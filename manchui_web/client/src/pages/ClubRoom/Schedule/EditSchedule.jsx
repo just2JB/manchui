@@ -92,7 +92,7 @@ const EditSchedule = () => {
             withCredentials: true,
           }
         );
-        const schedules = response.data;
+        const schedules = response.data.userSchedules;
         const finded = schedules.find((data) => data.date === date);
         if (finded) {
           setSchedule(finded.times);

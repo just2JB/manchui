@@ -4,9 +4,29 @@ import { IoIosArrowForward, IoIosArrowBack } from "react-icons/io";
 import "swiper/swiper-bundle.css";
 import "./ScheduleCalender.css";
 
-export const ScheduleCalender = ({ selectedDay, clickDate }) => {
+export const ScheduleCalender = ({
+  mySchedule,
+  requestSchedules,
+  selectedDay,
+  clickDate,
+}) => {
   const [swiperInstance, setSwiperInstance] = useState(null);
   const [swiping, setSwiping] = useState(false);
+
+  const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
+
   const getFirstDate = (date) => {
     const firstDate = new Date(date);
     firstDate.setDate(1);
@@ -144,25 +164,58 @@ export const ScheduleCalender = ({ selectedDay, clickDate }) => {
                     {row.map((data) => (
                       <td
                         key={data.date}
-                        className={data.isThisMonth ? "this-month" : ""}
+                        className={`${data.isThisMonth ? "this-month" : ""} `}
                         onClick={() => clickDateHandle(data.date)}
                       >
                         {data.date.getDate()}
-
                         {data.date.toDateString() ===
                         new Date().toDateString() ? (
                           <div className="today">{data.date.getDate()}</div>
                         ) : (
                           ""
                         )}
+
                         {data.date.toDateString() ===
                         selectedDay.toDateString() ? (
-                          <div className="selectedDay">
-                            {data.date.getDate()}
-                          </div>
+                          <div className="selectedDay"></div>
                         ) : (
                           ""
                         )}
+                        <div className="stateBox">
+                          <div
+                            className={`state ${
+                              mySchedule.some(
+                                (item) =>
+                                  (item.category !== "temp") &
+                                  (item.date ===
+                                    getFomatDate(
+                                      data.date.toLocaleDateString()
+                                    ))
+                              )
+                                ? "confirmSchedule"
+                                : mySchedule.some(
+                                    (item) =>
+                                      (item.category === "temp") &
+                                      (item.date ===
+                                        getFomatDate(
+                                          data.date.toLocaleDateString()
+                                        ))
+                                  )
+                                ? "tempSchedule"
+                                : ""
+                            } ${
+                              requestSchedules.some((team) =>
+                                team.request.includes(
+                                  data.date.toLocaleDateString()
+                                )
+                              )
+                                ? "requstDay"
+                                : ""
+                            }`}
+                          >
+                            <div className="tempRequst"></div>
+                          </div>
+                        </div>
                       </td>
                     ))}
                   </tr>

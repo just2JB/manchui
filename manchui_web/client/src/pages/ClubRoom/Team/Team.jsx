@@ -27,7 +27,7 @@ const Team = () => {
           }
         );
         setMyTeams(response.data.myTeam);
-      } catch {
+      } catch(error) {
         alert(error.response.data.message);
       }
     };

@@ -40,9 +40,49 @@
   font-weight: 150;
   color: var(--primary-200);
   position: relative;
+  overflow: hidden;
 }
 .ScheduleCalender .this-month {
   color: var(--text-primary);
+}
+.ScheduleCalender .stateBox {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+}
+.ScheduleCalender .state {
+  width: 25px;
+  height: 25px;
+  border-radius: 100px;
+}
+.ScheduleCalender .requstDay {
+  background-color: var(--request-1);
+}
+.ScheduleCalender .requstDay.tempSchedule {
+  background-color: var(--request-1);
+  justify-items: center;
+  align-content: center;
+}
+.ScheduleCalender .requstDay.tempSchedule .tempRequst {
+  visibility: visible;
+  width: 60%;
+  height: 60%;
+  border-radius: 100px;
+  background-color: var(--cold-gray);
+}
+.ScheduleCalender .tempRequst {
+  visibility: hidden;
+}
+.ScheduleCalender .tempSchedule {
+  background-color: var(--cold-gray);
+}
+.ScheduleCalender .confirmSchedule {
+  background-color: var(--complete-green);
 }
 .ScheduleCalender .today {
   position: absolute;
@@ -51,7 +91,6 @@
   height: 70%;
   width: 80%;
   border-radius: 100px;
-  background-color: var(--primary-300);
   align-content: center;
   font-weight: 300;
 }
@@ -62,7 +101,7 @@
   height: 70%;
   width: 80%;
   border-radius: 100px;
-  background-color: var(--brand-red);
+
   align-content: center;
 }
 .ScheduleCalender .swiper {

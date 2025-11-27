@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
 
 router.post("/verify-token", async (req, res) => {
@@ -32,11 +33,14 @@ router.post("/", async (req, res) => {
     const sameDateSchedule = schedules.find(
       (schedule) => (schedule.userId === userId) & (schedule.date === date)
     );
+
     if (sameDateSchedule) {
       sameDateSchedule.times = times;
       sameDateSchedule.category = category;
-
-      await sameDateSchedule.save();
+      if ((category === "temp") & times.every((time) => time === 0)) {
+        await Schedule.findByIdAndDelete(sameDateSchedule._id);
+        return res.status(201).json({ message: "스케줄이 저장되었습니다." });
+      } else await sameDateSchedule.save();
     } else {
       const schedule = new Schedule({
         userId: userId,
@@ -65,7 +69,28 @@ router.get("/:userId", async (req, res) => {
     const userSchedules = schedules.filter(
       (schedule) => schedule.userId === req.params.userId
     );
-    res.json(userSchedules);
+    res.json({ userSchedules: userSchedules });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+router.get("/request/:userId", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+    const teams = await Team.find();
+    const myTeam = teams.filter((team) =>
+      team.members.some((member) => String(member) === String(user._id))
+    );
+
+    const myTeamRequst = myTeam.map((team) => {
+      return { name: team.name, request: team.requestSchedules };
+    });
+    console.log(myTeamRequst);
+    res.json({ myTeam: myTeamRequst });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }

@@ -8,16 +8,17 @@
 }
 
 .schedule .topMenu {
-  height: 200px;
+  height: 100px;
   margin: 10px 12px 12px 12px;
-  background-color: var(--box-2);
+  background-color: var(--box-3);
   border-radius: 10px;
 }
 
 .schedule .ScheduleCalender {
   flex: 1;
   margin: 0px 12px 25px 12px;
-  border: 1px solid var(--box-2);
+  padding: 10px 0px 40px 0px;
+
   border-radius: 10px;
 }
 

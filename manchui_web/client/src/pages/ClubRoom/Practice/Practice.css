@@ -136,7 +136,7 @@
 .practice .listPracticeCard {
   background-color: var(--box-2);
   padding: 10px 5px;
-  border-radius: 5px;
+  border-radius: 16px;
   display: flex;
   justify-content: space-around;
   font-size: 14px;

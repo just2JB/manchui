@@ -88,7 +88,7 @@
   height: 100%;
 }
 .teamCalender .requestSchedule {
-  background-color: #ff9800;
+  background-color: var(--request-1);
 }
 .teamCalender .teamPractice {
   background-color: #4caf50;

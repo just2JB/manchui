@@ -1,7 +1,7 @@
 .bottomBar {
   position: fixed;
   bottom: 0px;
-  background-color: var(--box-2);
+  background-color: var(--background-dark);
   width: 680px;
   height: 45px;
   display: flex;
@@ -37,6 +37,7 @@
 
 .menu-button .button-icon {
   font-size: 16px;
+  color: var(--text-primary);
 }
 
 .bottomBar .buttonText {
@@ -54,13 +55,12 @@
   z-index: 200;
 }
 .bottomBar .selcetMenu {
-  color: var(--brand-red);
   font-size: 14px;
   font-weight: 400;
+  color: var(--text-primary);
 }
 .selcetMenu .button-icon {
   font-size: 19px;
-  color: var(--brand-red);
 }
 .bottomBar .firstButton {
   position: relative;
@@ -72,15 +72,15 @@
   background-color: rgba(127, 255, 212, 0);
   height: 100%;
   align-items: center;
-  align-content: end;
+  align-content: center;
   justify-items: center;
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 .bottomBar .circle {
-  background-color: var(--box-1);
+  background-color: var(--brand-red);
   width: 100%;
-  height: 100%;
+  height: 90%;
   border-radius: 20px;
   z-index: 1;
   animation-duration: 0.7s;
@@ -133,6 +133,7 @@
     width: 40px;
     height: 40px;
     border-radius: 100px;
+    background-color: var(--box-1);
   }
   100% {
   }
@@ -148,6 +149,7 @@
     width: 40px;
     height: 40px;
     border-radius: 100px;
+    background-color: var(--box-1);
   }
   100% {
   }
@@ -162,6 +164,7 @@
     width: 40px;
     height: 40px;
     border-radius: 100px;
+    background-color: var(--box-1);
   }
   100% {
   }
@@ -176,6 +179,7 @@
     width: 40px;
     height: 40px;
     border-radius: 100px;
+    background-color: var(--box-1);
   }
   100% {
   }
@@ -190,6 +194,7 @@
     width: 40px;
     height: 40px;
     border-radius: 100px;
+    background-color: var(--box-1);
   }
   100% {
   }

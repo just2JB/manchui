@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import axios from "axios";
-
 import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
-import Beams from "../../components/Beams/Beams";
-import { RiMenuFoldFill, RiMenuFold2Fill } from "react-icons/ri";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -63,19 +60,7 @@ const ClubRoom = () => {
   return (
     <div className="club-room">
       <div className="my-info">
-        <div className="infoBack">
-          <Beams
-            beamWidth={3.2}
-            beamHeight={40}
-            beamNumber={10}
-            lightColor="rgba(184, 184, 184, 1)"
-            speed={profilSpeed}
-            noiseIntensity={2}
-            s
-            scale={0.2}
-            rotation={315}
-          />
-        </div>
+        <div className="infoBack"></div>
         <div className="profil">
           <div className="profilCard">
             <div className="user">

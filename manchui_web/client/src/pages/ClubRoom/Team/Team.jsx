@@ -27,7 +27,7 @@ const Team = () => {
           }
         );
         setMyTeams(response.data.myTeam);
-      } catch(error) {
+      } catch (error) {
         alert(error.response.data.message);
       }
     };
@@ -37,7 +37,7 @@ const Team = () => {
   return (
     <div className="teamPage">
       <div className="topMenu">
-        <h4>내 팀</h4>
+        <h4></h4>
         <span
           className="newTeamButton"
           onClick={() => nav("/club/team/create-team")}
@@ -54,12 +54,27 @@ const Team = () => {
               onClick={() => nav(`/club/team/team-main/:${item._id}`)}
             >
               <div
-                className="labelColor"
-                style={{ backgroundColor: `${item.teamColor}` }}
+                className="colorLabel"
+                style={{
+                  background: `${item.teamColor}`,
+                }}
               ></div>
-              <div className="teamName">{item.name}</div>
-              <div className="toTeamMain">
-                <MdOutlineKeyboardArrowRight />
+              <div className="left">
+                <div className="teamName">{item.name}</div>{" "}
+                <div className="dday">
+                  공연<div>D-32</div>
+                </div>
+              </div>
+              <div className="right">
+                <div className="tag">Active</div>
+                <div className="teamInfo">
+                  <div>
+                    팀원<div>{item.members.length}</div>
+                  </div>
+                  <div>
+                    연습횟수 <div>17</div>
+                  </div>
+                </div>
               </div>
             </div>
           ))}

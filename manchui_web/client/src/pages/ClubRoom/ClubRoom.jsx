@@ -4,6 +4,7 @@ import axios from "axios";
 import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
+import { VictoryPie, VictoryTheme } from "victory";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 

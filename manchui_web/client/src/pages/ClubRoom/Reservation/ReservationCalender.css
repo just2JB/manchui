@@ -47,22 +47,24 @@
 .reserv-calendar-section .today {
   position: absolute;
   top: 15%;
-  left: 10%;
+  left: 5%;
   height: 70%;
-  width: 80%;
-  border-radius: 100px;
-  background-color: var(--primary-300);
+  width: 90%;
+  border-radius: 20px;
+  border: 1px solid var(--primary-200);
   align-content: center;
   font-weight: 300;
 }
 .reserv-calendar-section .selectedDay {
   position: absolute;
-  top: 15%;
-  left: 10%;
-  height: 70%;
-  width: 80%;
-  border-radius: 100px;
-  background-color: var(--brand-red);
+  top: 30%;
+  left: 15%;
+  height: 40%;
+  width: 70%;
+  font-weight: 400;
+  background-color: var(--background-dark);
+  border-bottom: 1px solid var(--brand-red);
+  color: var(--brand-red);
   align-content: center;
 }
 .reserv-calendar-section .swiper {

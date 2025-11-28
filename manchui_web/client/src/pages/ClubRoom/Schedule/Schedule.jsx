@@ -7,6 +7,7 @@ import "./Schedule.css";
 import { TbClockEdit } from "react-icons/tb";
 import { RiArrowGoBackLine } from "react-icons/ri";
 import { ScheduleCalender } from "./ScheduleCalender";
+import CustomPieChart from "../../../components/PieChart/CustomPieChart";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -14,7 +15,7 @@ const Schedule = () => {
   const [swiping, setSwiping] = useState(false);
   const [selectedDay, setselectedDay] = useState(new Date());
   const [requestSchedules, setRequestSchedules] = useState([]);
-  const [mySchedule, mySchedules] = useState([]);
+  const [mySchedule, setMySchedule] = useState([]);
   const { user } = useOutletContext();
   const [loading, setLoading] = useState(false);
 
@@ -47,12 +48,36 @@ const Schedule = () => {
         }
       );
 
-      mySchedules(response.data.userSchedules);
+      setMySchedule(response.data.userSchedules);
     } catch (error) {
       alert(error.response.data.message);
     }
   };
+  const rateSchedule = () => {
+    const uniqueSchedule = [
+      ...new Set(
+        mySchedule.map((item) => {
+          if (item.category !== "temp") {
+            return item.date;
+          } else {
+            return;
+          }
+        })
+      ),
+    ];
 
+    if (requestSchedules.length > 0) {
+      return (
+        Math.floor(
+          (uniqueSchedule.filter((date) =>
+            requestSchedules.includes(new Date(date).toLocaleDateString())
+          ).length /
+            requestSchedules.length) *
+            1000
+        ) / 10
+      );
+    }
+  };
   useEffect(() => {
     const getRequestSchedules = async () => {
       try {
@@ -63,7 +88,13 @@ const Schedule = () => {
           }
         );
 
-        setRequestSchedules(response.data.myTeam);
+        const requestArray = [];
+        response.data.myTeam.forEach((item) => {
+          requestArray.push(...item.request);
+        });
+        const uniqueArray = [...new Set(requestArray)];
+
+        setRequestSchedules(uniqueArray);
       } catch (error) {
         alert(error.response.data.message);
       }
@@ -82,7 +113,42 @@ const Schedule = () => {
           clickDate={clickDate}
         />
       </div>
-      <div className="rate"></div>
+      <div className="rateSection">
+        <div className="rate">
+          <div className="chartText">
+            <div>요청:{requestSchedules.length}</div>
+          </div>
+          <div className="pieChartBox">
+            <CustomPieChart
+              data={[
+                { x: "완료", y: rateSchedule() },
+                { x: "미완료", y: 100 - rateSchedule() },
+              ]}
+            />
+            <div className="middelLabel"> {rateSchedule()}%</div>
+          </div>
+          <div className="chartText">
+            <div>
+              완료:
+              {
+                [
+                  ...new Set(
+                    mySchedule.map((item) => {
+                      if (item.category !== "temp") {
+                        return item.date;
+                      } else {
+                        return;
+                      }
+                    })
+                  ),
+                ].filter((date) =>
+                  requestSchedules.includes(new Date(date).toLocaleDateString())
+                ).length
+              }
+            </div>
+          </div>
+        </div>
+      </div>
       <div className={`${swiping ? "swiping" : ""}`}></div>
     </div>
   );
@@ -91,3 +157,6 @@ const Schedule = () => {
 export default Schedule;
 
 //상단 메뉴: 요청된 날짜 가로 리스트로 모아두기 / 각종 메뉴 버튼  <div className="topMenu"></div>
+/**
+ *
+ */

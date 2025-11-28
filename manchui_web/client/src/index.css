@@ -17,17 +17,18 @@ body {
   height: 15px;
 }
 :root {
-  --background-dark: #0c0c0c;
-  --box-1: #121212;
-  --box-2: #1d1d1d;
-  --box-3: #333333;
+  --background-dark: #000000;
+  --box-1: #0c0c0c;
+  --box-2: #121212;
+  --box-3: #1d1d1d;
+  --box-4: #333333;
   --primary-200: #383838;
   --primary-300: #8f8f8f;
   --text-primary: #f5f5f5;
   --text-gray: #d6d6d6;
-  --brand-red: #b42226;
-  --complete-green: #00d1bd;
-  --accent-200: #ffbdab;
-  --request-1: #b42226;
+  --brand-red: #cc1f1f;
+  --complete-green: #00ffc8;
+  --accent-200: #ff4444;
+  --request-1: #cc1f1f;
   --cold-gray: #3f4455;
 }

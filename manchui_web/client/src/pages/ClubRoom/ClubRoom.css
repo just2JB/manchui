@@ -62,7 +62,7 @@
 .my-info .profil {
   width: 95%;
   z-index: 2;
-  background-color: #0c0c0c79;
+  background-color: var(--background-dark);
 }
 .my-info .profilCard {
   height: 300px;

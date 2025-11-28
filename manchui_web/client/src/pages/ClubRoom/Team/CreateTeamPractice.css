@@ -3,7 +3,7 @@
   top: 1px;
   background-color: var(--background-dark);
   width: 700px;
-  height: calc(100% - 40px);
+  height: calc(100% - 15px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -105,7 +105,7 @@
 }
 .createPractice .openThisTable {
   transition-duration: 0.5s;
-  height: 390px;
+  height: calc(100vh - 410px);
 }
 .createPractice .timeOpenContainer {
   position: absolute;
@@ -152,7 +152,7 @@
 .createPractice .timeCell {
   background-color: var(--box-1);
   border: 1px solid #00000000;
-  border-radius: 10px;
+  border-radius: 16px;
   height: 30px;
   width: 95%;
   display: flex;
@@ -201,7 +201,7 @@
   position: relative;
 }
 .createPractice .available {
-  background-color: #00e676;
+  background-color: var(--accent-200);
 }
 .createPractice .hoverName {
   position: absolute;
@@ -225,9 +225,8 @@
 }
 .createPractice .available .hoverName:hover {
   transition-duration: 0.4s;
-
   color: var(--text-primary);
-  background-color: #00e676;
+  background-color: var(--accent-200);
   height: 300%;
   bottom: -5px;
 }
@@ -241,7 +240,7 @@
   cursor: pointer;
 }
 .createPractice .bottomMenu {
-  margin: 0px 10px 10px 10px;
+  margin: 0px 10px 0px 10px;
 }
 .createPractice .endSection {
   height: 110px;

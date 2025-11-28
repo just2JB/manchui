@@ -7,59 +7,6 @@
   flex-direction: column;
   position: relative;
 }
-.practice .topMenu {
-  display: flex;
-  flex-direction: column;
-  margin: 0px 7px 0px 7px;
-  padding: 10px 0px 10px 0px;
-  border-radius: 0px 0px 10px 10px;
-}
-.practice .weekSelector {
-  height: 90px;
-  overflow: hidden;
-  position: sticky;
-}
-.practice .weekInfo {
-  font-size: 18px;
-  text-align: center;
-  margin-bottom: 5px;
-}
-.practice .weekSwiper {
-  height: 100%;
-  width: 100%;
-  background-color: var(--box-1);
-}
-.practice .weekSlide {
-  background-color: var(--background-dark);
-}
-.practice .weeks {
-  display: flex;
-  gap: 3px;
-  flex-direction: row;
-  justify-content: space-between;
-  height: 100%;
-}
-.practice .weekDay {
-  flex: 1;
-  text-align: center;
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  border: 1px solid var(--primary-200);
-  border-radius: 5px;
-}
-.practice .dateText {
-  font-size: 14px;
-  color: var(--text-gray);
-}
-.practice .sunday {
-  color: var(--brand-red);
-}
-
-.practice .saturday {
-  color: #2c3dff;
-}
 
 .practice .datePractices {
   display: flex;
@@ -120,9 +67,9 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 5px 30px 80px 30px;
+  padding: 5px 10px 80px 10px;
   margin: 5px;
-  gap: 5px;
+
   border-radius: 5px;
   position: relative;
 }
@@ -155,11 +102,15 @@
   background-color: #00000000;
   border: 1px solid #00000000;
   color: var(--text-gray);
-  transition-duration: 0.3s;
+  border-radius: 20px;
+  padding: 5px 10px;
   overflow: hidden;
 }
 .practice .selectDateCard {
   color: var(--text-primary);
+  border: 1px solid var(--brand-red);
+  background-color: var(--brand-red);
+  transition-duration: 0.3s;
 }
 
 .practice .floatAddPractice {

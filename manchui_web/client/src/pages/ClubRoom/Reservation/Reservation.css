@@ -42,7 +42,7 @@
   gap: 10px;
 }
 .card-inner {
-  background-color: var(--box-1);
+  background-color: var(--box-2);
   padding: 0px 10px;
   height: 50px;
   display: flex;
@@ -100,7 +100,6 @@
   align-content: center;
   padding-top: 10px;
   background-color: var(--background-dark);
-
   border-radius: 10px;
   user-select: none;
   z-index: 550;
@@ -171,7 +170,7 @@
   height: 100%;
   width: 100%;
   border-radius: 5px;
-  background-color: #00e676;
+  background-color: var(--complete-green);
 }
 .make-reservation {
   width: 100%;
@@ -180,12 +179,11 @@
 }
 .make-button {
   background-color: var(--brand-red);
-  border: 1px solid var(--brand-red);
-  width: 200px;
-  height: 50px;
+  width: 150px;
+  height: 32px;
   border-radius: 10px;
   align-content: center;
-  margin-bottom: 30px;
+  margin: 10px 0px 30px 0px;
 }
 
 .make-button:hover {

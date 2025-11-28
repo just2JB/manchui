@@ -89,7 +89,7 @@ router.get("/request/:userId", async (req, res) => {
     const myTeamRequst = myTeam.map((team) => {
       return { name: team.name, request: team.requestSchedules };
     });
-    console.log(myTeamRequst);
+
     res.json({ myTeam: myTeamRequst });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });

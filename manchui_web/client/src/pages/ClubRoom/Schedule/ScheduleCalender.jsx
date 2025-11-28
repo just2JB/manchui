@@ -181,6 +181,7 @@ export const ScheduleCalender = ({
                         ) : (
                           ""
                         )}
+
                         <div className="stateBox">
                           <div
                             className={`state ${
@@ -204,17 +205,14 @@ export const ScheduleCalender = ({
                                 ? "tempSchedule"
                                 : ""
                             } ${
-                              requestSchedules.some((team) =>
-                                team.request.includes(
-                                  data.date.toLocaleDateString()
-                                )
+                              requestSchedules.includes(
+                                data.date.toLocaleDateString()
                               )
                                 ? "requstDay"
                                 : ""
-                            }`}
-                          >
-                            <div className="tempRequst"></div>
-                          </div>
+                            } 
+                            `}
+                          ></div>
                         </div>
                       </td>
                     ))}
@@ -226,6 +224,7 @@ export const ScheduleCalender = ({
           </SwiperSlide>
         ))}
       </Swiper>
+
       <div className={`${swiping ? "swiping" : ""}`}></div>
     </div>
   );

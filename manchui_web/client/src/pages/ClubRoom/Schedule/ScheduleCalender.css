@@ -41,9 +41,10 @@
   color: var(--primary-200);
   position: relative;
   overflow: hidden;
+  border-radius: 10px;
 }
 .ScheduleCalender .this-month {
-  color: var(--text-primary);
+  color: var(--text-gray);
 }
 .ScheduleCalender .stateBox {
   position: absolute;
@@ -53,46 +54,49 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: end;
+  justify-content: center;
 }
 .ScheduleCalender .state {
-  width: 25px;
-  height: 25px;
-  border-radius: 100px;
-}
-.ScheduleCalender .requstDay {
-  background-color: var(--request-1);
-}
-.ScheduleCalender .requstDay.tempSchedule {
-  background-color: var(--request-1);
-  justify-items: center;
+  width: calc(50%);
+  height: calc(40%);
   align-content: center;
+  color: transparent;
 }
-.ScheduleCalender .requstDay.tempSchedule .tempRequst {
-  visibility: visible;
-  width: 60%;
-  height: 60%;
-  border-radius: 100px;
-  background-color: var(--cold-gray);
-}
-.ScheduleCalender .tempRequst {
-  visibility: hidden;
-}
+
 .ScheduleCalender .tempSchedule {
-  background-color: var(--cold-gray);
+  border-bottom: 5px dotted var(--cold-gray);
 }
 .ScheduleCalender .confirmSchedule {
-  background-color: var(--complete-green);
+  border-bottom: 5px solid var(--complete-green);
+  color: 1px solid var(--complete-green);
 }
+.ScheduleCalender .requstDay {
+  border-bottom: 5px solid var(--request-1);
+  animation-timing-function: ease;
+}
+.ScheduleCalender .tempSchedule.requstDay {
+  border-bottom: 5px dotted var(--request-1);
+
+  animation-timing-function: ease;
+}
+.ScheduleCalender .confirmSchedule.requstDay {
+  border-bottom: 5px solid var(--complete-green);
+  color: 1px solid var(--complete-green);
+}
+
 .ScheduleCalender .today {
   position: absolute;
   top: 15%;
   left: 10%;
   height: 70%;
   width: 80%;
-  border-radius: 100px;
+  border-radius: 20px;
   align-content: center;
   font-weight: 300;
+  font-size: 19px;
+  background-color: var(--background-dark);
+  border: 1px solid var(--primary-200);
+  color: var(--text-primary);
 }
 .ScheduleCalender .selectedDay {
   position: absolute;
@@ -114,6 +118,5 @@
   left: 0px;
   width: 100%;
   height: 100%;
-
   z-index: 200;
 }

@@ -7,7 +7,7 @@ const Cup = ({ fill }) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.imageSmoothingEnabled = false;
-    ctx.strokeStyle = "#f5f5f570"; // 테두리 색상
+    ctx.strokeStyle = "#8f8f8f"; // 테두리 색상
     ctx.lineWidth = 2; // 테두리 두께
 
     if (fill) {
@@ -17,7 +17,7 @@ const Cup = ({ fill }) => {
       ctx.lineTo(3, 19);
       ctx.lineTo(1, 4);
       ctx.closePath();
-      ctx.fillStyle = "#751a0fc4";
+      ctx.fillStyle = "#cc1f1f";
       ctx.fill();
     } else {
       ctx.clearRect(0, 0, canvas.width, canvas.height);

@@ -29,12 +29,12 @@
   cursor: pointer;
 }
 .join .control > div > button {
-  border: 1px solid #8080808f;
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   background-color: #00000000;
   height: 50px;
   width: 10vw;
-  color: #f5f5f5;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -96,9 +96,9 @@
   align-content: center;
   height: 60px;
   width: 200px;
-  background-color: #090909;
-  color: #ffffffc4;
-  border: 1px solid #8080808f;
+  background-color: var(--backgournd-dark);
+  color: var(--text-primary);
+  border: 1px solid var(--primary-300);
   font-size: 20px;
   border-radius: 20px;
   font-weight: 200;
@@ -107,19 +107,19 @@
 }
 .join .start > .button:hover {
   transition-duration: 0.3s;
-  border-color: #a6241500;
+  border-color: var(--box-2);
   outline: none;
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #8080808f;
 }
 
 .join input {
-  background-color: #090909;
-  border: 1px solid #f5f5f5;
+  background-color: var(--backgournd-dark);
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   height: 50px;
   width: 30%;
   z-index: 0;
-  color: #f5f5f5;
+  color: var(--text-primary);
   text-align: center;
   font-size: medium;
 }
@@ -130,42 +130,42 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .join input:focus {
-  border-color: #a624158f;
+  border-color: var(--brand-red);
   outline: none;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #a624158f;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px var(--brand-red);
   transition-duration: 0.5s;
 }
 .join select {
-  background-color: #090909;
-  border: 1px solid #f5f5f5;
+  background-color: var(--backgournd-dark);
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   height: 50px;
   width: 30%;
-  color: #f5f5f5;
+  color: var(--text-primary);
   text-align: center;
   font-size: medium;
 }
 .join select:focus {
   transition-duration: 0.5s;
-  border-color: #a624158f;
+  border-color: var(--brand-red);
   outline: none;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #a624158f;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px var(--brand-red);
 }
 .join textarea {
-  background-color: #090909;
-  border: 1px solid #f5f5f5;
+  background-color: var(--backgournd-dark);
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   height: 100px;
   width: 30%;
-  color: #f5f5f5;
+  color: var(--text-primary);
   padding: 4px;
   resize: none;
   z-index: 1;
 }
 .join textarea:focus {
-  border-color: #a624158f;
+  border-color: var(--brand-red);
   outline: none;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #a624158f;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px var(--brand-red);
 }
 
 .join .mdOpen {
@@ -176,15 +176,15 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .join .checkInfo {
   position: relative;
-  background-color: #090909;
-  border: 1px solid #f5f5f5;
+  background-color: var(--backgournd-dark);
+  border: 1px solid var(--primary-200);
   border-radius: 10px;
   width: 400px;
   height: 130px;
   display: flex;
   flex-direction: column;
   justify-content: space-around;
-  color: #f5f5f5;
+  color: var(--text-primary);
   padding: 4px;
   resize: none;
   overflow: hidden;
@@ -201,35 +201,35 @@ input[type="number"]::-webkit-inner-spin-button {
 .join .hor {
   flex: 0.9;
   margin-top: 10px;
-  border-top: 1px dotted rgba(112, 112, 112, 0.411);
+  border-top: 1px dotted var(--primary-200);
 }
 .join .checkInfo > div > .checkIcon {
   color: rgb(16, 206, 80);
   width: 15px;
 }
 .join .checkInfo > div > .errorIcon {
-  color: #a62415;
+  color: var(--brand-red);
   width: 15px;
   visibility: visible;
   cursor: pointer;
 }
 
 .join .submit {
-  background-color: #090909;
-  border: 1px solid #f5f5f5;
+  background-color: var(--box-1);
+  border: 1px solid var(--text-primary);
   border-radius: 10px;
   width: 200px;
   height: 50px;
-  color: #f5f5f5;
+  color: var(--text-primary);
   font-size: medium;
   z-index: 0;
   animation-duration: 2s;
   font-weight: 200;
 }
 .join .submit:hover {
-  border-color: #a624158f;
+  border-color: var(--brand-red);
   outline: none;
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px #a624158f;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px var(--brand-red);
 }
 .join .submitError {
   height: 50px;
@@ -237,7 +237,7 @@ input[type="number"]::-webkit-inner-spin-button {
   font-size: 17px;
 }
 .join .errorText {
-  color: #a62415d0;
+  color: var(--brand-red);
   font-weight: 300;
 }
 

@@ -7,7 +7,7 @@
   height: 60px;
   align-items: center;
   justify-content: space-between;
-  background-color: #121212c4;
+  background-color: #000000c4;
   z-index: 50;
   user-select: none;
 }
@@ -16,7 +16,7 @@
   top: 60px;
   height: 3px;
   width: 100%;
-  background: linear-gradient(#a624158f, #dadada00);
+  background: linear-gradient(var(--brand-red), #00000000);
   z-index: 50;
 }
 
@@ -35,7 +35,7 @@
   gap: 10px;
 }
 .link {
-  color: #fafafa;
+  color: var(--text-primary);
   text-decoration: none;
   font-size: large;
   font-weight: 200;
@@ -43,14 +43,14 @@
 }
 .link:hover {
   transition-duration: 0.5s;
-  color: rgb(204, 204, 204);
+  color: var(--text-gray);
 }
 .pop-button {
   visibility: hidden;
   position: absolute;
   margin-right: 5%;
   right: 0px;
-  color: rgb(180, 180, 180);
+  color: var(--text-gray);
   transition-property: transform;
   transition-duration: 0.3s;
 }
@@ -73,7 +73,12 @@
 }
 
 .pop-page-list-ul {
-  background: linear-gradient(90deg, #1212125d, #121212, #1212125d);
+  background: linear-gradient(
+    90deg,
+    #0000005d,
+    var(--background-dark),
+    #0000005d
+  );
   display: flex;
   flex-direction: column;
   padding-top: 5px;
@@ -81,7 +86,7 @@
 .pop-page-list-ul .link {
   font-size: 17px;
   height: 50px;
-  border-bottom: 1px solid #181818d5;
+  border-bottom: 1px solid #000000d5;
   align-content: center;
   width: auto;
 }
@@ -91,7 +96,7 @@
 }
 
 a {
-  color: white;
+  color: var(--text-primary);
 }
 @media screen and (max-width: 767px) {
   /** Mobile & Tablet  */

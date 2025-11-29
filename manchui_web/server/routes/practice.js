@@ -36,10 +36,15 @@ router.post("/edit", async (req, res) => {
 router.get("/teamPractice/:teamId", async (req, res) => {
   try {
     const practices = await Practice.find();
-
+    const team = await Team.findById(req.params.teamId);
+    if (!team) {
+      return res.status(404).json({ message: "존재하지 않는 팀입니다." });
+    }
     const teamPractice = practices.filter(
       (practice) => String(practice.teamId) === String(req.params.teamId)
     );
+    team.numberofPractice = teamPractice.length;
+    await team.save();
 
     res.json({ teamPractice: teamPractice });
   } catch (error) {

@@ -71,6 +71,10 @@
   margin-bottom: 5px;
 }
 .teamPage .tag {
+  visibility: hidden;
+}
+.teamPage .tag.active {
+  visibility: visible;
   margin-top: 15px;
   padding: 2px 5px 2px 5px;
   width: max-content;

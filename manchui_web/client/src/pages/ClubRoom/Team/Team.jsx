@@ -13,6 +13,7 @@ import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 
 const Team = () => {
   const [myTeams, setMyTeams] = useState([]);
+  const [activeTeam, setActiveTeam] = useState([]);
 
   const { user } = useOutletContext();
   const nav = useNavigate();
@@ -27,6 +28,8 @@ const Team = () => {
           }
         );
         setMyTeams(response.data.myTeam);
+        setActiveTeam(response.data.activeTeam);
+        console.log(response.data.activeTeam);
       } catch (error) {
         alert(error.response.data.message);
       }
@@ -66,13 +69,20 @@ const Team = () => {
                 </div>
               </div>
               <div className="right">
-                <div className="tag">Active</div>
+                <div
+                  className={`tag ${
+                    activeTeam.includes(item._id) ? "active" : ""
+                  }`}
+                >
+                  Active
+                </div>
+
                 <div className="teamInfo">
                   <div>
                     팀원<div>{item.members.length}</div>
                   </div>
                   <div>
-                    연습횟수 <div>17</div>
+                    연습횟수 <div>{item.numberofPractice}</div>
                   </div>
                 </div>
               </div>

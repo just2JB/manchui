@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
+const Practice = require("../models/Practice");
 
 router.post("/create", async (req, res) => {
   try {
@@ -189,8 +190,32 @@ router.get("/user/:userId", async (req, res) => {
     const myTeam = teams.filter((team) =>
       team.members.some((member) => String(member) === String(user._id))
     );
+    const practices = await Practice.find();
 
-    res.json({ myTeam: myTeam });
+    const activePractice = practices.filter(
+      (practice) =>
+        new Date(practice.date) >= new Date(Date.now()) ||
+        new Date(practice.date) >=
+          new Date(Date.now() - 24 * 60 * 60 * 1000 * 3)
+    );
+
+    const activeTeam = myTeam.filter((team) => {
+      const teamPractices = activePractice.filter(
+        (practice) => String(practice.teamId) === String(team._id)
+      );
+      if (teamPractices.length > 0) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    res.json({
+      myTeam: myTeam,
+      activeTeam: activeTeam.map((team) => {
+        return team._id;
+      }),
+    });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }

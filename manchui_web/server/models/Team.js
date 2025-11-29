@@ -23,6 +23,14 @@ const teamSchema = new mongoose.Schema({
     type: String,
     default: "#ffffff",
   },
+  numberofPractice: {
+    type: Number,
+    default: 0,
+  },
+  teamGoals: {
+    type: Array,
+    default: [],
+  },
 });
 
 const Team = mongoose.model("Team", teamSchema);

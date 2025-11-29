@@ -8,7 +8,7 @@ const CustomPieChart = ({ data }) => {
       <VictoryPie
         innerRadius={80}
         labels={[]}
-        padAngle={5}
+        padAngle={0}
         data={data}
         theme={customTheme}
       />

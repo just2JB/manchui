@@ -161,23 +161,8 @@ router.post("/add-goal", async (req, res) => {
     }
     newGoal._id = Date.now().toString();
     team.goals.push(newGoal);
-    team.goals.sort((a, b) => {
-      if (new Date(a.date) - new Date(b.date) > 0) {
-        if (new Date(a.date) >= new Date()) {
-          return -1;
-        } else {
-          return 1;
-        }
-      } else if (new Date(a.date) - new Date(b.date) < 0) {
-        if (new Date(b.date) >= new Date()) {
-          return 1;
-        } else {
-          return -1;
-        }
-      } else {
-        return 0;
-      }
-    });
+
+    team.goals.sort((a, b) => new Date(a.date) - new Date(b.date));
     await team.save();
     return res.status(201).json({ message: "팀 목표가 추가 되었습니다." });
   } catch (error) {

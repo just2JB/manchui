@@ -177,6 +177,9 @@ const TeamMain = () => {
 
   const quitTeamHandle = async (userId) => {
     //탈퇴 전 confirm 띄우기
+    if (!confirm("정말로 팀을 탈퇴하시겠습니까?")) {
+      return;
+    }
     try {
       const response = await axios.post(
         `${serverUrl}/api/team/quit`,
@@ -193,21 +196,6 @@ const TeamMain = () => {
     } catch (error) {
       alert(error.response.data.message);
       nav("/club/team");
-    }
-  };
-  const deleteTeamHandel = async () => {
-    //삭제 전 확인 문구 띄우기
-    try {
-      const response = await axios.delete(
-        `${serverUrl}/api/team/${parmas.id.slice(1)}`,
-        {
-          withCredentials: true,
-        }
-      );
-      alert(response.data.message);
-      nav("/club/team");
-    } catch {
-      alert(error.response.data.message);
     }
   };
 
@@ -584,30 +572,25 @@ const TeamMain = () => {
           <div className="invite menuContent" onClick={() => shareHandler()}>
             초대하기
           </div>
-          <div
-            className="edit menuContent"
-            onClick={() => nav(`/club/team/edit-team/:${team._id}`)}
-          >
-            팀 관리
-          </div>
+
+          {team.leaderId === user._id ? (
+            <div className="leaderMenu">
+              <div
+                className="edit menuContent"
+                onClick={() => nav(`/club/team/edit-team/:${team._id}`)}
+              >
+                팀 관리
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
           <div
             className="quit menuContent"
             onClick={() => quitTeamHandle(user._id)}
           >
             팀 탈퇴하기
           </div>
-          {team.leaderId === user._id ? (
-            <div className="leaderMenu">
-              <div
-                className="delete menuContent"
-                onClick={() => deleteTeamHandel()}
-              >
-                팀 삭제하기
-              </div>
-            </div>
-          ) : (
-            ""
-          )}
         </div>
       </div>
     </div>

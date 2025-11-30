@@ -10,8 +10,23 @@ const EditTeam = () => {
     requestSchedules: [],
   });
   const parmas = useParams();
+
+  const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
+
   const [formData, setFormData] = useState({
-    dayDate: new Date().toISOString().split("T")[0],
+    dayDate: getFomatDate(new Date().toLocaleDateString()),
   });
   const getMyTeams = async () => {
     try {
@@ -70,6 +85,25 @@ const EditTeam = () => {
       getMyTeams();
     } catch (error) {}
   };
+  const deleteTeamHandel = async () => {
+    //삭제 전 확인 문구 띄우기
+    if (!confirm("정말로 팀을 삭제하시겠습니까?")) {
+      return;
+    }
+
+    try {
+      const response = await axios.delete(
+        `${serverUrl}/api/team/${parmas.id.slice(1)}`,
+        {
+          withCredentials: true,
+        }
+      );
+      alert(response.data.message);
+      nav("/club/team");
+    } catch {
+      alert(error.response.data.message);
+    }
+  };
 
   useEffect(() => {
     getMyTeams();
@@ -87,12 +121,16 @@ const EditTeam = () => {
         />
         <button>변경하기</button>
       </div>
+      <div className="teamColor">
+        <input type="color" name="color" />
+        <button>변경하기</button>
+      </div>
 
-      <div className="dayAdd">
+      <div className="goalAdd">
         <div className="goalList">
           {team.goals
             ? team.goals.map((item) => (
-                <div className="goal" key={item}>
+                <div className="goal" key={item._id}>
                   <div className="goalName">{item.name}</div>
                   <div className="goalDate">{item.date}</div>
                   <button
@@ -114,21 +152,37 @@ const EditTeam = () => {
         <input
           type="date"
           name="dayDate"
-          value={formData.dayDate || new Date().toISOString().split("T")[0]}
+          value={formData.dayDate}
           onChange={(e) => onChangeHandle(e)}
         />
         <button onClick={() => addGoal()}>추가하기</button>
+      </div>
+
+      <div className="temeMemberManage">
+        <div className="memberList">
+          {team
+            ? team.members.map((member) => (
+                <div className="member" key={member._id}>
+                  <div className="memberId">{member.Identification}</div>
+                  <div className="memberName">{member.username}</div>
+                  <button className="changeLeaderButton">리더로 변경</button>
+                  <button className="quitMemberButton">팀에서 탈퇴</button>
+                </div>
+              ))
+            : ""}
+        </div>
+      </div>
+
+      <div className="deleteTeam">
+        <button
+          className="delete menuContent"
+          onClick={() => deleteTeamHandel()}
+        >
+          팀 삭제하기
+        </button>
       </div>
     </div>
   );
 };
 
 export default EditTeam;
-/*
-1. 이름 바꾸기
-2. 리더 바꾸기
-3. 팀 목표 설정하기
-4. 설명 바꾸기
-5. 멤버 관리
-6. 팀 제거
-*/

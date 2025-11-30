@@ -17,7 +17,55 @@ const Team = () => {
 
   const { user } = useOutletContext();
   const nav = useNavigate();
+  const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
+  const getDday = (goals) => {
+    const today = getFomatDate(new Date().toLocaleDateString())
+      .split("-")
+      .join("");
 
+    if (goals.find((goal) => goal.date.split("-").join("") > today)) {
+      return {
+        name: goals.find((goal) => goal.date.split("-").join("") > today).name,
+        date:
+          "D" +
+          Math.floor(
+            (new Date() -
+              new Date(
+                goals.find((goal) => goal.date.split("-").join("") > today).date
+              )) /
+              86400000 +
+              1
+          ),
+      };
+    } else if (goals.find((goal) => goal.date.split("-").join("") === today)) {
+      return {
+        name: goals.find((goal) => goal.date.split("-").join("") === today)
+          .name,
+        date: "D-day",
+      };
+    } else {
+      return {
+        name: goals[goals.length - 1].name,
+        date:
+          "D+" +
+          Math.floor(
+            (new Date() - new Date(goals[goals.length - 1].date)) / 86400000 + 1
+          ),
+      };
+    }
+  };
   useEffect(() => {
     const getMyTeams = async () => {
       try {
@@ -29,7 +77,6 @@ const Team = () => {
         );
         setMyTeams(response.data.myTeam);
         setActiveTeam(response.data.activeTeam);
-        console.log(response.data.activeTeam);
       } catch (error) {
         alert(error.response.data.message);
       }
@@ -66,33 +113,14 @@ const Team = () => {
                 <div className="teamName">{item.name}</div>
                 <div className="dday">
                   {item.goals.length > 0 ? (
-                    <div className="goalName">{item.goals[0].name}</div>
+                    <div className="goalName">{getDday(item.goals).name}</div>
                   ) : (
                     "자유 연습"
                   )}
                   {item.goals.length > 0 ? (
-                    <div className="goalDate">
-                      {`D${
-                        Math.floor(
-                          (new Date(item.goals[0].date) - new Date()) /
-                            (24 * 60 * 60 * 1000)
-                        ) === 0
-                          ? "-"
-                          : new Date(item.goals[0].date) - new Date() > 0
-                          ? ""
-                          : "+"
-                      }${
-                        Math.floor(
-                          (new Date(item.goals[0].date) - new Date()) /
-                            (24 * 60 * 60 * 1000)
-                        ) === 0
-                          ? "day"
-                          : -Math.floor(
-                              (new Date(item.goals[0].date) - new Date()) /
-                                (24 * 60 * 60 * 1000)
-                            )
-                      }`}
-                    </div>
+                    <div className="goalDate">{`${
+                      getDday(item.goals).date
+                    }`}</div>
                   ) : (
                     ""
                   )}

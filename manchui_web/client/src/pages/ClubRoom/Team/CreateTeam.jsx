@@ -51,6 +51,8 @@ const CreateTeam = () => {
               className="formInput"
               name="name"
               onChange={(e) => handleChange(e)}
+              value={teamData.name || ""}
+              required
             />
           </div>
           <div className="inputBox comment">
@@ -59,6 +61,7 @@ const CreateTeam = () => {
               className="formInput"
               name="comment"
               onChange={(e) => handleChange(e)}
+              value={teamData.comment || ""}
             />
           </div>
           <div className="inputBox teamColor">
@@ -69,6 +72,7 @@ const CreateTeam = () => {
               className="inputColor"
               name="teamColor"
               onChange={(e) => handleChange(e)}
+              value={teamData.teamColor || "#ffffff"}
             />
           </div>
           <div className="memberSection"></div>

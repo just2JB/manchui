@@ -63,9 +63,39 @@ const Team = () => {
                 }}
               ></div>
               <div className="left">
-                <div className="teamName">{item.name}</div>{" "}
+                <div className="teamName">{item.name}</div>
                 <div className="dday">
-                  공연<div>D-32</div>
+                  {item.goals.length > 0 ? (
+                    <div className="goalName">{item.goals[0].name}</div>
+                  ) : (
+                    "자유 연습"
+                  )}
+                  {item.goals.length > 0 ? (
+                    <div className="goalDate">
+                      {`D${
+                        Math.floor(
+                          (new Date(item.goals[0].date) - new Date()) /
+                            (24 * 60 * 60 * 1000)
+                        ) === 0
+                          ? "-"
+                          : new Date(item.goals[0].date) - new Date() > 0
+                          ? ""
+                          : "+"
+                      }${
+                        Math.floor(
+                          (new Date(item.goals[0].date) - new Date()) /
+                            (24 * 60 * 60 * 1000)
+                        ) === 0
+                          ? "day"
+                          : -Math.floor(
+                              (new Date(item.goals[0].date) - new Date()) /
+                                (24 * 60 * 60 * 1000)
+                            )
+                      }`}
+                    </div>
+                  ) : (
+                    ""
+                  )}
                 </div>
               </div>
               <div className="right">

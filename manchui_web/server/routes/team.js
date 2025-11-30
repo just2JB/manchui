@@ -150,8 +150,58 @@ router.post("/change-leader", async (req, res) => {
     });
   } catch (error) {}
 });
-
 //change-leader
+
+router.post("/add-goal", async (req, res) => {
+  try {
+    const { teamId, newGoal } = req.body;
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
+    }
+    newGoal._id = Date.now().toString();
+    team.goals.push(newGoal);
+    team.goals.sort((a, b) => {
+      if (new Date(a.date) - new Date(b.date) > 0) {
+        if (new Date(a.date) >= new Date()) {
+          return -1;
+        } else {
+          return 1;
+        }
+      } else if (new Date(a.date) - new Date(b.date) < 0) {
+        if (new Date(b.date) >= new Date()) {
+          return 1;
+        } else {
+          return -1;
+        }
+      } else {
+        return 0;
+      }
+    });
+    await team.save();
+    return res.status(201).json({ message: "팀 목표가 추가 되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+router.post("/delete-goal", async (req, res) => {
+  try {
+    const { teamId, goalId } = req.body;
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
+    }
+    const afterGoals = team.goals.filter(
+      (goal) => String(goal._id) !== String(goalId)
+    );
+    team.goals = afterGoals;
+    await team.save();
+    return res.status(201).json({ message: "팀 목표가 삭제 되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
 
 router.get("/:teamId", async (req, res) => {
   try {

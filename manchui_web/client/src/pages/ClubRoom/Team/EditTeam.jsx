@@ -40,6 +40,10 @@ const EditTeam = () => {
         ...response.data.team,
         memberSchedules: response.data.memberSchedules,
       });
+      setFormData({
+        ...formData,
+        teamColor: response.data.team.teamColor,
+      });
     } catch {
       alert("존재하지 않는 팀 입니다.");
       nav("/club/practice");
@@ -111,73 +115,102 @@ const EditTeam = () => {
 
   return (
     <div className="editTeam">
-      <div className="teamName">
-        <input
-          placeholder={team.name}
-          type="text"
-          name="name"
-          value={formData.name}
-          onChange={(e) => onChangeHandle(e)}
-        />
-        <button>변경하기</button>
-      </div>
-      <div className="teamColor">
-        <input type="color" name="color" />
-        <button>변경하기</button>
+      <div className="teamInfoEdit">
+        <h2>팀 정보 변경</h2>
+        <div className="teamName">
+          <input
+            className="textInput"
+            placeholder={team.name}
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={(e) => onChangeHandle(e)}
+          />
+          <button>변경하기</button>
+        </div>
+        <div className="teamColor">
+          <input
+            className="colorInput"
+            type="color"
+            name="color"
+            value={formData.teamColor}
+          />
+          <button>변경하기</button>
+        </div>
       </div>
 
-      <div className="goalAdd">
-        <div className="goalList">
-          {team.goals
-            ? team.goals.map((item) => (
-                <div className="goal" key={item._id}>
-                  <div className="goalName">{item.name}</div>
-                  <div className="goalDate">{item.date}</div>
-                  <button
-                    className="deleteGoal"
-                    onClick={() => deleteGoalHandle(item._id)}
-                  >
-                    삭제
-                  </button>
-                </div>
-              ))
-            : ""}
+      <div className="goalManage">
+        <h2>팀 일정 관리</h2>
+        <div className="listBox">
+          <div className="goalList">
+            <div className="addGoal">
+              <input
+                className="goalNameInput"
+                type="text"
+                name="dayName"
+                value={formData.dayName}
+                onChange={(e) => onChangeHandle(e)}
+              />
+              <input
+                className="dateInput"
+                type="date"
+                name="dayDate"
+                value={formData.dayDate}
+                onChange={(e) => onChangeHandle(e)}
+              />
+              <button onClick={() => addGoal()}>+</button>
+            </div>
+            {team.goals
+              ? team.goals.map((item) => (
+                  <div className="goal" key={item._id}>
+                    <div className="goalName">{item.name}</div>
+                    <div className="goalDate">{item.date}</div>
+                    <button
+                      className="deleteGoal"
+                      onClick={() => deleteGoalHandle(item._id)}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                ))
+              : ""}
+          </div>
         </div>
-        <input
-          type="text"
-          name="dayName"
-          value={formData.dayName}
-          onChange={(e) => onChangeHandle(e)}
-        />
-        <input
-          type="date"
-          name="dayDate"
-          value={formData.dayDate}
-          onChange={(e) => onChangeHandle(e)}
-        />
-        <button onClick={() => addGoal()}>추가하기</button>
       </div>
 
       <div className="temeMemberManage">
-        <div className="memberList">
-          {team
-            ? team.members.map((member) => (
-                <div className="member" key={member._id}>
-                  <div className="memberId">{member.Identification}</div>
-                  <div className="memberName">{member.username}</div>
-                  <button className="changeLeaderButton">리더로 변경</button>
-                  <button className="quitMemberButton">팀에서 탈퇴</button>
-                </div>
-              ))
-            : ""}
+        <h2>팀 멤버 관리</h2>
+        <div className="listBox">
+          <div className="memberList">
+            {team
+              ? team.members.map((member) => (
+                  <div
+                    className={`member ${
+                      team.leaderId === member._id ? "leader" : ""
+                    }`}
+                    key={member._id}
+                  >
+                    <div className="memberName">{member.username}</div>
+                    <div className="memberId">{member.Identification}</div>
+                    {team.leaderId === member._id ? (
+                      <div className="leaderTag">팀장</div>
+                    ) : (
+                      <button className="changeLeaderButton">
+                        리더로 변경
+                      </button>
+                    )}
+
+                    <button className="quitMemberButton">팀에서 탈퇴</button>
+                    <div className="memberButton"></div>
+                  </div>
+                ))
+              : ""}
+          </div>
         </div>
       </div>
 
       <div className="deleteTeam">
-        <button
-          className="delete menuContent"
-          onClick={() => deleteTeamHandel()}
-        >
+        <button className="deleteTeamButton" onClick={() => deleteTeamHandel()}>
           팀 삭제하기
         </button>
       </div>

@@ -5,6 +5,145 @@
   overflow-wrap: break-word;
   background-color: var(--background-dark);
   position: relative;
+  padding-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
-@media screen and (max-width: 767px) {
+.editTeam button {
+  border: none;
+  background-color: var(--primary-200);
+  color: var(--text-primary);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+.editTeam .teamInfoEdit {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.editTeam .textInput {
+  border: 1px solid var(--primary-300);
+  background-color: var(--box-1);
+  color: var(--text-primary);
+  padding: 5px;
+  border-radius: 5px;
+}
+.editTeam .colorInput {
+  border: 1px solid var(--primary-300);
+  border-radius: 5px;
+  background-color: var(--box-1);
+  height: 40px;
+  width: 40px;
+}
+.editTeam .goalManage {
+  margin: 10px;
+}
+.editTeam .listBox {
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+.editTeam .goalList {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  width: max-content;
+}
+
+.editTeam .goal {
+  background-color: var(--box-2);
+  border-radius: 10px;
+  padding: 5px 10px;
+}
+.editTeam .addGoal {
+  background-color: var(--box-2);
+  border-radius: 10px;
+  width: 120px;
+  height: 100%;
+  padding: 5px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.editTeam .goalNameInput {
+  width: 90%;
+  border: 1px solid var(--primary-300);
+  background-color: var(--box-1);
+  color: var(--text-primary);
+  border-radius: 5px;
+  padding: 5px;
+}
+.editTeam .dateInput {
+  width: 90%;
+  border: 1px solid var(--primary-300);
+  background-color: var(--box-1);
+  color: var(--text-primary);
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.editTeam .temeMemberManage {
+  margin: 10px;
+}
+.editTeam .memberList {
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}
+.editTeam .member {
+  background-color: var(--box-2);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  padding: 5px 10px 0px 10px;
+  align-items: center;
+  overflow: hidden;
+  transition-duration: 0.3s;
+  height: 40px;
+  position: relative;
+}
+.editTeam .member:hover {
+  height: 95px;
+}
+.editTeam .memberName {
+  text-align: center;
+}
+.editTeam .memberId {
+  font-size: 10px;
+  text-align: center;
+  color: var(--text-gray);
+  margin-bottom: 5px;
+}
+.editTeam .memberButton {
+  background-color: var(--primary-200);
+  border-radius: 5px;
+  height: 10px;
+  width: 80%;
+  position: absolute;
+  bottom: -5px;
+}
+.editTeam .leader .memberButton {
+  background-color: var(--brand-red);
+}
+.editTeam .leaderTag {
+  color: white;
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 5px;
+  margin-top: 3px;
+}
+.editTeam .changeLeaderButton {
+  background-color: var(--box-3);
+  font-size: 11px;
+  width: max-content;
+  margin-top: 5px;
+  padding: 2px 5px;
+}
+.editTeam .quitMemberButton {
+  background-color: var(--brand-red);
+  font-size: 11px;
+  width: max-content;
+  margin-top: 3px;
+  padding: 2px 5px;
 }

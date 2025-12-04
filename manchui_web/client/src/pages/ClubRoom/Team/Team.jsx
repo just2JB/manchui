@@ -35,7 +35,13 @@ const Team = () => {
       .split("-")
       .join("");
 
-    if (goals.find((goal) => goal.date.split("-").join("") > today)) {
+    if (goals.find((goal) => goal.date.split("-").join("") === today)) {
+      return {
+        name: goals.find((goal) => goal.date.split("-").join("") === today)
+          .name,
+        date: "D-day",
+      };
+    } else if (goals.find((goal) => goal.date.split("-").join("") > today)) {
       return {
         name: goals.find((goal) => goal.date.split("-").join("") > today).name,
         date:
@@ -48,12 +54,6 @@ const Team = () => {
               86400000 +
               1
           ),
-      };
-    } else if (goals.find((goal) => goal.date.split("-").join("") === today)) {
-      return {
-        name: goals.find((goal) => goal.date.split("-").join("") === today)
-          .name,
-        date: "D-day",
       };
     } else {
       return {

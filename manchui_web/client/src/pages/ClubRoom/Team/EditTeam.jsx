@@ -44,6 +44,7 @@ const EditTeam = () => {
       });
       setFormData({
         ...formData,
+        name: response.data.team.name,
         teamColor: response.data.team.teamColor,
       });
     } catch {
@@ -91,10 +92,16 @@ const EditTeam = () => {
       return;
     }
     try {
-      const response = await axios.post(`${serverUrl}/api/team/delete-goal`, {
-        teamId: team._id,
-        goalId: goalId,
-      });
+      const response = await axios.post(
+        `${serverUrl}/api/team/delete-goal`,
+        {
+          teamId: team._id,
+          goalId: goalId,
+        },
+        {
+          withCredentials: true,
+        }
+      );
       alert("팀 목표가 삭제 되었습니다.");
       getMyTeams();
     } catch (error) {}
@@ -115,6 +122,79 @@ const EditTeam = () => {
       alert(response.data.message);
       nav("/club/team");
     } catch {
+      alert(error.response.data.message);
+    }
+  };
+
+  const editInfoHandle = async () => {
+    if (formData.name === team.name && formData.teamColor === team.teamColor) {
+      return;
+    }
+
+    if (!confirm("정말로 변경하시겠습니까?")) {
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/team/edit`,
+        {
+          name: formData.name,
+          teamColor: formData.teamColor,
+          teamId: team._id,
+        },
+        { withCredentials: true }
+      );
+      alert("변경 되었습니다.");
+      setFormData({
+        dayDate: getFomatDate(new Date().toLocaleDateString()),
+      });
+      getMyTeams();
+    } catch (error) {}
+  };
+  const quitTeamHandle = async (userId) => {
+    if (userId === team.leaderId) {
+      alert("팀장을 위임 후 탈퇴해 주세요.");
+      return;
+    }
+    if (!confirm("정말로 탈퇴시키겠습니까?")) {
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/team/quit`,
+        {
+          teamId: team._id,
+          userId: userId,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      alert(response.data.message);
+      getMyTeams();
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+
+  const changeLeaderHandle = async (userId) => {
+    if (!confirm("정말로 팀장을 바꾸시겠습니까")) {
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/team/change-leader`,
+        {
+          teamId: team._id,
+          userId: userId,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      alert(response.data.message);
+      getMyTeams();
+    } catch (error) {
       alert(error.response.data.message);
     }
   };
@@ -150,7 +230,16 @@ const EditTeam = () => {
             />
           </div>
         </div>
-        <button className="infoEditButton">변경하기</button>
+        <button
+          className={`infoEditButton ${
+            formData.name === team.name && formData.teamColor === team.teamColor
+              ? "unChange"
+              : ""
+          }`}
+          onClick={() => editInfoHandle()}
+        >
+          변경하기
+        </button>
       </div>
       <div className="manageSection">
         <div className="goalManage">
@@ -198,8 +287,10 @@ const EditTeam = () => {
                 onChange={(e) => onChangeHandle(e)}
               />
 
-              <button onClick={() => addGoal()}>추가 완료</button>
-              <button className="" onClick={() => clickAdd()}>
+              <button className="addConfirm" onClick={() => addGoal()}>
+                추가 완료
+              </button>
+              <button className="addCancle" onClick={() => clickAdd()}>
                 닫기
               </button>
             </div>
@@ -225,12 +316,21 @@ const EditTeam = () => {
                       {team.leaderId === member._id ? (
                         <div className="leaderTag">팀장</div>
                       ) : (
-                        <button className="changeLeaderButton">
+                        <button
+                          className="changeLeaderButton"
+                          onClick={() => changeLeaderHandle(member._id)}
+                        >
                           팀장 변경
                         </button>
                       )}
 
-                      <button className="quitMemberButton"> 탈퇴</button>
+                      <button
+                        className="quitMemberButton"
+                        onClick={() => quitTeamHandle(member._id)}
+                      >
+                        {" "}
+                        탈퇴
+                      </button>
                       <div className="memberButton"></div>
                     </div>
                   ))

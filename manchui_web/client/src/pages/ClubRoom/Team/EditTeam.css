@@ -37,6 +37,10 @@
   border: none;
   border-radius: 5px;
 }
+.editTeam .unChange {
+  background-color: var(--box-1);
+  color: var(--box-3);
+}
 
 .editTeam .teamName {
   height: 100%;
@@ -98,6 +102,10 @@
   top: 0px;
   left: 0px;
   background-color: var(--background-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
 
 .editTeam .goalNameInput {
@@ -109,14 +117,30 @@
   color: var(--text-primary);
   border-radius: 5px;
   padding: 5px;
+  font-size: 16px;
 }
 .editTeam .dateInput {
-  width: 90%;
+  width: 100px;
   border: 1px solid var(--primary-300);
-  background-color: var(--primary-200);
-  color: var(--text-primary);
+  background-color: var(--primary-300);
   border-radius: 5px;
   padding: 5px;
+}
+.editTeam .addConfirm {
+  background-color: var(--primary-200);
+  color: var(--text-primary);
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
+}
+.editTeam .addCancle {
+  background-color: var(--brand-red);
+  color: var(--text-primary);
+  width: 100px;
+  height: 30px;
+  border-radius: 5px;
+  border: none;
 }
 
 .editTeam .goalList {

@@ -118,13 +118,21 @@ router.post("/request-schedule", async (req, res) => {
 
 router.post("/edit", async (req, res) => {
   try {
-    const { teamId, name, comment } = req.body;
+    const { teamId, name, comment, teamColor } = req.body;
     const team = await Team.findById(teamId);
     if (!team) {
       return res.status(404).json({ message: "팀을 찾을 수 없습니다." });
     }
-    team.name = name;
-    team.comment = comment;
+    if (name) {
+      team.name = name;
+    }
+    if (comment) {
+      team.comment = comment;
+    }
+    if (teamColor) {
+      team.teamColor = teamColor;
+    }
+
     await team.save();
     return res.status(201).json({
       message: "업데이트 되었습니다",
@@ -146,9 +154,10 @@ router.post("/change-leader", async (req, res) => {
     await team.save();
     return res.status(201).json({
       message: "업데이트 되었습니다",
-      newRequestSchedules: team.requestSchedules,
     });
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
 });
 //change-leader
 

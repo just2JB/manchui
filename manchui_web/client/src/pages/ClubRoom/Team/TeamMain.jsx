@@ -176,7 +176,10 @@ const TeamMain = () => {
   }, []);
 
   const quitTeamHandle = async (userId) => {
-    //탈퇴 전 confirm 띄우기
+    if (userId === team.leaderId) {
+      alert("팀장을 위임 후 탈퇴해 주세요.");
+      return;
+    }
     if (!confirm("정말로 팀을 탈퇴하시겠습니까?")) {
       return;
     }

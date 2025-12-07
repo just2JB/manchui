@@ -225,7 +225,7 @@ const TeamMain = () => {
       const response = await axios.delete(`${serverUrl}/api/practice/${id}`, {
         withCredentials: true,
       });
-      setTeamPractice(teamPractice.filter((practice) => practice._id !== id));
+      await getPractice();
       alert(response.data.message);
       setEditPractice("unSelect");
       setPracticeInfoDetail("unSelect");

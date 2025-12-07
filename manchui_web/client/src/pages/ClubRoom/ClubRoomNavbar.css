@@ -78,6 +78,7 @@
 .ClubRoomNavbar .menuMenu {
   background-color: var(--background-dark);
   width: 300px;
+  text-align: center;
 }
 .ClubRoomNavbar .closeSection {
   flex: 1;
@@ -96,7 +97,7 @@
 }
 .ClubRoomNavbar .menu .menubutton {
   border-top: 1px solid var(--box-3);
-  padding: 30px;
+  padding: 40px;
 }
 .ClubRoomNavbar .menu .menuLogoBox {
   width: 150px;

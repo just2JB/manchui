@@ -16,78 +16,24 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 //내가 가입된 팀만 가져오기
 //팀 id로 메인 이동
-const toKrDay = ({ day }) => {
-  if (day === 0) return <div className={`day sunday`}>일</div>;
-  else if (day === 1) return <div className="day">월</div>;
-  else if (day === 2) return <div className="day">화</div>;
-  else if (day === 3) return <div className="day">수</div>;
-  else if (day === 4) return <div className="day">목</div>;
-  else if (day === 5) return <div className="day">금</div>;
-  else if (day === 6) return <div className={`day saturday`}>토</div>;
-};
 const Practice = () => {
   const [seeSelect, setSeeSelect] = useState(false);
-  const [swiping, setSwiping] = useState(false);
-  const [swiperInstance, setSwiperInstance] = useState(null);
   const [newOpen, setNewOpen] = useState(false);
   const [practices, setPractices] = useState([]);
   const [seePractices, setSeePractices] = useState([]);
   const [seeOption, setSeeOption] = useState("내 연습");
   const [selcetDay, setSelcetDay] = useState(new Date());
-  const [weekPractice, setWeekPractice] = useState([[], [], []]);
-  const [month, setMonth] = useState(new Date().getMonth() + 1);
   const { user } = useOutletContext();
   const nav = useNavigate();
 
+  function toCard(index) {
+    const card = document.getElementsByClassName("practiceCard")[index];
+    console.log(card.offsetTop + "px");
+    card.scrollIntoView({ behavior: "smooth" });
+  }
+
   const openNewPractice = () => {
     setNewOpen(true);
-  };
-  const setDayArray = (date, index) => {
-    const firstDate = new Date(date).setDate(
-      date.getDate() - date.getDay() - 7
-    );
-    const first = new Date(firstDate);
-    const dayArray = [];
-    for (let i = 0; i < 21; i++) {
-      const next = new Date(first).setDate(first.getDate() + i);
-      dayArray.push(new Date(next));
-    }
-    setMonth(dayArray[10].getMonth() + 1);
-    if (index === 0) {
-      setWeekPractice([
-        dayArray.slice(7, 14),
-        dayArray.slice(14, 21),
-        dayArray.slice(0, 7),
-      ]);
-    } else if (index === 1) {
-      setWeekPractice([
-        dayArray.slice(0, 7),
-        dayArray.slice(7, 14),
-        dayArray.slice(14, 21),
-      ]);
-    } else if (index === 2) {
-      setWeekPractice([
-        dayArray.slice(14, 21),
-        dayArray.slice(0, 7),
-        dayArray.slice(7, 14),
-      ]);
-    }
-  };
-
-  const handleSwiper = (swiper) => {
-    setSwiperInstance(swiper);
-  };
-  const toToday = () => {
-    if (swiperInstance) {
-      setDayArray(new Date(), swiperInstance.realIndex);
-    }
-    setSelcetDay(new Date());
-  };
-  const toFomatDate = (date) => {
-    const FomatDate = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
-    return FomatDate;
   };
 
   useEffect(() => {
@@ -101,10 +47,16 @@ const Practice = () => {
     } else {
       setSeePractices([]);
     }
+    if (document.getElementsByClassName("selectDateCard")[0]) {
+      const card = document.getElementsByClassName("selectDateCard")[0];
+      card.scrollIntoView({ behavior: "smooth" });
+    } else if (document.getElementsByClassName("practiceCard")[0]) {
+      const cards = document.getElementsByClassName("practiceCard");
+      cards[cards.length - 1].scrollIntoView({ behavior: "smooth" });
+    }
   }, [practices, seeOption]);
 
   useEffect(() => {
-    setDayArray(new Date(), 0);
     const getPractices = async () => {
       try {
         const response = await axios.get(`${serverUrl}/api/practice`, {
@@ -140,10 +92,6 @@ const Practice = () => {
     getPractices();
   }, []);
 
-  const changeSlideHandle = (e) => {
-    setDayArray(weekPractice[e.realIndex][0], e.realIndex);
-    setSwiping(false);
-  };
   return (
     <div className="practice">
       <div className="topMenu">
@@ -180,19 +128,17 @@ const Practice = () => {
         <div className="practicesBottom">
           <div className="practiceList">
             {seePractices.map((practice, index) => (
-              <div
-                key={practice._id}
-                className={`practiceCard ${
-                  new Date(practice.date).toLocaleDateString() ===
-                  selcetDay.toLocaleDateString()
-                    ? "selectDateCard"
-                    : ""
-                }`}
-                onClick={() => setSelcetDay(new Date(practice.date))}
-              >
+              <div key={practice._id} className={`practiceCard`}>
                 {index === 0 ||
                 practice.date !== seePractices[index - 1].date ? (
-                  <div className={`practiceDateText`}>
+                  <div
+                    className={`practiceDateText ${
+                      new Date(practice.date).toLocaleDateString() ===
+                      selcetDay.toLocaleDateString()
+                        ? "selectDateCard"
+                        : ""
+                    }`}
+                  >
                     {practice.date.split("-")[0]}년{" "}
                     {Number(practice.date.split("-")[1])}월{" "}
                     {Number(practice.date.split("-")[2])}일
@@ -203,8 +149,8 @@ const Practice = () => {
                 <div className="listPracticeCard">
                   <span
                     style={{
-                      padding: "2px",
-                      marginRight: "3px",
+                      padding: "5px",
+                      marginLeft: "5px",
                       borderRadius: "5px",
                       backgroundColor: `${practice.teamColor}`,
                     }}
@@ -248,7 +194,6 @@ const Practice = () => {
       ) : (
         ""
       )}{" "}
-      <div className={`${swiping ? "swiping" : ""}`}></div>
     </div>
   );
 };
@@ -263,50 +208,4 @@ export default Practice;
 5. 월간 선택, 보기 만들어서 한눈에 보기
 6. 스케줄 작성 페이지 만들고 홈, 스케줄 페이지에 에 팀 스케줄 요청된 날짜 강조해주는 효과 만들기
 7. 연습데이터가 나중엔 개 많을거니까 잘라서 가져오게 바꿔야할듯 (ALL) (date~date)
-
-
-<div className="weekInfo">{month}월</div>
-        <div className="weekSelector">
-          <Swiper
-            onSlideChangeTransitionStart={() => setSwiping(true)}
-            onSlideChangeTransitionEnd={(e) => changeSlideHandle(e)}
-            onSwiper={handleSwiper}
-            className="weekSwiper"
-            loop="true"
-            slidesPerView={1}
-            spaceBetween={10}
-            resistanceRatio={0}
-            speed={400}
-          >
-            {weekPractice.map((week) => (
-              <SwiperSlide key={week[0]} className="weekSlide">
-                <div className="weeks">
-                  {week.map((date) => (
-                    <div
-                      key={date}
-                      className="weekDay mok"
-                      onClick={() => setSelcetDay(date)}
-                    >
-                      <div className="dateText">
-                        {toKrDay({ day: date.getDay() })}
-                        {date.getDate()}
-                      </div>
-
-                      <div className="datePractices">
-                        {seePractices
-                          .filter((prac) => prac.date === toFomatDate(date))
-                          .map((practice, index) => (
-                            <div
-                              key={index}
-                              className="datePracticeObject"
-                            ></div>
-                          ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </div>
 */

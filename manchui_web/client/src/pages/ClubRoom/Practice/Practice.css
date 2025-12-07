@@ -7,6 +7,20 @@
   flex-direction: column;
   position: relative;
 }
+.practice .topMenu {
+  position: absolute;
+  width: 100%;
+  background: linear-gradient(var(--background-dark), transparent);
+  height: 60px;
+  z-index: 100;
+}
+.practice .listControler {
+  background-color: transparent;
+  margin-top: 10px;
+  display: flex;
+  justify-content: end;
+  gap: 10px;
+}
 
 .practice .datePractices {
   display: flex;
@@ -17,20 +31,6 @@
   gap: 3px;
 }
 
-.practice .datePracticeObject {
-  width: 5px;
-  height: 5px;
-  border-radius: 20px;
-  background-color: var(--accent-200);
-}
-
-.practice .listControler {
-  border-bottom: 1px solid var(--primary-200);
-  margin-top: 10px;
-  display: flex;
-  justify-content: end;
-  gap: 10px;
-}
 .practice .seeSelect {
   position: relative;
 }
@@ -68,10 +68,10 @@
   flex: 1;
   flex-direction: column;
   padding: 5px 10px 80px 10px;
-  margin: 5px;
-
+  margin: 30px 5px;
   border-radius: 5px;
   position: relative;
+  gap: 0px;
 }
 .practice .practiceDateText {
   text-align: center;
@@ -79,10 +79,11 @@
   margin-bottom: 5px;
   font-size: 13px;
   font-weight: 200;
+  transition-duration: 0.3s;
 }
 .practice .listPracticeCard {
-  background-color: var(--box-2);
-  padding: 10px 5px;
+  background-color: var(--box-1);
+  padding: 15px 5px;
   border-radius: 16px;
   display: flex;
   justify-content: space-around;
@@ -107,16 +108,16 @@
   overflow: hidden;
 }
 .practice .selectDateCard {
-  color: var(--text-primary);
-  border: 1px solid var(--brand-red);
-  background-color: var(--brand-red);
-  transition-duration: 0.3s;
+  color: var(--brand-red);
+  font-size: 18px;
+  font-weight: 400;
+  border-radius: 20px;
 }
 
 .practice .floatAddPractice {
-  position: absolute;
+  position: fixed;
   right: 15px;
-  bottom: 20px;
+  bottom: 55px;
   background-color: var(--brand-red);
   font-size: 15px;
   padding: 5px;
@@ -157,14 +158,7 @@
   border: none;
   border-radius: 5px;
 }
-.practice .swiping {
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100%;
-  z-index: 200;
-}
+
 @keyframes popNewPractice {
   0% {
     bottom: -200px;

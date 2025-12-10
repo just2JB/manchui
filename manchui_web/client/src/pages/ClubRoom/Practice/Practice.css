@@ -13,29 +13,90 @@
 }
 .practice .monthSelector {
   display: flex;
-  justify-content: space-around;
+  gap: 30px;
+  justify-content: space-between;
+  margin: 10px 30px;
+}
+.practice .monthSelector > div {
+  flex: 1;
+  text-align: center;
+  padding: 5px;
+  background-color: var(--box-1);
+  border-radius: 10px;
 }
 .practice .dateSelcetor {
-  position: relative;
   width: 100%;
 }
 .practice .swiper {
-  position: absolute;
   background-color: transparent;
-  width: 134%;
-  left: -17%;
+  width: 130%;
+  left: -15%;
 }
 .practice .dateBox {
   text-align: center;
-  background-color: var(--box-3);
-  aspect-ratio: 1/1;
+  background-color: var(--box-2);
+  aspect-ratio: 12/13;
   border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 }
 .practice .selectDateBox {
   animation-name: changeDate;
   animation-duration: 0.3s;
   background-color: var(--brand-red);
 }
+.practice .dateText {
+  margin-top: 15%;
+  font-size: 150%;
+  font-weight: 400;
+}
+.practice .day {
+  color: var(--primary-300);
+}
+.practice .practiceCountBox {
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.practice .practiceCount {
+  width: 5px;
+  height: 5px;
+  border-radius: 20px;
+  background-color: var(--text-gray);
+  margin-bottom: 5px;
+}
+.practice .seeOptionSelector {
+  margin: 20px 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+}
+.practice .seeOptionSelector > div {
+  flex: 1;
+  text-align: center;
+  background-color: var(--box-3);
+  color: var(--primary-300);
+  border-radius: 10px;
+  padding: 8px;
+  font-size: 14px;
+}
+
+.practice .practiceCard {
+  background-color: var(--box-1);
+  color: var(--primary-300);
+  padding: 5px;
+  height: 100px;
+  align-items: center;
+  border-radius: 16px;
+  display: flex;
+  justify-content: space-around;
+  font-size: 17px;
+  font-weight: 250;
+  margin: 5px 15px;
+}
+
 .practice .floatAddPractice {
   position: fixed;
   right: 15px;
@@ -92,7 +153,7 @@
 
 @keyframes changeDate {
   0% {
-    background-color: var(--box-3);
+    background-color: var(--box-2);
   }
   100% {
     background-color: var(--brand-red);

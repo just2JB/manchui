@@ -16,6 +16,16 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 //내가 가입된 팀만 가져오기
 //팀 id로 메인 이동
+const toKrDay = ({ day }) => {
+  if (day === 0) return <div className={`day sunday`}>일</div>;
+  else if (day === 1) return <div className="day">월</div>;
+  else if (day === 2) return <div className="day">화</div>;
+  else if (day === 3) return <div className="day">수</div>;
+  else if (day === 4) return <div className="day">목</div>;
+  else if (day === 5) return <div className="day">금</div>;
+  else if (day === 6) return <div className={`day saturday`}>토</div>;
+};
+
 const Practice = () => {
   const [newOpen, setNewOpen] = useState(false);
   const [practices, setPractices] = useState([]);
@@ -79,7 +89,7 @@ const Practice = () => {
     } else {
       setSeePractices([]);
     }
-  }, [practices, seeOption]);
+  }, [practices, seeOption, selcetDay]);
 
   useEffect(() => {
     const getPractices = async () => {
@@ -166,7 +176,7 @@ const Practice = () => {
           <Swiper
             loop="false"
             className="swiper"
-            spaceBetween={3}
+            spaceBetween={9}
             slidesPerView={7}
             onSwiper={handleSwiper}
             onSlideChangeTransitionStart={(e) => slideChangeHandle(e)}
@@ -182,7 +192,18 @@ const Practice = () => {
                 }`}
                 onClick={() => dateClickHandle(date)}
               >
-                {date.getDate()}
+                <div className="dateText"> {date.getDate()}</div>
+                {toKrDay({ day: date.getDay() })}
+                <div className="practiceCountBox">
+                  {seePractices
+                    .filter(
+                      (prac) =>
+                        prac.date === getFomatDate(date.toLocaleDateString())
+                    )
+                    .map((count, index) => (
+                      <div className="practiceCount"></div>
+                    ))}
+                </div>
               </SwiperSlide>
             ))}
             {calenders[1].map((date) => (
@@ -196,7 +217,18 @@ const Practice = () => {
                 }`}
                 onClick={() => dateClickHandle(date)}
               >
-                {date.getDate()}
+                <div className="dateText"> {date.getDate()}</div>
+                {toKrDay({ day: date.getDay() })}
+                <div className="practiceCountBox">
+                  {seePractices
+                    .filter(
+                      (prac) =>
+                        prac.date === getFomatDate(date.toLocaleDateString())
+                    )
+                    .map((count, index) => (
+                      <div className="practiceCount"></div>
+                    ))}
+                </div>
               </SwiperSlide>
             ))}
             {calenders[2].map((date) => (
@@ -210,13 +242,72 @@ const Practice = () => {
                 }`}
                 onClick={() => dateClickHandle(date)}
               >
-                {date.getDate()}
+                <div className="dateText"> {date.getDate()}</div>
+                {toKrDay({ day: date.getDay() })}
+                <div className="practiceCountBox">
+                  {seePractices
+                    .filter(
+                      (prac) =>
+                        prac.date === getFomatDate(date.toLocaleDateString())
+                    )
+                    .map((count, index) => (
+                      <div className="practiceCount"></div>
+                    ))}
+                </div>
               </SwiperSlide>
             ))}
           </Swiper>
         </div>
+        <div className="seeOptionSelector">
+          <div onClick={() => setSeeOption("내 연습")}>내 팀 연습</div>
+          <div onClick={() => setSeeOption("전체 연습")}>전체 연습</div>
+        </div>
       </div>
-      <div className="myPractice"></div>
+      <div className="myPractice">
+        <div className="practiceList">
+          {seePractices.filter(
+            (prac) => prac.date === getFomatDate(selcetDay.toLocaleDateString())
+          ).length < 1 ? (
+            <div className="practiceCard">오늘은 연습이 없습니다.</div>
+          ) : (
+            ""
+          )}
+          {seePractices
+            .filter(
+              (prac) =>
+                prac.date === getFomatDate(selcetDay.toLocaleDateString())
+            )
+            .map((practice) => (
+              <div key={practice._id} className="practiceCard">
+                <span
+                  style={{
+                    padding: "2px",
+                    marginRight: "3px",
+                    padding: "5px",
+                    marginLeft: "5px",
+                    borderRadius: "5px",
+                    backgroundColor: `${practice.teamColor}`,
+                  }}
+                ></span>
+                <div>{practice.teamName}</div>
+                <div>
+                  {(practice.time.split("~")[0] * 2) % 2 === 0
+                    ? `${practice.time.split("~")[0]}:00`
+                    : `${practice.time.split("~")[0] - 0.5}:30`}
+                  ~
+                  {(practice.time.split("~")[1] * 2) % 2 === 0
+                    ? `${practice.time.split("~")[1]}:00`
+                    : `${practice.time.split("~")[1] - 0.5}:30`}
+                </div>
+
+                <div>
+                  <MdOutlinePlace />
+                  {practice.place}
+                </div>
+              </div>
+            ))}
+        </div>
+      </div>
       <div className="floatAddPractice" onClick={() => openNewPractice()}>
         +새 연습
       </div>

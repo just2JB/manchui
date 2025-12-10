@@ -17,20 +17,52 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 //내가 가입된 팀만 가져오기
 //팀 id로 메인 이동
 const Practice = () => {
-  const [seeSelect, setSeeSelect] = useState(false);
   const [newOpen, setNewOpen] = useState(false);
   const [practices, setPractices] = useState([]);
   const [seePractices, setSeePractices] = useState([]);
   const [seeOption, setSeeOption] = useState("내 연습");
-  const [selcetDay, setSelcetDay] = useState(new Date());
   const { user } = useOutletContext();
+  const [swiperInstance, setSwiperInstance] = useState(null);
+  const handleSwiper = (swiper) => {
+    setSwiperInstance(swiper);
+  };
   const nav = useNavigate();
+  const [selcetDay, setSelcetDay] = useState(new Date());
 
-  function toCard(index) {
-    const card = document.getElementsByClassName("practiceCard")[index];
-    console.log(card.offsetTop + "px");
-    card.scrollIntoView({ behavior: "smooth" });
-  }
+  const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
+
+  const getLastDate = (date) => {
+    const lastDate = new Date(date);
+    lastDate.setMonth(date.getMonth() + 1);
+    lastDate.setDate(0);
+    return lastDate;
+  };
+  const makeMonthData = (year, month) => {
+    const date = new Date(year, month, 1);
+    const last = getLastDate(date);
+    let monthData = [];
+    for (let i = 0; i < last.getDate() - 0; i++) {
+      monthData.push(new Date(year, month, i + 1));
+    }
+    return monthData;
+  };
+  const [calenders, setCalenders] = useState([
+    makeMonthData(new Date().getFullYear(), new Date().getMonth()),
+    makeMonthData(new Date().getFullYear(), new Date().getMonth() + 1),
+    makeMonthData(new Date().getFullYear(), new Date().getMonth() - 1),
+  ]);
 
   const openNewPractice = () => {
     setNewOpen(true);
@@ -46,13 +78,6 @@ const Practice = () => {
       setSeePractices(practices);
     } else {
       setSeePractices([]);
-    }
-    if (document.getElementsByClassName("selectDateCard")[0]) {
-      const card = document.getElementsByClassName("selectDateCard")[0];
-      card.scrollIntoView({ behavior: "smooth" });
-    } else if (document.getElementsByClassName("practiceCard")[0]) {
-      const cards = document.getElementsByClassName("practiceCard");
-      cards[cards.length - 1].scrollIntoView({ behavior: "smooth" });
     }
   }, [practices, seeOption]);
 
@@ -85,6 +110,7 @@ const Practice = () => {
             return -1;
         });
         setPractices(dateSorted);
+        setSelcetDay(new Date());
       } catch {
         alert(error.response.data.message);
       }
@@ -92,40 +118,131 @@ const Practice = () => {
     getPractices();
   }, []);
 
+  const toToday = () => {
+    setSelcetDay(new Date());
+  };
+  const dateClickHandle = (date) => {
+    setSelcetDay(date);
+  };
+  const slideChangeHandle = (e) => {
+    if (swiperInstance.slides.length - e.realIndex < 4) {
+      setSelcetDay(
+        [...calenders[0], ...calenders[1], ...calenders[2]][
+          3 - (swiperInstance.slides.length - e.realIndex)
+        ]
+      );
+    } else {
+      setSelcetDay(
+        [...calenders[0], ...calenders[1], ...calenders[2]][
+          swiperInstance.realIndex + 3
+        ]
+      );
+    }
+  };
+  useEffect(() => {
+    if (swiperInstance) {
+      const selcetDayEl = document.getElementById(
+        getFomatDate(selcetDay.toLocaleDateString())
+      );
+      if (selcetDayEl.swiperSlideIndex < 3) {
+        swiperInstance.slideToLoop(
+          swiperInstance.slides.length - 3 + selcetDayEl.swiperSlideIndex,
+          300
+        );
+      } else {
+        swiperInstance.slideToLoop(selcetDayEl.swiperSlideIndex - 3);
+      }
+    }
+  }, [selcetDay]);
   return (
     <div className="practice">
       <div className="topMenu">
-        <div className="listControler">
-          <div
-            className="seeSelect"
-            onClick={() =>
-              seeSelect ? setSeeSelect(false) : setSeeSelect(true)
-            }
+        <div className="monthSelector">
+          <div>ㅇㅇ</div>
+          <div>{selcetDay.getMonth() + 1}월</div>
+          <div onClick={() => toToday()}>오늘로</div>
+        </div>
+        <div className="dateSelector">
+          <Swiper
+            loop="false"
+            className="swiper"
+            spaceBetween={3}
+            slidesPerView={7}
+            onSwiper={handleSwiper}
+            onSlideChangeTransitionStart={(e) => slideChangeHandle(e)}
           >
-            {seeOption}
-            {seeSelect ? (
-              <div className={`seeOption`}>
-                <div
-                  className="controlButton"
-                  onClick={() => setSeeOption("내 연습")}
-                >
-                  내 연습
-                </div>
-                <div
-                  className="controlButton"
-                  onClick={() => setSeeOption("전체 연습")}
-                >
-                  전체 연습
-                </div>
-              </div>
-            ) : (
-              ""
-            )}
-          </div>
+            {calenders[0].map((date) => (
+              <SwiperSlide
+                key={date}
+                id={getFomatDate(date.toLocaleDateString())}
+                className={`dateBox ${
+                  selcetDay.toLocaleDateString() === date.toLocaleDateString()
+                    ? "selectDateBox"
+                    : ""
+                }`}
+                onClick={() => dateClickHandle(date)}
+              >
+                {date.getDate()}
+              </SwiperSlide>
+            ))}
+            {calenders[1].map((date) => (
+              <SwiperSlide
+                key={date}
+                id={getFomatDate(date.toLocaleDateString())}
+                className={`dateBox ${
+                  selcetDay.toLocaleDateString() === date.toLocaleDateString()
+                    ? "selectDateBox"
+                    : ""
+                }`}
+                onClick={() => dateClickHandle(date)}
+              >
+                {date.getDate()}
+              </SwiperSlide>
+            ))}
+            {calenders[2].map((date) => (
+              <SwiperSlide
+                key={date}
+                id={getFomatDate(date.toLocaleDateString())}
+                className={`dateBox ${
+                  selcetDay.toLocaleDateString() === date.toLocaleDateString()
+                    ? "selectDateBox"
+                    : ""
+                }`}
+                onClick={() => dateClickHandle(date)}
+              >
+                {date.getDate()}
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </div>
-      <div className="myPractice">
-        <div className="practicesBottom">
+      <div className="myPractice"></div>
+      <div className="floatAddPractice" onClick={() => openNewPractice()}>
+        +새 연습
+      </div>
+      {newOpen ? (
+        <div className="newPractice">
+          <div className="closeSection" onClick={() => setNewOpen(false)}></div>
+          <div className="buttonBox">
+            <button onClick={() => nav("/club/team/create-team")}>
+              새 팀에서 만들기
+            </button>
+            <button onClick={() => nav("/club/team")}>
+              기존 팀 연습 추가하기
+            </button>
+          </div>
+        </div>
+      ) : (
+        ""
+      )}
+    </div>
+  );
+};
+
+export default Practice;
+
+/*
+<div className="practicesBottom">
           <div className="practiceList">
             {seePractices.map((practice, index) => (
               <div key={practice._id} className={`practiceCard`}>
@@ -175,32 +292,6 @@ const Practice = () => {
             ))}
           </div>
         </div>
-      </div>
-      <div className="floatAddPractice" onClick={() => openNewPractice()}>
-        +새 연습
-      </div>
-      {newOpen ? (
-        <div className="newPractice">
-          <div className="closeSection" onClick={() => setNewOpen(false)}></div>
-          <div className="buttonBox">
-            <button onClick={() => nav("/club/team/create-team")}>
-              새 팀에서 만들기
-            </button>
-            <button onClick={() => nav("/club/team")}>
-              기존 팀 연습 추가하기
-            </button>
-          </div>
-        </div>
-      ) : (
-        ""
-      )}{" "}
-    </div>
-  );
-};
-
-export default Practice;
-
-/*
 1. 주간 선택, 보기를 만들어서 원하는 날짜 볼 수 있게 하기
 2. 연습들 리스트로 보이기
 3. 연습 생성 플로트 시키기

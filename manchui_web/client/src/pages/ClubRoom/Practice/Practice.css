@@ -8,112 +8,34 @@
   position: relative;
 }
 .practice .topMenu {
-  position: absolute;
   width: 100%;
-  background: linear-gradient(var(--background-dark), transparent);
-  height: 60px;
-  z-index: 100;
+  padding-top: 10px;
 }
-.practice .listControler {
-  background-color: transparent;
-  margin-top: 10px;
-  display: flex;
-  justify-content: end;
-  gap: 10px;
-}
-
-.practice .datePractices {
-  display: flex;
-  width: 100%;
-  height: 10px;
-  justify-content: center;
-  align-items: center;
-  gap: 3px;
-}
-
-.practice .seeSelect {
-  position: relative;
-}
-.practice .seeOption {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  transition-duration: 0.3s;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  z-index: 100;
-  background-color: var(--primary-200);
-  width: max-content;
-}
-.practice .controlButton {
-  text-align: end;
-  font-size: 14px;
-  font-weight: 250;
-  padding: 3px 10px;
-}
-.practice .myPractice {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow-y: scroll;
-}
-.practice .practicesBottom {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-.practice .practiceList {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  padding: 5px 10px 80px 10px;
-  margin: 30px 5px;
-  border-radius: 5px;
-  position: relative;
-  gap: 0px;
-}
-.practice .practiceDateText {
-  text-align: center;
-  margin-top: 10px;
-  margin-bottom: 5px;
-  font-size: 13px;
-  font-weight: 200;
-  transition-duration: 0.3s;
-}
-.practice .listPracticeCard {
-  background-color: var(--box-1);
-  padding: 15px 5px;
-  border-radius: 16px;
+.practice .monthSelector {
   display: flex;
   justify-content: space-around;
-  font-size: 14px;
-  font-weight: 250;
 }
-.practice .listIndex {
-  background-color: var(--box-2) 00;
-  padding: 0px;
+.practice .dateSelcetor {
+  position: relative;
+  width: 100%;
 }
-
-.practice .listPracticeCard > div {
-  flex: 1;
+.practice .swiper {
+  position: absolute;
+  background-color: transparent;
+  width: 134%;
+  left: -17%;
+}
+.practice .dateBox {
   text-align: center;
-}
-.practice .practiceCard {
-  background-color: #00000000;
-  border: 1px solid #00000000;
-  color: var(--text-gray);
-  border-radius: 20px;
-  padding: 5px 10px;
-  overflow: hidden;
-}
-.practice .selectDateCard {
-  color: var(--brand-red);
-  font-size: 18px;
-  font-weight: 400;
+  background-color: var(--box-3);
+  aspect-ratio: 1/1;
   border-radius: 20px;
 }
-
+.practice .selectDateBox {
+  animation-name: changeDate;
+  animation-duration: 0.3s;
+  background-color: var(--brand-red);
+}
 .practice .floatAddPractice {
   position: fixed;
   right: 15px;
@@ -165,5 +87,14 @@
   }
   100% {
     bottom: 0px;
+  }
+}
+
+@keyframes changeDate {
+  0% {
+    background-color: var(--box-3);
+  }
+  100% {
+    background-color: var(--brand-red);
   }
 }

@@ -9,8 +9,8 @@
   z-index: 400;
   user-select: none;
   overflow: hidden;
-  border-radius: 20px 20px 0px 0px;
-  border: 1px solid var(--box-1);
+  border-radius: 60px;
+  border: 1px solid var(--box-4);
 }
 .bottomBar .inviteLinkBottom {
   position: absolute;
@@ -77,8 +77,8 @@
 }
 .bottomBar .circle {
   background-color: var(--brand-red);
-  width: 95%;
-  height: 90%;
+  width: 80%;
+  height: 85%;
   border-radius: 20px;
   z-index: 1;
   animation-duration: 0.7s;

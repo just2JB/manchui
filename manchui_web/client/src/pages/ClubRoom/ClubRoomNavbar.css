@@ -48,8 +48,9 @@
 }
 
 .ClubRoomNavbar .manchui-logo {
-  scale: 0.7;
+  scale: 0.55;
   margin: 0px;
+  margin-top: 3px;
 }
 .title-text {
   font-weight: 500;

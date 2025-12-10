@@ -56,7 +56,7 @@ const BottomBar = () => {
         </div>
         <div className="buttonText">
           <LiaCalendarCheckSolid className="button-icon" />
-          연습실 예약
+          연습실
         </div>
       </Link>
       <Link
@@ -102,7 +102,7 @@ const BottomBar = () => {
       >
         <div className="buttonText">
           <RiMenuAddLine className="button-icon" />
-          일정 작성
+          일정
         </div>
       </Link>
     </div>

@@ -69,9 +69,9 @@ const Practice = () => {
     return monthData;
   };
   const [calenders, setCalenders] = useState([
+    makeMonthData(new Date().getFullYear(), new Date().getMonth() - 1),
     makeMonthData(new Date().getFullYear(), new Date().getMonth()),
     makeMonthData(new Date().getFullYear(), new Date().getMonth() + 1),
-    makeMonthData(new Date().getFullYear(), new Date().getMonth() - 1),
   ]);
 
   const openNewPractice = () => {
@@ -135,32 +135,21 @@ const Practice = () => {
     setSelcetDay(date);
   };
   const slideChangeHandle = (e) => {
-    if (swiperInstance.slides.length - e.realIndex < 4) {
-      setSelcetDay(
-        [...calenders[0], ...calenders[1], ...calenders[2]][
-          3 - (swiperInstance.slides.length - e.realIndex)
-        ]
-      );
-    } else {
-      setSelcetDay(
-        [...calenders[0], ...calenders[1], ...calenders[2]][
-          swiperInstance.realIndex + 3
-        ]
-      );
-    }
+    setSelcetDay(
+      [...calenders[0], ...calenders[1], ...calenders[2]][
+        swiperInstance.realIndex + 3 - 3
+      ]
+    );
   };
   useEffect(() => {
     if (swiperInstance) {
       const selcetDayEl = document.getElementById(
         getFomatDate(selcetDay.toLocaleDateString())
       );
-      if (selcetDayEl.swiperSlideIndex < 3) {
-        swiperInstance.slideToLoop(
-          swiperInstance.slides.length - 3 + selcetDayEl.swiperSlideIndex,
-          300
-        );
+      if (selcetDayEl.swiperSlideIndex < 4) {
+        swiperInstance.slideTo(0, 300);
       } else {
-        swiperInstance.slideToLoop(selcetDayEl.swiperSlideIndex - 3);
+        swiperInstance.slideTo(selcetDayEl.swiperSlideIndex - 3);
       }
     }
   }, [selcetDay]);
@@ -174,13 +163,15 @@ const Practice = () => {
         </div>
         <div className="dateSelector">
           <Swiper
-            loop="false"
             className="swiper"
             spaceBetween={9}
             slidesPerView={7}
             onSwiper={handleSwiper}
             onSlideChangeTransitionStart={(e) => slideChangeHandle(e)}
           >
+            <SwiperSlide className={`dateBox`}></SwiperSlide>{" "}
+            <SwiperSlide className={`dateBox`}></SwiperSlide>{" "}
+            <SwiperSlide className={`dateBox`}></SwiperSlide>
             {calenders[0].map((date) => (
               <SwiperSlide
                 key={date}
@@ -256,6 +247,9 @@ const Practice = () => {
                 </div>
               </SwiperSlide>
             ))}
+            <SwiperSlide className={`dateBox`}></SwiperSlide>{" "}
+            <SwiperSlide className={`dateBox`}></SwiperSlide>
+            <SwiperSlide className={`dateBox`}></SwiperSlide>
           </Swiper>
         </div>
         <div className="seeOptionSelector">
@@ -333,56 +327,6 @@ const Practice = () => {
 export default Practice;
 
 /*
-<div className="practicesBottom">
-          <div className="practiceList">
-            {seePractices.map((practice, index) => (
-              <div key={practice._id} className={`practiceCard`}>
-                {index === 0 ||
-                practice.date !== seePractices[index - 1].date ? (
-                  <div
-                    className={`practiceDateText ${
-                      new Date(practice.date).toLocaleDateString() ===
-                      selcetDay.toLocaleDateString()
-                        ? "selectDateCard"
-                        : ""
-                    }`}
-                  >
-                    {practice.date.split("-")[0]}년{" "}
-                    {Number(practice.date.split("-")[1])}월{" "}
-                    {Number(practice.date.split("-")[2])}일
-                  </div>
-                ) : (
-                  ""
-                )}
-                <div className="listPracticeCard">
-                  <span
-                    style={{
-                      padding: "5px",
-                      marginLeft: "5px",
-                      borderRadius: "5px",
-                      backgroundColor: `${practice.teamColor}`,
-                    }}
-                  ></span>
-                  <div>{practice.teamName}</div>
-                  <div>
-                    {(practice.time.split("~")[0] * 2) % 2 === 0
-                      ? `${practice.time.split("~")[0]}:00`
-                      : `${practice.time.split("~")[0] - 0.5}:30`}
-                    ~
-                    {(practice.time.split("~")[1] * 2) % 2 === 0
-                      ? `${practice.time.split("~")[1]}:00`
-                      : `${practice.time.split("~")[1] - 0.5}:30`}
-                  </div>
-
-                  <div>
-                    <MdOutlinePlace />
-                    {practice.place}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 1. 주간 선택, 보기를 만들어서 원하는 날짜 볼 수 있게 하기
 2. 연습들 리스트로 보이기
 3. 연습 생성 플로트 시키기
@@ -390,4 +334,6 @@ export default Practice;
 5. 월간 선택, 보기 만들어서 한눈에 보기
 6. 스케줄 작성 페이지 만들고 홈, 스케줄 페이지에 에 팀 스케줄 요청된 날짜 강조해주는 효과 만들기
 7. 연습데이터가 나중엔 개 많을거니까 잘라서 가져오게 바꿔야할듯 (ALL) (date~date)
+   ㄴ이번달로부터 이번달 저번달 다음달만 가져오는걸로 합시다
+
 */

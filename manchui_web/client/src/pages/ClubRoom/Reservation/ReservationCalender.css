@@ -51,9 +51,10 @@
   height: 70%;
   width: 90%;
   border-radius: 20px;
-  border: 1px solid var(--primary-200);
+  background-color: var(--background-dark);
   align-content: center;
-  font-weight: 300;
+  font-weight: 400;
+  font-size: 23px;
 }
 .reserv-calendar-section .selectedDay {
   position: absolute;

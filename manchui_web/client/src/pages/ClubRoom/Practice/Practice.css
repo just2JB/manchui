@@ -103,10 +103,10 @@
   background-color: var(--box-1);
   color: var(--primary-300);
   padding: 5px;
-  height: 70px;
-  border-radius: 16px;
+  height: 66px;
+  border-radius: 14px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row-reverse;
   justify-content: space-between;
   font-size: 17px;
   font-weight: 250;
@@ -123,17 +123,26 @@
   padding: 5px 10px;
 }
 .practice .pracTeam {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: start;
+  animation-name: pracCardOn;
+  animation-duration: 0.3s;
+}
+.practice .teamName {
   color: var(--text-gray);
   font-size: 19px;
   font-weight: 400;
   animation-name: pracCardOn;
-  animation-duration: 0.3s;
+  animation-duration: 0.5s;
 }
+
 .practice .pracInfo {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  text-align: end;
+  justify-content: space-around;
+  text-align: start;
   animation-name: pracCardOn;
   animation-duration: 0.3s;
 }
@@ -141,15 +150,17 @@
   color: var(--text-gray);
   font-size: 22px;
   font-weight: 400;
+  animation-name: pracCardOn;
+  animation-duration: 0.5s;
 }
 .practice .pracBottom {
-  margin: 0px 10px 6px 10px;
-  padding: 3px 0px;
-  border-radius: 10px;
+  margin: 5px 0px 5px 10px;
+  padding: 3px 1px;
+  border-radius: 2px;
   display: flex;
   justify-content: space-between;
   animation-name: pracCardOn;
-  animation-duration: 0.3s;
+  animation-duration: 0.5s;
 }
 
 .practice .floatAddPractice {

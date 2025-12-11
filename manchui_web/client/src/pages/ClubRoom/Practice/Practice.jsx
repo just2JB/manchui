@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { useEffect } from "react";
 import { MdOutlinePlace } from "react-icons/md";
+import { HiUserGroup } from "react-icons/hi";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
@@ -281,7 +282,11 @@ const Practice = () => {
               <div key={practice._id} className="practiceCard">
                 <div className="pracTop">
                   <div className="pracTeam">
-                    <div>{practice.teamName}</div>
+                    <div className="teamName">{practice.teamName}</div>
+                    <div className="member">
+                      <HiUserGroup />
+                      {practice.members.length}
+                    </div>
                   </div>
                   <div className="pracInfo">
                     <div className="pracTime">

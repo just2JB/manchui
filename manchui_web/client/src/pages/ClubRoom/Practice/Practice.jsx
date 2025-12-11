@@ -320,12 +320,8 @@ const Practice = () => {
         <div className="newPractice">
           <div className="closeSection" onClick={() => setNewOpen(false)}></div>
           <div className="buttonBox">
-            <button onClick={() => nav("/club/team/create-team")}>
-              새 팀에서 만들기
-            </button>
-            <button onClick={() => nav("/club/team")}>
-              기존 팀 연습 추가하기
-            </button>
+            <button onClick={() => nav("/club/team/create-team")}>새 팀</button>
+            <button onClick={() => nav("/club/team")}>기존 팀</button>
           </div>
         </div>
       ) : (

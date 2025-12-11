@@ -13,16 +13,22 @@
 }
 .practice .monthSelector {
   display: flex;
-  gap: 30px;
+  gap: 10px;
   justify-content: space-between;
   margin: 10px 30px;
 }
 .practice .monthSelector > div {
   flex: 1;
   text-align: center;
-  padding: 5px;
   background-color: var(--box-1);
+  padding: 5px;
   border-radius: 10px;
+}
+.practice .monthText {
+  font-size: 18px;
+}
+.practice .toToday {
+  color: var(--primary-300);
 }
 .practice .dateSelcetor {
   width: 100%;
@@ -40,17 +46,21 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  overflow: hidden;
+  color: var(--primary-300);
 }
 .practice .selectDateBox {
   animation-name: changeDate;
   animation-duration: 0.3s;
   background-color: var(--brand-red);
+  color: var(--text-primary);
 }
 .practice .dateText {
   margin-top: 15%;
   font-size: 150%;
   font-weight: 400;
 }
+
 .practice .day {
   color: var(--primary-300);
 }
@@ -63,9 +73,9 @@
 .practice .practiceCount {
   width: 5px;
   height: 5px;
-  border-radius: 20px;
   background-color: var(--text-gray);
   margin-bottom: 5px;
+  border-radius: 20px;
 }
 .practice .seeOptionSelector {
   margin: 20px 15px;
@@ -81,20 +91,65 @@
   border-radius: 10px;
   padding: 8px;
   font-size: 14px;
+  position: relative;
+}
+.practice .seeOptionSelector > .selcetOption {
+  background-color: var(--brand-red);
+  color: var(--text-gray);
+  transition-duration: 0.5s;
 }
 
 .practice .practiceCard {
   background-color: var(--box-1);
   color: var(--primary-300);
   padding: 5px;
-  height: 100px;
-  align-items: center;
+  height: 70px;
   border-radius: 16px;
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content: space-between;
   font-size: 17px;
   font-weight: 250;
-  margin: 5px 15px;
+  margin: 6px 15px;
+}
+.practice .noPrac {
+  align-items: center;
+  justify-content: center;
+}
+.practice .pracTop {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 10px;
+}
+.practice .pracTeam {
+  color: var(--text-gray);
+  font-size: 19px;
+  font-weight: 400;
+  animation-name: pracCardOn;
+  animation-duration: 0.3s;
+}
+.practice .pracInfo {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: end;
+  animation-name: pracCardOn;
+  animation-duration: 0.3s;
+}
+.practice .pracTime {
+  color: var(--text-gray);
+  font-size: 22px;
+  font-weight: 400;
+}
+.practice .pracBottom {
+  margin: 0px 10px 6px 10px;
+  padding: 3px 0px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  animation-name: pracCardOn;
+  animation-duration: 0.3s;
 }
 
 .practice .floatAddPractice {
@@ -157,5 +212,17 @@
   }
   100% {
     background-color: var(--brand-red);
+  }
+}
+
+@keyframes pracCardOn {
+  0% {
+    transform: translateY(-10%);
+    background-color: transparent;
+    color: transparent;
+    border-color: transparent;
+  }
+  100% {
+    transform: translateX(0px);
   }
 }

@@ -4,18 +4,12 @@ import "./Practice.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { useEffect } from "react";
-import {
-  MdOutlineOutlinedFlag,
-  MdOutlineAccessTime,
-  MdOutlinePlace,
-} from "react-icons/md";
+import { MdOutlinePlace } from "react-icons/md";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-//내가 가입된 팀만 가져오기
-//팀 id로 메인 이동
 const toKrDay = ({ day }) => {
   if (day === 0) return <div className={`day sunday`}>일</div>;
   else if (day === 1) return <div className="day">월</div>;
@@ -147,7 +141,7 @@ const Practice = () => {
         getFomatDate(selcetDay.toLocaleDateString())
       );
       if (selcetDayEl.swiperSlideIndex < 4) {
-        swiperInstance.slideTo(0, 300);
+        swiperInstance.slideTo(0, 500);
       } else {
         swiperInstance.slideTo(selcetDayEl.swiperSlideIndex - 3);
       }
@@ -157,9 +151,11 @@ const Practice = () => {
     <div className="practice">
       <div className="topMenu">
         <div className="monthSelector">
-          <div>ㅇㅇ</div>
-          <div>{selcetDay.getMonth() + 1}월</div>
-          <div onClick={() => toToday()}>오늘로</div>
+          <div className="toToday" onClick={() => toToday()}>
+            오늘
+          </div>
+          <div className="monthText">{selcetDay.getMonth() + 1}월</div>
+          <div className="toToday">기능2</div>
         </div>
         <div className="dateSelector">
           <Swiper
@@ -253,8 +249,18 @@ const Practice = () => {
           </Swiper>
         </div>
         <div className="seeOptionSelector">
-          <div onClick={() => setSeeOption("내 연습")}>내 팀 연습</div>
-          <div onClick={() => setSeeOption("전체 연습")}>전체 연습</div>
+          <div
+            onClick={() => setSeeOption("내 연습")}
+            className={`${seeOption === "내 연습" ? "selcetOption" : ""}`}
+          >
+            내 팀 연습
+          </div>
+          <div
+            onClick={() => setSeeOption("전체 연습")}
+            className={`${seeOption === "전체 연습" ? "selcetOption" : ""}`}
+          >
+            전체 연습
+          </div>
         </div>
       </div>
       <div className="myPractice">
@@ -262,7 +268,7 @@ const Practice = () => {
           {seePractices.filter(
             (prac) => prac.date === getFomatDate(selcetDay.toLocaleDateString())
           ).length < 1 ? (
-            <div className="practiceCard">오늘은 연습이 없습니다.</div>
+            <div className="practiceCard noPrac">아직 연습이 없습니다.</div>
           ) : (
             ""
           )}
@@ -273,31 +279,31 @@ const Practice = () => {
             )
             .map((practice) => (
               <div key={practice._id} className="practiceCard">
-                <span
-                  style={{
-                    padding: "2px",
-                    marginRight: "3px",
-                    padding: "5px",
-                    marginLeft: "5px",
-                    borderRadius: "5px",
-                    backgroundColor: `${practice.teamColor}`,
-                  }}
-                ></span>
-                <div>{practice.teamName}</div>
-                <div>
-                  {(practice.time.split("~")[0] * 2) % 2 === 0
-                    ? `${practice.time.split("~")[0]}:00`
-                    : `${practice.time.split("~")[0] - 0.5}:30`}
-                  ~
-                  {(practice.time.split("~")[1] * 2) % 2 === 0
-                    ? `${practice.time.split("~")[1]}:00`
-                    : `${practice.time.split("~")[1] - 0.5}:30`}
-                </div>
+                <div className="pracTop">
+                  <div className="pracTeam">
+                    <div>{practice.teamName}</div>
+                  </div>
+                  <div className="pracInfo">
+                    <div className="pracTime">
+                      {(practice.time.split("~")[0] * 2) % 2 === 0
+                        ? `${practice.time.split("~")[0]}:00`
+                        : `${practice.time.split("~")[0] - 0.5}:30`}
+                      ~
+                      {(practice.time.split("~")[1] * 2) % 2 === 0
+                        ? `${practice.time.split("~")[1]}:00`
+                        : `${practice.time.split("~")[1] - 0.5}:30`}
+                    </div>
 
-                <div>
-                  <MdOutlinePlace />
-                  {practice.place}
+                    <div className="pracPlace">
+                      <MdOutlinePlace />
+                      {practice.place}
+                    </div>
+                  </div>
                 </div>
+                <div
+                  className="pracBottom"
+                  style={{ backgroundColor: `${practice.teamColor}` }}
+                ></div>
               </div>
             ))}
         </div>
@@ -329,11 +335,8 @@ export default Practice;
 /*
 1. 주간 선택, 보기를 만들어서 원하는 날짜 볼 수 있게 하기
 2. 연습들 리스트로 보이기
-3. 연습 생성 플로트 시키기
+3. 연습 생성 플로트
 4. 연습 추가 누르면  / [새로운 팀 만들기 => 팀 만들기 => 링크 공유 유도] / [기존팀에서 추가 => 팀 페이지로 이동]
 5. 월간 선택, 보기 만들어서 한눈에 보기
-6. 스케줄 작성 페이지 만들고 홈, 스케줄 페이지에 에 팀 스케줄 요청된 날짜 강조해주는 효과 만들기
-7. 연습데이터가 나중엔 개 많을거니까 잘라서 가져오게 바꿔야할듯 (ALL) (date~date)
-   ㄴ이번달로부터 이번달 저번달 다음달만 가져오는걸로 합시다
-
+6. 연습 누르면 해당 팀 메인 갈 수 있도록
 */

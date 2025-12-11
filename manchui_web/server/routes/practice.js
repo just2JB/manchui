@@ -69,7 +69,20 @@ router.get("/", async (req, res) => {
     const practices = await Practice.find();
     const teams = await Team.find();
     const detailPractices = [];
-    practices.forEach((practice) => {
+    const toMonth = new Date();
+    const lastMonth = new Date();
+    lastMonth.setMonth(toMonth.getMonth() - 1);
+    lastMonth.setDate(1);
+    const nextMonth = new Date();
+    nextMonth.setMonth(toMonth.getMonth() + 2);
+    nextMonth.setDate(0);
+
+    const monthFiltered = practices.filter(
+      (prac) =>
+        lastMonth < new Date(prac.date) && new Date(prac.date) < nextMonth
+    );
+
+    monthFiltered.forEach((practice) => {
       const team = teams.find((t) => String(t._id) === practice.teamId);
       if (!team) {
       } else {

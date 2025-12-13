@@ -1,6 +1,6 @@
 .bottomBar {
   position: fixed;
-  bottom: 0px;
+  bottom: 6px;
   background-color: var(--background-dark);
   width: 680px;
   height: 45px;

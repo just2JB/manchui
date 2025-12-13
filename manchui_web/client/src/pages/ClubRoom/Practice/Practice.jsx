@@ -250,17 +250,39 @@ const Practice = () => {
           </Swiper>
         </div>
         <div className="seeOptionSelector">
-          <div
-            onClick={() => setSeeOption("내 연습")}
-            className={`${seeOption === "내 연습" ? "selcetOption" : ""}`}
-          >
-            내 연습
+          <div className="optionFrontBox">
+            <div className="optionBox">
+              <div
+                onClick={() => setSeeOption("내 연습")}
+                className="optionButton"
+              >
+                <span className="optionText">내 연습</span>
+              </div>
+            </div>
+            <div className="optionBox">
+              <div
+                onClick={() => setSeeOption("전체 연습")}
+                className="optionButton"
+              >
+                <span className="optionText">전체 연습</span>
+              </div>
+            </div>
           </div>
-          <div
-            onClick={() => setSeeOption("전체 연습")}
-            className={`${seeOption === "전체 연습" ? "selcetOption" : ""}`}
-          >
-            전체 연습
+          <div className="optionBackBox">
+            <div className="firstBox">
+              <div
+                className={`optionBack ${
+                  seeOption === "내 연습"
+                    ? "option1"
+                    : seeOption === "전체 연습"
+                    ? "option2"
+                    : ""
+                }`}
+              >
+                <div className="optionBackColor">{seeOption}</div>
+              </div>
+            </div>
+            <div className=""></div>
           </div>
         </div>
       </div>

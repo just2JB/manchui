@@ -170,7 +170,7 @@
   height: 100%;
   width: 100%;
   border-radius: 5px;
-  background-color: var(--complete-green);
+  background-color: var(--brand-red);
 }
 .make-reservation {
   width: 100%;

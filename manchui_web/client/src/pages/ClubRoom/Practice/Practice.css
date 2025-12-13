@@ -69,7 +69,6 @@
   justify-content: center;
   gap: 2px;
 }
-
 .practice .practiceCount {
   width: 5px;
   height: 5px;
@@ -78,25 +77,77 @@
   border-radius: 20px;
 }
 .practice .seeOptionSelector {
-  margin: 20px 15px;
+  margin: 30px 20px 20px 20px;
+  position: relative;
+  border-radius: 13px;
+  overflow: hidden;
+  border: 3px solid var(--box-3);
+}
+.practice .optionFrontBox {
   display: flex;
-  gap: 10px;
   justify-content: space-between;
 }
-.practice .seeOptionSelector > div {
+.practice .optionBox {
   flex: 1;
+}
+.practice .optionButton {
   text-align: center;
   background-color: var(--box-3);
   color: var(--primary-300);
-  border-radius: 10px;
   padding: 8px;
   font-size: 14px;
   position: relative;
+  z-index: 10;
 }
-.practice .seeOptionSelector > .selcetOption {
+.practice .optionText {
+  z-index: 40;
+}
+
+.practice .optionBackBox {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.practice .optionBackBox > div {
+  flex: 1;
+}
+.practice .firstBox {
+  position: relative;
+}
+.practice .optionBack {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  bottom: 0px;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-in-out;
+  z-index: 20;
+  display: flex;
+}
+
+.practice .optionBackColor {
+  color: var(--text-primary);
   background-color: var(--brand-red);
-  color: var(--text-gray);
-  transition-duration: 0.5s;
+  text-align: center;
+  border-radius: 10px;
+  padding: 8px;
+  flex: 1;
+  margin: 0px 1%;
+  font-size: 14px;
+  position: relative;
+  z-index: 10;
+}
+
+.practice .option1 {
+  left: 0%;
+}
+.practice .option2 {
+  left: 100%;
 }
 
 .practice .practiceCard {

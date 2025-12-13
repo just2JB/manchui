@@ -33,8 +33,11 @@ const BottomBar = () => {
     <div
       className="bottomBar"
       style={{
-        border: `${
-          location.pathname.includes("/club/team/join") ? "none" : ""
+        visibility: `${
+          location.pathname.includes("/club/team/join") ||
+          location.pathname.includes("/club/login")
+            ? "hidden"
+            : ""
         }`,
       }}
     >

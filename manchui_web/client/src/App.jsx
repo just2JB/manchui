@@ -33,6 +33,10 @@ import AdminSetting from "./pages/Admin/AdminSetting";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
 import BottomBar from "./pages/ClubRoom/BottomBar";
 import Schedule from "./pages/ClubRoom/Schedule/Schedule";
+import AuthWindow from "./pages/ClubRoom/AuthWindow/AuthWindow";
+import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
+import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
+
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function ProtectedRoute() {
@@ -41,7 +45,7 @@ function ProtectedRoute() {
   const { setIsLogin } = useOutletContext();
   const nav = useNavigate();
   const notAuth = () => {
-    nav("/club");
+    nav("/login");
     alert("로그인 해야 사용할 수 있습니다.");
   };
 
@@ -81,7 +85,7 @@ function AdminRoute() {
   const [user, setUser] = useState(null);
   const nav = useNavigate();
   const notAuth = () => {
-    nav("/club");
+    nav("/login");
     alert("임원진이 아닙니다.");
   };
 
@@ -125,29 +129,97 @@ function Layout() {
 
 function ClubRoomLayout() {
   const [isLogin, setIsLogin] = useState(false);
-  const [authIsOpen, setAuthIsOpen] = useState(false);
 
   return (
     <>
       <div className="clubRoomLayout">
-        <ClubRoomNavbar
-          isLogin={isLogin}
-          setIsLogin={setIsLogin}
-          setAuthIsOpen={setAuthIsOpen}
-        />
+        <ClubRoomNavbar isLogin={isLogin} setIsLogin={setIsLogin} />
         <div className="clubRoombody">
           <Outlet
             context={{
               isLogin,
               setIsLogin,
-              authIsOpen,
-              setAuthIsOpen,
             }}
           />
         </div>
         <BottomBar />
       </div>
     </>
+  );
+}
+
+function LiginRoute() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    passwordCheck: "",
+    username: "",
+    clubcode: "",
+    Identification: "",
+  });
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const nav = useNavigate();
+  const loginHandle = async (e) => {
+    e.preventDefault();
+    setFormData({ email: formData.email, password: formData.password });
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/auth/login`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.user) {
+        nav("/club");
+        return;
+      } else {
+        return alert(response.data.message);
+      }
+    } catch (error) {
+    } finally {
+    }
+  };
+  const signUpHandle = async (e) => {
+    e.preventDefault();
+    if (formData.password !== formData.passwordCheck) {
+      return;
+    }
+    if (formData.clubcode != 10007) {
+      return;
+    }
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/auth/signup`,
+        formData
+      );
+      if (response.status === 201) {
+        alert("계정 생성이 성공 되었습니다.");
+        setFormData({ email: formData.email, password: "" });
+        nav("/login/login-email");
+      }
+    } catch (error) {
+    } finally {
+    }
+  };
+  return (
+    <div className="loginPage">
+      <Outlet
+        context={{
+          formData,
+          loginHandle,
+          handleChange,
+          signUpHandle,
+          nav,
+        }}
+      />
+    </div>
   );
 }
 
@@ -166,9 +238,15 @@ const router = createBrowserRouter([
   {
     path: "/club",
     element: <ClubRoomLayout />,
+    children: [{ path: "team/join/:id", element: <TeamJoin /> }],
+  },
+  {
+    path: "/login",
+    element: <LiginRoute />,
     children: [
-      { index: true, element: <ClubRoom /> },
-      { path: "team/join/:id", element: <TeamJoin /> },
+      { index: true, element: <AuthWindow /> },
+      { path: "login-email", element: <LoginFormEmail /> },
+      { path: "signup-email", element: <SignUpEmail /> },
     ],
   },
   {
@@ -178,6 +256,7 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
+          { index: true, element: <ClubRoom /> },
           { path: "practice", element: <Practice /> },
           { path: "team", element: <Team /> },
           { path: "team/create-team", element: <CreateTeam /> },

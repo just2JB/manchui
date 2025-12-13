@@ -254,7 +254,7 @@ const Practice = () => {
             onClick={() => setSeeOption("내 연습")}
             className={`${seeOption === "내 연습" ? "selcetOption" : ""}`}
           >
-            내 팀 연습
+            내 연습
           </div>
           <div
             onClick={() => setSeeOption("전체 연습")}

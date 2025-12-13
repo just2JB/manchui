@@ -1,18 +1,7 @@
 .auth-window {
-  position: fixed;
-  left: 0px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  top: 0;
-  height: 100vh;
-  width: 100vw;
-  color: var(--text-primary);
-  background-color: #1212128a;
-  z-index: 100;
-}
-.auth-window .form-div {
-  background-color: var(--box-1);
   display: flex;
   flex-direction: column;
+}
+.formPage {
+  color: var(--text-primary);
 }

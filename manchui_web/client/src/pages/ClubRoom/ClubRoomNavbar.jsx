@@ -1,11 +1,6 @@
 import axios from "axios";
 import React, { useState } from "react";
-import {
-  Link,
-  useNavigate,
-  useLocation,
-  useOutletContext,
-} from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "./ClubRoomNavbar.css";
 import { IoIosMenu, IoMdArrowBack, IoIosClose } from "react-icons/io";
 import { LuSquareArrowOutUpLeft } from "react-icons/lu";
@@ -24,8 +19,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
           {},
           { withCredentials: true }
         );
-        nav("/club");
-        window.location.reload();
+        nav("/login");
         alert(response.data.message);
       } catch (error) {
         nav("/club");
@@ -36,7 +30,8 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
   };
   return (
     <div className="ClubRoomNavbar">
-      {location.pathname.includes("/club/team/join") ? (
+      {location.pathname.includes("/club/team/join") ||
+      location.pathname.includes("/login") ? (
         <div className="topBar inviteLink"></div>
       ) : (
         <div className="topBar">

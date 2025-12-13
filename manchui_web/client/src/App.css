@@ -15,11 +15,17 @@
   user-select: none;
   z-index: 100;
 }
-
+.loginPage {
+  background-color: var(--background-dark);
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 @media screen and (max-width: 767px) {
   .clubRoombody {
     width: 100%;
     position: fixed;
   }
-
 }

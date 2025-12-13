@@ -1,62 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useOutletContext } from "react-router-dom";
 import axios from "axios";
-import AuthWindow from "./AuthWindow/AuthWindow";
 import "./ClubRoom.css";
 import Loading from "../../components/Loading/Loading";
-import { VictoryPie, VictoryTheme } from "victory";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoom = () => {
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState({ username: "" });
-  const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
-  const [profilSpeed, setProfilSpeed] = useState(4);
-
-  useEffect(() => {
-    setLoading(true);
-
-    const verifyToken = async () => {
-      try {
-        const response = await axios.post(
-          `${serverUrl}/api/auth/verify-token`,
-          {},
-          { withCredentials: true }
-        );
-        if (response.data.isValid) {
-          setUser(response.data.user);
-          setIsLogin(true);
-
-          return;
-        }
-
-        return;
-      } catch (error) {
-        console.log("토큰 인증 실패", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    verifyToken();
-  }, []);
-
-  const handleLogout = async (e) => {
-    if (confirm(`로그아웃 하시겠습니까?`)) {
-      try {
-        const response = await axios.post(
-          `${serverUrl}/api/auth/logout`,
-          {},
-          { withCredentials: true }
-        );
-        alert(response.data.message);
-        setIsLogin(false);
-        setUser({ username: "" });
-      } catch (error) {
-        console.log("토큰인증 실패");
-      }
-    }
-  };
+  const { user } = useOutletContext();
 
   return (
     <div className="club-room">
@@ -86,16 +38,6 @@ const ClubRoom = () => {
         <div>
           <Loading />
         </div>
-      ) : (
-        <></>
-      )}
-
-      {authIsOpen ? (
-        <AuthWindow
-          setIsLogin={setIsLogin}
-          setUser={setUser}
-          setAuthIsOpen={setAuthIsOpen}
-        />
       ) : (
         <></>
       )}

@@ -51,7 +51,8 @@ const Team = () => {
               new Date(
                 goals.find((goal) => goal.date.split("-").join("") > today).date
               )) /
-              86400000
+              86400000 +
+              1
           ),
       };
     } else {
@@ -60,7 +61,7 @@ const Team = () => {
         date:
           "D+" +
           Math.floor(
-            (new Date() - new Date(goals[goals.length - 1].date)) / 86400000
+            (new Date() - new Date(goals[goals.length - 1].date)) / 86400000 + 1
           ),
       };
     }

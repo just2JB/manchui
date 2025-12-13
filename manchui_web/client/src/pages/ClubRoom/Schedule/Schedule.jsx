@@ -158,5 +158,5 @@ export default Schedule;
 
 //상단 메뉴: 요청된 날짜 가로 리스트로 모아두기 / 각종 메뉴 버튼  <div className="topMenu"></div>
 /**
- *
+ 지난 요청및 지난 스케줄 삭제하기 (1달 주기?)
  */

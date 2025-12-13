@@ -60,7 +60,9 @@
   font-size: 150%;
   font-weight: 400;
 }
-
+.practice .selectDateBox .day {
+  color: var(--text-primary);
+}
 .practice .day {
   color: var(--primary-300);
 }
@@ -188,12 +190,16 @@
   animation-name: pracCardOn;
   animation-duration: 0.5s;
 }
+.practice .member {
+  font-size: 14px;
+}
 
 .practice .pracInfo {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
   text-align: start;
+  font-size: 14px;
   animation-name: pracCardOn;
   animation-duration: 0.3s;
 }
@@ -258,6 +264,13 @@
   font-weight: 800;
   border: none;
   border-radius: 14px;
+}
+
+.practice .icon {
+  transform: translateY(2px);
+}
+.practice .timeIcon {
+  margin-left: 5px;
 }
 
 @keyframes popNewPractice {

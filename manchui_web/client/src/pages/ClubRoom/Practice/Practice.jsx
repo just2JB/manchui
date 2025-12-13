@@ -4,8 +4,9 @@ import "./Practice.css";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { useEffect } from "react";
-import { MdOutlinePlace } from "react-icons/md";
+import { MdOutlinePlace, MdOutlineAccessTime } from "react-icons/md";
 import { HiUserGroup } from "react-icons/hi";
+
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useState } from "react";
@@ -306,8 +307,12 @@ const Practice = () => {
                   <div className="pracTeam">
                     <div className="teamName">{practice.teamName}</div>
                     <div className="member">
-                      <HiUserGroup />
+                      <HiUserGroup className="icon" />
                       {practice.members.length}
+                      <MdOutlineAccessTime className="icon timeIcon" />
+                      {practice.time.split("~")[1] -
+                        practice.time.split("~")[0]}
+                      h
                     </div>
                   </div>
                   <div className="pracInfo">
@@ -322,7 +327,7 @@ const Practice = () => {
                     </div>
 
                     <div className="pracPlace">
-                      <MdOutlinePlace />
+                      <MdOutlinePlace className="icon" />
                       {practice.place}
                     </div>
                   </div>

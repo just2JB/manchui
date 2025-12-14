@@ -223,7 +223,7 @@
 .practice .floatAddPractice {
   position: fixed;
   right: 15px;
-  bottom: 55px;
+  bottom: 60px;
   background-color: var(--brand-red);
   font-size: 14px;
   padding: 3px;
@@ -267,7 +267,7 @@
 }
 
 .practice .icon {
-  transform: translateY(2px);
+  transform: translateY(1px);
 }
 .practice .timeIcon {
   margin-left: 5px;

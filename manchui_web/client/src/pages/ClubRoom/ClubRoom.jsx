@@ -13,7 +13,6 @@ const ClubRoom = () => {
   return (
     <div className="club-room">
       <div className="my-info">
-        <div className="infoBack"></div>
         <div className="profil">
           <div className="profilCard">
             <div className="user">
@@ -31,6 +30,9 @@ const ClubRoom = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="">
+          
         </div>
       </div>
 

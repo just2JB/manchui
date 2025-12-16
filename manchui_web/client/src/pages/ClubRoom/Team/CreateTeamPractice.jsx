@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./CreateTeamPractice.css";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import axios from "axios";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 import { IoCloseOutline, IoFilter } from "react-icons/io5";
@@ -15,6 +16,7 @@ const CreatePractice = ({
   getPractice,
   selectedDayPractice,
 }) => {
+  const manchuiModal = useManchuiModal();
   const [date, setDate] = useState(selectedDay || new Date());
   const [selectedMembers, setSelectedMembers] = useState(team.members || []);
   const [openTimeTable, setOpenTimeTable] = useState(3);
@@ -65,7 +67,7 @@ const CreatePractice = ({
       for (let i = 0; i < hour - anchor + 1; i++) {
         newHours.push(anchor + i);
         if (reservedTime.includes(anchor + i)) {
-          alert("중간에 선택불가능한 시간이 있습니다.");
+          manchuiModal("선택불가능한 시간이 있습니다.");
           return;
         }
       }
@@ -143,11 +145,11 @@ const CreatePractice = ({
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       setOpenCreatePractice(false);
       await getPractice();
     } catch (error) {
-      alert("서버 에러입니다.");
+      await manchuiModal("서버 에러입니다.");
     }
   };
 

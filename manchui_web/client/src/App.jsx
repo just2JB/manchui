@@ -76,7 +76,7 @@ function ProtectedRoute() {
     return null;
   }
   return isAuthenticated ? (
-    <Outlet context={{ user, setIsLogin }} />
+    <Outlet context={{ user, setUser, setIsLogin }} />
   ) : (
     notAuth()
   );

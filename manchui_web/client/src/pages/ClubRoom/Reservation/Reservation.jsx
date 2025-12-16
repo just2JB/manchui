@@ -8,7 +8,7 @@ import { IoMdShare } from "react-icons/io";
 import { IoCloseOutline } from "react-icons/io5";
 import Loading from "../../../components/Loading/Loading";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
-
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 const Reservation = () => {
   const [loading, setLoading] = useState(false);
   const [reservationData, setReservationData] = useState([]);
@@ -21,6 +21,7 @@ const Reservation = () => {
       (data) => new Date(data.date).toDateString() === new Date().toDateString()
     )
   );
+  const manchuiModal = useManchuiModal();
 
   const { user } = useOutletContext();
 
@@ -111,10 +112,11 @@ const Reservation = () => {
   };
   const deleteHandle = async (data) => {
     if (
-      confirm(
+      await manchuiModal(
         `${data.date} / ${Math.min(...data.time)}시 - ${
           Math.max(...data.time) + 1
-        }시 / 취소하시겠습니까?`
+        }시 / 취소하시겠습니까?`,
+        "confirm"
       )
     ) {
       setLoading(true);
@@ -124,7 +126,7 @@ const Reservation = () => {
           { withCredentials: true }
         );
       } catch (error) {
-        alert("오류가 발생하였습니다.");
+        manchuiModal("오류가 발생하였습니다.");
       } finally {
         fetchReservation();
       }

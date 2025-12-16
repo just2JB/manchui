@@ -7,6 +7,7 @@ import {
   useOutletContext,
   data,
 } from "react-router-dom";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import axios from "axios";
 import "./EditSchedule.css";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
@@ -22,9 +23,10 @@ const EditSchedule = () => {
       1, 2, 3번 모두 백엔드에서 처리
 
 
+
       +날짜, (확정, 임시저장) 여부, 일정,
 */
-
+  const manchuiModal = useManchuiModal();
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
   const [schedule, setSchedule] = useState([
@@ -74,7 +76,7 @@ const EditSchedule = () => {
         withCredentials: true,
       });
       if (response.status === 201) {
-        alert("일정이 성공적으로 저장되었습니다.");
+        await manchuiModal("일정이 성공적으로 저장되었습니다.");
       }
       nav(-1);
     } catch (error) {

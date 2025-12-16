@@ -1,12 +1,14 @@
 import React from "react";
 import "./CreateTeam.css";
 import { useState } from "react";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 import { useOutletContext, useNavigate } from "react-router-dom";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 import "./TeamCalender.css";
 const CreateTeam = () => {
+  const manchuiModal = useManchuiModal();
   const [teamData, setTeamData] = useState({});
   const [loading, setLoading] = useState(false);
   const { user } = useOutletContext();
@@ -29,11 +31,11 @@ const CreateTeam = () => {
           { withCredentials: true }
         );
         if (response.status === 201) {
-          alert("팀 생성이 성공 되었습니다.");
+          manchuiModal("팀 생성이 성공 되었습니다.");
           nav("/club/team");
         }
       } catch (error) {
-        alert("서버 에러입니다.");
+        await manchuiModal("서버 에러입니다.");
       } finally {
         setLoading(false);
       }

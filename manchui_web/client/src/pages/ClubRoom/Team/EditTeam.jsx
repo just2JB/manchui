@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./EditTeam.css";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 const EditTeam = () => {
   const [team, setTeam] = useState({
@@ -11,7 +12,7 @@ const EditTeam = () => {
   });
   const parmas = useParams();
   const nav = useNavigate();
-
+  const manchuiModal = useManchuiModal();
   const getFomatDate = (localeDateString) => {
     localeDateString = localeDateString.split(". ").join(".");
     const year = localeDateString.split(".")[0];
@@ -48,7 +49,7 @@ const EditTeam = () => {
         teamColor: response.data.team.teamColor,
       });
     } catch {
-      alert("존재하지 않는 팀 입니다.");
+      await manchuiModal("존재하지 않는 팀 입니다.");
       nav("/club/practice");
     }
   };
@@ -79,16 +80,16 @@ const EditTeam = () => {
           { newGoal, teamId: team._id },
           { withCredentials: true }
         );
-        alert("팀 목표가 추가 되었습니다.");
+        manchuiModal("팀 목표가 추가 되었습니다.");
         getMyTeams();
         clickAdd();
       } catch (error) {
-        alert("서버 에러입니다.");
+        manchuiModal("서버 에러입니다.");
       }
     }
   };
   const deleteGoalHandle = async (goalId) => {
-    if (!confirm("정말로 삭제하시겠습니까?")) {
+    if (!(await manchuiModal("정말로 삭제하시겠습니까?", "confirm"))) {
       return;
     }
     try {
@@ -102,13 +103,13 @@ const EditTeam = () => {
           withCredentials: true,
         }
       );
-      alert("팀 목표가 삭제 되었습니다.");
+      manchuiModal("팀 목표가 삭제 되었습니다.");
       getMyTeams();
     } catch (error) {}
   };
   const deleteTeamHandel = async () => {
     //삭제 전 확인 문구 띄우기
-    if (!confirm("정말로 팀을 삭제하시겠습니까?")) {
+    if (!(await manchuiModal("정말로 팀을 삭제하시겠습니까?", "confirm"))) {
       return;
     }
 
@@ -119,10 +120,10 @@ const EditTeam = () => {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       nav("/club/team");
     } catch {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     }
   };
 
@@ -131,7 +132,7 @@ const EditTeam = () => {
       return;
     }
 
-    if (!confirm("정말로 변경하시겠습니까?")) {
+    if (!(await manchuiModal("정말로 변경하시겠습니까?", "confirm"))) {
       return;
     }
     try {
@@ -144,7 +145,7 @@ const EditTeam = () => {
         },
         { withCredentials: true }
       );
-      alert("변경 되었습니다.");
+      manchuiModal("변경 되었습니다.");
       setFormData({
         dayDate: getFomatDate(new Date().toLocaleDateString()),
       });
@@ -153,10 +154,10 @@ const EditTeam = () => {
   };
   const quitTeamHandle = async (userId) => {
     if (userId === team.leaderId) {
-      alert("팀장을 위임 후 탈퇴해 주세요.");
+      manchuiModal("팀장을 위임 후 탈퇴해 주세요.");
       return;
     }
-    if (!confirm("정말로 탈퇴시키겠습니까?")) {
+    if (!(await manchuiModal("정말로 탈퇴시키겠습니까?", "confirm"))) {
       return;
     }
     try {
@@ -170,15 +171,15 @@ const EditTeam = () => {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       getMyTeams();
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     }
   };
 
   const changeLeaderHandle = async (userId) => {
-    if (!confirm("정말로 팀장을 바꾸시겠습니까")) {
+    if (!(await manchuiModal("정말로 팀장을 바꾸시겠습니까", "confirm"))) {
       return;
     }
     try {
@@ -192,10 +193,10 @@ const EditTeam = () => {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       getMyTeams();
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     }
   };
 

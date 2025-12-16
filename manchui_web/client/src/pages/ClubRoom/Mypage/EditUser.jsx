@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Mypage.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const Mypage = () => {
-  const { user } = useOutletContext();
+  const manchuiModal = useManchuiModal();
+  const { user, setUser } = useOutletContext();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -46,10 +48,17 @@ const Mypage = () => {
         reqData,
         { withCredentials: true }
       );
-      alert(response.data.message);
+      if (selectedForm === "username") {
+        setUser({ ...user, username: formData[selectedForm] });
+      }
+      if (selectedForm === "Identification") {
+        setUser({ ...user, Identification: formData[selectedForm] });
+      }
+
+      manchuiModal(response.data.message);
       nav("/club/mypage");
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     } finally {
       setLoading(false);
     }

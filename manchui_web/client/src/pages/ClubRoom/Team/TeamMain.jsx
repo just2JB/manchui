@@ -3,6 +3,7 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import "./TeamMain.css";
 import axios from "axios";
 import Loading from "../../../components/Loading/Loading";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import EditTeamPractice from "./EditTeamPractice";
 import CreateTeamPractice from "./CreateTeamPractice";
 import { useState } from "react";
@@ -40,6 +41,7 @@ const TeamMain = () => {
     unconfirm: [],
   });
   const { user } = useOutletContext();
+  const manchuiModal = useManchuiModal();
   const nav = useNavigate();
   const parmas = useParams();
   const inviteURL = `${clientUrl}/club/team/join/${parmas.id}`;
@@ -106,7 +108,7 @@ const TeamMain = () => {
       });
       setTeamPractice(sortedPractices);
     } catch {
-      alert("연습을 불러올 수 없습니다.");
+      manchuiModal("연습을 불러올 수 없습니다.");
     }
   };
   const handelCommentChange = (e) => {
@@ -126,9 +128,9 @@ const TeamMain = () => {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
     } catch {
-      alert("서버 오류입니다.");
+      await manchuiModal("서버 오류입니다.");
     }
   };
   useEffect(() => {
@@ -168,7 +170,7 @@ const TeamMain = () => {
         });
         await getPractice();
       } catch {
-        alert("존재하지 않는 팀 입니다.");
+        manchuiModal("존재하지 않는 팀 입니다.");
         nav("/club/team");
       }
     };
@@ -177,10 +179,10 @@ const TeamMain = () => {
 
   const quitTeamHandle = async (userId) => {
     if (userId === team.leaderId) {
-      alert("팀장을 위임 후 탈퇴해 주세요.");
+      manchuiModal("팀장을 위임 후 탈퇴해 주세요.");
       return;
     }
-    if (!confirm("정말로 팀을 탈퇴하시겠습니까?")) {
+    if (!(await manchuiModal("정말로 팀을 탈퇴하시겠습니까?", "confirm"))) {
       return;
     }
     try {
@@ -194,10 +196,10 @@ const TeamMain = () => {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       nav("/club/team");
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
       nav("/club/team");
     }
   };
@@ -215,22 +217,25 @@ const TeamMain = () => {
         }
       );
       setTeam({ ...team, requestSchedules: response.data.newRequestSchedules });
-      alert(response.data.message);
+      manchuiModal(response.data.message);
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     }
   };
   const deletePracticeHandle = async (id) => {
+    if (!(await manchuiModal("정말 삭제하시겠습니까?", "confirm"))) {
+      return;
+    }
     try {
       const response = await axios.delete(`${serverUrl}/api/practice/${id}`, {
         withCredentials: true,
       });
       await getPractice();
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       setEditPractice("unSelect");
       setPracticeInfoDetail("unSelect");
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     }
   };
   const getTotal = () => {
@@ -256,7 +261,7 @@ const TeamMain = () => {
       }
     } else {
       navigator.clipboard.writeText(inviteURL);
-      alert("초대 링크가 클립보드에 복사되었습니다.");
+      manchuiModal("초대 링크가 클립보드에 복사되었습니다.");
     }
   };
   return (

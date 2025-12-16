@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useOutletContext } from "react-router-dom";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./TeamJoin.css";
 import axios from "axios";
 import AuthWindow from "../AuthWindow/AuthWindow";
@@ -13,6 +14,7 @@ const TeamJoin = () => {
   const [loading, setLoading] = useState(false);
   const { isLogin, setIsLogin, authIsOpen, setAuthIsOpen } = useOutletContext();
   const parmas = useParams();
+  const manchuiModal = useManchuiModal();
   const nav = useNavigate();
   const joinTeamHandle = async (userId) => {
     try {
@@ -27,10 +29,10 @@ const TeamJoin = () => {
           withCredentials: true,
         }
       );
-      alert(response.data.message);
+      manchuiModal(response.data.message);
       nav("/club/team");
     } catch (error) {
-      alert(error.response.data.message);
+      await manchuiModal(error.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ const TeamJoin = () => {
         );
         setTeamName(response.data.team.name);
       } catch (error) {
-        alert("팀이 없습니다 링크를 다시확인해 주세요!");
+        await manchuiModal("팀이 없습니다 링크를 다시확인해 주세요!");
         nav("/club");
       }
     };

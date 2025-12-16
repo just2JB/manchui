@@ -1,22 +1,10 @@
 import React from "react";
 import "./MainPage.css";
 import LiquidChrome from "../../components/LiquidChrome/LiquidChrome";
-import { useManchuiModal } from "../../hooks/ManchuiModal";
+
 import { MdAddAlarm } from "react-icons/md";
 
 const MainPage = () => {
-  const tet = useManchuiModal();
-  const handelCheck = async () => {
-    const isConfirmed = await tet(
-      "종합예술 댄스 동아리 만가지를 취하다, 만취",
-      "confirm"
-    );
-    if (isConfirmed) {
-      alert("삭제되었습니다.");
-    } else {
-    }
-  };
-
   return (
     <div className="main-page">
       <div className="background">
@@ -37,10 +25,6 @@ const MainPage = () => {
 
       <div className="main-content">
         <p>종합예술 댄스 동아리 만가지를 취하다, 만취</p>
-
-        <div className="" onClick={handelCheck}>
-          aa
-        </div>
       </div>
     </div>
   );

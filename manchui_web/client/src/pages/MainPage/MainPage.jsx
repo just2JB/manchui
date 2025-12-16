@@ -6,14 +6,14 @@ import { MdAddAlarm } from "react-icons/md";
 
 const MainPage = () => {
   const tet = useManchuiModal();
-
   const handelCheck = async () => {
-    const isConfirmed = await tet("테스트", "confirm");
+    const isConfirmed = await tet(
+      "종합예술 댄스 동아리 만가지를 취하다, 만취",
+      "confirm"
+    );
     if (isConfirmed) {
-      console.log("서버 삭제 API 호출");
       alert("삭제되었습니다.");
     } else {
-      console.log("삭제가 취소되었습니다.");
     }
   };
 
@@ -37,9 +37,7 @@ const MainPage = () => {
 
       <div className="main-content">
         <p>종합예술 댄스 동아리 만가지를 취하다, 만취</p>
-        <div className="" onClick={handleDelete}>
-          아니
-        </div>{" "}
+
         <div className="" onClick={handelCheck}>
           aa
         </div>

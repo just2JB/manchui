@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { createPortal } from "react-dom";
-import "./Modal.css";
+import styles from "./ManchuiModal.module.css";
 const ModalContext = createContext();
 
 export const ModalProvider = ({ children }) => {
@@ -32,18 +32,35 @@ export const ModalProvider = ({ children }) => {
       {children}
       {state.isOpen &&
         createPortal(
-          <div className="overlay" style={overlayStyle}>
-            <div style={modalStyle}>
-              <p>{state.message}</p>
+          <div className={styles.overlay}>
+            <div className={styles.modal}>
+              <p className={styles.message}>{state.message}</p>
 
               {state.type === "confirm" ? (
-                <div className="buttons">
-                  <button onClick={() => handleClose(false)}>취소</button>
-                  <button onClick={() => handleClose(true)}>확인</button>
+                <div className={styles.buttonGroup}>
+                  <button
+                    className={`${styles.button} ${styles.cancelBtn}`}
+                    onClick={() => handleClose(false)}
+                  >
+                    취소
+                  </button>
+                  <button
+                    className={`${styles.button} ${styles.confirmBtn}`}
+                    onClick={() => handleClose(true)}
+                    autoFocus
+                  >
+                    확인
+                  </button>
                 </div>
               ) : (
-                <div className="buttons">
-                  <button onClick={() => handleClose(false)}>닫기</button>
+                <div className={styles.buttonGroup}>
+                  <button
+                    className={`${styles.button} ${styles.checkBtn}`}
+                    onClick={() => handleClose(false)}
+                    autoFocus
+                  >
+                    닫기
+                  </button>
                 </div>
               )}
             </div>
@@ -80,3 +97,21 @@ const modalStyle = {
   minWidth: "300px",
   boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
 };
+
+//사용법
+/**
+ * 
+ *
+ *import { useManchuiModal } from "../../hooks/ManchuiModal";
+
+   const modal = useManchuiModal();
+
+   const handelCheck = async () => {
+     const isConfirmed = await modal("테스트", "confirm");
+     if (isConfirmed) {
+       alert("삭제되었습니다.");
+     } else {
+     }
+   };
+ 
+ */

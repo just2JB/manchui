@@ -6,7 +6,6 @@
   background-color: #050505;
   user-select: none;
 }
-
 .clubRoombody {
   width: 700px;
   min-height: calc(100vh - 40px);
@@ -22,6 +21,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.joinPage {
+  width: 100vw;
+  height: 100vh;
 }
 @media screen and (max-width: 767px) {
   .clubRoombody {

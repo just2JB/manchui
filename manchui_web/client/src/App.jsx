@@ -7,6 +7,7 @@ import {
   RouterProvider,
   useOutletContext,
 } from "react-router-dom";
+import { ModalProvider } from "./hooks/ManchuiModal";
 
 import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
@@ -36,6 +37,7 @@ import Schedule from "./pages/ClubRoom/Schedule/Schedule";
 import AuthWindow from "./pages/ClubRoom/AuthWindow/AuthWindow";
 import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
 import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
+import JoinName from "./pages/Join/JoinName";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -127,9 +129,42 @@ function Layout() {
   );
 }
 
+function JoinRoute() {
+  const [formData, setFormData] = useState({
+    name: "",
+    major: "",
+    grade: "",
+    studentId: "",
+    contact: "",
+    wish: "",
+  });
+  const [formError, setFormError] = useState({
+    name: "",
+    major: "",
+    grade: "",
+    studentId: "",
+    contact: "",
+    error: false,
+  });
+
+  return (
+    <>
+      <div className="joinPage">
+        <Outlet
+          context={{
+            formData,
+            setFormData,
+            formError,
+            setFormError,
+          }}
+        />
+      </div>
+    </>
+  );
+}
+
 function ClubRoomLayout() {
   const [isLogin, setIsLogin] = useState(false);
-
   return (
     <>
       <div className="clubRoomLayout">
@@ -231,8 +266,16 @@ const router = createBrowserRouter([
       { index: true, element: <MainPage /> },
       { path: "/about", element: <About /> },
       { path: "/goods", element: <Goods /> },
-      { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },
+      {
+        path: "/join",
+        element: <JoinRoute />,
+        children: [
+          { index: true, element: <Join /> },
+          { index: "/name", element: <JoinName /> },
+          { index: "/major", element: <JoinName /> },
+        ],
+      },
     ],
   },
   {
@@ -284,9 +327,9 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <>
+    <ModalProvider>
       <RouterProvider router={router} />
-    </>
+    </ModalProvider>
   );
 }
 

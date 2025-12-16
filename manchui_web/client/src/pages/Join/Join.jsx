@@ -3,7 +3,7 @@ import Cup from "../../components/Cup/Cup";
 import Loading from "../../components/Loading/Loading";
 import { IoIosArrowForward, IoIosArrowBack, IoMdOpen } from "react-icons/io";
 import { IoAlertCircleOutline, IoCheckmark } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import "./Join.css";
 import axios from "axios";
 
@@ -13,22 +13,8 @@ const array = [false, false, false, false, false, false, false];
 const Join = () => {
   const [formIndex, setFormIndex] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    major: "",
-    grade: "",
-    studentId: "",
-    contact: "",
-    wish: "",
-  });
-  const [formError, setFormError] = useState({
-    name: "",
-    major: "",
-    grade: "",
-    studentId: "",
-    contact: "",
-    error: false,
-  });
+
+  const { formData, setFormData, formError, setFormError } = useOutletContext();
 
   const checkError = () => {
     const message = {
@@ -68,7 +54,6 @@ const Join = () => {
   };
 
   const nav = useNavigate();
-
   const nameRef = useRef();
   const majorRef = useRef();
   const gradeRef = useRef();
@@ -477,3 +462,4 @@ export default Join;
 
 //학번 중복 있을 시 그냥 진행되도록
 //중복 학번 조회시 모두 표시해주게 변경(JoinCheck.jsx 수정 필요)
+//route 형태로 변경할 것 

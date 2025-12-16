@@ -38,6 +38,12 @@ import AuthWindow from "./pages/ClubRoom/AuthWindow/AuthWindow";
 import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
 import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
 import JoinName from "./pages/Join/JoinName";
+import JoinMajor from "./pages/Join/JoinMajor";
+import JoinGrade from "./pages/Join/JoinGrade";
+import JoinStudentId from "./pages/Join/JoinStudentId";
+import JoinContact from "./pages/Join/JoinContact";
+import JoinComment from "./pages/Join/JoinComment";
+import JoinConfirm from "./pages/Join/JoinConfirm";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -85,6 +91,7 @@ function ProtectedRoute() {
 function AdminRoute() {
   const [isAuthenticated, setIsauthenticated] = useState(null);
   const [user, setUser] = useState(null);
+
   const nav = useNavigate();
   const notAuth = () => {
     nav("/login");
@@ -146,18 +153,37 @@ function JoinRoute() {
     contact: "",
     error: false,
   });
-
+  const nav = useNavigate();
+  const route = [
+    "",
+    "name",
+    "major",
+    "grade",
+    "studentId",
+    "contact",
+    "comment",
+    "confirm",
+  ];
   return (
     <>
       <div className="joinPage">
-        <Outlet
-          context={{
-            formData,
-            setFormData,
-            formError,
-            setFormError,
-          }}
-        />
+        <div className="content">
+          <Outlet
+            context={{
+              formData,
+              setFormData,
+              formError,
+              setFormError,
+            }}
+          />
+        </div>
+        <div className="indexView">
+          {route.map((type, index) => (
+            <div key={type} onClick={() => nav(`/join/${type}`)}>
+              {index}
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );
@@ -183,7 +209,7 @@ function ClubRoomLayout() {
   );
 }
 
-function LiginRoute() {
+function LoginRoute() {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -272,8 +298,13 @@ const router = createBrowserRouter([
         element: <JoinRoute />,
         children: [
           { index: true, element: <Join /> },
-          { index: "/name", element: <JoinName /> },
-          { index: "/major", element: <JoinName /> },
+          { path: "name", element: <JoinName /> },
+          { path: "major", element: <JoinMajor /> },
+          { path: "grade", element: <JoinGrade /> },
+          { path: "studentId", element: <JoinStudentId /> },
+          { path: "contact", element: <JoinContact /> },
+          { path: "comment", element: <JoinComment /> },
+          { path: "confirm", element: <JoinConfirm /> },
         ],
       },
     ],
@@ -285,7 +316,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <LiginRoute />,
+    element: <LoginRoute />,
     children: [
       { index: true, element: <AuthWindow /> },
       { path: "login-email", element: <LoginFormEmail /> },

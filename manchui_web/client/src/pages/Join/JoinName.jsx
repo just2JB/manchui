@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const JoinName = () => {
-  return (
-    <div>JoinName</div>
-  )
-}
+  return <div>JoinName</div>;
+};
 
-export default JoinName
+export default JoinName;

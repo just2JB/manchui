@@ -79,10 +79,10 @@ const Reservation = () => {
   };
   const makeHandle = async (e) => {
     if (makeTime.length < 1) {
-      return alert("예약할 시간을 선택해주세요!");
+      return manchuiModal("예약할 시간을 선택해주세요!");
     }
     if (Math.max(...makeTime) + 1 - Math.min(...makeTime) !== makeTime.length) {
-      return alert("연속된 시간을 선택해주세요!");
+      return manchuiModal("연속된 시간을 선택해주세요!");
     }
     setLoading(true);
     const date = `${selectedDay.getFullYear()}-${String(
@@ -99,13 +99,13 @@ const Reservation = () => {
         reqData
       );
       if (response.status === 201) {
-        alert("예약이 완료되었습니다.");
+        manchuiModal("예약이 완료되었습니다.");
       }
 
       setMakeTime([]);
       setOpenInfo(false);
     } catch (error) {
-      alert("오류가 발생하였습니다.");
+      manchuiModal("오류가 발생하였습니다.");
     } finally {
       fetchReservation();
     }

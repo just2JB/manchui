@@ -19,3 +19,6 @@
   display: flex;
   flex-direction: row;
 }
+.joinPage .index {
+  display: flex;
+}

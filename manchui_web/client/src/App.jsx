@@ -179,7 +179,11 @@ function JoinRoute() {
         </div>
         <div className="indexView">
           {route.map((type, index) => (
-            <div key={type} onClick={() => nav(`/join/${type}`)}>
+            <div
+              key={type}
+              onClick={() => nav(`/join/${type}`)}
+              className="index"
+            >
               {index}
             </div>
           ))}

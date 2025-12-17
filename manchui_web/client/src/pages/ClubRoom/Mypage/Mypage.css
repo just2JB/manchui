@@ -14,11 +14,10 @@
   align-items: center;
 }
 .mypage .userImage {
-  margin-top: 20%;
-  background-color: var(--primary-200);
+  margin-top: 10%;
   border-radius: 100px;
   width: 100px;
-  height: 100px;
+  height: 90px;
   overflow: hidden;
 }
 .mypage .profilImage {
@@ -27,7 +26,7 @@
 }
 .mypage .username {
   margin-top: 5px;
-  font-size: 19px;
+  font-size: 30px;
 }
 .mypage .userInfo {
   font-size: 14px;

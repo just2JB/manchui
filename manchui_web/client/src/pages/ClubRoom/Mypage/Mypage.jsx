@@ -52,9 +52,7 @@ const Mypage = () => {
   return (
     <div className="mypage">
       <div className="profil">
-        <div className="userImage">
-          <img src="/profilIcon.png" alt="Logo" className="profilImage" />
-        </div>
+        <div className="userImage"></div>
         <div className="username">{user.username}</div>
         <div className="userInfo">
           <div className="userName">{user.Identification}</div>

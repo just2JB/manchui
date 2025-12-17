@@ -16,13 +16,6 @@ const ClubRoom = () => {
         <div className="profil">
           <div className="profilCard">
             <div className="user">
-              <div className="userImage">
-                <img
-                  src="/profilIcon.png"
-                  alt="Logo"
-                  className="defaultImage"
-                />
-              </div>
               <div className="userText">
                 <div className="Identification">{user.Identification} </div>
                 <div className="username">{user.username} </div>
@@ -31,9 +24,10 @@ const ClubRoom = () => {
             </div>
           </div>
         </div>
-        <div className="">
-          
-        </div>
+      </div>
+      <div className="requestSchedule">스케줄 완료 퍼센테이지</div>
+      <div className="practiceView">
+        <div className="pracToday">오늘의 연습</div>
       </div>
 
       {loading ? (

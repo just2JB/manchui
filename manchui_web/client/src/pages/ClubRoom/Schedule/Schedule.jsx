@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import axios from "axios";
-import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import "./Schedule.css";
-import { TbClockEdit } from "react-icons/tb";
-import { RiArrowGoBackLine } from "react-icons/ri";
 import { ScheduleCalender } from "./ScheduleCalender";
 import CustomPieChart from "../../../components/PieChart/CustomPieChart";
+import ScheduleList from "./ScheduleList";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -18,6 +16,7 @@ const Schedule = () => {
   const [mySchedule, setMySchedule] = useState([]);
   const { user } = useOutletContext();
   const [loading, setLoading] = useState(false);
+  const [viewType, setViewType] = useState("calender");
 
   const getFomatDate = (localeDateString) => {
     localeDateString = localeDateString.split(". ").join(".");
@@ -106,14 +105,18 @@ const Schedule = () => {
   return (
     <div className="schedule">
       <div className="ScheduleCalender">
-        <ScheduleCalender
-          mySchedule={mySchedule}
-          requestSchedules={requestSchedules}
-          selectedDay={selectedDay}
-          clickDate={clickDate}
-        />
+        {viewType === "calender" ? (
+          <ScheduleCalender
+            mySchedule={mySchedule}
+            requestSchedules={requestSchedules}
+            selectedDay={selectedDay}
+            clickDate={clickDate}
+          />
+        ) : (
+          <ScheduleList requestSchedules={requestSchedules} />
+        )}
       </div>
-      <div className="rateSection">
+      <div className="rateSection" onClick={() => setViewType("list")}>
         <div className="rate">
           <div className="chartText">
             <div>요청:{requestSchedules.length}</div>

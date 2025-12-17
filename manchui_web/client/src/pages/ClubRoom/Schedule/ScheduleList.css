@@ -1,0 +1,19 @@
+.scheduleList .listOption {
+  display: flex;
+  justify-content: space-around;
+}
+.scheduleList .listOptionBtn {
+  background-color: var(--box-3);
+  padding: 4px;
+}
+.scheduleList .list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.scheduleList .request {
+  background-color: var(--box-2);
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+}

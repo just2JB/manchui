@@ -21,6 +21,12 @@
   border-radius: 10px;
 }
 
+.schedule .scheduleList {
+  flex: 1;
+  margin: 0px 12px 0px 12px;
+  padding: 10px 0px 0px 0px;
+  border-radius: 10px;
+}
 .schedule .rateSection {
   height: 130px;
   justify-items: center;

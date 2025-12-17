@@ -68,7 +68,9 @@ const ScheduleList = ({ requestSchedules, confirmDate }) => {
               >
                 <div className="reqDate">{req}</div>
                 <div className="reqButton" onClick={() => clickDate(req)}>
-                  작성
+                  {confirmDate.find((date) => date === getFomatDate(req))
+                    ? "수정"
+                    : "작성"}
                 </div>
               </div>
             ))}

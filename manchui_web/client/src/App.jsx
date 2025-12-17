@@ -342,7 +342,7 @@ const router = createBrowserRouter([
           { path: "team/team-main/:id", element: <TeamMain /> },
           { path: "reservation", element: <Reservation /> },
           { path: "schedule", element: <Schedule /> },
-
+          { path: "schedule/list", element: <Schedule /> },
           { path: "mypage", element: <Mypage /> },
           { path: "mypage/:data", element: <EditUser /> },
           { path: "edit-schedule/:date", element: <EditSchedule /> },

@@ -16,7 +16,6 @@ const Schedule = () => {
   const [mySchedule, setMySchedule] = useState([]);
   const { user } = useOutletContext();
   const [loading, setLoading] = useState(false);
-  const [viewType, setViewType] = useState("calender");
 
   const getFomatDate = (localeDateString) => {
     localeDateString = localeDateString.split(". ").join(".");
@@ -92,8 +91,16 @@ const Schedule = () => {
           requestArray.push(...item.request);
         });
         const uniqueArray = [...new Set(requestArray)];
-
-        setRequestSchedules(uniqueArray);
+        const sortedreqs = uniqueArray.sort((a, b) => {
+          if (getFomatDate(a) > getFomatDate(b)) {
+            return 1;
+          } else if (getFomatDate(a) === getFomatDate(b)) {
+            return 0;
+          } else if (getFomatDate(a) < getFomatDate(b)) {
+            return -1;
+          }
+        });
+        setRequestSchedules(sortedreqs);
       } catch (error) {
         alert(error.response.data.message);
       }
@@ -105,7 +112,7 @@ const Schedule = () => {
   return (
     <div className="schedule">
       <div className="ScheduleCalender">
-        {viewType === "calender" ? (
+        {location.pathname !== "/club/schedule/list" ? (
           <ScheduleCalender
             mySchedule={mySchedule}
             requestSchedules={requestSchedules}
@@ -113,10 +120,23 @@ const Schedule = () => {
             clickDate={clickDate}
           />
         ) : (
-          <ScheduleList requestSchedules={requestSchedules} />
+          <ScheduleList
+            requestSchedules={requestSchedules}
+            confirmDate={[
+              ...new Set(
+                mySchedule.map((item) => {
+                  if (item.category !== "temp") {
+                    return item.date;
+                  } else {
+                    return;
+                  }
+                })
+              ),
+            ]}
+          />
         )}
       </div>
-      <div className="rateSection" onClick={() => setViewType("list")}>
+      <div className="rateSection" onClick={() => nav("/club/schedule/list")}>
         <div className="rate">
           <div className="chartText">
             <div>요청:{requestSchedules.length}</div>

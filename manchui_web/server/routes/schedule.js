@@ -4,6 +4,19 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
+const getFomatDate = (localeDateString) => {
+  localeDateString = localeDateString.split(". ").join(".");
+  const year = localeDateString.split(".")[0];
+  const month =
+    localeDateString.split(".")[1].length === 1
+      ? "0" + localeDateString.split(".")[1]
+      : localeDateString.split(".")[1];
+  const date =
+    localeDateString.split(".")[2].length === 1
+      ? "0" + localeDateString.split(".")[2]
+      : localeDateString.split(".")[2];
+  return `${year}-${month}-${date}`;
+};
 
 router.post("/verify-token", async (req, res) => {
   const token = req.cookies.token;
@@ -87,7 +100,12 @@ router.get("/request/:userId", async (req, res) => {
     );
 
     const myTeamRequst = myTeam.map((team) => {
-      return { name: team.name, request: team.requestSchedules };
+      return {
+        name: team.name,
+        request: team.requestSchedules.filter(
+          (req) => new Date(getFomatDate(req)) >= new Date()
+        ),
+      };
     });
 
     res.json({ myTeam: myTeamRequst });
@@ -97,7 +115,3 @@ router.get("/request/:userId", async (req, res) => {
 });
 
 module.exports = router;
-
-/*    const thisWeek = new Date().setDate(
-      new Date().getDate() - new Date().getDay() - 1
-    );*/

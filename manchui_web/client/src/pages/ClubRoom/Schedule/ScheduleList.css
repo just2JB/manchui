@@ -17,3 +17,7 @@
   display: flex;
   justify-content: space-between;
 }
+.scheduleList .confirmReq {
+  background-color: var(--box-3);
+  border: 1px solid var(--primary-300);
+}

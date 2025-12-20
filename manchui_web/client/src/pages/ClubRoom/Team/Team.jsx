@@ -47,7 +47,7 @@ const Team = () => {
         date:
           "D" +
           Math.floor(
-            (new Date() -
+            (new Date().setHours(0, 0, 0, 0) -
               new Date(
                 goals.find((goal) => goal.date.split("-").join("") > today).date
               )) /
@@ -61,7 +61,10 @@ const Team = () => {
         date:
           "D+" +
           Math.floor(
-            (new Date() - new Date(goals[goals.length - 1].date)) / 86400000 + 1
+            (new Date().setHours(0, 0, 0, 0) -
+              new Date(goals[goals.length - 1].date)) /
+              86400000 +
+              1
           ),
       };
     }

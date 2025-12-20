@@ -419,8 +419,7 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-
-  height: 70px;
+  height: 50px;
   margin-bottom: 10px;
 }
 .teamMain .editSchedule {

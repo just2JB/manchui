@@ -18,7 +18,7 @@
   display: flex;
   justify-content: space-between;
   border-bottom: 1px solid var(--primary-200);
-  color: var(--brand-red);
+  color: var(--text-gray);
 }
 .scheduleList .confirmReq {
   color: var(--complete-green);

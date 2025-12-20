@@ -26,7 +26,7 @@ const Practice = () => {
   const [newOpen, setNewOpen] = useState(false);
   const [practices, setPractices] = useState([]);
   const [seePractices, setSeePractices] = useState([]);
-  const [seeOption, setSeeOption] = useState("내 연습");
+  const [seeOption, setSeeOption] = useState("myPrac");
   const { user } = useOutletContext();
   const [swiperInstance, setSwiperInstance] = useState(null);
   const handleSwiper = (swiper) => {
@@ -75,12 +75,12 @@ const Practice = () => {
   };
 
   useEffect(() => {
-    if (seeOption === "내 연습") {
+    if (seeOption === "myPrac") {
       const filteredPractices = practices.filter((practice) =>
         practice.members.includes(user._id)
       );
       setSeePractices(filteredPractices);
-    } else if (seeOption === "전체 연습") {
+    } else if (seeOption === "allPrac") {
       setSeePractices(practices);
     } else {
       setSeePractices([]);
@@ -116,11 +116,11 @@ const Practice = () => {
             return -1;
         });
         setPractices(dateSorted);
-        setSelcetDay(new Date());
       } catch {
         alert(error.response.data.message);
       }
     };
+    setSelcetDay(new Date());
     getPractices();
   }, []);
 
@@ -143,7 +143,7 @@ const Practice = () => {
         getFomatDate(selcetDay.toLocaleDateString())
       );
       if (selcetDayEl.swiperSlideIndex < 4) {
-        swiperInstance.slideTo(0, 500);
+        swiperInstance.slideTo(0, 300);
       } else {
         swiperInstance.slideTo(selcetDayEl.swiperSlideIndex - 3);
       }
@@ -251,39 +251,20 @@ const Practice = () => {
           </Swiper>
         </div>
         <div className="seeOptionSelector">
-          <div className="optionFrontBox">
-            <div className="optionBox">
-              <div
-                onClick={() => setSeeOption("내 연습")}
-                className="optionButton"
-              >
-                <span className="optionText">내 연습</span>
-              </div>
+          <div className={`optionFrontBox ${seeOption}`}>
+            <div
+              onClick={() => setSeeOption("myPrac")}
+              className="optionButton"
+            >
+              <div className="optionBack"></div>
+              <div className="optionText myPracText">내 연습</div>
             </div>
-            <div className="optionBox">
-              <div
-                onClick={() => setSeeOption("전체 연습")}
-                className="optionButton"
-              >
-                <span className="optionText">전체 연습</span>
-              </div>
+            <div
+              onClick={() => setSeeOption("allPrac")}
+              className="optionButton"
+            >
+              <div className="optionText allPracText">전체 연습</div>
             </div>
-          </div>
-          <div className="optionBackBox">
-            <div className="firstBox">
-              <div
-                className={`optionBack ${
-                  seeOption === "내 연습"
-                    ? "option1"
-                    : seeOption === "전체 연습"
-                    ? "option2"
-                    : ""
-                }`}
-              >
-                <div className="optionBackColor">{seeOption}</div>
-              </div>
-            </div>
-            <div className=""></div>
           </div>
         </div>
       </div>

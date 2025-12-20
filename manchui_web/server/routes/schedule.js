@@ -103,7 +103,9 @@ router.get("/request/:userId", async (req, res) => {
       return {
         name: team.name,
         request: team.requestSchedules.filter(
-          (req) => new Date(getFomatDate(req)) >= new Date()
+          (req) =>
+            new Date(getFomatDate(req)) >=
+            new Date(new Date().setDate(new Date().getDate() - 1))
         ),
       };
     });

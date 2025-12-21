@@ -220,6 +220,7 @@
   transition-duration: 0.3s;
   height: 40px;
   position: relative;
+  height: 100px;
 }
 .editTeam .member:hover {
   height: 100px;

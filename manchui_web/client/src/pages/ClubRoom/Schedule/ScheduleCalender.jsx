@@ -93,16 +93,6 @@ export const ScheduleCalender = ({
   };
   const clickDateHandle = (date) => {
     clickDate(date);
-    if (
-      date.getMonth() !==
-      calenders[swiperInstance.realIndex][2][0].date.getMonth()
-    ) {
-      if (date > calenders[swiperInstance.realIndex][2][0].date) {
-        swiperInstance.slideNext(300, true);
-      } else if (date < calenders[swiperInstance.realIndex][2][0].date) {
-        swiperInstance.slidePrev(300, true);
-      }
-    }
   };
   const handleSwiper = (swiper) => {
     setSwiperInstance(swiper);

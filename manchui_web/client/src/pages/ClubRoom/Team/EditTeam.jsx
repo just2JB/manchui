@@ -329,7 +329,6 @@ const EditTeam = () => {
                         className="quitMemberButton"
                         onClick={() => quitTeamHandle(member._id)}
                       >
-                        {" "}
                         탈퇴
                       </button>
                       <div className="memberButton"></div>

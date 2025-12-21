@@ -25,7 +25,7 @@
   position: relative;
   flex: 1;
   text-decoration: none;
-  color: var(--text-gray);
+  color: var(--primary-300);
   font-size: small;
   font-weight: 200;
   transition-duration: 0.3s;
@@ -34,7 +34,7 @@
 
 .menu-button .button-icon {
   font-size: 16px;
-  color: var(--text-primary);
+  color: var(--primary-300);
 }
 
 .bottomBar .buttonText {

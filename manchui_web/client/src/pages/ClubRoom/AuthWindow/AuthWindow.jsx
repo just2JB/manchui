@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import "./AuthWindow.css";
 import axios from "axios";
 import { useNavigate, useOutletContext } from "react-router-dom";

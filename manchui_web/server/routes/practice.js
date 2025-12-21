@@ -103,6 +103,46 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/today/:userId", async (req, res) => {
+  try {
+    const practices = await Practice.find();
+    const teams = await Team.find();
+    const detailPractices = [];
+    const toDate = new Date();
+    const lastDate = new Date();
+    lastDate.setDate(toDate.getDate() - 2);
+
+    const nextDate = new Date();
+    nextDate.setDate(toDate.getDate() + 2);
+
+    const monthFiltered = practices
+      .filter(
+        (prac) =>
+          lastDate < new Date(prac.date) && new Date(prac.date) < nextDate
+      )
+      .filter((prac) => prac.members.includes(req.params.userId));
+
+    monthFiltered.forEach((practice) => {
+      const team = teams.find((t) => String(t._id) === practice.teamId);
+      if (!team) {
+      } else {
+        detailPractices.push({
+          _id: practice._id,
+          time: practice.time,
+          date: practice.date,
+          place: practice.place,
+          members: practice.members,
+          teamName: team.name,
+          teamColor: team.teamColor,
+        });
+      }
+    });
+    res.json({ practices: detailPractices });
+  } catch (error) {
+    res.status(501).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   try {
     const practices = await Practice.findByIdAndDelete(req.params.id);

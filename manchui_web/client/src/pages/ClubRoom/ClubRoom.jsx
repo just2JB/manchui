@@ -8,8 +8,133 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ClubRoom = () => {
   const [loading, setLoading] = useState(false);
+  const [requestSchedules, setRequestSchedules] = useState([]);
+  const [practices, setPractices] = useState([]);
+  const [mySchedule, setMySchedule] = useState([]);
   const { user } = useOutletContext();
+  const getFomatDate = (localeDateString) => {
+    localeDateString = localeDateString.split(". ").join(".");
+    const year = localeDateString.split(".")[0];
+    const month =
+      localeDateString.split(".")[1].length === 1
+        ? "0" + localeDateString.split(".")[1]
+        : localeDateString.split(".")[1];
+    const date =
+      localeDateString.split(".")[2].length === 1
+        ? "0" + localeDateString.split(".")[2]
+        : localeDateString.split(".")[2];
+    return `${year}-${month}-${date}`;
+  };
 
+  const getMySchedules = async () => {
+    try {
+      const response = await axios.get(
+        `${serverUrl}/api/schedule/${user._id}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      setMySchedule(response.data.userSchedules);
+    } catch (error) {
+      alert(error.response.data.message);
+    }
+  };
+  const rateSchedule = () => {
+    const uniqueSchedule = [
+      ...new Set(
+        mySchedule.map((item) => {
+          if (item.category !== "temp") {
+            return item.date;
+          } else {
+            return;
+          }
+        })
+      ),
+    ];
+
+    if (requestSchedules.length > 0) {
+      return (
+        Math.floor(
+          (uniqueSchedule.filter((date) =>
+            requestSchedules.includes(new Date(date).toLocaleDateString())
+          ).length /
+            requestSchedules.length) *
+            1000
+        ) / 10
+      );
+    } else {
+      return 0;
+    }
+  };
+  useEffect(() => {
+    const getPractices = async () => {
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/practice/today/${user._id}`,
+          {
+            withCredentials: true,
+          }
+        );
+        const dateSorted = response.data.practices.sort((a, b) => {
+          if (
+            Number(a.date.split("-").join("")) >
+            Number(b.date.split("-").join(""))
+          )
+            return 1;
+          if (
+            Number(a.date.split("-").join("")) ===
+            Number(b.date.split("-").join(""))
+          ) {
+            const aFirst = a.time.split("~")[0];
+            const bFirst = b.time.split("~")[0];
+            if (aFirst > bFirst) return 1;
+            if (aFirst === bFirst) return 0;
+            if (aFirst < bFirst) return -1;
+          }
+          if (
+            Number(a.date.split("-").join("")) <
+            Number(b.date.split("-").join(""))
+          )
+            return -1;
+        });
+        setPractices(dateSorted);
+      } catch {
+        alert(error.response.data.message);
+      }
+    };
+    const getRequestSchedules = async () => {
+      try {
+        const response = await axios.get(
+          `${serverUrl}/api/schedule/request/${user._id}`,
+          {
+            withCredentials: true,
+          }
+        );
+
+        const requestArray = [];
+        response.data.myTeam.forEach((item) => {
+          requestArray.push(...item.request);
+        });
+        const uniqueArray = [...new Set(requestArray)];
+        const sortedreqs = uniqueArray.sort((a, b) => {
+          if (getFomatDate(a) > getFomatDate(b)) {
+            return 1;
+          } else if (getFomatDate(a) === getFomatDate(b)) {
+            return 0;
+          } else if (getFomatDate(a) < getFomatDate(b)) {
+            return -1;
+          }
+        });
+        setRequestSchedules(sortedreqs);
+      } catch (error) {
+        alert(error.response.data.message);
+      }
+    };
+    getPractices();
+    getMySchedules();
+    getRequestSchedules();
+  }, []);
   return (
     <div className="club-room">
       <div className="my-info">
@@ -25,9 +150,43 @@ const ClubRoom = () => {
           </div>
         </div>
       </div>
-      <div className="requestSchedule">스케줄 완료 퍼센테이지</div>
+      <div className="requestSchedule">
+        스케줄 작성
+        <div className="present">
+          <div className="persentText">{rateSchedule()}%</div>
+          <div className="barWarp">
+            <div
+              className="persentBar"
+              style={{ width: `${rateSchedule()}%` }}
+            ></div>
+          </div>
+        </div>
+      </div>
       <div className="practiceView">
-        <div className="pracToday">오늘의 연습</div>
+        <div className="pracToday">
+          오늘의 연습
+          <div className="pracList">
+            {practices
+              .filter(
+                (prac) =>
+                  prac.date === getFomatDate(new Date().toLocaleDateString())
+              )
+              .map((practice) => (
+                <div key={practice._id} className="practiceCard">
+                  <div className="teamName">{practice.teamName}</div>
+                  <div className="pracTime">
+                    {(practice.time.split("~")[0] * 2) % 2 === 0
+                      ? `${practice.time.split("~")[0]}:00`
+                      : `${practice.time.split("~")[0] - 0.5}:30`}
+                    ~
+                    {(practice.time.split("~")[1] * 2) % 2 === 0
+                      ? `${practice.time.split("~")[1]}:00`
+                      : `${practice.time.split("~")[1] - 0.5}:30`}
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
       </div>
 
       {loading ? (

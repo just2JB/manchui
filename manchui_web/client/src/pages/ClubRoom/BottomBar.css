@@ -74,6 +74,7 @@
   justify-items: center;
   transition-duration: 0.3s;
   transition-timing-function: cubic-bezier(0.075, 0.82, 0.165, 1);
+  left: 0px;
 }
 .bottomBar .circle {
   background-color: var(--brand-red);
@@ -84,19 +85,19 @@
   animation-duration: 0.7s;
 }
 .bottomBar .index1 {
-  left: 0px;
+  transform: translateX(0%);
 }
 .bottomBar .index2 {
-  left: 100%;
+  transform: translateX(100%);
 }
 .bottomBar .index3 {
-  left: 200%;
+  transform: translateX(200%);
 }
 .bottomBar .index4 {
-  left: 300%;
+  transform: translateX(300%);
 }
 .bottomBar .index5 {
-  left: 400%;
+  transform: translateX(400%);
 }
 .index1 > .circle {
   animation-name: move;

@@ -43,13 +43,11 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
           <div className="title">
             <div>
               {location.pathname !== "이미지만띄우기" ? (
-                <Link className="logo" to="/club">
-                  <img
-                    src="/logos/longLogo_white.png"
-                    alt="Logo"
-                    className="manchui-logo"
-                  />
-                </Link>
+                <img
+                  src="/logos/longLogo_white.png"
+                  alt="Logo"
+                  className="manchui-logo"
+                />
               ) : location.pathname === "/club/reservation" ? (
                 <h2 className="title-text">동아리방 예약</h2>
               ) : location.pathname === "/club/practice" ? (

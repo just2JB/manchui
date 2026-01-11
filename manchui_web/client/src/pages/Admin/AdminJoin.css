@@ -1,3 +1,15 @@
-.adminJome {
+.adminJoin {
   color: #f5f5f5;
+  width: 100%;
+}
+.adminJoin .topMenu {
+  width: 100%;
+}
+.adminJoin .menu {
+  display: flex;
+  justify-content: space-between;
+}
+.adminJoin .search {
+  display: flex;
+  justify-content: center;
 }

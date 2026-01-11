@@ -1,6 +1,10 @@
 const mongoose = require("mongoose");
 
 const join = new mongoose.Schema({
+  type: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
     required: true,
@@ -17,6 +21,10 @@ const join = new mongoose.Schema({
     required: true,
   },
   contact: {
+    type: String,
+    require: true,
+  },
+  contactType: {
     type: String,
     require: true,
   },

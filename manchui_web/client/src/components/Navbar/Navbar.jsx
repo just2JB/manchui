@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { IoChevronDownSharp } from "react-icons/io5";
 
 import "./Navbar.css";
@@ -18,10 +18,19 @@ function toTop() {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
   return (
     <div className="navbar">
-      <div className="navbar-top">
+      <div
+        className="navbar-top"
+        style={{
+          top:
+            location.pathname.includes("/join") && location.pathname.length > 6
+              ? "-80px"
+              : "0px",
+        }}
+      >
         <Link className="logo" onClick={toTop} href="/">
           <img
             src="/logos/longLogo_white.png"
@@ -77,7 +86,6 @@ const Navbar = () => {
           ></div>
         </div>
       </div>
-      <div className="navbar-bottom"></div>
     </div>
   );
 };

@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const settingSchema = new mongoose.Schema({
-  join: {
-    type: Boolean,
-    required: true,
+  joinForm: {
+    type: Number,
+    default: 0, // 0: disabled, 1: enabled
   },
 });
 

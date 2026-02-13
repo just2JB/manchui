@@ -7,9 +7,10 @@
   height: 60px;
   align-items: center;
   justify-content: space-between;
-  background-color: #000000c4;
+  background-color: #ba000000;
   z-index: 50;
   user-select: none;
+  transition-duration: 0.3s;
 }
 .navbar-bottom {
   position: fixed;

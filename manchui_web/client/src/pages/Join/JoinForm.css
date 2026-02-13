@@ -1,0 +1,189 @@
+.joinForm {
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+.joinForm .stateBar {
+  padding-top: 15px;
+  padding-bottom: 60px;
+  position: fixed;
+  top: 0px;
+  height: 150px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(var(--background-dark) 40%, #00000000);
+}
+.joinForm .back {
+  margin: 10px 0px 0px 34px;
+  font-size: 25px;
+}
+.joinForm .progressBar {
+  background-color: var(--box-3);
+  height: 6px;
+  margin: 20px 34px;
+  position: relative;
+}
+.joinForm .cups {
+  position: absolute;
+  width: 100%;
+  top: -10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.joinForm .progressFill {
+  background-color: var(--brand-red);
+  border-radius: 5px;
+  height: 100%;
+  width: 0%;
+  transition-duration: 0.3s;
+}
+.joinForm .text {
+  margin-left: 34px;
+  font-size: 30px;
+  font-weight: 500;
+}
+.joinForm .form {
+  margin-top: 300px;
+  padding: 0px 34px;
+}
+.joinForm .nextButton {
+  margin: 0px 10px;
+  height: 50px;
+  background-color: var(--brand-red);
+  text-align: center;
+  align-content: center;
+  border-radius: 80px;
+  margin-top: 30px;
+  font-size: 20px;
+  font-weight: 700;
+}
+.joinForm .inputbox {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  transition-duration: 0.3s;
+}
+
+.joinForm .label {
+  font-size: 18px;
+  transition-duration: 0.3s;
+}
+.joinForm .activeLabel {
+  color: var(--brand-red);
+}
+.joinForm input {
+  background-color: #00000000;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: lighter;
+  border: none;
+  border-bottom: 1px solid var(--text-gray);
+  height: 35px;
+  transition-duration: 0.3s;
+}
+.joinForm input:focus {
+  border-bottom: 2px ridge var(--brand-red);
+  outline: none;
+}
+.joinForm .select {
+  background-color: #00000000;
+  color: var(--text-primary);
+  font-weight: lighter;
+  border: none;
+  border-bottom: 1px solid var(--text-gray);
+  height: 35px;
+  position: relative;
+  transition-duration: 0.3s;
+}
+.joinForm .select:focus {
+  border-bottom: 2px ridge var(--brand-red);
+  outline: none;
+}
+.joinForm .academicStateArrow {
+  font-size: 20px;
+  position: absolute;
+  right: 10px;
+  top: 5px;
+  transition-duration: 0.3s;
+}
+.joinForm .arrowUp {
+  rotate: 180deg;
+}
+.joinForm .optionsBox {
+  transition-duration: 0.3s;
+  position: fixed;
+  left: 0px;
+  display: flex;
+  flex-direction: column;
+  bottom: -110vh;
+  width: 100%;
+  justify-content: space-between;
+}
+.joinForm .blur {
+  height: calc(100vh - 330px);
+  transform: translateY(60px);
+  background-color: rgba(0, 0, 0, 0.507);
+  backdrop-filter: blur(1px);
+}
+.joinForm .options {
+  position: relative;
+  background-color: var(--background-dark);
+  height: 390px;
+  border-radius: 20px;
+  align-content: center;
+  box-shadow: 0px -5px 10px -5px var(--text-gray);
+}
+.joinForm .activeOptions {
+  bottom: 0vh;
+}
+.joinForm .confirmButton {
+  position: absolute;
+  right: 10px;
+  top: 20px;
+}
+.joinForm .confirmButton > .nextButton {
+  margin-top: 0px;
+  height: auto;
+  font-size: 16px;
+  border-radius: 10px;
+  font-weight: normal;
+  padding: 10px 20px;
+  background-color: var(--box-3);
+}
+.joinForm .swiper {
+  display: flex;
+  height: 40%;
+}
+.joinForm .option {
+  font-size: 15px;
+  font-weight: normal;
+  color: var(--text-gray);
+  text-align: center;
+  align-content: center;
+  transition: all 0.3s;
+}
+.joinForm .option.selectedOption {
+  font-size: 33px;
+  font-weight: 480;
+  color: var(--text-primary);
+}
+.joinForm .name {
+  margin-top: 50px;
+}
+.joinForm .studentId {
+  margin-top: 30px;
+}
+
+.joinForm .hidden > * {
+  border: none;
+  color: transparent;
+  background-color: transparent;
+}
+
+.joinForm .twoInputBox {
+  margin-top: 30px;
+  width: 100%;
+  display: flex;
+  gap: 10px;
+}

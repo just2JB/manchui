@@ -29,7 +29,6 @@ import EditTeam from "./pages/ClubRoom/Team/EditTeam";
 import Team from "./pages/ClubRoom/Team/Team";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
-import JoinCheck from "./pages/Join/JoinCheck";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import EditSchedule from "./pages/ClubRoom/Schedule/EditSchedule";
 import BottomBar from "./pages/ClubRoom/BottomBar";
@@ -37,13 +36,7 @@ import Schedule from "./pages/ClubRoom/Schedule/Schedule";
 import AuthWindow from "./pages/ClubRoom/AuthWindow/AuthWindow";
 import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
 import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
-import JoinName from "./pages/Join/JoinName";
-import JoinMajor from "./pages/Join/JoinMajor";
-import JoinGrade from "./pages/Join/JoinGrade";
-import JoinStudentId from "./pages/Join/JoinStudentId";
-import JoinContact from "./pages/Join/JoinContact";
-import JoinComment from "./pages/Join/JoinComment";
-import JoinConfirm from "./pages/Join/JoinConfirm";
+import JoinForm from "./pages/Join/JoinForm";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -63,7 +56,7 @@ function ProtectedRoute() {
         const responsse = await axios.post(
           `${serverUrl}/api/auth/verify-token`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
         setIsauthenticated(responsse.data.isValid);
         setUser(responsse.data.user);
@@ -104,7 +97,7 @@ function AdminRoute() {
         const responsse = await axios.post(
           `${serverUrl}/api/auth/verify-token`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
         setIsauthenticated(responsse.data.isValid);
         setUser(responsse.data.user);
@@ -132,63 +125,6 @@ function Layout() {
       <Navbar />
       <Outlet />
       <Footer />
-    </>
-  );
-}
-
-function JoinRoute() {
-  const [formData, setFormData] = useState({
-    name: "",
-    major: "",
-    grade: "",
-    studentId: "",
-    contact: "",
-    wish: "",
-  });
-  const [formError, setFormError] = useState({
-    name: "",
-    major: "",
-    grade: "",
-    studentId: "",
-    contact: "",
-    error: false,
-  });
-  const nav = useNavigate();
-  const route = [
-    "",
-    "name",
-    "major",
-    "grade",
-    "studentId",
-    "contact",
-    "comment",
-    "confirm",
-  ];
-  return (
-    <>
-      <div className="joinPage">
-        <div className="content">
-          <Outlet
-            context={{
-              formData,
-              setFormData,
-              formError,
-              setFormError,
-            }}
-          />
-        </div>
-        <div className="indexView">
-          {route.map((type, index) => (
-            <div
-              key={type}
-              onClick={() => nav(`/join/${type}`)}
-              className="index"
-            >
-              {index}
-            </div>
-          ))}
-        </div>
-      </div>
     </>
   );
 }
@@ -238,7 +174,7 @@ function LoginRoute() {
         formData,
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (response.data.user) {
@@ -262,7 +198,7 @@ function LoginRoute() {
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/signup`,
-        formData
+        formData,
       );
       if (response.status === 201) {
         alert("계정 생성이 성공 되었습니다.");
@@ -296,21 +232,8 @@ const router = createBrowserRouter([
       { index: true, element: <MainPage /> },
       { path: "/about", element: <About /> },
       { path: "/goods", element: <Goods /> },
-      { path: "/join/check", element: <JoinCheck /> },
-      {
-        path: "/join",
-        element: <JoinRoute />,
-        children: [
-          { index: true, element: <Join /> },
-          { path: "name", element: <JoinName /> },
-          { path: "major", element: <JoinMajor /> },
-          { path: "grade", element: <JoinGrade /> },
-          { path: "studentId", element: <JoinStudentId /> },
-          { path: "contact", element: <JoinContact /> },
-          { path: "comment", element: <JoinComment /> },
-          { path: "confirm", element: <JoinConfirm /> },
-        ],
-      },
+      { path: "/join", element: <Join /> },
+      { path: "/join/form", element: <JoinForm /> },
     ],
   },
   {

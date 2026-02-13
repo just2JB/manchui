@@ -1,24 +1,13 @@
-.joinPage .content {
-  padding-top: 60px;
-  width: 100%;
-  color: var(--text-gray);
+.join {
+  height: 100vh;
+  align-items: center;
+  align-content: center;
 }
-.joinPage .hidden {
-  visibility: hidden;
-}
-.joinPage .start .slectWork {
-  background-color: var(--box-3);
-}
-.joinPage .start .joinFormBtn {
-  border: 1px solid var(--primary-300);
-  color: var(--text-gray);
-}
-
-.joinPage .indexView {
-  color: var(--text-gray);
+.join .slectWork {
   display: flex;
-  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
 }
-.joinPage .index {
-  display: flex;
+.join .joinFormBtn {
+  background-color: aliceblue;
 }

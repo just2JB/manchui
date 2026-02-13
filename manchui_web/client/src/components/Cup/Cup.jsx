@@ -7,7 +7,7 @@ const Cup = ({ fill }) => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.imageSmoothingEnabled = false;
-    ctx.strokeStyle = "#8f8f8f"; // 테두리 색상
+    ctx.strokeStyle = "#00000000"; // 테두리 색상
     ctx.lineWidth = 2; // 테두리 두께
 
     if (fill) {

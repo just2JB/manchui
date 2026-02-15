@@ -1,13 +1,99 @@
 .join {
-  height: 100vh;
-  align-items: center;
-  align-content: center;
-}
-.join .slectWork {
+  min-height: 100vh;
+  background-color: var(--background-dark);
+  color: var(--text-primary);
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 20px;
+  padding: 24px;
+  box-sizing: border-box;
 }
-.join .joinFormBtn {
-  background-color: aliceblue;
+
+.joinInner {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.joinTitle {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 700;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.joinDesc {
+  font-size: 15px;
+  color: var(--text-gray);
+  margin: 0 0 40px;
+  line-height: 1.5;
+}
+
+.joinActions {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.joinBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 20px 24px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  min-height: 80px;
+}
+
+.joinBtn:active {
+  transform: scale(0.98);
+}
+
+.joinBtnLabel {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.joinBtnSub {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* Primary: 가입 하기 */
+.joinBtnPrimary {
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
+}
+
+.joinBtnPrimary:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
+}
+
+.joinBtnPrimary .joinBtnSub {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Secondary: 가입 확인 */
+.joinBtnSecondary {
+  background-color: var(--box-1);
+  color: var(--text-primary);
+  border: 1px solid var(--box-3);
+}
+
+.joinBtnSecondary:hover {
+  background-color: var(--box-2);
+  border-color: var(--text-gray);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.joinBtnSecondary .joinBtnSub {
+  color: var(--text-gray);
 }

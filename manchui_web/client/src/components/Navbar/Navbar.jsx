@@ -9,7 +9,7 @@ const pages = [
   { name: "동아리 소개", path: "/about" },
   { name: "가입", path: "/join" },
   { name: "굿즈", path: "/goods" },
-  { name: "동아리방", path: "/club" },
+  { name: "동아리방", path: "/login" },
 ];
 
 function toTop() {

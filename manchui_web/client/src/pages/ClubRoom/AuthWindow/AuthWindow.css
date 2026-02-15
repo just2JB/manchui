@@ -1,7 +1,208 @@
+/* Login route wrapper - ensure parent has layout when only child loads CSS */
+.loginPage {
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* ----- AuthWindow (landing) ----- */
 .auth-window {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-window-inner {
+  text-align: center;
+}
+
+.auth-window-title {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 700;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.auth-window-desc {
+  font-size: 15px;
+  color: var(--text-gray);
+  margin: 0 0 40px;
+  line-height: 1.5;
+}
+
+.auth-window-actions {
   display: flex;
   flex-direction: column;
+  gap: 16px;
 }
-.formPage {
+
+.auth-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 20px 24px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  min-height: 80px;
+  font: inherit;
+  color: inherit;
+}
+
+.auth-btn:active {
+  transform: scale(0.98);
+}
+
+.auth-btn-label {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.auth-btn-sub {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.auth-btn-primary {
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
   color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
+}
+
+.auth-btn-primary:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
+}
+
+.auth-btn-primary .auth-btn-sub {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.auth-btn-secondary {
+  background-color: var(--box-1);
+  color: var(--text-primary);
+  border: 1px solid var(--box-3);
+}
+
+.auth-btn-secondary:hover {
+  background-color: var(--box-2);
+  border-color: var(--text-gray);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.auth-btn-secondary .auth-btn-sub {
+  color: var(--text-gray);
+}
+
+/* ----- Form pages (LoginFormEmail, SignUpEmail) ----- */
+.formPage {
+  width: 100%;
+  max-width: 420px;
+  color: var(--text-primary);
+}
+
+.auth-form-card {
+  background-color: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 16px;
+  padding: 28px 24px;
+}
+
+.auth-form-title {
+  font-size: 1.35rem;
+  font-weight: 600;
+  margin: 0 0 24px;
+  text-align: center;
+}
+
+.auth-form-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-gray);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  transition: color 0.2s;
+}
+
+.auth-form-back:hover {
+  color: var(--text-primary);
+}
+
+.auth-form .field {
+  margin-bottom: 18px;
+}
+
+.auth-form .field label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-gray);
+  margin-bottom: 8px;
+}
+
+.auth-form .field input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--text-primary);
+  background-color: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-form .field input::placeholder {
+  color: var(--text-gray);
+  opacity: 0.7;
+}
+
+.auth-form .field input:focus {
+  outline: none;
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 2px rgba(179, 0, 0, 0.2);
+}
+
+.auth-form .auth-submit {
+  width: 100%;
+  margin-top: 28px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.auth-form .auth-submit:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.4);
+}
+
+.auth-form .auth-submit:active {
+  transform: scale(0.98);
+}
+
+.auth-form .auth-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

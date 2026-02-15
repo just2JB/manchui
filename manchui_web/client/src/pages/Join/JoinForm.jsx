@@ -6,6 +6,8 @@ import { MdKeyboardArrowDown, MdLanguage } from "react-icons/md";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import Cup, { CUP_TYPES } from "../../components/Cup/Cup";
+import axios from "axios";
+const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 // 단과대·학과 계층 데이터 (한국어)
 const COLLEGES_KO = [
@@ -96,7 +98,7 @@ const TRANSLATIONS = {
     promptCollege: "단과대학을 선택해주세요",
     promptMajor: "전공을 선택해주세요",
     promptContact: "연락처를 입력해주세요",
-    promptWish: "동아리에서 하고싶은 활동이 있다면?",
+    promptWish: "하고 싶은 활동이 있다면?",
     promptConfirm: "정보를 확인하세요",
     labelName: "이름",
     labelStudentId: "학번",
@@ -108,8 +110,8 @@ const TRANSLATIONS = {
     placeholderName: "김만취",
     next: "다음",
     academicStates: ["재학", "휴학", "졸업"],
-    wishQuestion: "동아리에서 하고싶은 활동이 있다면?",
-    wishPlaceholder: "하고 싶은 활동을 자유롭게 적어주세요",
+    wishQuestion: "하고 싶은 활동이 있다면?",
+    wishPlaceholder: "자유롭게 적어주세요",
     prev: "이전",
     confirm: "확인",
     colleges: COLLEGES_KO,
@@ -124,7 +126,7 @@ const TRANSLATIONS = {
     promptCollege: "Select your college",
     promptMajor: "Select your major",
     promptContact: "Please enter your contact",
-    promptWish: "Any activities you want to do in the club?",
+    promptWish: "Activities you want to do?",
     promptConfirm: "Please check your information",
     labelName: "Name",
     labelStudentId: "Student ID",
@@ -136,8 +138,8 @@ const TRANSLATIONS = {
     placeholderName: "e.g. John Smith",
     next: "Next",
     academicStates: ["Enrolled", "Leave of absence", "Graduated"],
-    wishQuestion: "Any activities you want to do in the club?",
-    wishPlaceholder: "Write any activities you'd like to do",
+    wishQuestion: "Activities you want to do?",
+    wishPlaceholder: "Write here",
     prev: "Previous",
     confirm: "Confirm",
     colleges: COLLEGES_EN,
@@ -156,6 +158,7 @@ const JoinForm = () => {
   const collegeRef = useRef();
   const majorRef = useRef();
   const contactRef = useRef();
+  const wishTextareaRef = useRef();
 
   const [lang, setLang] = useState("ko");
   const [majorList, setMajorList] = useState([]);
@@ -371,6 +374,18 @@ const JoinForm = () => {
     } else if (formNum === 13) {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
+  }, [formNum]);
+
+  // 모달 열릴 때 활동 희망 텍스트영역 자동 포커스
+  useEffect(() => {
+    if (formNum !== 13) return;
+    const id = requestAnimationFrame(() => {
+      wishTextareaRef.current?.focus();
+    });
+    return () => cancelAnimationFrame(id);
+  }, [formNum]);
+
+  useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -447,6 +462,17 @@ const JoinForm = () => {
         ]
       : formData.major;
 
+  const handleSubmit = async () => {
+    let data = { ...formData };
+    try {
+      const response = await axios.post(`${serverUrl}/api/join/apply`, data);
+      if (response.status === 201) {
+        alert("가입신청이 완료되었습니다");
+
+        nav("/join");
+      }
+    } catch (error) {}
+  };
   return (
     <div className="joinForm">
       <div className="stateBar">
@@ -501,7 +527,7 @@ const JoinForm = () => {
         </div>
       </div>
 
-      <form className="form">
+      <form className="form" onSubmit={handleSubmit}>
         <button
           ref={confirmButtonRef}
           className="nextButton"
@@ -793,6 +819,7 @@ const JoinForm = () => {
           <div className="wishPopup">
             <p className="wishPopupQuestion">{t.wishQuestion}</p>
             <textarea
+              ref={wishTextareaRef}
               name="wish"
               className="wishPopupInput"
               placeholder={t.wishPlaceholder}
@@ -811,7 +838,7 @@ const JoinForm = () => {
               <button
                 type="button"
                 className="wishPopupConfirm"
-                onClick={() => setFormNum(14)}
+                onClick={handleSubmit}
               >
                 {t.confirm}
               </button>

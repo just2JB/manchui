@@ -31,18 +31,30 @@ const AuthWindow = () => {
 
   return (
     <div className="auth-window">
-      <>
-        이미계정이 있나요?
-        <button className="toLogin" onClick={() => nav("/login/login-email")}>
-          로그인
-        </button>
-      </>
-      <>
-        계정 만들러 가기
-        <button className="toSignup" onClick={() => nav("/login/signup-email")}>
-          계정생성
-        </button>
-      </>
+      <div className="auth-window-inner">
+        <h1 className="auth-window-title">동아리방 로그인</h1>
+        <p className="auth-window-desc">
+          만취 동아리방에 오신 것을 환영합니다.
+        </p>
+        <div className="auth-window-actions">
+          <button
+            type="button"
+            className="auth-btn auth-btn-primary"
+            onClick={() => nav("/login/login-email")}
+          >
+            <span className="auth-btn-label">로그인</span>
+            <span className="auth-btn-sub">이미 계정이 있나요?</span>
+          </button>
+          <button
+            type="button"
+            className="auth-btn auth-btn-secondary"
+            onClick={() => nav("/login/signup-email")}
+          >
+            <span className="auth-btn-label">계정 생성</span>
+            <span className="auth-btn-sub">새로 계정 만들기</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

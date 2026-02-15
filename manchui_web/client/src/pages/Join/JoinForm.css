@@ -1,6 +1,7 @@
 .joinForm {
   color: var(--text-primary);
-  min-height: 100vh;
+  min-height: 900px;
+  user-select: none;
 }
 .joinForm .stateBar {
   padding-top: 15px;
@@ -12,10 +13,17 @@
   display: flex;
   flex-direction: column;
   background: linear-gradient(var(--background-dark) 40%, #00000000);
+  z-index: 100;
 }
-.joinForm .back {
-  margin: 10px 0px 0px 34px;
-  font-size: 25px;
+.joinForm .language {
+  background-color: var(--box-1);
+  padding: 5px;
+  border-radius: 10px;
+  position: fixed;
+  bottom: 30px;
+  left: 34px;
+  font-size: 16px;
+  color: var(--text-gray);
 }
 .joinForm .progressBar {
   background-color: var(--box-3);
@@ -57,6 +65,8 @@
   margin-top: 30px;
   font-size: 20px;
   font-weight: 700;
+  border: none;
+  color: var(--text-primary);
 }
 .joinForm .inputbox {
   flex: 1;
@@ -76,7 +86,7 @@
   background-color: #00000000;
   color: var(--text-primary);
   font-size: 18px;
-  font-weight: lighter;
+  font-weight: 300;
   border: none;
   border-bottom: 1px solid var(--text-gray);
   height: 35px;
@@ -89,12 +99,15 @@
 .joinForm .select {
   background-color: #00000000;
   color: var(--text-primary);
-  font-weight: lighter;
+  font-weight: 300;
   border: none;
   border-bottom: 1px solid var(--text-gray);
   height: 35px;
   position: relative;
   transition-duration: 0.3s;
+  font-size: 18px;
+  align-content: end;
+  padding-bottom: 5px;
 }
 .joinForm .select:focus {
   border-bottom: 2px ridge var(--brand-red);
@@ -104,7 +117,7 @@
   font-size: 20px;
   position: absolute;
   right: 10px;
-  top: 5px;
+  top: 10px;
   transition-duration: 0.3s;
 }
 .joinForm .arrowUp {
@@ -132,6 +145,7 @@
   height: 390px;
   border-radius: 20px;
   align-content: center;
+
   box-shadow: 0px -5px 10px -5px var(--text-gray);
 }
 .joinForm .activeOptions {
@@ -153,7 +167,7 @@
 }
 .joinForm .swiper {
   display: flex;
-  height: 40%;
+  height: 60%;
 }
 .joinForm .option {
   font-size: 15px;
@@ -161,11 +175,13 @@
   color: var(--text-gray);
   text-align: center;
   align-content: center;
+  height: 50px;
   transition: all 0.3s;
 }
 .joinForm .option.selectedOption {
   font-size: 33px;
   font-weight: 480;
+
   color: var(--text-primary);
 }
 .joinForm .name {
@@ -186,4 +202,8 @@
   width: 100%;
   display: flex;
   gap: 10px;
+}
+
+.joinForm .contact {
+  margin-top: 30px;
 }

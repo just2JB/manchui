@@ -237,11 +237,6 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: "/club",
-    element: <ClubRoomLayout />,
-    children: [{ path: "team/join/:id", element: <TeamJoin /> }],
-  },
-  {
     path: "/login",
     element: <LoginRoute />,
     children: [
@@ -258,6 +253,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { index: true, element: <ClubRoom /> },
+          { path: "team/join/:id", element: <TeamJoin /> },
           { path: "practice", element: <Practice /> },
           { path: "team", element: <Team /> },
           { path: "team/create-team", element: <CreateTeam /> },

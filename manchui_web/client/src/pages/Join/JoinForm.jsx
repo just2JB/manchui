@@ -5,7 +5,146 @@ import { MdKeyboardArrowDown, MdLanguage } from "react-icons/md";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
-import Cup from "../../components/Cup/Cup";
+import Cup, { CUP_TYPES } from "../../components/Cup/Cup";
+
+// 단과대·학과 계층 데이터 (한국어)
+const COLLEGES_KO = [
+  "경상대학",
+  "공학대학",
+  "첨단융합대학",
+  "글로벌문화통상대학",
+  "디자인대학",
+  "소프트웨어융합대학",
+  "약학대학",
+  "커뮤니케이션&컬처대학",
+  "예체능대학",
+  "LIONS칼리지",
+];
+const COLLEGE_MAJORS_KO = [
+  ["경영학부", "경제학부", "보험계리학과", "회계세무학과"],
+  [
+    "건설환경공학과",
+    "건축학부",
+    "교통물류공학과",
+    "에너지바이오학과",
+    "기계공학과",
+    "로봇공학과",
+    "산업경영공학과",
+    "해양융합공학과",
+    "스마트융합공학부",
+    "전자공학부",
+    "배터리소재화학공학과",
+  ],
+  ["차세대반도체융합공학부", "바이오신약융합학부", "국방지능정보융합공학부"],
+  ["글로벌문화통상학부"],
+  ["디자인계열"],
+  ["컴퓨터학부", "ICT융합학부", "인공지능학과", "수리데이터사이언스학과"],
+  ["약학과"],
+  ["광고홍보학과", "미디어학과", "문화인류학과", "문화콘텐츠학과"],
+  ["무용예술학과", "스포츠과학부", "실용음악학과"],
+  ["전계열", "자연계열", "인문사회계열"],
+];
+
+// 단과대·학과 계층 데이터 (영어)
+const COLLEGES_EN = [
+  "Business & Economics",
+  "Engineering",
+  "Advanced Convergence",
+  "Global Culture & Commerce",
+  "Design",
+  "Software Convergence",
+  "Pharmacy",
+  "Communication & Culture",
+  "Arts & Sports",
+  "LIONS College",
+];
+const COLLEGE_MAJORS_EN = [
+  ["Business Admin", "Economics", "Actuarial Science", "Accounting & Tax"],
+  [
+    "Civil & Env. Eng.",
+    "Architecture",
+    "Transport & Logistics Eng.",
+    "Energy & Biotechnology",
+    "Mechanical Eng.",
+    "Robotics Eng.",
+    "Industrial Mgmt Eng.",
+    "Ocean Convergence Eng.",
+    "Smart Convergence Eng.",
+    "Electronic Eng.",
+    "Battery Materials & Chem. Eng.",
+  ],
+  [
+    "Next-gen Semiconductor",
+    "Bio-Drug Convergence",
+    "Defense Intelligence Info.",
+  ],
+  ["Global Culture & Commerce"],
+  ["Design"],
+  ["Computer Science", "ICT Convergence", "AI", "Math Data Science"],
+  ["Pharmacy"],
+  ["Advertising & PR", "Media", "Cultural Anthropology", "Cultural Contents"],
+  ["Dance Arts", "Sports Science", "Applied Music"],
+  ["All Majors", "Natural Sciences", "Humanities & Social Sciences"],
+];
+
+const TRANSLATIONS = {
+  ko: {
+    promptName: "이름을 입력해주세요",
+    promptStudentId: "학번을 입력해주세요",
+    promptAcademicState: "학적상태를 선택해주세요",
+    promptGrade: "학년을 선택해주세요",
+    promptCollege: "단과대학을 선택해주세요",
+    promptMajor: "전공을 선택해주세요",
+    promptContact: "연락처를 입력해주세요",
+    promptWish: "동아리에서 하고싶은 활동이 있다면?",
+    promptConfirm: "정보를 확인하세요",
+    labelName: "이름",
+    labelStudentId: "학번",
+    labelAcademicState: "학적상태",
+    labelGrade: "학년",
+    labelCollege: "단과대학",
+    labelMajor: "전공",
+    labelContact: "연락처",
+    placeholderName: "김만취",
+    next: "다음",
+    academicStates: ["재학", "휴학", "졸업"],
+    wishQuestion: "동아리에서 하고싶은 활동이 있다면?",
+    wishPlaceholder: "하고 싶은 활동을 자유롭게 적어주세요",
+    prev: "이전",
+    confirm: "확인",
+    colleges: COLLEGES_KO,
+    collegeMajors: COLLEGE_MAJORS_KO,
+    langLabel: "한국어",
+  },
+  en: {
+    promptName: "Please enter your name",
+    promptStudentId: "Please enter your student ID",
+    promptAcademicState: "Select your academic status",
+    promptGrade: "Select your grade",
+    promptCollege: "Select your college",
+    promptMajor: "Select your major",
+    promptContact: "Please enter your contact",
+    promptWish: "Any activities you want to do in the club?",
+    promptConfirm: "Please check your information",
+    labelName: "Name",
+    labelStudentId: "Student ID",
+    labelAcademicState: "Academic status",
+    labelGrade: "Grade",
+    labelCollege: "College",
+    labelMajor: "Major",
+    labelContact: "Contact",
+    placeholderName: "e.g. John Smith",
+    next: "Next",
+    academicStates: ["Enrolled", "Leave of absence", "Graduated"],
+    wishQuestion: "Any activities you want to do in the club?",
+    wishPlaceholder: "Write any activities you'd like to do",
+    prev: "Previous",
+    confirm: "Confirm",
+    colleges: COLLEGES_EN,
+    collegeMajors: COLLEGE_MAJORS_EN,
+    langLabel: "English",
+  },
+};
 
 const JoinForm = () => {
   const nav = useNavigate();
@@ -18,14 +157,15 @@ const JoinForm = () => {
   const majorRef = useRef();
   const contactRef = useRef();
 
+  const [lang, setLang] = useState("ko");
   const [majorList, setMajorList] = useState([]);
   const [progress, setProgress] = useState(0);
   const [formData, setFormData] = useState({
     name: "",
-    academicState: "",
-    college: "",
-    major: "",
-    grade: 0,
+    academicState: TRANSLATIONS.ko.academicStates[0],
+    college: COLLEGES_KO[0],
+    major: COLLEGE_MAJORS_KO[0][0],
+    grade: 1,
     studentId: "",
     contact: "",
     contactType: "phoneNumber",
@@ -49,13 +189,11 @@ const JoinForm = () => {
     if (swiperInstance) {
       setOptionIndex(swiperInstance.realIndex);
     }
-    if (swiperInstance.realIndex === 1) {
-      setFormData({ ...formData, academicState: "휴학" });
-    } else if (swiperInstance.realIndex === 2) {
-      setFormData({ ...formData, academicState: "졸업" });
-    } else {
-      setFormData({ ...formData, academicState: "재학" });
-    }
+    const koStates = TRANSLATIONS.ko.academicStates;
+    setFormData({
+      ...formData,
+      academicState: koStates[swiperInstance.realIndex] ?? koStates[0],
+    });
   };
 
   const [swiperInstance1, setSwiperInstance1] = useState(null);
@@ -87,9 +225,24 @@ const JoinForm = () => {
   };
   const handleSwipeMove2 = (e) => {
     if (swiperInstance2) {
-      setOptionIndex2(swiperInstance2.realIndex);
+      const idx = swiperInstance2.realIndex;
+      setOptionIndex2(idx);
+      const majors = COLLEGE_MAJORS_KO[idx];
+      const firstMajor = majors && majors[0] ? majors[0] : "";
+      setOptionIndex3(0);
+      setFormData((prev) => ({
+        ...prev,
+        college: COLLEGES_KO[idx] ?? COLLEGES_KO[0],
+        major: firstMajor,
+      }));
     }
   };
+
+  useEffect(() => {
+    if (swiperInstance3) {
+      swiperInstance3.slideTo(0, 0);
+    }
+  }, [optionIndex2]);
 
   const [swiperInstance3, setSwiperInstance3] = useState(null);
   const [optionIndex3, setOptionIndex3] = useState(0);
@@ -98,7 +251,13 @@ const JoinForm = () => {
   };
   const handleSwipeMove3 = (e) => {
     if (swiperInstance3) {
-      setOptionIndex3(swiperInstance3.realIndex);
+      const idx = swiperInstance3.realIndex;
+      setOptionIndex3(idx);
+      const majors = COLLEGE_MAJORS_KO[optionIndex2];
+      setFormData((prev) => ({
+        ...prev,
+        major: (majors && majors[idx]) ?? (majors && majors[0]) ?? "",
+      }));
     }
   };
 
@@ -122,9 +281,12 @@ const JoinForm = () => {
     }
   };
 
+  const t = TRANSLATIONS[lang];
+  const toggleLang = () => setLang((prev) => (prev === "ko" ? "en" : "ko"));
+
   const handleNext = (e) => {
     e.preventDefault();
-    if (formNum < 12) {
+    if (formNum < 13) {
       setFormNum(formNum + 1);
     }
   };
@@ -202,15 +364,17 @@ const JoinForm = () => {
       setProgress(5);
     } else if (formNum === 12) {
       window.scrollTo({
-        top: 50,
+        top: 100,
         behavior: "smooth",
       });
       confirmButtonRef.current.focus();
+    } else if (formNum === 13) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (formNum < 12) {
+        if (formNum < 13) {
           setFormNum(formNum + 1);
         }
       } else if (e.key === "Escape") {
@@ -244,68 +408,115 @@ const JoinForm = () => {
       }
     };
 
+    const handleWheel = (e) => {
+      if (formNum !== 4 && formNum !== 6 && formNum !== 8 && formNum !== 10)
+        return;
+      e.preventDefault();
+      if (e.deltaY > 0) {
+        if (formNum === 4 && swiperInstance) swiperInstance.slideNext();
+        else if (formNum === 6 && swiperInstance1) swiperInstance1.slideNext();
+        else if (formNum === 8 && swiperInstance2) swiperInstance2.slideNext();
+        else if (formNum === 10 && swiperInstance3) swiperInstance3.slideNext();
+      } else {
+        if (formNum === 4 && swiperInstance) swiperInstance.slidePrev();
+        else if (formNum === 6 && swiperInstance1) swiperInstance1.slidePrev();
+        else if (formNum === 8 && swiperInstance2) swiperInstance2.slidePrev();
+        else if (formNum === 10 && swiperInstance3) swiperInstance3.slidePrev();
+      }
+    };
+
     document.addEventListener("keydown", handleKeyDown);
+    document.addEventListener("wheel", handleWheel, { passive: false });
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
+      document.removeEventListener("wheel", handleWheel);
     };
   }, [formNum]);
+
+  const academicStateDisplay = (() => {
+    const idx = TRANSLATIONS.ko.academicStates.indexOf(formData.academicState);
+    return idx >= 0 ? t.academicStates[idx] : formData.academicState;
+  })();
+
+  const currentCollegeMajors = t.collegeMajors[optionIndex2] ?? [];
+  const majorDisplay =
+    currentCollegeMajors.length > 0
+      ? currentCollegeMajors[
+          Math.min(optionIndex3, currentCollegeMajors.length - 1)
+        ]
+      : formData.major;
 
   return (
     <div className="joinForm">
       <div className="stateBar">
-        <div className="progressBar">
-          <div
-            className="progressFill"
-            style={{ width: `${(progress - 1) * 25}%` }}
-          ></div>
-          <div className="cups">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <div key={num} className="cup">
-                <Cup fill={progress >= num} />
-              </div>
-            ))}
+        <button
+          type="button"
+          className="languageToggle"
+          onClick={toggleLang}
+          aria-label={lang === "ko" ? "Switch to English" : "한국어로 전환"}
+        >
+          <MdLanguage />
+          <span>{t.langLabel}</span>
+        </button>
+        <div className="progressSection">
+          <div className="progressBar">
+            <div
+              className="progressFill"
+              style={{ width: `${Math.max(0, (progress - 1) * 25)}%` }}
+            ></div>
+            <div className="cups">
+              {[1, 2, 5, 9, 11].map((num, index) => (
+                <div
+                  key={num}
+                  className={`cup ${progress >= index + 1 ? "cupFilled" : ""}`}
+                  onClick={() => setFormNum(num)}
+                >
+                  <Cup fill={progress >= index + 1} type={CUP_TYPES[index]} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="text">
-          {formNum === 1
-            ? "이름을 입력해주세요"
-            : formNum === 2
-              ? "학번을 입력해주세요"
-              : formNum === 3 || formNum === 4
-                ? "학적상태를 선택해주세요"
-                : formNum === 5 || formNum === 6
-                  ? "학년을 선택해주세요"
-                  : formNum === 7 || formNum === 8
-                    ? "단과대학을 선택해주세요"
-                    : formNum === 9 || formNum === 10
-                      ? "전공을 선택해주세요"
-                      : formNum === 11
-                        ? "연락처를 입력해주세요"
-                        : "정보를 확인하세요"}
+        <div className="stateBarRow">
+          <div className="text">
+            {formNum === 1
+              ? t.promptName
+              : formNum === 2
+                ? t.promptStudentId
+                : formNum === 3 || formNum === 4
+                  ? t.promptAcademicState
+                  : formNum === 5 || formNum === 6
+                    ? t.promptGrade
+                    : formNum === 7 || formNum === 8
+                      ? t.promptCollege
+                      : formNum === 9 || formNum === 10
+                        ? t.promptMajor
+                        : formNum === 11
+                          ? t.promptContact
+                          : formNum === 13
+                            ? t.promptWish
+                            : t.promptConfirm}
+          </div>
         </div>
       </div>
 
       <form className="form">
-        <div className="language">
-          <MdLanguage />
-          한국어
-        </div>
         <button
           ref={confirmButtonRef}
           className="nextButton"
           onClick={handleNext}
         >
-          다음
+          {t.next}
         </button>
         <div className="name inputbox">
           <label className={`label ${formNum === 1 ? "activeLabel" : ""}`}>
-            이름
+            {t.labelName}
           </label>
           <input
             ref={nameRef}
             name="name"
-            placeholder="김만취"
+            placeholder={t.placeholderName}
             onFocus={() => handleFocus(1)}
             onChange={handleChange}
             value={formData.name}
@@ -315,7 +526,7 @@ const JoinForm = () => {
           className={`studentId inputbox ${formNum > 1 ? "visible" : "hidden"}`}
         >
           <label className={`label ${formNum === 2 ? "activeLabel" : ""}`}>
-            학번
+            {t.labelStudentId}
           </label>
           <input
             ref={studentIdRef}
@@ -334,7 +545,7 @@ const JoinForm = () => {
             className={`academicState inputbox ${formNum > 2 ? "visible" : "hidden"}`}
           >
             <label className={`label ${formNum === 4 ? "activeLabel" : ""}`}>
-              학적상태
+              {t.labelAcademicState}
             </label>
             <div
               ref={academicStateRef}
@@ -343,7 +554,7 @@ const JoinForm = () => {
               name="academicState"
               onClick={() => handleFocus(3)}
             >
-              {formData.academicState}
+              {academicStateDisplay}
               <div
                 className={`academicStateArrow ${formNum === 4 ? "arrowUp activeLabel" : ""}`}
               >
@@ -366,14 +577,15 @@ const JoinForm = () => {
                 >
                   <SwiperSlide className="option"></SwiperSlide>
                   <SwiperSlide className="option"></SwiperSlide>
-                  {["재학", "휴학", "졸업"].map((state, index) => (
+                  {t.academicStates.map((label, index) => (
                     <SwiperSlide
+                      key={label}
                       className={`option ${optionIndex === index ? "selectedOption" : ""}`}
                       onClick={() => {
                         swiperInstance.slideTo(index);
                       }}
                     >
-                      {state}
+                      {label}
                     </SwiperSlide>
                   ))}
                   <SwiperSlide className="option"></SwiperSlide>
@@ -387,7 +599,7 @@ const JoinForm = () => {
             style={{ flex: `${formNum > 4 ? 1 : 0}` }}
           >
             <label className={`label ${formNum === 6 ? "activeLabel" : ""}`}>
-              학년
+              {t.labelGrade}
             </label>
             <div
               ref={gradeRef}
@@ -446,7 +658,7 @@ const JoinForm = () => {
             className={`college inputbox ${formNum > 6 ? "visible" : "hidden"}`}
           >
             <label className={`label ${formNum === 8 ? "activeLabel" : ""}`}>
-              단과대학
+              {t.labelCollege}
             </label>
             <div
               ref={collegeRef}
@@ -455,6 +667,7 @@ const JoinForm = () => {
               name="college"
               onClick={() => handleFocus(8)}
             >
+              {t.colleges[optionIndex2]}
               <div
                 className={`academicStateArrow ${formNum === 8 ? "arrowUp activeLabel" : ""}`}
               >
@@ -477,14 +690,9 @@ const JoinForm = () => {
                 >
                   <SwiperSlide className="option"></SwiperSlide>
                   <SwiperSlide className="option"></SwiperSlide>
-                  {[
-                    "소프트웨어융합대학",
-                    "라이언스칼리지",
-                    "공학대학",
-                    "경상대학",
-                    "예술대학",
-                  ].map((college, index) => (
+                  {t.colleges.map((college, index) => (
                     <SwiperSlide
+                      key={college}
                       className={`option ${optionIndex2 === index ? "selectedOption" : ""}`}
                       onClick={() => {
                         swiperInstance2.slideTo(index);
@@ -504,7 +712,7 @@ const JoinForm = () => {
             style={{ flex: `${formNum > 8 ? 1 : 0}` }}
           >
             <label className={`label ${formNum === 10 ? "activeLabel" : ""}`}>
-              전공
+              {t.labelMajor}
             </label>
             <div
               ref={majorRef}
@@ -513,6 +721,7 @@ const JoinForm = () => {
               name="major"
               onClick={() => handleFocus(10)}
             >
+              {majorDisplay}
               <div
                 className={`academicStateArrow ${formNum === 10 ? "arrowUp activeLabel" : ""}`}
               >
@@ -535,19 +744,17 @@ const JoinForm = () => {
                 >
                   <SwiperSlide className="option"></SwiperSlide>
                   <SwiperSlide className="option"></SwiperSlide>
-                  {["ICT융합학부", "경영학부", "기계공학과"].map(
-                    (major, index) => (
-                      <SwiperSlide
-                        key={major}
-                        className={`option ${optionIndex3 === index ? "selectedOption" : ""}`}
-                        onClick={() => {
-                          swiperInstance3.slideTo(index);
-                        }}
-                      >
-                        {major}
-                      </SwiperSlide>
-                    ),
-                  )}
+                  {currentCollegeMajors.map((major, index) => (
+                    <SwiperSlide
+                      key={major}
+                      className={`option ${optionIndex3 === index ? "selectedOption" : ""}`}
+                      onClick={() => {
+                        swiperInstance3.slideTo(index);
+                      }}
+                    >
+                      {major}
+                    </SwiperSlide>
+                  ))}
                   <SwiperSlide className="option"></SwiperSlide>
                   <SwiperSlide className="option"></SwiperSlide>
                 </Swiper>
@@ -560,7 +767,7 @@ const JoinForm = () => {
           style={{ visibility: `${formNum > 9 ? "visible" : "hidden"}` }}
         >
           <label className={`label ${formNum === 11 ? "activeLabel" : ""}`}>
-            연락처
+            {t.labelContact}
           </label>
           <input
             ref={contactRef}
@@ -572,6 +779,46 @@ const JoinForm = () => {
           />
         </div>
       </form>
+
+      {/* formNum 13: 동아리 활동 희망 팝업 */}
+      {formNum === 13 && (
+        <div
+          className="wishPopupOverlay"
+          onClick={(e) => {
+            if (e.target.classList.contains("wishPopupOverlay")) {
+              setFormNum(12);
+            }
+          }}
+        >
+          <div className="wishPopup">
+            <p className="wishPopupQuestion">{t.wishQuestion}</p>
+            <textarea
+              name="wish"
+              className="wishPopupInput"
+              placeholder={t.wishPlaceholder}
+              value={formData.wish}
+              onChange={handleChange}
+              rows={4}
+            />
+            <div className="wishPopupButtons">
+              <button
+                type="button"
+                className="wishPopupCancel"
+                onClick={() => setFormNum(12)}
+              >
+                {t.prev}
+              </button>
+              <button
+                type="button"
+                className="wishPopupConfirm"
+                onClick={() => setFormNum(14)}
+              >
+                {t.confirm}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

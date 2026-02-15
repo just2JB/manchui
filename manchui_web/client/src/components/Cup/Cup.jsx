@@ -1,41 +1,30 @@
-import React, { useRef, useEffect } from "react";
+import React from "react";
 import "./Cup.css";
-const Cup = ({ fill }) => {
-  const canvasRef = useRef(null);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-    canvas.imageSmoothingEnabled = false;
-    ctx.strokeStyle = "#00000000"; // 테두리 색상
-    ctx.lineWidth = 2; // 테두리 두께
+const FILL_COLOR = "#b30000";
+const EMPTY_COLOR = "#4a4a4a";
 
-    if (fill) {
-      ctx.beginPath();
-      ctx.lineTo(14, 4);
-      ctx.lineTo(12, 19);
-      ctx.lineTo(3, 19);
-      ctx.lineTo(1, 4);
-      ctx.closePath();
-      ctx.fillStyle = "#cc1f1f";
-      ctx.fill();
-    } else {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    ctx.beginPath();
-    ctx.moveTo(15, 0);
-    ctx.lineTo(13, 20);
-    ctx.lineTo(2, 20);
-    ctx.lineTo(0, 0);
-    ctx.closePath();
-    ctx.stroke();
-  }, [fill]);
+// 소주잔: 위가 넓은 사다리꼴
+const SojuIcon = ({ fill }) => (
+  <svg
+    viewBox="0 0 24 32"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    className="cupSvg"
+    aria-hidden
+  >
+    <path
+      d="M5 4h14l-2 24H7L5 4z"
+      fill={fill ? FILL_COLOR : EMPTY_COLOR}
+    />
+  </svg>
+);
 
-  return (
-    <div>
-      <canvas ref={canvasRef} width={15} height={20} />
-    </div>
-  );
-};
+const Cup = ({ fill }) => (
+  <div className="cupIcon" aria-hidden>
+    <SojuIcon fill={fill} />
+  </div>
+);
 
 export default Cup;
+export const CUP_TYPES = ["soju", "soju", "soju", "soju", "soju"];

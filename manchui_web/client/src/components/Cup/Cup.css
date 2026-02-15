@@ -1,4 +1,12 @@
-canvas {
-  image-rendering: pixelated;
- 
+.cupIcon {
+  display: inline-block;
+  line-height: 0;
+  flex-shrink: 0;
+  filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.35));
+}
+
+.cupSvg {
+  display: block;
+  width: 15px;
+  height: 20px;
 }

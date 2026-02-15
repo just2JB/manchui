@@ -5,7 +5,16 @@ const User = require("../models/User");
 
 router.post("/apply", async (req, res) => {
   try {
-    const { name, major, grade, studentId, contact, wish } = req.body;
+    const {
+      name,
+      academicState,
+      college,
+      major,
+      grade,
+      studentId,
+      contact,
+      wish,
+    } = req.body;
     const existingApplication = await Join.findOne({ studentId });
     if (existingApplication) {
       return res
@@ -15,8 +24,10 @@ router.post("/apply", async (req, res) => {
     const join = new Join({
       name: name,
       major: major,
-      grade: grade,
-      studentId: studentId,
+      academicState: academicState,
+      college: college,
+      grade: Number(grade),
+      studentId: Number(studentId),
       contact: contact,
       wish: wish,
     });

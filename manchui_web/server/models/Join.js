@@ -1,11 +1,23 @@
 const mongoose = require("mongoose");
 
 const join = new mongoose.Schema({
-  type: {
+  name: {
     type: String,
     required: true,
   },
-  name: {
+  academicState: {
+    type: String,
+    required: true,
+  },
+  grade: {
+    type: Number,
+    required: true,
+  },
+  studentId: {
+    type: Number,
+    required: true,
+  },
+  college: {
     type: String,
     required: true,
   },
@@ -13,20 +25,9 @@ const join = new mongoose.Schema({
     type: String,
     required: true,
   },
-  grade: {
-    type: String,
-  },
-  studentId: {
-    type: Number,
-    required: true,
-  },
   contact: {
     type: String,
-    require: true,
-  },
-  contactType: {
-    type: String,
-    require: true,
+    required: true,
   },
   wish: {
     type: String,

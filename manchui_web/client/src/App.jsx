@@ -37,6 +37,7 @@ import AuthWindow from "./pages/ClubRoom/AuthWindow/AuthWindow";
 import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
 import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
 import JoinForm from "./pages/Join/JoinForm";
+import JoinCheck from "./pages/Join/JoinCheck";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -233,6 +234,7 @@ const router = createBrowserRouter([
       { path: "/about", element: <About /> },
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
+      { path: "/join/check", element: <JoinCheck /> },
       { path: "/join/form", element: <JoinForm /> },
     ],
   },

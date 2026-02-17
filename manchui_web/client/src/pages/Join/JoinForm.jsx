@@ -125,6 +125,7 @@ const TRANSLATIONS = {
     nameErrorEmpty: "이름을 입력해주세요.",
     nameErrorInvalid: "이름은 한글, 영문, 공백, 하이픈만 입력 가능합니다.",
     studentIdError: "학번은 10자리 숫자만 입력 가능합니다.",
+    contactErrorEmpty: "연락처를 입력해주세요.",
   },
   en: {
     promptName: "Please enter your name",
@@ -160,6 +161,7 @@ const TRANSLATIONS = {
     nameErrorEmpty: "Please enter your name.",
     nameErrorInvalid: "Name can only contain letters, spaces, and hyphens.",
     studentIdError: "Student ID must be exactly 10 digits.",
+    contactErrorEmpty: "Please enter your contact.",
   },
 };
 
@@ -253,11 +255,13 @@ const JoinForm = () => {
   const [formNum, setFormNum] = useState(0);
   const [nameError, setNameError] = useState(null);
   const [studentIdError, setStudentIdError] = useState(null);
+  const [contactError, setContactError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "name") setNameError(null);
     if (name === "studentId") setStudentIdError(null);
+    if (name === "contact") setContactError(null);
     if (name === "contact") {
       const digits = value.replace(/\D/g, "");
       const looksLikePhone =
@@ -397,6 +401,15 @@ const JoinForm = () => {
         return;
       }
       setStudentIdError(null);
+    }
+    if (formNum === 11) {
+      const contactTrim = (formData.contact || "").trim();
+      if (contactTrim.length === 0) {
+        setContactError(t.contactErrorEmpty);
+        contactRef.current?.focus();
+        return;
+      }
+      setContactError(null);
     }
     if (formNum < 13) {
       setFormNum(formNum + 1);
@@ -662,6 +675,9 @@ const JoinForm = () => {
             <div className="studentIdError inputErrorShake">
               {studentIdError}
             </div>
+          )}
+          {contactError && formNum === 11 && (
+            <div className="contactError inputErrorShake">{contactError}</div>
           )}
         </div>
       </div>
@@ -930,7 +946,7 @@ const JoinForm = () => {
           </div>
         </div>
         <div
-          className={`contact inputbox ${formNum > 9 ? "visible" : "hidden"}`}
+          className={`contact inputbox ${formNum > 9 ? "visible" : "hidden"} ${contactError && formNum === 11 ? "inputboxShake" : ""}`}
           style={{ visibility: `${formNum > 9 ? "visible" : "hidden"}` }}
         >
           <label className={`label ${formNum === 11 ? "activeLabel" : ""}`}>

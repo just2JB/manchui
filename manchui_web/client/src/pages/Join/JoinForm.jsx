@@ -257,6 +257,16 @@ const JoinForm = () => {
   const [studentIdError, setStudentIdError] = useState(null);
   const [contactError, setContactError] = useState(null);
 
+  useEffect(() => {
+    if (!serverUrl) return;
+    axios
+      .get(`${serverUrl}/api/join/config`)
+      .then((res) => {
+        if (res.data.formOpen === false) nav("/join");
+      })
+      .catch(() => {});
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "name") setNameError(null);

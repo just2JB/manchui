@@ -2,9 +2,59 @@ const express = require("express");
 const router = express.Router();
 const Join = require("../models/Join");
 const User = require("../models/User");
+const Setting = require("../models/Setting");
+
+router.get("/config", async (req, res) => {
+  try {
+    let setting = await Setting.findOne();
+    if (!setting) {
+      setting = await Setting.create({ joinForm: 0, currentGeneration: 1 });
+    }
+    res.json({
+      formOpen: setting.joinForm === 1,
+      currentGeneration: setting.currentGeneration ?? 1,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
+
+router.put("/config", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    if (!userId) return res.status(401).json({ message: "권한이 없습니다." });
+    const user = await User.findById(userId);
+    if (!user || user.position !== "임원진") {
+      return res.status(401).json({ message: "권한이 없습니다." });
+    }
+    let setting = await Setting.findOne();
+    if (!setting) {
+      setting = await Setting.create({ joinForm: 0, currentGeneration: 1 });
+    }
+    if (typeof req.body.formOpen === "boolean") {
+      setting.joinForm = req.body.formOpen ? 1 : 0;
+    }
+    const gen = Number(req.body.currentGeneration);
+    if (gen >= 1) setting.currentGeneration = gen;
+    await setting.save();
+    res.json({
+      formOpen: setting.joinForm === 1,
+      currentGeneration: setting.currentGeneration,
+      message: "설정이 저장되었습니다.",
+    });
+  } catch (err) {
+    res.status(500).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
 
 router.post("/apply", async (req, res) => {
   try {
+    let setting = await Setting.findOne();
+    if (!setting) setting = await Setting.create({ joinForm: 0, currentGeneration: 1 });
+    if (setting.joinForm !== 1) {
+      return res.status(403).json({ message: "현재 가입 신청을 받고 있지 않습니다." });
+    }
+    const currentGen = setting.currentGeneration ?? 1;
     const {
       name,
       academicState,
@@ -15,21 +65,25 @@ router.post("/apply", async (req, res) => {
       contact,
       wish,
     } = req.body;
-    const existingApplication = await Join.findOne({ studentId });
+    const existingApplication = await Join.findOne({
+      studentId: Number(studentId),
+      generation: currentGen,
+    });
     if (existingApplication) {
       return res
         .status(401)
         .json({ message: "동일한 학번으로 신청 내역이 있습니다." });
     }
     const join = new Join({
-      name: name,
-      major: major,
-      academicState: academicState,
-      college: college,
+      name,
+      major,
+      academicState,
+      college,
       grade: Number(grade),
       studentId: Number(studentId),
-      contact: contact,
-      wish: wish,
+      contact,
+      wish,
+      generation: currentGen,
     });
     await join.save();
     res.status(201).json({ message: "신청이 완료되었습니다." });
@@ -83,6 +137,33 @@ router.get("/check/:studentId", async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    if (!userId) return res.status(401).json({ message: "권한이 없습니다." });
+    const admin = await User.findById(userId);
+    if (!admin || admin.position !== "임원진") {
+      return res.status(401).json({ message: "권한이 없습니다." });
+    }
+    const validStatus = ["신청", "입금확인", "톡방초대완료"];
+    const status = req.body.status;
+    if (!validStatus.includes(status)) {
+      return res.status(400).json({ message: "올바른 상태가 아닙니다." });
+    }
+    const join = await Join.findByIdAndUpdate(
+      req.params.id,
+      { status },
+      { new: true }
+    );
+    if (!join) {
+      return res.status(404).json({ message: "해당 신청을 찾을 수 없습니다." });
+    }
+    res.json({ join, message: "상태가 변경되었습니다." });
+  } catch (err) {
+    res.status(500).json({ message: "서버 오류가 발생하였습니다." });
   }
 });
 

@@ -1,15 +1,321 @@
 .adminJoin {
-  color: #f5f5f5;
+  color: var(--text-primary, #f5f5f5);
   width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
 .adminJoin .topMenu {
-  width: 100%;
+  margin-bottom: 24px;
 }
 .adminJoin .menu {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
-.adminJoin .search {
+.adminJoin .title {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.adminJoinConfig {
+  background-color: var(--box-1, #1e1e1e);
+  border: 1px solid var(--box-3, #383838);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.adminJoinConfig .configTitle,
+.adminJoin .sectionTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+.adminJoinConfig .configRow {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.adminJoinConfig .configLabel {
+  min-width: 100px;
+  font-size: 14px;
+  color: var(--text-gray, #888);
+}
+.adminJoinConfig .configToggle {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--box-3);
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--box-2);
+  color: var(--text-primary);
+}
+.adminJoinConfig .configToggle.on {
+  background: var(--brand-red, #b30000);
+  border-color: var(--brand-red);
+}
+.adminJoinConfig input[type="number"] {
+  width: 72px;
+  padding: 6px 10px;
+  font-size: 14px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  color: var(--text-primary);
+}
+.adminJoinConfig .configUnit {
+  font-size: 14px;
+  color: var(--text-gray);
+}
+.adminJoinConfig .configSave {
+  margin-top: 16px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--brand-red);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.adminJoinConfig .configSave:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.joinSection {
+  margin-top: 8px;
+}
+.sectionHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.joinSection .sectionTitle {
+  margin: 0;
+  margin-right: auto;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.sortSelect {
+  padding: 6px 10px;
+  font-size: 13px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.sortOrderBtn {
+  padding: 6px 10px;
+  font-size: 13px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.searchBox input {
+  padding: 6px 12px;
+  font-size: 13px;
+  width: 180px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  color: var(--text-primary);
+}
+.searchBox input::placeholder {
+  color: var(--text-gray);
+}
+
+.adminJoin .joinDatas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.adminJoin .joinDatas .data {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.adminJoin .joinDatas .data.selected {
+  border-color: var(--brand-red);
+  box-shadow: 0 0 0 1px var(--brand-red);
+}
+.adminJoin .joinDatas .dataName {
+  font-weight: 500;
+  min-width: 72px;
+}
+.adminJoin .joinDatas .dataInfo {
+  font-size: 13px;
+  color: var(--text-gray);
+  flex: 1;
+  min-width: 120px;
+}
+.dataStatus {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.dataStatus.status-신청 {
+  background: var(--box-3);
+  color: var(--text-gray);
+}
+.dataStatus.status-입금확인 {
+  background: rgba(179, 0, 0, 0.25);
+  color: #ff8888;
+}
+.dataStatus.status-톡방초대완료 {
+  background: rgba(0, 120, 0, 0.25);
+  color: #88dd88;
+}
+.dataStatusSelect {
+  padding: 4px 8px;
+  font-size: 12px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  min-width: 100px;
+}
+.adminJoin .joinDatas .dataDetail {
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--text-primary);
+  background: var(--box-3);
+  border: 1px solid var(--text-gray);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.adminJoin .joinDatas .dataDetail:hover {
+  background: var(--box-4);
+}
+.adminJoin .joinDatas .dataDelete {
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--brand-red);
+  background: transparent;
+  border: 1px solid var(--brand-red);
+  border-radius: 6px;
+  cursor: pointer;
+}
+.adminJoin .joinDatas .dataDelete:hover {
+  background: var(--brand-red);
+  color: var(--text-primary);
+}
+
+.detailOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
   justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  box-sizing: border-box;
+}
+.detailModal {
+  background: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 16px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.detailHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--box-3);
+}
+.detailHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.detailClose {
+  background: none;
+  border: none;
+  color: var(--text-gray);
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+.detailClose:hover {
+  color: var(--text-primary);
+}
+.detailBody {
+  padding: 20px;
+  overflow-y: auto;
+}
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.detailRow .detailLabel {
+  min-width: 90px;
+  font-size: 13px;
+  color: var(--text-gray);
+}
+.detailRow span:last-child,
+.detailRow select {
+  flex: 1;
+  font-size: 14px;
+}
+.detailRow select {
+  padding: 6px 10px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.detailRowFull {
+  flex-direction: column;
+  align-items: flex-start;
+}
+.detailWish {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-gray);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.detailFooter {
+  padding: 12px 20px;
+  border-top: 1px solid var(--box-3);
+}
+.detailDelete {
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--brand-red);
+  background: transparent;
+  border: 1px solid var(--brand-red);
+  border-radius: 8px;
+  cursor: pointer;
+}
+.detailDelete:hover {
+  background: var(--brand-red);
+  color: var(--text-primary);
 }

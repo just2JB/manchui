@@ -23,6 +23,37 @@
 .joinForm .stateBarRow .text {
   margin-left: 0;
 }
+@keyframes inputboxShake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px); }
+  30% { transform: translateX(8px); }
+  45% { transform: translateX(-6px); }
+  60% { transform: translateX(6px); }
+  75% { transform: translateX(-3px); }
+  90% { transform: translateX(3px); }
+}
+@keyframes inputErrorShake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-6px); }
+  30% { transform: translateX(6px); }
+  45% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  75% { transform: translateX(-2px); }
+  90% { transform: translateX(2px); }
+}
+.joinForm .inputboxShake {
+  animation: inputboxShake 0.5s ease-in-out;
+}
+.joinForm .inputErrorShake {
+  animation: inputErrorShake 0.5s ease-in-out;
+}
+.joinForm .stateBarRow .nameError,
+.joinForm .stateBarRow .studentIdError {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--brand-red);
+}
 .joinForm .languageToggle {
   position: absolute;
   top: 15px;

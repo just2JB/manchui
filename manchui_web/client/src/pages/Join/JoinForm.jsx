@@ -108,6 +108,7 @@ const TRANSLATIONS = {
     labelMajor: "전공",
     labelContact: "연락처",
     placeholderName: "김만취",
+    placeholderContact: "전화번호 or 카카오ID",
     next: "다음",
     academicStates: ["재학", "휴학", "졸업"],
     wishQuestion: "하고 싶은 활동이 있다면?",
@@ -117,6 +118,13 @@ const TRANSLATIONS = {
     colleges: COLLEGES_KO,
     collegeMajors: COLLEGE_MAJORS_KO,
     langLabel: "한국어",
+    validationName: "이름을 입력해주세요.",
+    validationStudentId: "학번을 10자리 숫자로 입력해주세요.",
+    validationContact:
+      "연락처를 전화번호(010-0000-0000) 또는 카카오ID로 입력해주세요.",
+    nameErrorEmpty: "이름을 입력해주세요.",
+    nameErrorInvalid: "이름은 한글, 영문, 공백, 하이픈만 입력 가능합니다.",
+    studentIdError: "학번은 10자리 숫자만 입력 가능합니다.",
   },
   en: {
     promptName: "Please enter your name",
@@ -136,6 +144,7 @@ const TRANSLATIONS = {
     labelMajor: "Major",
     labelContact: "Contact",
     placeholderName: "e.g. John Smith",
+    placeholderContact: "Phone or Kakao ID",
     next: "Next",
     academicStates: ["Enrolled", "Leave of absence", "Graduated"],
     wishQuestion: "Activities you want to do?",
@@ -145,8 +154,75 @@ const TRANSLATIONS = {
     colleges: COLLEGES_EN,
     collegeMajors: COLLEGE_MAJORS_EN,
     langLabel: "English",
+    validationName: "Please enter your name.",
+    validationStudentId: "Please enter 10 digit student ID.",
+    validationContact: "Please enter phone (e.g. 010-0000-0000) or Kakao ID.",
+    nameErrorEmpty: "Please enter your name.",
+    nameErrorInvalid: "Name can only contain letters, spaces, and hyphens.",
+    studentIdError: "Student ID must be exactly 10 digits.",
   },
 };
+
+/** 연락처가 전화번호(0으로 시작하는 숫자)일 때 하이픈 자동 포맷 */
+function formatPhoneContact(value) {
+  const digits = value.replace(/\D/g, "");
+  if (digits.length === 0) return "";
+  if (digits[0] !== "0") return value;
+  if (digits.length > 11) return value;
+  if (digits.startsWith("010")) {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  }
+  if (digits.startsWith("02")) {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 5) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+    if (digits.length <= 9)
+      return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5)}`;
+    return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6, 10)}`;
+  }
+  if (digits.match(/^0[3-9]\d/)) {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    if (digits.length <= 10)
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
+  }
+  return value;
+}
+
+/** 전화번호 형식인지 검사 (한국 형식) */
+function isPhoneFormat(str) {
+  const digits = str.replace(/\D/g, "");
+  if (digits.length < 9 || digits.length > 11 || digits[0] !== "0")
+    return false;
+  if (digits.startsWith("010")) return digits.length === 11;
+  if (digits.startsWith("02"))
+    return digits.length === 9 || digits.length === 10;
+  if (digits.match(/^0[3-9]\d/))
+    return digits.length === 10 || digits.length === 11;
+  return false;
+}
+
+/** 카카오ID 형식 (영문/숫자/일부 특수, 2~20자 등) */
+function isKakaoIdFormat(str) {
+  const s = str.trim();
+  if (s.length < 2 || s.length > 20) return false;
+  return /^[a-zA-Z0-9._-]+$/.test(s);
+}
+
+/** 이름 유효: 비어있지 않고, 글자/공백/하이픈만 허용 (숫자·특수기호 불가) */
+function isValidName(str) {
+  const s = (str || "").trim();
+  if (s.length === 0) return false;
+  return /^[\p{L}\s-]+$/u.test(s);
+}
+
+/** 학번 유효: 정확히 10자리 숫자 */
+function isValidStudentId(str) {
+  const digits = (str || "").replace(/\D/g, "");
+  return digits.length === 10;
+}
 
 const JoinForm = () => {
   const nav = useNavigate();
@@ -175,12 +251,22 @@ const JoinForm = () => {
     wish: "",
   });
   const [formNum, setFormNum] = useState(0);
+  const [nameError, setNameError] = useState(null);
+  const [studentIdError, setStudentIdError] = useState(null);
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    if (name === "name") setNameError(null);
+    if (name === "studentId") setStudentIdError(null);
+    if (name === "contact") {
+      const digits = value.replace(/\D/g, "");
+      const looksLikePhone =
+        digits.length > 0 && digits[0] === "0" && /^\d+$/.test(digits);
+      const nextContact = looksLikePhone ? formatPhoneContact(value) : value;
+      setFormData({ ...formData, [name]: nextContact });
+      return;
+    }
+    setFormData({ ...formData, [name]: value });
   };
 
   const [swiperInstance, setSwiperInstance] = useState(null);
@@ -280,7 +366,7 @@ const JoinForm = () => {
       setFormNum(6);
     } else if (num === 11) {
       contactRef.current.focus();
-      contactRef.current.placeholder = "010-0000-0000";
+      contactRef.current.placeholder = TRANSLATIONS[lang].placeholderContact;
     }
   };
 
@@ -289,6 +375,29 @@ const JoinForm = () => {
 
   const handleNext = (e) => {
     e.preventDefault();
+    const t = TRANSLATIONS[lang];
+    if (formNum === 1) {
+      const nameTrim = (formData.name || "").trim();
+      if (nameTrim.length === 0) {
+        setNameError(t.nameErrorEmpty);
+        nameRef.current?.focus();
+        return;
+      }
+      if (!/^[\p{L}\s-]+$/u.test(nameTrim)) {
+        setNameError(t.nameErrorInvalid);
+        nameRef.current?.focus();
+        return;
+      }
+      setNameError(null);
+    }
+    if (formNum === 2) {
+      if (!isValidStudentId(formData.studentId)) {
+        setStudentIdError(t.studentIdError);
+        studentIdRef.current?.focus();
+        return;
+      }
+      setStudentIdError(null);
+    }
     if (formNum < 13) {
       setFormNum(formNum + 1);
     }
@@ -390,7 +499,7 @@ const JoinForm = () => {
       if (e.key === "Enter") {
         e.preventDefault();
         if (formNum < 13) {
-          setFormNum(formNum + 1);
+          document.querySelector(".nextButton")?.click();
         }
       } else if (e.key === "Escape") {
         e.preventDefault();
@@ -398,7 +507,6 @@ const JoinForm = () => {
           setFormNum(formNum - 1);
         }
       } else if (e.key === "ArrowDown") {
-        console.log("Enter 키가 눌렸습니다!");
         e.preventDefault();
         if (formNum === 4) {
           swiperInstance.slideNext();
@@ -462,7 +570,30 @@ const JoinForm = () => {
         ]
       : formData.major;
 
+  const validateForm = (data, t) => {
+    const nameTrim = (data.name || "").trim();
+    if (!nameTrim) return { valid: false, message: t.validationName };
+
+    const sid = (data.studentId || "").replace(/\D/g, "");
+    if (sid.length !== 10)
+      return { valid: false, message: t.validationStudentId };
+
+    const contactTrim = (data.contact || "").trim();
+    if (!contactTrim) return { valid: false, message: t.validationContact };
+    if (!isPhoneFormat(contactTrim) && !isKakaoIdFormat(contactTrim)) {
+      return { valid: false, message: t.validationContact };
+    }
+
+    return { valid: true };
+  };
+
   const handleSubmit = async () => {
+    const t = TRANSLATIONS[lang];
+    const validation = validateForm(formData, t);
+    if (!validation.valid) {
+      alert(validation.message);
+      return;
+    }
     let data = { ...formData };
     try {
       const response = await axios.post(`${serverUrl}/api/join/apply`, data);
@@ -524,6 +655,14 @@ const JoinForm = () => {
                             ? t.promptWish
                             : t.promptConfirm}
           </div>
+          {nameError && formNum === 1 && (
+            <div className="nameError inputErrorShake">{nameError}</div>
+          )}
+          {studentIdError && formNum === 2 && (
+            <div className="studentIdError inputErrorShake">
+              {studentIdError}
+            </div>
+          )}
         </div>
       </div>
 
@@ -535,7 +674,9 @@ const JoinForm = () => {
         >
           {t.next}
         </button>
-        <div className="name inputbox">
+        <div
+          className={`name inputbox ${nameError && formNum === 1 ? "inputboxShake" : ""}`}
+        >
           <label className={`label ${formNum === 1 ? "activeLabel" : ""}`}>
             {t.labelName}
           </label>
@@ -549,7 +690,7 @@ const JoinForm = () => {
           />
         </div>
         <div
-          className={`studentId inputbox ${formNum > 1 ? "visible" : "hidden"}`}
+          className={`studentId inputbox ${formNum > 1 ? "visible" : "hidden"} ${studentIdError && formNum === 2 ? "inputboxShake" : ""}`}
         >
           <label className={`label ${formNum === 2 ? "activeLabel" : ""}`}>
             {t.labelStudentId}
@@ -801,7 +942,7 @@ const JoinForm = () => {
             onFocus={() => handleFocus(11)}
             onChange={handleChange}
             value={formData.contact}
-            placeholder=""
+            placeholder={t.placeholderContact}
           />
         </div>
       </form>

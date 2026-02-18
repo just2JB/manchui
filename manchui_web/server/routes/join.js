@@ -50,9 +50,12 @@ router.put("/config", async (req, res) => {
 router.post("/apply", async (req, res) => {
   try {
     let setting = await Setting.findOne();
-    if (!setting) setting = await Setting.create({ joinForm: 0, currentGeneration: 1 });
+    if (!setting)
+      setting = await Setting.create({ joinForm: 0, currentGeneration: 1 });
     if (setting.joinForm !== 1) {
-      return res.status(403).json({ message: "현재 가입 신청을 받고 있지 않습니다." });
+      return res
+        .status(403)
+        .json({ message: "현재 가입 신청을 받고 있지 않습니다." });
     }
     const currentGen = setting.currentGeneration ?? 1;
     const {
@@ -65,15 +68,7 @@ router.post("/apply", async (req, res) => {
       contact,
       wish,
     } = req.body;
-    const existingApplication = await Join.findOne({
-      studentId: Number(studentId),
-      generation: currentGen,
-    });
-    if (existingApplication) {
-      return res
-        .status(401)
-        .json({ message: "동일한 학번으로 신청 내역이 있습니다." });
-    }
+
     const join = new Join({
       name,
       major,
@@ -110,29 +105,37 @@ router.get("/:userId", async (req, res) => {
 
 router.get("/check/:studentId", async (req, res) => {
   try {
-    const studentId = req.params.studentId;
-    const join = await Join.findOne({ studentId });
-    if (!join) {
-      return res.status(401).json({ message: "신청 이력이 없습니다." });
+    const studentId = Number(req.params.studentId);
+    if (!Number.isInteger(studentId)) {
+      return res.status(400).json({ message: "올바른 학번을 입력해주세요." });
+    }
+    const joins = await Join.find({ studentId }).sort({ applyAt: -1 });
+    if (!joins.length) {
+      return res.status(404).json({ message: "신청 이력이 없습니다." });
     }
 
-    let hashName = "";
-    hashName = hashName + join.name[0] + "*";
-    for (let i = 0; i < join.name.length - 3; i++) {
-      hashName = hashName + "*";
-    }
-    if (join.name.length > 2) {
-      hashName = hashName + join.name[join.name.length - 1];
-    }
+    const list = joins.map((join) => {
+      let hashName = "";
+      if (join.name && join.name.length > 0) {
+        hashName = hashName + join.name[0] + "*";
+        for (let i = 0; i < join.name.length - 3; i++) {
+          hashName = hashName + "*";
+        }
+        if (join.name.length > 2) {
+          hashName = hashName + join.name[join.name.length - 1];
+        }
+      }
+      return {
+        name: hashName,
+        major: join.major,
+        applyAt: join.applyAt,
+        generation: join.generation ?? 1,
+        status: join.status || "신청",
+      };
+    });
 
-    const sendData = {
-      name: hashName,
-      major: join.major,
-      applyAt: join.applyAt,
-    };
     res.json({
-      join: sendData,
-
+      list,
       message: "성공적으로 불러왔습니다.",
     });
   } catch (error) {
@@ -156,7 +159,7 @@ router.patch("/:id", async (req, res) => {
     const join = await Join.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true }
+      { new: true },
     );
     if (!join) {
       return res.status(404).json({ message: "해당 신청을 찾을 수 없습니다." });

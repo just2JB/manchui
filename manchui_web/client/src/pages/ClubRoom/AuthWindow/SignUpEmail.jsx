@@ -1,5 +1,5 @@
 import React from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, Link } from "react-router-dom";
 import "./AuthWindow.css";
 
 const SignUpEmail = () => {
@@ -7,14 +7,19 @@ const SignUpEmail = () => {
 
   return (
     <div className="signUpEmail formPage">
-      <button
-        type="button"
-        className="auth-form-back"
-        onClick={() => nav("/login")}
-        aria-label="이전"
-      >
-        ← 로그인 선택으로
-      </button>
+      <div className="auth-form-nav">
+        <button
+          type="button"
+          className="auth-form-back"
+          onClick={() => nav("/login")}
+          aria-label="이전"
+        >
+          ← 로그인 선택으로
+        </button>
+        <Link to="/" className="auth-form-home">
+          홈페이지로
+        </Link>
+      </div>
       <div className="auth-form-card">
         <h2 className="auth-form-title">계정 생성</h2>
         <form className="auth-form signup" onSubmit={signUpHandle}>

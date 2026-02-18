@@ -91,11 +91,12 @@
   border-radius: 999px;
 }
 .joinForm .progressFill {
-  background-color: var(--brand-red);
+  background: linear-gradient(90deg, var(--brand-red) 0%, #8a0000 100%);
   height: 100%;
   width: 0%;
   border-radius: 999px;
   transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
+  box-shadow: 0 0 10px rgba(179, 0, 0, 0.3);
 }
 .joinForm .cups {
   position: absolute;
@@ -173,7 +174,8 @@
 .joinForm .nextButton {
   margin: 0px 10px;
   height: 50px;
-  background-color: var(--brand-red);
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
   text-align: center;
   align-content: center;
   border-radius: 80px;
@@ -184,6 +186,11 @@
   color: var(--text-primary);
   animation-name: buttonLoad;
   animation-duration: 0.5s;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+.joinForm .nextButton:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
 }
 .joinForm .inputbox {
   flex: 1;
@@ -417,13 +424,21 @@
 }
 
 .joinForm .wishPopupConfirm {
-  background-color: var(--brand-red);
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
   color: var(--text-primary);
 }
 
-.joinForm .wishPopupCancel:hover,
-.joinForm .wishPopupConfirm:hover {
+.joinForm .wishPopupCancel:hover {
   opacity: 0.9;
+}
+.joinForm .wishPopupConfirm:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
+}
+.joinForm .wishPopupConfirm:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 
 @keyframes wishPopupFadeIn {

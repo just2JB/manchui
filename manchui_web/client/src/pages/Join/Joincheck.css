@@ -1,0 +1,179 @@
+.joinCheck {
+  min-height: 100vh;
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.joinCheckInner {
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+}
+
+.joinCheckTitle {
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 700;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.joinCheckDesc {
+  font-size: 15px;
+  color: var(--text-gray);
+  margin: 0 0 28px;
+  line-height: 1.5;
+}
+
+.joinCheckForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.joinCheckLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-gray);
+}
+
+.joinCheckInput {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 16px;
+  color: var(--text-primary);
+  background: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 10px;
+  box-sizing: border-box;
+}
+
+.joinCheckInput::placeholder {
+  color: var(--text-gray);
+  opacity: 0.7;
+}
+
+.joinCheckSubmit {
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.joinCheckSubmit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+}
+
+.joinCheckSubmit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.joinCheckError {
+  font-size: 14px;
+  color: var(--brand-red);
+  margin: 0 0 16px;
+}
+
+.joinCheckNoResult {
+  font-size: 15px;
+  color: var(--text-gray);
+  margin: 0 0 20px;
+}
+
+.joinCheckResult {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.joinCheckResultTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+
+.joinCheckList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.joinCheckCard {
+  background: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.joinCheckCardRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.joinCheckCardRow:last-child {
+  margin-bottom: 0;
+}
+
+.joinCheckCardDate {
+  font-weight: 600;
+  color: var(--text-primary);
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--box-3);
+}
+
+.joinCheckCardLabel {
+  min-width: 56px;
+  color: var(--text-gray);
+  font-size: 13px;
+}
+
+.joinCheckStatus {
+  font-size: 13px;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+.joinCheckStatus.status-신청 {
+  background: var(--box-3);
+  color: var(--text-gray);
+}
+
+.joinCheckStatus.status-입금확인 {
+  background: rgba(179, 0, 0, 0.25);
+  color: #ff8888;
+}
+
+.joinCheckStatus.status-톡방초대완료 {
+  background: rgba(0, 120, 0, 0.25);
+  color: #88dd88;
+}
+
+.joinCheckBack {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--text-gray);
+  text-decoration: none;
+  margin-top: 8px;
+}
+
+.joinCheckBack:hover {
+  color: var(--text-primary);
+}

@@ -38,8 +38,22 @@ const COLLEGE_MAJORS_KO = [
     "배터리소재화학공학과",
   ],
   ["차세대반도체융합공학부", "바이오신약융합학부", "국방지능정보융합공학부"],
-  ["글로벌문화통상학부"],
-  ["디자인계열"],
+  [
+    "글로벌문화통상학부",
+    "한국언어문학과",
+    "중국학과",
+    "일본학과",
+    "영미언어문화학과",
+    "프랑스학과",
+  ],
+  [
+    "디자인계열",
+    "주얼리패션디자인학과",
+    "융합디자인학부",
+    "영상디자인학과",
+    "커뮤니케이션디자인학과",
+    "산업디자인학과",
+  ],
   ["컴퓨터학부", "ICT융합학부", "인공지능학과", "수리데이터사이언스학과"],
   ["약학과"],
   ["광고홍보학과", "미디어학과", "문화인류학과", "문화콘텐츠학과"],
@@ -80,8 +94,22 @@ const COLLEGE_MAJORS_EN = [
     "Bio-Drug Convergence",
     "Defense Intelligence Info.",
   ],
-  ["Global Culture & Commerce"],
-  ["Design"],
+  [
+    "Global Culture & Commerce",
+    "Korean Lang. & Lit.",
+    "Chinese Studies",
+    "Japanese Studies",
+    "English Lang. & Culture",
+    "French Studies",
+  ],
+  [
+    "Design",
+    "Jewelry & Fashion Design",
+    "Convergence Design",
+    "Visual Design",
+    "Communication Design",
+    "Industrial Design",
+  ],
   ["Computer Science", "ICT Convergence", "AI", "Math Data Science"],
   ["Pharmacy"],
   ["Advertising & PR", "Media", "Cultural Anthropology", "Cultural Contents"],
@@ -256,6 +284,7 @@ const JoinForm = () => {
   const [nameError, setNameError] = useState(null);
   const [studentIdError, setStudentIdError] = useState(null);
   const [contactError, setContactError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!serverUrl) return;
@@ -265,6 +294,20 @@ const JoinForm = () => {
         if (res.data.formOpen === false) nav("/join");
       })
       .catch(() => {});
+  }, []);
+
+  // 가입폼에서만 모바일 키보드 시 뷰포트 고정 (interactive-widget=overlays-content)
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) return;
+    const original = meta.getAttribute("content") || "";
+    meta.setAttribute(
+      "content",
+      "width=device-width, initial-scale=1.0, interactive-widget=overlays-content"
+    );
+    return () => {
+      meta.setAttribute("content", original || "width=device-width, initial-scale=1.0");
+    };
   }, []);
 
   const handleChange = (e) => {
@@ -611,21 +654,25 @@ const JoinForm = () => {
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     const t = TRANSLATIONS[lang];
     const validation = validateForm(formData, t);
     if (!validation.valid) {
       alert(validation.message);
       return;
     }
+    setIsSubmitting(true);
     let data = { ...formData };
     try {
       const response = await axios.post(`${serverUrl}/api/join/apply`, data);
       if (response.status === 201) {
         alert("가입신청이 완료되었습니다");
-
         nav("/join");
       }
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <div className="joinForm">
@@ -1006,8 +1053,9 @@ const JoinForm = () => {
                 type="button"
                 className="wishPopupConfirm"
                 onClick={handleSubmit}
+                disabled={isSubmitting}
               >
-                {t.confirm}
+                {isSubmitting ? "제출 중…" : t.confirm}
               </button>
             </div>
           </div>

@@ -34,8 +34,9 @@ router.put("/config", async (req, res) => {
     if (typeof req.body.formOpen === "boolean") {
       setting.joinForm = req.body.formOpen ? 1 : 0;
     }
-    const gen = Number(req.body.currentGeneration);
-    if (gen >= 1) setting.currentGeneration = gen;
+    const raw = Number(req.body.currentGeneration);
+    const gen = raw >= 1 ? Math.round(raw * 2) / 2 : null;
+    if (gen !== null) setting.currentGeneration = gen;
     await setting.save();
     res.json({
       formOpen: setting.joinForm === 1,

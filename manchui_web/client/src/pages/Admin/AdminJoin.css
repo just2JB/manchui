@@ -319,3 +319,13 @@
   background: var(--brand-red);
   color: var(--text-primary);
 }
+.adminJoin .configSave {
+  margin-left: 5px;
+  padding: 6px 10px;
+  font-size: 13px;
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+}

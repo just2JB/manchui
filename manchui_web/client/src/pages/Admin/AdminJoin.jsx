@@ -25,6 +25,57 @@ const formatDate = (date) => {
   });
 };
 
+/** CSV 필드 이스케이프 (쉼표·줄바꿈·따옴표 포함 시 따옴표로 감싸기) */
+const escapeCsvField = (val) => {
+  const s = String(val ?? "");
+  if (
+    s.includes(",") ||
+    s.includes('"') ||
+    s.includes("\n") ||
+    s.includes("\r")
+  ) {
+    return `"${s.replace(/"/g, '""')}"`;
+  }
+  return s;
+};
+
+/** 구글 연락처 불러오기용 CSV 생성 (UTF-8 BOM) */
+const buildContactsCsv = (list, generation) => {
+  const BOM = "\uFEFF";
+  const headers = [
+    "Name",
+    "Given Name",
+    "Family Name",
+    "Phone 1 - Value",
+    "Phone 1 - Type",
+    "Notes",
+  ];
+  const rows = list.map((d) => {
+    const name = d.name || "";
+    const contact = d.contact || "";
+    const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
+    return [
+      escapeCsvField(name),
+      escapeCsvField(name.slice(1)),
+      escapeCsvField(name.slice(0, 1)),
+      escapeCsvField(contact),
+      "Mobile",
+      escapeCsvField(notes),
+    ].join(",");
+  });
+  return BOM + [headers.join(","), ...rows].join("\r\n");
+};
+
+const downloadCsv = (content, filename) => {
+  const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+};
+
 const AdminJoin = () => {
   const { user } = useOutletContext();
   const manchuiModal = useManchuiModal();
@@ -57,7 +108,9 @@ const AdminJoin = () => {
       });
       setJoinData(Array.isArray(res.data.joinData) ? res.data.joinData : []);
     } catch (err) {
-      manchuiModal(err.response?.data?.message || "목록을 불러오지 못했습니다.");
+      manchuiModal(
+        err.response?.data?.message || "목록을 불러오지 못했습니다.",
+      );
     }
   };
 
@@ -72,11 +125,13 @@ const AdminJoin = () => {
   const handleSaveConfig = async () => {
     if (!serverUrl || !user?._id) return;
     setSaving(true);
+    const gen = Number(currentGeneration);
+    const roundedGen = gen >= 1 ? Math.round(gen * 2) / 2 : 1;
     try {
       await axios.put(`${serverUrl}/api/join/config`, {
         userId: user._id,
         formOpen,
-        currentGeneration: Number(currentGeneration) || 1,
+        currentGeneration: roundedGen,
       });
       manchuiModal("설정이 저장되었습니다.");
       fetchConfig();
@@ -106,15 +161,18 @@ const AdminJoin = () => {
       const res = await axios.patch(
         `${serverUrl}/api/join/${id}`,
         { userId: user._id, status: newStatus },
-        { withCredentials: true }
+        { withCredentials: true },
       );
       setJoinData((prev) =>
-        prev.map((d) => (d._id === id ? { ...d, status: res.data.join.status } : d))
+        prev.map((d) =>
+          d._id === id ? { ...d, status: res.data.join.status } : d,
+        ),
       );
       if (detailData?._id === id) {
-        setDetailData((prev) => (prev ? { ...prev, status: res.data.join.status } : null));
+        setDetailData((prev) =>
+          prev ? { ...prev, status: res.data.join.status } : null,
+        );
       }
-      manchuiModal("상태가 변경되었습니다.");
     } catch (err) {
       manchuiModal(err.response?.data?.message || "상태 변경에 실패했습니다.");
     } finally {
@@ -122,14 +180,27 @@ const AdminJoin = () => {
     }
   };
 
+  const handleExportContactsCsv = () => {
+    if (!sortedList.length) {
+      manchuiModal("내보낼 연락처가 없습니다.");
+      return;
+    }
+    const csv = buildContactsCsv(sortedList, currentGeneration);
+    const filename = `만취_${currentGeneration}기_연락처_${new Date().toISOString().slice(0, 10)}.csv`;
+    downloadCsv(csv, filename);
+    manchuiModal(
+      `연락처 ${sortedList.length}명이 CSV로 저장되었습니다. 구글 연락처에서 '가져오기'로 불러올 수 있습니다.`,
+    );
+  };
+
   const baseList = useMemo(
     () =>
       joinData.filter(
         (d) =>
           d.generation === currentGeneration ||
-          (d.generation == null && currentGeneration === 1)
+          (d.generation == null && currentGeneration === 1),
       ),
-    [joinData, currentGeneration]
+    [joinData, currentGeneration],
   );
 
   const filteredList = useMemo(() => {
@@ -139,7 +210,7 @@ const AdminJoin = () => {
       (d) =>
         (d.name && d.name.toLowerCase().includes(q)) ||
         String(d.studentId || "").includes(q) ||
-        (d.contact && d.contact.toLowerCase().includes(q))
+        (d.contact && d.contact.toLowerCase().includes(q)),
     );
   }, [baseList, searchQuery]);
 
@@ -191,8 +262,13 @@ const AdminJoin = () => {
           <input
             type="number"
             min={1}
+            step={0.5}
             value={currentGeneration}
-            onChange={(e) => setCurrentGeneration(Number(e.target.value) || 1)}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              const rounded = v >= 1 ? Math.round(v * 2) / 2 : 1;
+              setCurrentGeneration(rounded);
+            }}
           />
           <span className="configUnit">기</span>
         </div>
@@ -209,7 +285,16 @@ const AdminJoin = () => {
       <div className="joinSection">
         <div className="sectionHeader">
           <h3 className="sectionTitle">
-            {currentGeneration}기 신청 목록 ({sortedList.length}명)
+            {currentGeneration}기 신청 목록 ({sortedList.length}명){" "}
+            <button
+              type="button"
+              className="configSave"
+              onClick={handleExportContactsCsv}
+              disabled={!sortedList.length}
+              title="현재 목록을 구글 연락처 가져오기용 CSV로 저장"
+            >
+              연락처 CSV 내보내기
+            </button>
           </h3>
           <div className="toolbar">
             <select
@@ -226,7 +311,9 @@ const AdminJoin = () => {
             <button
               type="button"
               className="sortOrderBtn"
-              onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}
+              onClick={() =>
+                setSortOrder((o) => (o === "asc" ? "desc" : "asc"))
+              }
             >
               {sortOrder === "asc" ? "↑ 오름차순" : "↓ 내림차순"}
             </button>
@@ -251,7 +338,9 @@ const AdminJoin = () => {
               <span className="dataInfo">
                 {data.college} · {data.major} · {data.studentId}
               </span>
-              <span className={`dataStatus status-${(data.status || "신청").replace(/ /g, "")}`}>
+              <span
+                className={`dataStatus status-${(data.status || "신청").replace(/ /g, "")}`}
+              >
                 {data.status || "신청"}
               </span>
               <select
@@ -270,7 +359,9 @@ const AdminJoin = () => {
               <button
                 type="button"
                 className="dataDetail"
-                onClick={() => setDetailData(detailData?._id === data._id ? null : data)}
+                onClick={() =>
+                  setDetailData(detailData?._id === data._id ? null : data)
+                }
               >
                 상세
               </button>

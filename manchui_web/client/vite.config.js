@@ -10,5 +10,4 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: ["localhost"],
   },
-  build: { outDir: "dist" },
 });

@@ -79,12 +79,12 @@
   transform: rotate(360deg);
 }
 .pop-bar {
-  transition-duration: 0.5s;
+  transition-duration: 0.3s;
   visibility: hidden;
   position: absolute;
+  left: 0;
   width: 100%;
   top: -500px;
-
   text-align: center;
   z-index: 10;
 }
@@ -134,8 +134,28 @@ a {
     width: auto;
     height: 50px;
   }
+  /** 드롭다운: 뷰포트 기준 전체 너비, 상단 바 바로 아래에 연결 */
+  .pop-bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 45;
+  }
   .pop-open {
     visibility: visible;
-    top: 62px;
+    top: 60px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+  .pop-page-list-ul {
+    background: var(--background-dark);
+    padding-top: 0;
+  }
+  .pop-page-list-ul .link {
+    padding-left: 20px;
+    padding-right: 20px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
   }
 }

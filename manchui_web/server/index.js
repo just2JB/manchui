@@ -15,7 +15,11 @@ const practiceRouter = require("./routes/practice");
 
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: [
+      "https://maaaaaaanchui.com",
+      "http://localhost:5173",
+      process.env.CLIENT_URL,
+    ],
     credentials: true,
   }),
 );

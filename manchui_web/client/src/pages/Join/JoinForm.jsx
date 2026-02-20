@@ -300,10 +300,13 @@ const JoinForm = () => {
     const original = meta.getAttribute("content") || "";
     meta.setAttribute(
       "content",
-      "width=device-width, initial-scale=1.0, interactive-widget=overlays-content"
+      "width=device-width, initial-scale=1.0, interactive-widget=overlays-content",
     );
     return () => {
-      meta.setAttribute("content", original || "width=device-width, initial-scale=1.0");
+      meta.setAttribute(
+        "content",
+        original || "width=device-width, initial-scale=1.0",
+      );
     };
   }, []);
 
@@ -476,17 +479,17 @@ const JoinForm = () => {
       nameRef.current.focus();
 
       inputboxes[0].appendChild(nextButton);
-      confirmButtonRef.current.scrollIntoView({
+      window.scrollTo({
+        top: 0,
         behavior: "smooth",
-        block: "center",
       });
       setProgress(1);
     } else if (formNum === 2) {
       studentIdRef.current.focus();
       inputboxes[1].appendChild(nextButton);
-      confirmButtonRef.current.scrollIntoView({
+      window.scrollTo({
+        top: 90,
         behavior: "smooth",
-        block: "center",
       });
       setProgress(2);
     } else if (formNum > 2 && formNum < 5) {

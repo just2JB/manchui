@@ -10,4 +10,5 @@ export default defineConfig({
     strictPort: true,
     allowedHosts: ["localhost"],
   },
+  base: "/",
 });

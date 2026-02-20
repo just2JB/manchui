@@ -6,8 +6,7 @@ import { useNavigate, useOutletContext, Link } from "react-router-dom";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const AuthWindow = () => {
-  const { formData, setFormData } = useOutletContext();
-
+  const { redirectTo } = useOutletContext() ?? {};
   const nav = useNavigate();
 
   useEffect(() => {
@@ -19,7 +18,7 @@ const AuthWindow = () => {
           { withCredentials: true }
         );
         if (response.data.isValid) {
-          nav("/club");
+          nav(redirectTo || "/club");
           return;
         }
         return;
@@ -28,7 +27,7 @@ const AuthWindow = () => {
       }
     };
     verifyToken();
-  }, []);
+  }, [redirectTo, nav]);
 
   return (
     <div className="auth-window">

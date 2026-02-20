@@ -27,6 +27,36 @@
   height: 100vh;
   justify-items: center;
 }
+
+.preparingPage {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.preparingMessage {
+  font-size: 1.25rem;
+  color: var(--text-secondary, #888);
+  margin-bottom: 1rem;
+}
+.preparingLink {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  color: var(--brand-red, #b30000);
+  text-decoration: none;
+  font-weight: 600;
+}
+.preparingLink:hover {
+  text-decoration: underline;
+}
+.preparingWrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #050505;
+}
 @media screen and (max-width: 767px) {
   .clubRoombody {
     width: 100%;

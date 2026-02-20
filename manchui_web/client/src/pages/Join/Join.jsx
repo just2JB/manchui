@@ -1,36 +1,24 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./Join.css";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 const Join = () => {
   const nav = useNavigate();
-  const [formOpen, setFormOpen] = useState(true);
-  const [generation, setGeneration] = useState(null);
-
-  useEffect(() => {
-    if (!serverUrl) return;
-    axios
-      .get(`${serverUrl}/api/join/config`)
-      .then((res) => {
-        setFormOpen(res.data.formOpen !== false);
-        setGeneration(res.data.currentGeneration ?? null);
-      })
-      .catch(() => {});
-  }, []);
+  const { joinConfig, joinConfigLoading } = useOutletContext() ?? {};
+  const formOpen = joinConfig?.formOpen !== false;
+  const generation = joinConfig?.currentGeneration ?? null;
 
   return (
     <div className="join">
       <div className="joinInner">
         <h1 className="joinTitle">만취 가입하기</h1>
         <p className="joinDesc">
-          {generation != null ? `${generation}기 ` : ""}
-          가입 신청 또는 신청 내역을 확인하세요.
+          {joinConfigLoading
+            ? "설정을 불러오는 중…"
+            : `${generation != null ? `${generation}기 ` : ""}가입 신청 또는 신청 내역을 확인하세요.`}
         </p>
         <div className="joinActions">
-          {formOpen ? (
+          {joinConfigLoading ? null : formOpen ? (
             <button
               type="button"
               className="joinBtn joinBtnPrimary"

@@ -121,10 +121,33 @@ function AdminRoute() {
 }
 
 function Layout() {
+  const [joinConfig, setJoinConfig] = useState({
+    formOpen: true,
+    currentGeneration: null,
+  });
+  const [joinConfigLoading, setJoinConfigLoading] = useState(true);
+
+  useEffect(() => {
+    if (!serverUrl) {
+      setJoinConfigLoading(false);
+      return;
+    }
+    axios
+      .get(`${serverUrl}/api/join/config`)
+      .then((res) => {
+        setJoinConfig({
+          formOpen: res.data.formOpen !== false,
+          currentGeneration: res.data.currentGeneration ?? null,
+        });
+      })
+      .catch(() => {})
+      .finally(() => setJoinConfigLoading(false));
+  }, []);
+
   return (
     <>
       <Navbar />
-      <Outlet />
+      <Outlet context={{ joinConfig, joinConfigLoading }} />
       <Footer />
     </>
   );

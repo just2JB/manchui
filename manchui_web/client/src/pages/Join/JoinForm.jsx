@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./JoinForm.css";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { MdKeyboardArrowDown, MdLanguage } from "react-icons/md";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -286,15 +286,12 @@ const JoinForm = () => {
   const [contactError, setContactError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const { joinConfig, joinConfigLoading } = useOutletContext() ?? {};
   useEffect(() => {
-    if (!serverUrl) return;
-    axios
-      .get(`${serverUrl}/api/join/config`)
-      .then((res) => {
-        if (res.data.formOpen === false) nav("/join");
-      })
-      .catch(() => {});
-  }, []);
+    if (joinConfigLoading === false && joinConfig?.formOpen === false) {
+      nav("/join");
+    }
+  }, [joinConfigLoading, joinConfig?.formOpen, nav]);
 
   // 가입폼에서만 모바일 키보드 시 뷰포트 고정 (interactive-widget=overlays-content)
   useEffect(() => {

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import "./JoinCheck.css";
+import "./Joincheck.css";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 

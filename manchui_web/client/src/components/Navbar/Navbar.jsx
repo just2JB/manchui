@@ -4,21 +4,24 @@ import { IoChevronDownSharp } from "react-icons/io5";
 
 import "./Navbar.css";
 
-const pages = [
+const ALL_PAGES = [
   { name: "홈", path: "/" },
   { name: "동아리 소개", path: "/about" },
   { name: "가입", path: "/join" },
   { name: "굿즈", path: "/goods" },
   { name: "동아리방", path: "/login" },
 ];
+/** siteRestricted일 때는 가입만 표시 */
+const RESTRICTED_PAGES = [{ name: "가입", path: "/join" }];
 
 function toTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-const Navbar = () => {
+const Navbar = ({ siteRestricted = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const pages = siteRestricted ? RESTRICTED_PAGES : ALL_PAGES;
 
   return (
     <div className="navbar">
@@ -31,14 +34,15 @@ const Navbar = () => {
               : "0px",
         }}
       >
-        <Link className="logo" onClick={toTop} href="/">
+        <div className="navbar-left" />
+        <Link className="logo" onClick={toTop} to="/">
           <img
             src="/logos/longLogo_white.png"
             alt="Logo"
             className="manchui-logo"
           />
         </Link>
-
+        <div className="navbar-right">
         <ul className="page-list-ul">
           {pages.map((item) => (
             <Link
@@ -51,7 +55,6 @@ const Navbar = () => {
             </Link>
           ))}
         </ul>
-
         <div
           className={`pop-button ${isOpen ? "rotate" : ""}`}
           onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
@@ -84,6 +87,7 @@ const Navbar = () => {
             className="pop-back"
             onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
           ></div>
+        </div>
         </div>
       </div>
     </div>

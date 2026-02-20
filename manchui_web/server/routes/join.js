@@ -13,6 +13,7 @@ router.get("/config", async (req, res) => {
     res.json({
       formOpen: setting.joinForm === 1,
       currentGeneration: setting.currentGeneration ?? 1,
+      siteRestricted: Boolean(setting.siteRestricted),
     });
   } catch (err) {
     res.status(500).json({ message: "서버 오류가 발생하였습니다." });
@@ -37,10 +38,14 @@ router.put("/config", async (req, res) => {
     const raw = Number(req.body.currentGeneration);
     const gen = raw >= 1 ? Math.round(raw * 2) / 2 : null;
     if (gen !== null) setting.currentGeneration = gen;
+    if (typeof req.body.siteRestricted === "boolean") {
+      setting.siteRestricted = req.body.siteRestricted;
+    }
     await setting.save();
     res.json({
       formOpen: setting.joinForm === 1,
       currentGeneration: setting.currentGeneration,
+      siteRestricted: Boolean(setting.siteRestricted),
       message: "설정이 저장되었습니다.",
     });
   } catch (err) {

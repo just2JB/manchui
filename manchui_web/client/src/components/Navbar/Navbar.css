@@ -12,6 +12,18 @@
   user-select: none;
   transition-duration: 0.3s;
 }
+.navbar-left {
+  flex: 1;
+  min-width: 0;
+}
+.navbar-right {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 50px;
+}
 .navbar-bottom {
   position: fixed;
   top: 60px;
@@ -21,19 +33,23 @@
   z-index: 50;
 }
 
+.navbar-top .logo {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 51;
+}
 .manchui-logo {
   display: inline-block;
   width: auto;
   height: 50px;
-  margin-left: 3vw;
   z-index: 50;
 }
 .page-list-ul {
   display: flex;
-  width: 50%;
-  margin-right: 50px;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 10px;
+  margin-right: 0;
 }
 .link {
   color: var(--text-primary);
@@ -101,6 +117,9 @@ a {
 }
 @media screen and (max-width: 767px) {
   /** Mobile & Tablet  */
+  .navbar-right {
+    margin-right: 5%;
+  }
   .page-list-ul {
     visibility: hidden;
   }
@@ -114,7 +133,6 @@ a {
     top: 50%;
     width: auto;
     height: 50px;
-    margin-left: 0px;
   }
   .pop-open {
     visibility: visible;

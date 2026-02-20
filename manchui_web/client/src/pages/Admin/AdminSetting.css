@@ -1,8 +1,75 @@
-.joinSetting {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.adminSetting {
+  color: var(--text-primary, #f5f5f5);
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
 }
+
+.joinSetting {
+  max-width: 480px;
+  background-color: var(--box-1, #1e1e1e);
+  border: 1px solid var(--box-3, #383838);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.joinSetting .configTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 16px;
+}
+
+.joinSetting .configRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.joinSetting .configLabel {
+  min-width: 140px;
+  font-size: 14px;
+  color: var(--text-gray, #888);
+}
+
+.joinSetting .configToggle {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--box-3);
+  font-size: 14px;
+  cursor: pointer;
+  background: var(--box-2);
+  color: var(--text-primary);
+}
+
+.joinSetting .configToggle.on {
+  background: var(--brand-red, #b30000);
+  border-color: var(--brand-red);
+}
+
+.joinSetting .configHint {
+  font-size: 13px;
+  color: var(--text-gray, #888);
+  margin: 0 0 16px;
+  line-height: 1.4;
+}
+
+.joinSetting .configSave {
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--brand-red);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.joinSetting .configSave:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .joinFrame {
   border: 1px solid #333333;
 }

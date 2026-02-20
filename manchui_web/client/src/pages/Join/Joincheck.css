@@ -166,14 +166,32 @@
   color: #88dd88;
 }
 
+.joinCheckFooter {
+  margin-top: 20px;
+}
+
 .joinCheckBack {
   display: inline-block;
   font-size: 14px;
   color: var(--text-gray);
   text-decoration: none;
-  margin-top: 8px;
 }
 
 .joinCheckBack:hover {
   color: var(--text-primary);
+}
+
+.joinCheckAdminLink {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  font-size: 11px;
+  color: var(--text-gray);
+  text-decoration: none;
+  opacity: 0.4;
+}
+
+.joinCheckAdminLink:hover {
+  color: var(--text-primary);
+  opacity: 0.8;
 }

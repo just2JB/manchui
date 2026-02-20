@@ -6,6 +6,8 @@ import {
   Outlet,
   RouterProvider,
   useOutletContext,
+  useLocation,
+  Link,
 } from "react-router-dom";
 import { ModalProvider } from "./hooks/ManchuiModal";
 
@@ -40,6 +42,15 @@ import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
+
+function PreparingPage() {
+  return (
+    <div className="preparingPage">
+      <p className="preparingMessage">현재 준비중입니다.</p>
+      <Link to="/join" className="preparingLink">가입하러 가기</Link>
+    </div>
+  );
+}
 
 function ProtectedRoute() {
   const [isAuthenticated, setIsauthenticated] = useState(null);
@@ -120,10 +131,14 @@ function AdminRoute() {
   return isAuthenticated ? <Outlet context={{ user }} /> : notAuth();
 }
 
+const JOIN_PATHS = ["/join", "/join/check", "/join/form"];
+
 function Layout() {
+  const location = useLocation();
   const [joinConfig, setJoinConfig] = useState({
     formOpen: true,
     currentGeneration: null,
+    siteRestricted: false,
   });
   const [joinConfigLoading, setJoinConfigLoading] = useState(true);
 
@@ -138,16 +153,24 @@ function Layout() {
         setJoinConfig({
           formOpen: res.data.formOpen !== false,
           currentGeneration: res.data.currentGeneration ?? null,
+          siteRestricted: Boolean(res.data.siteRestricted),
         });
       })
       .catch(() => {})
       .finally(() => setJoinConfigLoading(false));
   }, []);
 
+  const isJoinPath = JOIN_PATHS.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
+  const showPreparing = joinConfig.siteRestricted && !isJoinPath;
+
   return (
     <>
-      <Navbar />
-      <Outlet context={{ joinConfig, joinConfigLoading }} />
+      <Navbar siteRestricted={joinConfig.siteRestricted} />
+      {showPreparing ? (
+        <PreparingPage />
+      ) : (
+        <Outlet context={{ joinConfig, joinConfigLoading }} />
+      )}
       <Footer />
     </>
   );
@@ -155,6 +178,29 @@ function Layout() {
 
 function ClubRoomLayout() {
   const [isLogin, setIsLogin] = useState(false);
+  const [siteRestricted, setSiteRestricted] = useState(false);
+  const [configLoading, setConfigLoading] = useState(true);
+
+  useEffect(() => {
+    if (!serverUrl) {
+      setConfigLoading(false);
+      return;
+    }
+    axios
+      .get(`${serverUrl}/api/join/config`)
+      .then((res) => setSiteRestricted(Boolean(res.data.siteRestricted)))
+      .catch(() => {})
+      .finally(() => setConfigLoading(false));
+  }, []);
+
+  if (!configLoading && siteRestricted) {
+    return (
+      <div className="clubRoomLayout preparingWrapper">
+        <PreparingPage />
+      </div>
+    );
+  }
+
   return (
     <>
       <div className="clubRoomLayout">
@@ -182,6 +228,9 @@ function LoginRoute() {
     clubcode: "",
     Identification: "",
   });
+
+  const location = useLocation();
+  const redirectTo = location.state?.redirectTo || "/club";
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -189,28 +238,6 @@ function LoginRoute() {
     });
   };
   const nav = useNavigate();
-  const loginHandle = async (e) => {
-    e.preventDefault();
-    setFormData({ email: formData.email, password: formData.password });
-    try {
-      const response = await axios.post(
-        `${serverUrl}/api/auth/login`,
-        formData,
-        {
-          withCredentials: true,
-        },
-      );
-
-      if (response.data.user) {
-        nav("/club");
-        return;
-      } else {
-        return alert(response.data.message);
-      }
-    } catch (error) {
-    } finally {
-    }
-  };
   const signUpHandle = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.passwordCheck) {
@@ -233,15 +260,34 @@ function LoginRoute() {
     } finally {
     }
   };
+
+  const loginHandleWithRedirect = async (e) => {
+    e.preventDefault();
+    setFormData({ email: formData.email, password: formData.password });
+    try {
+      const response = await axios.post(
+        `${serverUrl}/api/auth/login`,
+        formData,
+        { withCredentials: true },
+      );
+      if (response.data.user) {
+        nav(redirectTo);
+        return;
+      }
+      return alert(response.data.message);
+    } catch (err) {}
+  };
+
   return (
     <div className="loginPage">
       <Outlet
         context={{
           formData,
-          loginHandle,
+          loginHandle: loginHandleWithRedirect,
           handleChange,
           signUpHandle,
           nav,
+          redirectTo,
         }}
       />
     </div>

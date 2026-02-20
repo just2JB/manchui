@@ -140,8 +140,18 @@ const JoinCheck = () => {
           <p className="joinCheckNoResult">신청 내역이 없습니다.</p>
         )}
 
-        <Link to="/join" className="joinCheckBack">
-          ← 가입하기로 돌아가기
+        <div className="joinCheckFooter">
+          <Link to="/join" className="joinCheckBack">
+            ← 가입하기로 돌아가기
+          </Link>
+        </div>
+
+        <Link
+          to="/login"
+          state={{ redirectTo: "/admin" }}
+          className="joinCheckAdminLink"
+        >
+          관리자
         </Link>
       </div>
     </div>

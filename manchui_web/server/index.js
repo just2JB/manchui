@@ -13,9 +13,24 @@ const scheduleRouter = require("./routes/schedule");
 const teamRouter = require("./routes/team");
 const practiceRouter = require("./routes/practice");
 
+// www / 비-www 둘 다 허용 (같은 도메인)
+const clientUrl = process.env.CLIENT_URL || "";
+const allowedOrigins = new Set([clientUrl]);
+if (clientUrl.startsWith("https://www.")) {
+  allowedOrigins.add(clientUrl.replace("https://www.", "https://"));
+} else if (clientUrl.startsWith("https://")) {
+  allowedOrigins.add(clientUrl.replace("https://", "https://www."));
+}
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   }),
 );

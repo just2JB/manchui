@@ -275,7 +275,10 @@ function LoginRoute() {
         return;
       }
       return alert(response.data.message);
-    } catch (err) {}
+    } catch (err) {
+      const msg = err.response?.data?.message || err.message || "로그인에 실패했습니다.";
+      alert(msg);
+    }
   };
 
   return (

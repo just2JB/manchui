@@ -32,6 +32,9 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
+    if (!user) {
+      return res.status(401).json({ message: "이메일 또는 비밀번호가 올바르지 않습니다." });
+    }
     const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
@@ -47,7 +50,7 @@ router.post("/login", async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
-      samesite: "none",
+      sameSite: "none",
       maxAge: 24 * 60 * 60 * 1000,
     });
 

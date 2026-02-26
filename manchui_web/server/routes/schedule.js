@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
+const getToken = require("../utils/getToken");
 const getFomatDate = (localeDateString) => {
   localeDateString = localeDateString.split(". ").join(".");
   const year = localeDateString.split(".")[0];
@@ -19,7 +20,7 @@ const getFomatDate = (localeDateString) => {
 };
 
 router.post("/verify-token", async (req, res) => {
-  const token = req.cookies.token;
+  const token = getToken(req);
   if (!token) {
     return res.status(401).json({ isVaild: false, message: "토큰이 없습니다" });
   }

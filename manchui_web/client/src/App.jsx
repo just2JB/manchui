@@ -271,6 +271,10 @@ function LoginRoute() {
         { withCredentials: true },
       );
       if (response.data.user) {
+        // iOS Safari 등: 쿠키 대신 localStorage + Authorization 헤더 사용
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+        }
         nav(redirectTo);
         return;
       }

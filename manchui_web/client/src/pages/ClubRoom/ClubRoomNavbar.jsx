@@ -13,18 +13,20 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
   const nav = useNavigate();
   const handleLogout = async (e) => {
     if (confirm(`로그아웃 하시겠습니까?`)) {
+      let message = "로그아웃 되었습니다.";
       try {
-        const response = await axios.post(
+        const res = await axios.post(
           `${serverUrl}/api/auth/logout`,
           {},
           { withCredentials: true }
         );
+        if (res?.data?.message) message = res.data.message;
+      } catch (e) {
+        // 서버 오류여도 클라이언트 토큰은 제거
+      } finally {
+        localStorage.removeItem("token");
         nav("/login");
-        alert(response.data.message);
-      } catch (error) {
-        nav("/club");
-        window.location.reload();
-        console.log(error.response.data.message);
+        alert(message);
       }
     }
   };

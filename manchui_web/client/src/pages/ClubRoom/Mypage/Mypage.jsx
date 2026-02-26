@@ -39,6 +39,7 @@ const Mypage = () => {
           {},
           { withCredentials: true }
         );
+        localStorage.removeItem("token");
         alert(response.data.message);
         nav("/club");
         setIsLogin(false);

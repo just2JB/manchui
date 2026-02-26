@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const getToken = require("../utils/getToken");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -57,7 +58,8 @@ router.post("/login", async (req, res) => {
     const userWithoutPassword = user.toObject();
     delete userWithoutPassword.password;
 
-    res.json({ user: userWithoutPassword });
+    // iOS Safari 등 크로스 사이트 쿠키 미지원 시 클라이언트가 localStorage + Authorization 헤더 사용
+    res.json({ user: userWithoutPassword, token });
   } catch (error) {
     console.log("서버 오류:", error.message);
     res.status(501).json({ message: "서버 오류가 발생했습니다." });
@@ -65,7 +67,7 @@ router.post("/login", async (req, res) => {
 });
 router.post("/logout", async (req, res) => {
   try {
-    const token = req.cookies.token;
+    const token = getToken(req);
     if (!token) {
       return res.status(400).json({ message: "이미 로그아웃된 상태입니다." });
     }
@@ -100,7 +102,7 @@ router.delete("/delete/:userId", async (req, res) => {
   }
 });
 router.post("/verify-token", async (req, res) => {
-  const token = req.cookies.token;
+  const token = getToken(req);
   if (!token) {
     return res.status(401).json({ isVaild: false, message: "토큰이 없습니다" });
   }

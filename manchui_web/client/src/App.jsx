@@ -15,7 +15,6 @@ import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import MainPage from "./pages/MainPage/MainPage";
-import About from "./pages/About/About";
 import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
@@ -307,7 +306,6 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <MainPage /> },
-      { path: "/about", element: <About /> },
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },

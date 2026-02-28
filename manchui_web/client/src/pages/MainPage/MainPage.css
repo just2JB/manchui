@@ -1,39 +1,240 @@
-.main-page {
+/* ---------- Landing Page ---------- */
+.landing-page {
   width: 100%;
-  height: 2000px;
+  min-height: 100vh;
   background-color: var(--background-dark);
 }
-.background {
+
+/* ---------- Hero ---------- */
+.landing-hero {
+  position: relative;
   width: 100%;
+  min-height: 100vh;
   display: flex;
+  align-items: center;
   justify-content: center;
-}
-.liquid {
-  width: 100%;
-}
-.cover {
-  position: absolute;
-  top: 0px;
-  width: 100vw;
-  height: 1000px;
-  background: linear-gradient(#00000088, var(--background-dark));
-  z-index: 20;
+  background-color: var(--background-dark);
 }
 
-.main-content {
-  position: absolute;
+.landing-hero-content {
+  position: relative;
+  padding: 2rem;
+  text-align: center;
+}
+
+.landing-hero-typo {
   display: flex;
-  justify-content: space-around;
-  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2em;
+}
+
+.landing-hero-line {
+  font-size: clamp(2rem, 6vw, 4rem);
+  font-weight: 600;
+  letter-spacing: 0.04em;
   color: var(--text-primary);
-  top: 65px;
-  z-index: 30;
+  line-height: 1.2;
+  margin: 0;
+  text-shadow: 0 0 40px rgba(255, 255, 255, 0.06);
 }
-@media screen and (min-width: 767px) {
-  .liquid {
-    width: 72%;
-  }
-  .cover {
-    background: radial-gradient(#0000002c, var(--background-dark) 50%);
+
+@media (min-width: 768px) {
+  .landing-hero-line {
+    font-size: clamp(2.5rem, 5vw, 4.5rem);
+    letter-spacing: 0.06em;
   }
 }
+
+.landing-hero-manchui {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 700;
+  letter-spacing: 0.2em;
+}
+
+@media (min-width: 768px) {
+  .landing-hero-manchui {
+    font-size: clamp(3rem, 7vw, 5.5rem);
+    letter-spacing: 0.25em;
+  }
+}
+
+/* ---------- Section common ---------- */
+.landing-about,
+.landing-awards,
+.landing-projects {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(4rem, 10vw, 6rem) 1.5rem;
+}
+
+.landing-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-gray);
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+/* ---------- About ---------- */
+.landing-about-title {
+  font-size: clamp(1.5rem, 3vw, 1.85rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.25rem;
+  line-height: 1.4;
+}
+
+.landing-about-text {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text-gray);
+}
+
+/* ---------- Awards ---------- */
+.landing-awards-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 640px) {
+  .landing-awards-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.landing-awards-year {
+  padding: 1.25rem;
+  background: var(--box-1);
+  border-radius: 8px;
+}
+
+.landing-awards-year-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--box-3);
+}
+
+.landing-awards-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.landing-awards-list li {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-gray);
+  padding: 0.2em 0;
+}
+
+/* ---------- Projects (marquee) ---------- */
+.landing-projects {
+  padding-bottom: 4rem;
+}
+
+.landing-projects-title {
+  padding-left: 1.5rem;
+}
+
+.landing-marquee-wrap {
+  overflow: hidden;
+  padding: 0.5rem 0;
+}
+
+.landing-marquee {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  will-change: transform;
+}
+
+.landing-project-card {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 10px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.landing-project-card:hover {
+  background: var(--box-2);
+  border-color: var(--primary-300);
+}
+
+.landing-project-card-title {
+  font-weight: 500;
+}
+
+.landing-project-card-arrow {
+  opacity: 0.6;
+  font-size: 0.9em;
+}
+
+/* Project modal */
+.landing-project-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+  backdrop-filter: blur(4px);
+}
+
+.landing-project-modal {
+  max-width: 420px;
+  width: 100%;
+  padding: 1.75rem;
+  background: var(--box-1);
+  border: 1px solid var(--box-3);
+  border-radius: 12px;
+}
+
+.landing-project-modal h3 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.landing-project-modal p {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--text-gray);
+  margin-bottom: 1.25rem;
+}
+
+.landing-project-modal-close {
+  width: 100%;
+  padding: 0.65rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  background: var(--box-2);
+  border: 1px solid var(--box-3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.landing-project-modal-close:hover {
+  background: var(--box-3);
+}
+

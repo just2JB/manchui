@@ -47,23 +47,27 @@
 .link {
   text-decoration: none;
   color: var(--text-more);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 400;
+  transition-duration: 0.3s;
 }
 .link:hover {
   color: var(--brand-red);
 }
 .loginButtonBox {
   flex: 1;
-  justify-items: end;
+  display: flex;
+  justify-content: end;
 }
 .loginButton {
   background-color: var(--brand-red);
   color: var(--text-primary);
-  padding: 5px 10px;
+  padding: 5px 20px;
   height: min-content;
   width: fit-content;
-  border-radius: 6px;
+  border: none;
+  border-radius: 3px;
+  transition-duration: 0.3s;
 }
 .loginButton:hover {
   background-color: var(--accent-200);

@@ -18,6 +18,7 @@ import MainPage from "./pages/MainPage/MainPage";
 import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
+import Contact from "./pages/Contact/Contact";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
@@ -39,6 +40,7 @@ import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
 import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
+import NotFound from "./pages/NotFound/NotFound";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -311,7 +313,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <MainPage /> },
-
+      { path: "/contact", element: <Contact /> },
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },
@@ -360,6 +362,7 @@ const router = createBrowserRouter([
       { path: "setting", element: <AdminSetting /> },
     ],
   },
+  { path: "*", element: <NotFound /> },
 ]);
 
 function App() {

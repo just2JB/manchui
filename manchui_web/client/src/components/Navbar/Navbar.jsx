@@ -7,6 +7,7 @@ import "./Navbar.css";
 const ALL_PAGES = [
   { name: "홈", path: "/" },
   { name: "가입", path: "/join" },
+  { name: "문의", path: "/contact" },
   { name: "굿즈", path: "/goods" },
 ];
 /** siteRestricted일 때는 가입만 표시 */
@@ -67,9 +68,9 @@ const Navbar = ({ siteRestricted = false }) => {
             ))}
           </div>
           <div className="loginButtonBox">
-            <div className="loginButton" onClick={() => nav("/login")}>
+            <button className="loginButton" onClick={() => nav("/login")}>
               로그인
-            </div>
+            </button>
           </div>
         </div>
       </div>

@@ -15,7 +15,6 @@ import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import MainPage from "./pages/MainPage/MainPage";
-import About from "./pages/About/About";
 import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
@@ -47,7 +46,9 @@ function PreparingPage() {
   return (
     <div className="preparingPage">
       <p className="preparingMessage">현재 준비중입니다.</p>
-      <Link to="/join" className="preparingLink">가입하러 가기</Link>
+      <Link to="/join" className="preparingLink">
+        가입하러 가기
+      </Link>
     </div>
   );
 }
@@ -160,7 +161,9 @@ function Layout() {
       .finally(() => setJoinConfigLoading(false));
   }, []);
 
-  const isJoinPath = JOIN_PATHS.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
+  const isJoinPath = JOIN_PATHS.some(
+    (p) => location.pathname === p || location.pathname.startsWith(p + "/"),
+  );
   const showPreparing = joinConfig.siteRestricted && !isJoinPath;
 
   return (
@@ -252,7 +255,7 @@ function LoginRoute() {
         formData,
       );
       if (response.status === 201) {
-        alert("계정 생성이 성공 되었습니다.");
+        alert("계정이 성공적으로 생성되었습니다.");
         setFormData({ email: formData.email, password: "" });
         nav("/login/login-email");
       }
@@ -280,7 +283,8 @@ function LoginRoute() {
       }
       return alert(response.data.message);
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || "로그인에 실패했습니다.";
+      const msg =
+        err.response?.data?.message || err.message || "로그인에 실패했습니다.";
       alert(msg);
     }
   };
@@ -307,7 +311,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <MainPage /> },
-      { path: "/about", element: <About /> },
+
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },

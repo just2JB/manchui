@@ -3,6 +3,13 @@ import "./Footer.css";
 import { IoLogoInstagram, IoLogoYoutube } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
+let footerData = {
+  youtubeLink: "https://www.youtube.com/@manchui10007",
+  instargramLink: "https://www.instagram.com/maaaaaaanchui/",
+  location:
+    "경기도 안산시 상록구 한양대학로55 한양대학교 ERICA캠퍼스 학생복지관 422호",
+};
+
 const Footer = () => {
   return (
     <>
@@ -12,36 +19,21 @@ const Footer = () => {
         <div className="footer">
           <div className="link-div">
             <div>
-              <a
-                href="https://www.instagram.com/maaaaaaanchui/"
-                target="_blank"
-              >
+              <a href={footerData.youtubeLink} target="_blank">
                 <IoLogoInstagram size={20} />
               </a>
-              <a href="https://www.youtube.com/@manchui10007" target="-blank">
+              <a href={footerData.instargramLink} target="-blank">
                 <IoLogoYoutube size={20} />
               </a>
             </div>
-            <Link>가입 하기</Link>
           </div>
           <div className="info">
-            <p>
-              Dance Crew. <span className="span-red">MANCHUI</span>
-            </p>
-            <p>
-              경기도 안산시 상록구 한양대학로 55<br></br> 한양대학교 ERICA캠퍼스
-              학생복지관 422호
-            </p>
+            <p>{footerData.location}</p>
           </div>
-          <div className="footer-logo">
-            <a className="logo" href="/">
-              <img
-                src="/logos/shortLogo.png"
-                alt="Logo"
-                className="short-logo"
-              />
-            </a>
-            <p className="reserved">ⓒ 2025 MANCHUI. All rights reserved.</p>
+          <div className="reservedDiv">
+            <p className="reserved">
+              ⓒ 2025-{new Date().getFullYear()} MANCHUI. All rights reserved.
+            </p>
           </div>
         </div>
       )}

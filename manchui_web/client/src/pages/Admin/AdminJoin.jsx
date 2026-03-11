@@ -47,33 +47,45 @@ const isValidPhone = (contact) => {
   return /^01[0-9]/.test(digits);
 };
 
-/** 구글 연락처 불러오기용 CSV 생성 (UTF-8 BOM), 이름 앞에 "N기" 붙임 */
+/** 구글 연락처 가져오기 템플릿 형식 (Phone - Label / Phone - Value 사용 시 전화번호 필드에 정상 매핑됨) */
 const buildContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = [
     "Name",
     "Given Name",
     "Family Name",
-    "Phone 1 - Value",
-    "Phone 1 - Type",
+    "Phone - Label",
+    "Phone - Value",
     "Notes",
   ];
   const genLabel = generation != null ? `${generation}기` : "";
   const rows = list.map((d) => {
     const rawName = (d.name || "").trim();
     const name = genLabel ? `${genLabel} ${rawName}` : rawName;
-    const contact = d.contact || "";
+    const contact = normalizePhoneForGoogle(d.contact || "");
     const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
     return [
       escapeCsvField(name),
       escapeCsvField(rawName.slice(1)),
       escapeCsvField(rawName.slice(0, 1)),
-      escapeCsvField(contact),
       "Mobile",
+      escapeCsvField(contact),
       escapeCsvField(notes),
     ].join(",");
   });
   return BOM + [headers.join(","), ...rows].join("\r\n");
+};
+
+/** 구글 연락처 인식용 전화번호 형식 (+82 10-XXXX-XXXX 등) */
+const normalizePhoneForGoogle = (contact) => {
+  const digits = String(contact || "").replace(/\D/g, "");
+  if (digits.length < 10) return contact;
+  if (digits.startsWith("01")) {
+    const rest = digits.slice(1);
+    const formatted = rest.replace(/^(\d{2})(\d{4})(\d{4})$/, "$1-$2-$3");
+    return formatted ? "+82 " + formatted : contact;
+  }
+  return contact;
 };
 
 const downloadCsv = (content, filename) => {

@@ -39,7 +39,15 @@ const escapeCsvField = (val) => {
   return s;
 };
 
-/** 구글 연락처 불러오기용 CSV 생성 (UTF-8 BOM) */
+/** 전화번호 형식 여부 (숫자만 10~11자리, 01x로 시작) */
+const isValidPhone = (contact) => {
+  if (!contact || typeof contact !== "string") return false;
+  const digits = contact.replace(/\D/g, "");
+  if (digits.length < 10 || digits.length > 11) return false;
+  return /^01[0-9]/.test(digits);
+};
+
+/** 구글 연락처 불러오기용 CSV 생성 (UTF-8 BOM), 이름 앞에 "N기" 붙임 */
 const buildContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = [
@@ -50,14 +58,16 @@ const buildContactsCsv = (list, generation) => {
     "Phone 1 - Type",
     "Notes",
   ];
+  const genLabel = generation != null ? `${generation}기` : "";
   const rows = list.map((d) => {
-    const name = d.name || "";
+    const rawName = (d.name || "").trim();
+    const name = genLabel ? `${genLabel} ${rawName}` : rawName;
     const contact = d.contact || "";
     const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
     return [
       escapeCsvField(name),
-      escapeCsvField(name.slice(1)),
-      escapeCsvField(name.slice(0, 1)),
+      escapeCsvField(rawName.slice(1)),
+      escapeCsvField(rawName.slice(0, 1)),
       escapeCsvField(contact),
       "Mobile",
       escapeCsvField(notes),
@@ -185,12 +195,31 @@ const AdminJoin = () => {
       manchuiModal("내보낼 연락처가 없습니다.");
       return;
     }
-    const csv = buildContactsCsv(sortedList, currentGeneration);
-    const filename = `만취_${currentGeneration}기_연락처_${new Date().toISOString().slice(0, 10)}.csv`;
-    downloadCsv(csv, filename);
-    manchuiModal(
-      `연락처 ${sortedList.length}명이 CSV로 저장되었습니다. 구글 연락처에서 '가져오기'로 불러올 수 있습니다.`,
-    );
+    const validPhoneList = sortedList.filter((d) => isValidPhone(d.contact));
+    const invalidPhoneList = sortedList.filter((d) => !isValidPhone(d.contact));
+    const dateStr = new Date().toISOString().slice(0, 10);
+
+    if (validPhoneList.length > 0) {
+      const csv = buildContactsCsv(validPhoneList, currentGeneration);
+      downloadCsv(csv, `만취_${currentGeneration}기_연락처_${dateStr}.csv`);
+    }
+    if (invalidPhoneList.length > 0) {
+      const csvInvalid = buildContactsCsv(invalidPhoneList, currentGeneration);
+      downloadCsv(
+        csvInvalid,
+        `만취_${currentGeneration}기_연락처_전화번호형식아님_${dateStr}.csv`,
+      );
+    }
+
+    let msg = "";
+    if (validPhoneList.length > 0) {
+      msg += `연락처 ${validPhoneList.length}명이 CSV로 저장되었습니다. 구글 연락처에서 '가져오기'로 불러올 수 있습니다.`;
+    }
+    if (invalidPhoneList.length > 0) {
+      if (msg) msg += "\n\n";
+      msg += `전화번호 형식이 아닌 연락처 ${invalidPhoneList.length}명은 별도 CSV 파일로 저장되었습니다.`;
+    }
+    manchuiModal(msg);
   };
 
   const baseList = useMemo(

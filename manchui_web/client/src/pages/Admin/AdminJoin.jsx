@@ -47,36 +47,76 @@ const isValidPhone = (contact) => {
   return /^01[0-9]/.test(digits);
 };
 
-/** 구글 연락처 가져오기 템플릿 형식 (Phone - Label / Phone - Value 사용 시 전화번호 필드에 정상 매핑됨) */
+/**
+ * 구글 연락처 내보내기와 동일한 CSV 구조 (컬럼 순서·이름 일치해야 가져오기 시 전화번호 필드에 매핑됨)
+ * @see https://support.google.com/contacts/answer/7199294
+ */
 const buildContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = [
     "Name",
     "Given Name",
+    "Additional Name",
     "Family Name",
-    "Phone - Label",
-    "Phone - Value",
+    "Yomi Name",
+    "Given Name Yomi",
+    "Additional Name Yomi",
+    "Family Name Yomi",
+    "Name Prefix",
+    "Name Suffix",
+    "Initials",
+    "Nickname",
+    "Short Name",
+    "Maiden Name",
+    "Birthday",
+    "Gender",
+    "Location",
+    "Billing Information",
+    "Directory Server",
+    "Mileage",
+    "Occupation",
+    "Hobby",
+    "Sensitivity",
+    "Priority",
+    "Subject",
     "Notes",
+    "Group Membership",
+    "E-mail 1 - Type",
+    "E-mail 1 - Value",
+    "E-mail 2 - Type",
+    "E-mail 2 - Value",
+    "Phone 1 - Type",
+    "Phone 1 - Value",
   ];
-  const genLabel = generation != null ? `${generation}기` : "";
+  const genLabel = generation != null ? `${generation}기가두모집` : "";
+  const empty = (n) => Array(n).fill("").map(escapeCsvField).join(",");
+
   const rows = list.map((d) => {
     const rawName = (d.name || "").trim();
     const name = genLabel ? `${genLabel} ${rawName}` : rawName;
+    const given = rawName.slice(1) || "";
+    const family = rawName.slice(0, 1) || "";
     const contact = normalizePhoneForGoogle(d.contact || "");
     const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
     return [
       escapeCsvField(name),
-      escapeCsvField(rawName.slice(1)),
-      escapeCsvField(rawName.slice(0, 1)),
+      escapeCsvField(given),
+      "",
+      escapeCsvField(family),
+      empty(9),
+      empty(9),
+      escapeCsvField(notes),
+      "",
+      empty(4),
       "Mobile",
       escapeCsvField(contact),
-      escapeCsvField(notes),
     ].join(",");
   });
+
   return BOM + [headers.join(","), ...rows].join("\r\n");
 };
 
-/** 구글 연락처 인식용 전화번호 형식 (+82 10-XXXX-XXXX 등) */
+/** 구글 연락처용 전화번호 (숫자만 또는 +82 형식) */
 const normalizePhoneForGoogle = (contact) => {
   const digits = String(contact || "").replace(/\D/g, "");
   if (digits.length < 10) return contact;

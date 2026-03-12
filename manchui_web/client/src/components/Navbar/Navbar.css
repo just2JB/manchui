@@ -1,161 +1,240 @@
 .navbar-top {
   position: fixed;
-  display: flex;
   top: 0px;
   left: 0px;
   width: 100%;
-  height: 60px;
+  height: 90px;
   align-items: center;
-  justify-content: space-between;
-  background-color: #ba000000;
+  background-color: transparent;
   z-index: 50;
   user-select: none;
   transition-duration: 0.3s;
 }
-.navbar-left {
-  flex: 1;
-  min-width: 0;
-}
-.navbar-right {
-  flex: 1;
-  min-width: 0;
+.desktop {
   display: flex;
+  height: 100%;
+  justify-content: space-between;
   align-items: center;
-  justify-content: flex-end;
-  margin-right: 50px;
-}
-.navbar-bottom {
-  position: fixed;
-  top: 60px;
-  height: 3px;
-  width: 100%;
-  background: linear-gradient(var(--brand-red), #00000000);
-  z-index: 50;
+  margin: 0px 11%;
+  border-bottom: 1px solid #12121250;
 }
 
-.navbar-top .logo {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 51;
+.logoBox {
+  flex: 1;
 }
-.manchui-logo {
-  display: inline-block;
-  width: auto;
+.shortLogo {
   height: 50px;
-  z-index: 50;
+  width: fit-content;
+  transition-duration: 0.3s;
 }
-.page-list-ul {
+.shortLogo:hover {
+  height: 54px;
+  transform: translateX(-2px);
+}
+.menuLogo {
+  height: 100%;
+}
+.menu {
+  flex: 1;
+  height: 100%;
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-right: 0;
+  justify-content: space-around;
+}
+.linkBox {
+  height: 100%;
+  text-align: center;
+  align-content: center;
 }
 .link {
-  color: var(--text-primary);
   text-decoration: none;
-  font-size: large;
-  font-weight: 200;
-  width: max-content;
+  color: var(--text-more);
+  font-size: 15px;
+  font-weight: 400;
+  transition-duration: 0.3s;
 }
 .link:hover {
-  transition-duration: 0.5s;
-  color: var(--text-gray);
+  color: var(--brand-red);
 }
-.pop-button {
-  visibility: hidden;
-  position: absolute;
-  margin-right: 5%;
-  right: 0px;
-  color: var(--text-gray);
-  transition-property: transform;
-  transition-duration: 0.3s;
-}
-.rotate {
-  transform: rotate(180deg);
-}
-.rotate2 {
-  transition-duration: 0.6s;
-  transform: rotate(360deg);
-}
-.pop-bar {
-  transition-duration: 0.3s;
-  visibility: hidden;
-  position: absolute;
-  left: 0;
-  width: 100%;
-  top: -500px;
-  text-align: center;
-  z-index: 10;
-}
-
-.pop-page-list-ul {
-  background: linear-gradient(
-    90deg,
-    #0000005d,
-    var(--background-dark),
-    #0000005d
-  );
+.loginButtonBox {
+  flex: 1;
   display: flex;
-  flex-direction: column;
-  padding-top: 5px;
+  justify-content: end;
 }
-.pop-page-list-ul .link {
-  font-size: 17px;
-  height: 50px;
-  border-bottom: 1px solid #000000d5;
-  align-content: center;
-  width: auto;
+.loginButton {
+  background-color: var(--brand-red);
+  color: var(--text-primary);
+  padding: 5px 20px;
+  height: min-content;
+  width: fit-content;
+  border: none;
+  border-radius: 3px;
+  transition-duration: 0.3s;
 }
-.pop-back {
-  width: 100%;
-  height: 100vh;
+.loginButton:hover {
+  background-color: var(--accent-200);
 }
 
-a {
+.navbar-top .mobile {
+  visibility: hidden;
+  height: 0px;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-2px);
+  align-items: center;
+  padding: 0px 10px;
+}
+.navbar-top .mobile > div {
+  flex: 1;
+}
+.navbar-top .logo_long {
+  height: 50px;
+}
+.navbar-top .menu_btn {
+  text-align: end;
   color: var(--text-primary);
 }
+.mobileMenu {
+  position: fixed;
+  left: 0px;
+  top: 100vh;
+  height: 100vh;
+  width: 100vw;
+  transition-duration: 0.3s;
+}
+.menuOn {
+  top: 0px;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+}
+.mobileMenu {
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(#121212 8%, var(--brand-red));
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+  visibility: hidden;
+}
+
+.wave {
+  opacity: 0.4;
+  position: absolute;
+  top: -10%;
+  left: 50%;
+  background-color: var(--background-dark);
+  width: 150vw;
+  height: 150vw;
+  margin-left: -75vw;
+  margin-top: -75vw;
+  transform-origin: 50% 48%;
+  border-radius: 43%;
+  animation: drift 3000ms infinite linear;
+}
+
+.wave.-three {
+  animation: drift 5000ms infinite linear;
+}
+
+.wave.-two {
+  animation: drift 7000ms infinite linear;
+  opacity: 0.1;
+  background: var(--background-dark);
+}
+
+.menuContents {
+  position: absolute;
+  left: 0;
+  top: 51vw;
+  width: 100%;
+  z-index: 1;
+  height: 300px;
+  text-align: center;
+  transform: translate3d(0, 0, 0);
+  color: white;
+}
+.navbar-top .closeMenu {
+  position: absolute;
+  left: calc(50% - 25px);
+  top: 70%;
+  background-color: var(--box-1);
+  border-radius: 50px;
+  width: 50px;
+  height: 50px;
+  color: var(--text-primary);
+  text-align: center;
+  align-content: center;
+}
+.floatButtons {
+  display: flex;
+  width: 100%;
+  justify-content: space-around;
+}
+.mobileLinkBox {
+  position: relative;
+  justify-items: center;
+}
+.mobileLinkButton {
+  position: absolute;
+  color: var(--text-primary);
+  width: max-content;
+  padding: 5px 20px;
+  border-radius: 10px;
+}
+.mobileLinkButton .link {
+  font-weight: 400;
+  font-size: 17px;
+}
+.float0 {
+  animation: floatButton 950ms infinite linear;
+}
+.float1 {
+  animation: floatButton 920ms infinite linear;
+}
+.float2 {
+  animation: floatButton 970ms infinite linear;
+}
+.float3 {
+  animation: floatButton 900ms infinite linear;
+}
+.float4 {
+  animation: floatButton 960ms infinite linear;
+}
+.float5 {
+  animation: floatButton 900ms infinite linear;
+}
+.float6 {
+  animation: floatButton 700ms infinite linear;
+}
+
+@keyframes drift {
+  from {
+    transform: rotate(0deg);
+  }
+  from {
+    transform: rotate(360deg);
+  }
+}
+@keyframes floatButton {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
 @media screen and (max-width: 767px) {
-  /** Mobile & Tablet  */
-  .navbar-right {
-    margin-right: 5%;
-  }
-  .page-list-ul {
+  .navbar-top .desktop {
     visibility: hidden;
+    height: 0px;
   }
-  .pop-button {
+  .navbar-top .mobile {
     visibility: visible;
+    height: 60px;
   }
-  .navbar .manchui-logo {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    left: 50%;
-    top: 50%;
-    width: auto;
-    height: 50px;
-  }
-  /** 드롭다운: 뷰포트 기준 전체 너비, 상단 바 바로 아래에 연결 */
-  .pop-bar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 45;
-  }
-  .pop-open {
+  .mobileMenu {
     visibility: visible;
-    top: 60px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  }
-  .pop-page-list-ul {
-    background: var(--background-dark);
-    padding-top: 0;
-  }
-  .pop-page-list-ul .link {
-    padding-left: 20px;
-    padding-right: 20px;
-    justify-content: center;
-    display: flex;
-    align-items: center;
   }
 }

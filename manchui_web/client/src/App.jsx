@@ -15,10 +15,10 @@ import axios from "axios";
 import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import MainPage from "./pages/MainPage/MainPage";
-import About from "./pages/About/About";
 import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
+import Contact from "./pages/Contact/Contact";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
@@ -40,6 +40,7 @@ import LoginFormEmail from "./pages/ClubRoom/AuthWindow/LoginFormEmail";
 import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
+import NotFound from "./pages/NotFound/NotFound";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -47,7 +48,9 @@ function PreparingPage() {
   return (
     <div className="preparingPage">
       <p className="preparingMessage">현재 준비중입니다.</p>
-      <Link to="/join" className="preparingLink">가입하러 가기</Link>
+      <Link to="/join" className="preparingLink">
+        가입하러 가기
+      </Link>
     </div>
   );
 }
@@ -168,7 +171,9 @@ function Layout() {
       .finally(() => setJoinConfigLoading(false));
   }, []);
 
-  const isJoinPath = JOIN_PATHS.some((p) => location.pathname === p || location.pathname.startsWith(p + "/"));
+  const isJoinPath = JOIN_PATHS.some(
+    (p) => location.pathname === p || location.pathname.startsWith(p + "/"),
+  );
   const showPreparing = joinConfig.siteRestricted && !isJoinPath;
 
   return (
@@ -260,7 +265,7 @@ function LoginRoute() {
         formData,
       );
       if (response.status === 201) {
-        alert("계정 생성이 성공 되었습니다.");
+        alert("계정이 성공적으로 생성되었습니다.");
         setFormData({ email: formData.email, password: "" });
         nav("/login/login-email");
       }
@@ -288,7 +293,8 @@ function LoginRoute() {
       }
       return alert(response.data.message);
     } catch (err) {
-      const msg = err.response?.data?.message || err.message || "로그인에 실패했습니다.";
+      const msg =
+        err.response?.data?.message || err.message || "로그인에 실패했습니다.";
       alert(msg);
     }
   };
@@ -315,7 +321,7 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <MainPage /> },
-      { path: "/about", element: <About /> },
+      { path: "/contact", element: <Contact /> },
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },
@@ -364,6 +370,7 @@ const router = createBrowserRouter([
       { path: "setting", element: <AdminSetting /> },
     ],
   },
+  { path: "*", element: <NotFound /> },
 ]);
 
 function App() {

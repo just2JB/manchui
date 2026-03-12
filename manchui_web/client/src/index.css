@@ -25,10 +25,15 @@ body {
   --primary-200: #333333;
   --primary-300: #8f8f8f;
   --text-primary: #ffffff;
-  --text-gray: #888888;
+  --text-gray: #e0e0e0;
+  --text-more: #888888;
   --brand-red: #b30000;
   --complete-green: #00ffc8;
   --accent-200: #ff4444;
   --request-1: #b30000;
   --cold-gray: #3f4455;
+}
+::selection {
+  background-color: var(--accent-200); /* 드래그 배경색 */
+  color: var(--text-primary); /* 드래그 글자색 */
 }

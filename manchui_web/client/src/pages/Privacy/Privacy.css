@@ -1,0 +1,98 @@
+.privacy-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--background-dark);
+  padding: 2rem 1rem 4rem;
+  box-sizing: border-box;
+}
+
+.privacy-container {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.privacy-title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.privacy-updated {
+  font-size: 0.875rem;
+  color: var(--text-more);
+  margin: 0 0 2.5rem;
+}
+
+.privacy-section {
+  margin-bottom: 2rem;
+}
+
+.privacy-section h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.privacy-section p,
+.privacy-section li {
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--text-gray);
+  margin: 0 0 0.5rem;
+}
+
+.privacy-section ul {
+  margin: 0.5rem 0 0 1.25rem;
+  padding: 0;
+}
+
+.privacy-section li {
+  margin-bottom: 0.5rem;
+}
+
+.privacy-section a {
+  color: var(--accent-200);
+  text-decoration: underline;
+}
+
+.privacy-section a:hover {
+  color: var(--text-primary);
+}
+
+.privacy-back {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.privacy-back-link {
+  font-size: 0.9375rem;
+  color: var(--text-more);
+  text-decoration: none;
+}
+
+.privacy-back-link:hover {
+  color: var(--accent-200);
+}
+
+@media screen and (max-width: 767px) {
+  .privacy-page {
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .privacy-title {
+    font-size: 1.5rem;
+  }
+
+  .privacy-section h2 {
+    font-size: 1rem;
+  }
+
+  .privacy-section p,
+  .privacy-section li {
+    font-size: 0.875rem;
+  }
+}

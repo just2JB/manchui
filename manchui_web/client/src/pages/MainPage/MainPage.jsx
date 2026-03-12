@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
 import "./MainPage.css";
 
 const COPY_LINES = ["by chance,", "however you dance,", "forever"];
@@ -9,8 +13,87 @@ const BLANK_AFTER_TYPING_MS = 2200;
 const CONTENT_AFTER_BLANK_MS = 500;
 const CONTENT_STAGGER = 0.2;
 
+const SESSION_ITEMS = [
+  {
+    id: "challenge",
+    title: "만취 챌린지",
+    description: "정기적으로 진행하는 만취만의 챌린지 활동을 소개합니다.",
+  },
+  {
+    id: "popup",
+    title: "팝업 클래스",
+    description: "다양한 장르의 팝업 클래스를 통해 실력을 쌓고 교류합니다.",
+  },
+  {
+    id: "festival",
+    title: "축제",
+    description: "봄·가을 축제 및 끼페스티벌 등 학교 행사에 참여합니다.",
+  },
+  {
+    id: "performance",
+    title: "외부 공연",
+    description: "안산 유니온 페스타 등 외부 공연 및 대회에 나갑니다.",
+  },
+  {
+    id: "community",
+    title: "친목 활동",
+    description: "MT, 회식 등 동아리원 간 친목을 다지는 시간입니다.",
+  },
+];
+
+const AWARDS_YEARS = [
+  {
+    year: "2023",
+    items: [
+      "봄축제 'ESPERO : PANG!' 끼페스티벌 4위 장려상",
+      "가을축제 'DDING-DONG' 동아리 공연 'HYLIGHT' 1위 대상",
+      "제1회 안산 유니온 페스타 에리카 댄스 대표",
+      "제1회 안산 유니온 페스타 1위 대상",
+    ],
+  },
+  {
+    year: "2024",
+    items: [
+      "봄축제 'ESPERO : BEAT' 끼페스티벌 'HEART:BEAT' 2위 우수상",
+      "가을축제 'HYRICA : FALL:ING' 동아리 공연 1위 대상",
+      "제2회 안산 유니온 페스타 에리카 댄스 대표",
+      "제2회 안산 유니온 페스타 1위 대상",
+    ],
+  },
+  {
+    year: "2025",
+    items: [
+      "가을축제 'ESPERO : STAGE:0' 끼페스티벌 2위 우수상",
+      "제3회 안산 유니온 페스타 에리카 댄스 대표",
+      "제3회 안산 유니온 페스타 1위 대상",
+      "BUZZ ON: Trigger Point 개최",
+      "Monster Korea, Homura Film와 협업",
+    ],
+  },
+];
+
+const QNA_ITEMS = [
+  {
+    q: "가입 오디션이 있나요?",
+    a: "만취는 가입 오디션이 없이, 누구나 춤에 대한 관심만 있다면 참여할 수 있는 동아리입니다.",
+  },
+  {
+    q: "정기적인 연습 날짜가 정해져 있나요?",
+    a: "정해져 있지 않습니다! 공연 스케줄이 생긴다면 참여하는 사람들의 스케줄을 고려하여 팀 내에서 자율적으로 일정을 정합니다.",
+  },
+  {
+    q: "가입하면 모든 활동에 참여해야 하나요?",
+    a: "원하는 활동만 참여하셔도 됩니다! 자신이 할 수 있는 만큼 참여하면 되고, 바쁘시면 안 하셔도 괜찮습니다. 부원들의 의견을 존중하기 때문에 강요하지 않아요 :)",
+  },
+  {
+    q: "춤을 처음 추는데 가입해도 잘 활동할 수 있을까요?",
+    a: "네, 문제 없습니다! 춤을 처음 추더라도 쉽게 참여할 수 있는 챌린지나 클래스 활동이 있고, 큰 무대를 준비하더라도 알려 드리면서 진행하기 때문에 처음이셔도 전혀 문제 없습니다!",
+  },
+];
+
 const MainPage = () => {
   const [phase, setPhase] = useState("typing");
+  const [sessionIndex, setSessionIndex] = useState(0);
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -137,6 +220,9 @@ const MainPage = () => {
                 <button
                   type="button"
                   className="copy-header-btn copy-header-btn--secondary"
+                  onClick={() =>
+                    document.getElementById("session")?.scrollIntoView({ behavior: "smooth" })
+                  }
                 >
                   활동 보기
                 </button>
@@ -257,8 +343,8 @@ const MainPage = () => {
             </p>
             <p className="about-p">
               힙합을 베이스로, K-pop, 걸리쉬, 여러 댄서들의 코레오, 왁킹, 락킹,
-              팝핀, 보깅까지! <span className="about-accent">다양한 장르</span>의
-              스트릿댄스를 도전해오고 있습니다.
+              팝핀, 보깅까지! <span className="about-accent">다양한 장르</span>
+              의 스트릿댄스를 도전해오고 있습니다.
             </p>
             <p className="about-p">
               춤에 대한 열정만 있다면{" "}
@@ -345,54 +431,133 @@ const MainPage = () => {
           </div>
         </div>
       </section>
+      <section className="session" id="session">
+        <h2 className="session-heading">주요 활동</h2>
+        <div className="session-menu">
+          {SESSION_ITEMS.map((item, i) => (
+            <button
+              key={item.id}
+              type="button"
+              className={`session-menu-btn ${i === sessionIndex ? "session-menu-btn--active" : ""}`}
+              onClick={() => setSessionIndex(i)}
+            >
+              {item.title}
+            </button>
+          ))}
+        </div>
+        <div className="session-content-wrap">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={sessionIndex}
+              className="session-content"
+              initial={{ y: 40, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -40, opacity: 0 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className="session-image-placeholder">
+                <span className="session-image-placeholder-text">
+                  사진 영역
+                </span>
+                <span className="session-image-placeholder-sub">
+                  (이미지 추후 첨부)
+                </span>
+              </div>
+              <p className="session-desc">
+                {SESSION_ITEMS[sessionIndex].description}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      </section>
       <section className="awards" id="awards">
-        <h2 className="awards-title">Archive</h2>
-        <div className="awards-scroll">
-          <div className="awards-track">
-            <article className="awards-year">
-              <h3 className="awards-year-title">2023</h3>
-              <ul className="awards-list">
-                <li>봄축제 &apos;ESPERO : PANG!&apos; 끼페스티벌 4위 장려상</li>
-                <li>
-                  가을축제 &apos;DDING-DONG&apos; 동아리 공연
-                  &apos;HYLIGHT&apos; 1위 대상
-                </li>
-                <li>제1회 안산 유니온 페스타 에리카 댄스 대표</li>
-                <li>제1회 안산 유니온 페스타 1위 대상</li>
-              </ul>
-            </article>
-            <article className="awards-year">
-              <h3 className="awards-year-title">2024</h3>
-              <ul className="awards-list">
-                <li>
-                  봄축제 &apos;ESPERO : BEAT&apos; 끼페스티벌
-                  &apos;HEART:BEAT&apos; 2위 우수상
-                </li>
-                <li>
-                  가을축제 &apos;HYRICA : FALL:ING&apos; 동아리 공연 1위 대상
-                </li>
-                <li>제2회 안산 유니온 페스타 에리카 댄스 대표</li>
-                <li>제2회 안산 유니온 페스타 1위 대상</li>
-              </ul>
-            </article>
-            <article className="awards-year">
-              <h3 className="awards-year-title">2025</h3>
-              <ul className="awards-list">
-                <li>
-                  가을축제 &apos;ESPERO : STAGE:0&apos; 끼페스티벌 2위 우수상
-                </li>
-                <li>제3회 안산 유니온 페스타 에리카 댄스 대표</li>
-                <li>제3회 안산 유니온 페스타 1위 대상</li>
-                <li>BUZZ ON: Trigger Point 개최</li>
-                <li>Monster Korea, Homura Film와 협업</li>
-              </ul>
-            </article>
+        <h2 className="awards-title">주요 행적</h2>
+        <div className="awards-swiper-wrap">
+          <Swiper
+            className="awards-swiper"
+            modules={[Autoplay, Pagination]}
+            direction="horizontal"
+            slidesPerView={3}
+            spaceBetween={20}
+            loop={true}
+            allowTouchMove={true}
+            simulateTouch={true}
+            pagination={{ clickable: true }}
+            autoplay={{
+              delay: 3000,
+              disableOnInteraction: false,
+            }}
+            breakpoints={{
+              320: { slidesPerView: 1 },
+              640: { slidesPerView: 2 },
+              900: { slidesPerView: 3 },
+            }}
+          >
+            {AWARDS_YEARS.map((block) => (
+              <SwiperSlide key={block.year}>
+                <article className="awards-year">
+                  <h3 className="awards-year-title">{block.year}</h3>
+                  <ul className="awards-list">
+                    {block.items.map((text, i) => (
+                      <li key={i}>{text}</li>
+                    ))}
+                  </ul>
+                </article>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </section>
+      <section className="qna" id="qna">
+        <h2 className="qna-heading">자주 묻는 질문</h2>
+        <div className="qna-list">
+          {QNA_ITEMS.map((item, i) => (
+            <motion.div
+              key={i}
+              className="qna-item"
+              initial={{ opacity: 0, x: i % 2 === 0 ? -28 : 28 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.25 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <p className="qna-q">
+                <span className="qna-q-mark">Q.</span> {item.q}
+              </p>
+              <p className="qna-a">{item.a}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+      <section className="toJoin" id="toJoin">
+        <div className="toJoin-inner">
+          <p className="toJoin-tagline">JOIN THE CREW</p>
+          <h2 className="toJoin-title">
+            누구나
+            <br />
+            함께
+          </h2>
+          <p className="toJoin-desc">
+            만취는 항상 새로운 에너지를 기다립니다.
+            <br />
+            장르 불문, 실력 불문. 열정 하나면 충분합니다.
+            <br />
+            당신의 이야기를 우리와 함께 써내려가세요.
+          </p>
+          <div className="toJoin-buttons">
+            <Link to="/join" className="toJoin-btn toJoin-btn--primary">
+              가입하기
+            </Link>
+            <a
+              href="https://www.instagram.com/maaaaaaanchui/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="toJoin-btn toJoin-btn--secondary"
+            >
+              인스타그램 팔로우
+            </a>
           </div>
         </div>
       </section>
-      <div className="session"></div>
-      <div className="qna"></div>
-      <div className="toJoin"></div>
     </div>
   );
 };

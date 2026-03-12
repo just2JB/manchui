@@ -116,11 +116,17 @@
   background-color: var(--background-dark);
 }
 
-.keyword-band:not(.keyword-band--reverse) .keyword-band-item:hover .keyword-band-word-hover {
+.keyword-band:not(.keyword-band--reverse)
+  .keyword-band-item:hover
+  .keyword-band-word-hover {
   color: var(--text-primary);
 }
 
-.keyword-band:not(.keyword-band--reverse) .keyword-band-item:hover .keyword-band-diamond svg path {
+.keyword-band:not(.keyword-band--reverse)
+  .keyword-band-item:hover
+  .keyword-band-diamond
+  svg
+  path {
   fill: var(--text-primary);
 }
 
@@ -542,42 +548,60 @@
 .awards {
   padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
   background-color: var(--background-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .awards-title {
-  font-size: clamp(1.25rem, 3vw, 1.5rem);
-  font-weight: 500;
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+  font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--text-primary);
   margin: 0 0 1.5rem;
+  text-align: center;
+  width: 100%;
 }
 
-.awards-scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: 0.5rem;
+.awards-swiper-wrap {
+  width: 100%;
+  max-width: 900px;
+  touch-action: pan-y;
 }
 
-.awards-scroll::-webkit-scrollbar {
-  height: 6px;
+.awards-swiper {
+  overflow: hidden;
+  padding: 0.25rem 0 1rem;
+  cursor: grab;
+  user-select: none;
 }
 
-.awards-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 3px;
+.awards-swiper:active {
+  cursor: grabbing;
 }
 
-.awards-scroll::-webkit-scrollbar-thumb {
+.awards-swiper .swiper-slide {
+  height: auto;
+  box-sizing: border-box;
+}
+
+.awards-swiper .swiper-pagination {
+  position: relative;
+  margin-top: 1rem;
+  bottom: auto;
+}
+
+.awards-swiper .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  opacity: 1;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.awards-swiper .swiper-pagination-bullet-active {
   background: var(--brand-red);
-  border-radius: 3px;
-}
-
-.awards-track {
-  display: flex;
-  gap: 1.25rem;
-  width: max-content;
-  padding-right: 1rem;
+  transform: scale(1.2);
 }
 
 .awards-year {
@@ -620,4 +644,325 @@
 
 .awards-list li:last-child {
   margin-bottom: 0;
+}
+
+/* ---------- Session (진행 사업) ---------- */
+.session {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
+  background-color: var(--background-dark);
+  box-sizing: border-box;
+}
+
+.session-heading {
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+.session-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.session-menu-btn {
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--text-more);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    background 0.2s,
+    border-color 0.2s;
+}
+
+.session-menu-btn:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+
+.session-menu-btn--active {
+  color: var(--text-primary);
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+}
+
+.session-content-wrap {
+  position: relative;
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.session-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.session-image-placeholder {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 320px;
+  background: var(--box-1);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.session-image-placeholder-text {
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--text-more);
+}
+
+.session-image-placeholder-sub {
+  font-size: 0.8rem;
+  color: var(--text-more);
+  opacity: 0.7;
+}
+
+.session-desc {
+  font-size: 0.95rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--text-more);
+  margin: 0;
+}
+
+/* ---------- QnA (자주 묻는 질문) ---------- */
+.qna {
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
+  background-color: var(--background-dark);
+}
+
+.qna-heading {
+  font-size: clamp(1.4rem, 3.5vw, 1.75rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+
+.qna-list {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0.5rem 0;
+}
+
+.qna-list::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dashed var(--brand-red);
+  transform: translateX(-50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.qna-item {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: min(320px, 42vw);
+  margin-bottom: -1.2rem;
+}
+
+.qna-item:last-child {
+  margin-bottom: 0;
+}
+
+.qna-item:nth-child(odd) {
+  align-self: flex-start;
+  padding-right: 1.5rem;
+}
+
+.qna-item:nth-child(odd)::after {
+  content: "";
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: min(2.5rem, 6vw);
+  height: 0;
+  border-top: 1px solid var(--brand-red);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.qna-item:nth-child(even) {
+  align-self: flex-end;
+  padding-left: 1.5rem;
+}
+
+.qna-item:nth-child(even)::after {
+  content: "";
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: min(2.5rem, 6vw);
+  height: 0;
+  border-top: 1px solid var(--brand-red);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .qna-list {
+    max-width: 100%;
+  }
+
+  .qna-list::before {
+    display: none;
+  }
+
+  .qna-item::after {
+    display: none !important;
+  }
+
+  .qna-item,
+  .qna-item:nth-child(odd),
+  .qna-item:nth-child(even) {
+    align-self: stretch;
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    margin-bottom: 1.25rem;
+  }
+
+  .qna-item:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.qna-q {
+  font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem;
+  line-height: 1.45;
+}
+
+.qna-q-mark {
+  color: var(--brand-red);
+}
+
+.qna-a {
+  font-size: clamp(0.875rem, 2vw, 0.95rem);
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--text-more);
+  margin: 0;
+}
+
+/* ---------- toJoin (가입 유도) ---------- */
+.toJoin {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
+  background-color: var(--background-dark);
+  box-sizing: border-box;
+}
+
+.toJoin-inner {
+  max-width: 560px;
+  width: 100%;
+  text-align: center;
+}
+
+.toJoin-tagline {
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--brand-red);
+  margin: 0 0 1rem;
+}
+
+.toJoin-title {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0 0 1.5rem;
+}
+
+.toJoin-desc {
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-more);
+  margin: 0 0 2rem;
+}
+
+.toJoin-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.toJoin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.85rem 1.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  border: 1px solid transparent;
+  box-sizing: border-box;
+}
+
+.toJoin-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.toJoin-btn--primary {
+  background: var(--brand-red);
+  color: var(--text-primary);
+}
+
+.toJoin-btn--secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.toJoin-btn--secondary:hover {
+  border-color: rgba(255, 255, 255, 0.6);
 }

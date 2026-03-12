@@ -19,6 +19,7 @@ import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
 import Contact from "./pages/Contact/Contact";
+import Privacy from "./pages/Privacy/Privacy";
 import ClubRoomNavbar from "./pages/ClubRoom/ClubRoomNavbar";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
@@ -322,6 +323,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <MainPage /> },
       { path: "/contact", element: <Contact /> },
+      { path: "/privacy", element: <Privacy /> },
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },

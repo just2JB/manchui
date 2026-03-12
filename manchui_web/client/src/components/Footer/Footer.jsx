@@ -8,7 +8,12 @@ const footerData = {
   instagramLink: "https://www.instagram.com/maaaaaaanchui/",
   location:
     "경기도 안산시 상록구 한양대학로55 한양대학교 ERICA캠퍼스 학생복지관 422호",
-  tagline: "한양대학교 ERICA 캠퍼스 댄스 동아리",
+  tagline: "한양대학교 ERICA 댄스 동아리",
+  developerEmail: "jb040222@naver.com",
+};
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
 };
 
 const Footer = () => {
@@ -21,9 +26,9 @@ const Footer = () => {
   return (
     <footer className="footer">
       <div className="footer-top">
-        <Link to="/" className="footer-logo">
+        <Link to="/" className="footer-logo" onClick={scrollToTop}>
           <img
-            src="/logos/shortLogo.png"
+            src="/logos/longLogo_white.png"
             alt="MANCHUI"
             className="footer-logo-img"
           />
@@ -31,11 +36,11 @@ const Footer = () => {
         <p className="footer-tagline">{footerData.tagline}</p>
 
         <nav className="footer-quick-links">
-          <Link to="/">동아리 소개</Link>
+          <Link to="/" onClick={scrollToTop}>동아리 소개</Link>
           <span className="footer-dot" aria-hidden="true" />
-          <Link to="/join">지원하기</Link>
+          <Link to="/join" onClick={scrollToTop}>지원하기</Link>
           <span className="footer-dot" aria-hidden="true" />
-          <Link to="/contact">문의하기</Link>
+          <Link to="/contact" onClick={scrollToTop}>문의하기</Link>
         </nav>
 
         <div className="footer-sns">
@@ -70,11 +75,21 @@ const Footer = () => {
             인스타그램 DM
           </a>
         </p>
+        <p className="footer-developer">
+          개발자 연락처:{" "}
+          <a href={`mailto:${footerData.developerEmail}`}>
+            {footerData.developerEmail}
+          </a>
+        </p>
       </div>
 
       <div className="footer-bottom">
         <p className="footer-reserved">
           ⓒ 2025–{new Date().getFullYear()} MANCHUI. All rights reserved.
+          <span className="footer-legal-sep"> · </span>
+          <Link to="/privacy" className="footer-privacy-link" onClick={scrollToTop}>
+            개인정보 처리방침
+          </Link>
         </p>
       </div>
     </footer>

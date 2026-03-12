@@ -112,7 +112,7 @@
   width: 100%;
   max-width: 100vw;
   transition-duration: 0.3s;
-  background: linear-gradient(#121212 8%, var(--brand-red));
+  background: linear-gradient(#12121275 8%, var(--brand-red));
   overflow: hidden;
   transform: translate3d(0, 0, 0);
   visibility: hidden;

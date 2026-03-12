@@ -46,38 +46,39 @@ const hasPhone = (d) => {
   return /^0\d/.test(p.replace(/\D/g, ""));
 };
 
-/** 구글 주소록용: 한국 전화번호를 +82 국제 형식으로 변환 */
-const toGooglePhoneValue = (phone) => {
+/** 010- 형식으로 깔끔하게 (구글 주소록이 +82 대신 이걸 휴대폰 번호로 잘 인식) */
+const toDomesticPhone = (phone) => {
   const digits = (phone || "").replace(/\D/g, "");
-  if (!digits.startsWith("0") || digits.length < 9) return phone || "";
-  const rest = digits.slice(1);
-  if (digits.startsWith("010") && rest.length === 10) {
-    return `+82 10 ${rest.slice(2, 6)} ${rest.slice(6)}`;
+  if (digits.length === 0) return phone || "";
+  if (digits[0] !== "0" || digits.length < 9) return phone || "";
+  if (digits.startsWith("010")) {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
   }
-  if (digits.startsWith("02") && (rest.length === 8 || rest.length === 9)) {
-    const mid = rest.length === 9 ? 5 : 4;
-    return `+82 2 ${rest.slice(1, mid)} ${rest.slice(mid)}`;
+  if (digits.startsWith("02")) {
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 5) return `${digits.slice(0, 2)}-${digits.slice(2)}`;
+    if (digits.length <= 9)
+      return `${digits.slice(0, 2)}-${digits.slice(2, 5)}-${digits.slice(5)}`;
+    return `${digits.slice(0, 2)}-${digits.slice(2, 6)}-${digits.slice(6, 10)}`;
   }
-  if (rest.length >= 8) {
-    return `+82 ${rest.slice(0, 2)} ${rest.slice(2, 5)} ${rest.slice(5)}`.trim();
+  if (digits.match(/^0[3-9]\d/)) {
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    if (digits.length <= 10)
+      return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7, 11)}`;
   }
-  return `+82 ${rest}`;
+  return phone || "";
 };
 
 /**
- * 구글 주소록(Google Contacts) 가져오기용 CSV - 전화번호만.
- * 컬럼 순서·헤더명을 구글 형식에 맞춤. UTF-8 BOM 포함.
+ * 구글 주소록 가져오기용 CSV. 헤더는 'Mobile' 하나로 줄여서 구글이 휴대폰 번호로 인식하게 함. 010- 형식 사용.
  */
 const buildPhoneContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
-  const headers = [
-    "Name",
-    "Given Name",
-    "Family Name",
-    "Phone 1 - Type",
-    "Phone 1 - Value",
-    "Notes",
-  ];
+  const headers = ["Name", "Given Name", "Family Name", "Mobile", "Notes"];
   const rows = list
     .filter(hasPhone)
     .map((d) => {
@@ -90,8 +91,7 @@ const buildPhoneContactsCsv = (list, generation) => {
         escapeCsvField(name),
         escapeCsvField(givenName),
         escapeCsvField(familyName),
-        "Mobile",
-        escapeCsvField(toGooglePhoneValue(phone)),
+        escapeCsvField(toDomesticPhone(phone)),
         escapeCsvField(notes),
       ].join(",");
     });
@@ -240,7 +240,7 @@ const AdminJoin = () => {
       return;
     }
     const csv = buildPhoneContactsCsv(sortedList, currentGeneration);
-    const filename = `만취_${currentGeneration}기_전화번호_${new Date().toISOString().slice(0, 10)}.csv`;
+    const filename = `${currentGeneration}기 가두모집_만취_${currentGeneration}기_전화번호_${new Date().toISOString().slice(0, 10)}.csv`;
     downloadCsv(csv, filename);
     manchuiModal(
       `전화번호 연락처 ${withPhone.length}명이 CSV로 저장되었습니다. 구글 주소록에서 '가져오기'로 불러와 연동할 수 있습니다.`,
@@ -254,7 +254,7 @@ const AdminJoin = () => {
       return;
     }
     const csv = buildKakaoIdCsv(sortedList, currentGeneration);
-    const filename = `만취_${currentGeneration}기_카카오ID_${new Date().toISOString().slice(0, 10)}.csv`;
+    const filename = `${currentGeneration}기 가두모집_만취_${currentGeneration}기_카카오ID_${new Date().toISOString().slice(0, 10)}.csv`;
     downloadCsv(csv, filename);
     manchuiModal(
       `카카오ID 연락처 ${withKakao.length}명이 CSV로 저장되었습니다.`,
@@ -359,7 +359,7 @@ const AdminJoin = () => {
               className="configSave"
               onClick={handleExportPhoneCsv}
               disabled={!sortedList.filter(hasPhone).length}
-              title="전화번호가 있는 신청만 구글 주소록 가져오기용 CSV로 저장 (UTF-8, +82 형식)"
+              title="전화번호가 있는 신청만 구글 주소록 가져오기용 CSV로 저장 (010- 형식, Mobile 열)"
             >
               전화번호 CSV (구글 주소록)
             </button>

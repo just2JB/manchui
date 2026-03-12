@@ -10,10 +10,16 @@ router.get("/config", async (req, res) => {
     if (!setting) {
       setting = await Setting.create({ joinForm: 0, currentGeneration: 1 });
     }
+    const president = setting.president || {};
     res.json({
       formOpen: setting.joinForm === 1,
       currentGeneration: setting.currentGeneration ?? 1,
       siteRestricted: Boolean(setting.siteRestricted),
+      president: {
+        name: president.name ?? "",
+        contact: president.contact ?? "",
+        major: president.major ?? "",
+      },
     });
   } catch (err) {
     res.status(500).json({ message: "서버 오류가 발생하였습니다." });
@@ -41,11 +47,26 @@ router.put("/config", async (req, res) => {
     if (typeof req.body.siteRestricted === "boolean") {
       setting.siteRestricted = req.body.siteRestricted;
     }
+    if (req.body.president && typeof req.body.president === "object") {
+      if (!setting.president) setting.president = {};
+      if (typeof req.body.president.name === "string")
+        setting.president.name = req.body.president.name;
+      if (typeof req.body.president.contact === "string")
+        setting.president.contact = req.body.president.contact;
+      if (typeof req.body.president.major === "string")
+        setting.president.major = req.body.president.major;
+    }
     await setting.save();
+    const president = setting.president || {};
     res.json({
       formOpen: setting.joinForm === 1,
       currentGeneration: setting.currentGeneration,
       siteRestricted: Boolean(setting.siteRestricted),
+      president: {
+        name: president.name ?? "",
+        contact: president.contact ?? "",
+        major: president.major ?? "",
+      },
       message: "설정이 저장되었습니다.",
     });
   } catch (err) {

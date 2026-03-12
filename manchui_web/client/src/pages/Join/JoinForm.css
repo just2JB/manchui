@@ -24,22 +24,52 @@
   margin-left: 0;
 }
 @keyframes inputboxShake {
-  0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-8px); }
-  30% { transform: translateX(8px); }
-  45% { transform: translateX(-6px); }
-  60% { transform: translateX(6px); }
-  75% { transform: translateX(-3px); }
-  90% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-8px);
+  }
+  30% {
+    transform: translateX(8px);
+  }
+  45% {
+    transform: translateX(-6px);
+  }
+  60% {
+    transform: translateX(6px);
+  }
+  75% {
+    transform: translateX(-3px);
+  }
+  90% {
+    transform: translateX(3px);
+  }
 }
 @keyframes inputErrorShake {
-  0%, 100% { transform: translateX(0); }
-  15% { transform: translateX(-6px); }
-  30% { transform: translateX(6px); }
-  45% { transform: translateX(-4px); }
-  60% { transform: translateX(4px); }
-  75% { transform: translateX(-2px); }
-  90% { transform: translateX(2px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-6px);
+  }
+  30% {
+    transform: translateX(6px);
+  }
+  45% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  90% {
+    transform: translateX(2px);
+  }
 }
 .joinForm .inputboxShake {
   animation: inputboxShake 0.5s ease-in-out;
@@ -70,7 +100,10 @@
   border: 1px solid var(--box-3);
   border-radius: 20px;
   cursor: pointer;
-  transition: color 0.2s, background-color 0.2s, border-color 0.2s;
+  transition:
+    color 0.2s,
+    background-color 0.2s,
+    border-color 0.2s;
 }
 .joinForm .languageToggle:hover {
   color: var(--text-primary);
@@ -157,9 +190,15 @@
   animation: cupFillPop 0.35s ease-out;
 }
 @keyframes cupFillPop {
-  0% { transform: scale(1); }
-  60% { transform: scale(1.06); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  60% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 .joinForm .text {
   margin-left: 34px;
@@ -186,7 +225,9 @@
   color: var(--text-primary);
   animation-name: buttonLoad;
   animation-duration: 0.5s;
-  transition: box-shadow 0.2s ease, background 0.2s ease;
+  transition:
+    box-shadow 0.2s ease,
+    background 0.2s ease;
 }
 .joinForm .nextButton:hover {
   background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);

@@ -32,6 +32,20 @@
   color: var(--text-gray, #888);
 }
 
+.joinSetting .configInput {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: var(--text-primary, #f5f5f5);
+  background: var(--box-2, #252525);
+  border: 1px solid var(--box-3, #383838);
+  border-radius: 8px;
+}
+
+.joinSetting .configInput::placeholder {
+  color: var(--text-gray, #666);
+}
+
 .joinSetting .configToggle {
   padding: 6px 14px;
   border-radius: 8px;

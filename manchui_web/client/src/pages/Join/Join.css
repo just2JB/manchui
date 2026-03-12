@@ -109,4 +109,35 @@
   border: 1px solid var(--box-3);
   border-radius: 12px;
   text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.joinClosedMessage {
+  margin: 0 0 16px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.joinClosedContact {
+  text-align: left;
+  font-size: 14px;
+}
+
+.joinClosedContactHeader {
+  font-weight: 600;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--box-3);
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.joinClosedContactRow {
+  display: grid;
+  grid-template-columns: 60px 1fr 1fr;
+  gap: 12px;
+}
+
+.joinClosedContactRow span {
+  word-break: break-all;
 }

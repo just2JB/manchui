@@ -234,11 +234,12 @@ function isPhoneFormat(str) {
   return false;
 }
 
-/** 카카오ID 형식 (영문/숫자/일부 특수, 2~20자 등) */
+/** 카카오ID 형식 (영문/숫자/ . _ - 및 전각·유사문자, 4~20자) */
 function isKakaoIdFormat(str) {
   const s = str.trim();
-  if (s.length < 2 || s.length > 20) return false;
-  return /^[a-zA-Z0-9._-]+$/.test(s);
+  if (s.length < 4 || s.length > 20) return false;
+  // 하이픈은 문자클래스 맨 앞에 두어 리터럴로만 해석되게 함. 전각/유니코드 변형 허용
+  return /^[-a-zA-Z0-9._\uFF0D\uFF0E\u2013\u2014\u2212]+$/.test(s);
 }
 
 /** 이름 유효: 비어있지 않고, 글자/공백/하이픈만 허용 (숫자·특수기호 불가) */

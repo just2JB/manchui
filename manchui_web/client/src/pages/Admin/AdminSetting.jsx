@@ -8,6 +8,11 @@ const serverUrl = import.meta.env.VITE_SERVER_URL;
 const AdminSetting = () => {
   const { user } = useOutletContext();
   const [siteRestricted, setSiteRestricted] = useState(false);
+  const [president, setPresident] = useState({
+    name: "",
+    contact: "",
+    major: "",
+  });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -20,6 +25,13 @@ const AdminSetting = () => {
       .get(`${serverUrl}/api/join/config`)
       .then((res) => {
         setSiteRestricted(Boolean(res.data.siteRestricted));
+        if (res.data.president) {
+          setPresident({
+            name: res.data.president.name ?? "",
+            contact: res.data.president.contact ?? "",
+            major: res.data.president.major ?? "",
+          });
+        }
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -32,6 +44,7 @@ const AdminSetting = () => {
       await axios.put(`${serverUrl}/api/join/config`, {
         userId: user._id,
         siteRestricted,
+        president,
       });
       alert("설정이 저장되었습니다.");
     } catch (err) {
@@ -67,6 +80,43 @@ const AdminSetting = () => {
         <p className="configHint">
           켜면 메인·소개·굿즈 등 가입(/join) 제외 페이지에 "현재 준비중입니다" 메시지가 표시됩니다.
         </p>
+        <h3 className="configTitle">회장 정보</h3>
+        <div className="configRow">
+          <span className="configLabel">이름</span>
+          <input
+            type="text"
+            className="configInput"
+            value={president.name}
+            onChange={(e) =>
+              setPresident((p) => ({ ...p, name: e.target.value }))
+            }
+            placeholder="회장 이름"
+          />
+        </div>
+        <div className="configRow">
+          <span className="configLabel">연락처</span>
+          <input
+            type="text"
+            className="configInput"
+            value={president.contact}
+            onChange={(e) =>
+              setPresident((p) => ({ ...p, contact: e.target.value }))
+            }
+            placeholder="전화번호 또는 카카오ID"
+          />
+        </div>
+        <div className="configRow">
+          <span className="configLabel">학과</span>
+          <input
+            type="text"
+            className="configInput"
+            value={president.major}
+            onChange={(e) =>
+              setPresident((p) => ({ ...p, major: e.target.value }))
+            }
+            placeholder="학과명"
+          />
+        </div>
         <button
           type="button"
           className="configSave"

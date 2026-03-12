@@ -29,7 +29,21 @@ const Join = () => {
             </button>
           ) : (
             <div className="joinClosed">
-              현재 가입 신청을 받고 있지 않습니다.
+              <p className="joinClosedMessage">
+                현재 가입 신청은 아래 연락처로 연락 부탁드립니다.
+              </p>
+              <div className="joinClosedContact">
+                <div className="joinClosedContactRow joinClosedContactHeader">
+                  <span>직책</span>
+                  <span>이름</span>
+                  <span>연락처</span>
+                </div>
+                <div className="joinClosedContactRow">
+                  <span>회장</span>
+                  <span>{joinConfig?.president?.name || "-"}</span>
+                  <span>{joinConfig?.president?.contact || "-"}</span>
+                </div>
+              </div>
             </div>
           )}
           <button

@@ -14,6 +14,12 @@ const settingSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  /** 회장 정보 */
+  president: {
+    name: { type: String, default: "" },
+    contact: { type: String, default: "" },
+    major: { type: String, default: "" },
+  },
 });
 
 const Setting = mongoose.model("Setting", settingSchema);

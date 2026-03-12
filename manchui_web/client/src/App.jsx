@@ -139,6 +139,7 @@ function Layout() {
     formOpen: true,
     currentGeneration: null,
     siteRestricted: false,
+    president: { name: "", contact: "", major: "" },
   });
   const [joinConfigLoading, setJoinConfigLoading] = useState(true);
 
@@ -154,6 +155,13 @@ function Layout() {
           formOpen: res.data.formOpen !== false,
           currentGeneration: res.data.currentGeneration ?? null,
           siteRestricted: Boolean(res.data.siteRestricted),
+          president: res.data.president
+            ? {
+                name: res.data.president.name ?? "",
+                contact: res.data.president.contact ?? "",
+                major: res.data.president.major ?? "",
+              }
+            : { name: "", contact: "", major: "" },
         });
       })
       .catch(() => {})

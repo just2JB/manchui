@@ -39,30 +39,83 @@ const escapeCsvField = (val) => {
   return s;
 };
 
-/** 구글 연락처 불러오기용 CSV 생성 (UTF-8 BOM) */
-const buildContactsCsv = (list, generation) => {
+/** 전화번호가 있는지 (phone 또는 레거시 contact가 숫자로 시작하면 전화번호로 간주) */
+const hasPhone = (d) => {
+  const p = (d.phone || d.contact || "").trim();
+  if (!p) return false;
+  return /^0\d/.test(p.replace(/\D/g, ""));
+};
+
+/** 구글 주소록용: 한국 전화번호를 +82 국제 형식으로 변환 */
+const toGooglePhoneValue = (phone) => {
+  const digits = (phone || "").replace(/\D/g, "");
+  if (!digits.startsWith("0") || digits.length < 9) return phone || "";
+  const rest = digits.slice(1);
+  if (digits.startsWith("010") && rest.length === 10) {
+    return `+82 10 ${rest.slice(2, 6)} ${rest.slice(6)}`;
+  }
+  if (digits.startsWith("02") && (rest.length === 8 || rest.length === 9)) {
+    const mid = rest.length === 9 ? 5 : 4;
+    return `+82 2 ${rest.slice(1, mid)} ${rest.slice(mid)}`;
+  }
+  if (rest.length >= 8) {
+    return `+82 ${rest.slice(0, 2)} ${rest.slice(2, 5)} ${rest.slice(5)}`.trim();
+  }
+  return `+82 ${rest}`;
+};
+
+/**
+ * 구글 주소록(Google Contacts) 가져오기용 CSV - 전화번호만.
+ * 컬럼 순서·헤더명을 구글 형식에 맞춤. UTF-8 BOM 포함.
+ */
+const buildPhoneContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = [
     "Name",
     "Given Name",
     "Family Name",
-    "Phone 1 - Value",
     "Phone 1 - Type",
+    "Phone 1 - Value",
     "Notes",
   ];
-  const rows = list.map((d) => {
-    const name = d.name || "";
-    const contact = d.contact || "";
-    const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
-    return [
-      escapeCsvField(name),
-      escapeCsvField(name.slice(1)),
-      escapeCsvField(name.slice(0, 1)),
-      escapeCsvField(contact),
-      "Mobile",
-      escapeCsvField(notes),
-    ].join(",");
-  });
+  const rows = list
+    .filter(hasPhone)
+    .map((d) => {
+      const name = (d.name || "").trim();
+      const phone = d.phone || d.contact || "";
+      const givenName = name.length > 1 ? name.slice(1) : "";
+      const familyName = name.length > 0 ? name.slice(0, 1) : "";
+      const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
+      return [
+        escapeCsvField(name),
+        escapeCsvField(givenName),
+        escapeCsvField(familyName),
+        "Mobile",
+        escapeCsvField(toGooglePhoneValue(phone)),
+        escapeCsvField(notes),
+      ].join(",");
+    });
+  return BOM + [headers.join(","), ...rows].join("\r\n");
+};
+
+/** 카카오ID 연락처 CSV - 카카오ID 있는 사람만 (이름, 카카오ID, 학번, 전공 등) */
+const buildKakaoIdCsv = (list, generation) => {
+  const BOM = "\uFEFF";
+  const headers = ["이름", "카카오ID", "학번", "전공", "비고"];
+  const rows = list
+    .filter((d) => (d.kakaoId || "").trim())
+    .map((d) => {
+      const name = d.name || "";
+      const kakaoId = (d.kakaoId || "").trim();
+      const notes = `만취 ${d.generation ?? generation ?? ""}기`;
+      return [
+        escapeCsvField(name),
+        escapeCsvField(kakaoId),
+        escapeCsvField(String(d.studentId ?? "")),
+        escapeCsvField(d.major ?? ""),
+        escapeCsvField(notes),
+      ].join(",");
+    });
   return BOM + [headers.join(","), ...rows].join("\r\n");
 };
 
@@ -180,16 +233,31 @@ const AdminJoin = () => {
     }
   };
 
-  const handleExportContactsCsv = () => {
-    if (!sortedList.length) {
-      manchuiModal("내보낼 연락처가 없습니다.");
+  const handleExportPhoneCsv = () => {
+    const withPhone = sortedList.filter(hasPhone);
+    if (!withPhone.length) {
+      manchuiModal("전화번호가 있는 신청자가 없습니다.");
       return;
     }
-    const csv = buildContactsCsv(sortedList, currentGeneration);
-    const filename = `만취_${currentGeneration}기_연락처_${new Date().toISOString().slice(0, 10)}.csv`;
+    const csv = buildPhoneContactsCsv(sortedList, currentGeneration);
+    const filename = `만취_${currentGeneration}기_전화번호_${new Date().toISOString().slice(0, 10)}.csv`;
     downloadCsv(csv, filename);
     manchuiModal(
-      `연락처 ${sortedList.length}명이 CSV로 저장되었습니다. 구글 연락처에서 '가져오기'로 불러올 수 있습니다.`,
+      `전화번호 연락처 ${withPhone.length}명이 CSV로 저장되었습니다. 구글 주소록에서 '가져오기'로 불러와 연동할 수 있습니다.`,
+    );
+  };
+
+  const handleExportKakaoIdCsv = () => {
+    const withKakao = sortedList.filter((d) => (d.kakaoId || "").trim());
+    if (!withKakao.length) {
+      manchuiModal("카카오ID가 있는 신청자가 없습니다.");
+      return;
+    }
+    const csv = buildKakaoIdCsv(sortedList, currentGeneration);
+    const filename = `만취_${currentGeneration}기_카카오ID_${new Date().toISOString().slice(0, 10)}.csv`;
+    downloadCsv(csv, filename);
+    manchuiModal(
+      `카카오ID 연락처 ${withKakao.length}명이 CSV로 저장되었습니다.`,
     );
   };
 
@@ -289,11 +357,20 @@ const AdminJoin = () => {
             <button
               type="button"
               className="configSave"
-              onClick={handleExportContactsCsv}
-              disabled={!sortedList.length}
-              title="현재 목록을 구글 연락처 가져오기용 CSV로 저장"
+              onClick={handleExportPhoneCsv}
+              disabled={!sortedList.filter(hasPhone).length}
+              title="전화번호가 있는 신청만 구글 주소록 가져오기용 CSV로 저장 (UTF-8, +82 형식)"
             >
-              연락처 CSV 내보내기
+              전화번호 CSV (구글 주소록)
+            </button>
+            <button
+              type="button"
+              className="configSave"
+              onClick={handleExportKakaoIdCsv}
+              disabled={!sortedList.filter((d) => (d.kakaoId || "").trim()).length}
+              title="카카오ID가 있는 신청만 CSV로 저장"
+            >
+              카카오ID CSV
             </button>
           </h3>
           <div className="toolbar">

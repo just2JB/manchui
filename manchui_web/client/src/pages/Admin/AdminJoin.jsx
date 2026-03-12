@@ -124,13 +124,19 @@ const buildKakaoIdCsv = (list, generation) => {
 };
 
 const downloadCsv = (content, filename) => {
-  const blob = new Blob([content], { type: "text/csv;charset=utf-8" });
+  if (!content || content.length < 10) return;
+  const blob = new Blob([content], {
+    type: "text/csv;charset=utf-8",
+  });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
   a.download = filename;
+  a.rel = "noopener";
+  document.body.appendChild(a);
   a.click();
-  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 500);
 };
 
 const AdminJoin = () => {
@@ -141,6 +147,8 @@ const AdminJoin = () => {
   const [currentGeneration, setCurrentGeneration] = useState(1);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [contactFilter, setContactFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
   const [sortBy, setSortBy] = useState("applyAt");
   const [sortOrder, setSortOrder] = useState("desc");
   const [detailData, setDetailData] = useState(null);
@@ -252,17 +260,39 @@ const AdminJoin = () => {
   };
 
   const handleExportKakaoIdCsv = () => {
-    const withKakao = sortedList.filter((d) => (d.kakaoId || "").trim());
-    if (!withKakao.length) {
+    const listWithKakao = sortedList.filter((d) => (d.kakaoId || "").trim());
+    if (!listWithKakao.length) {
       manchuiModal("카카오ID가 있는 신청자가 없습니다.");
       return;
     }
-    const csv = buildKakaoIdCsv(sortedList, currentGeneration);
-    const filename = `${currentGeneration}기 가두모집_만취_${currentGeneration}기_카카오ID_${new Date().toISOString().slice(0, 10)}.csv`;
-    downloadCsv(csv, filename);
-    manchuiModal(
-      `카카오ID 연락처 ${withKakao.length}명이 CSV로 저장되었습니다.`,
-    );
+    const csv =
+      "\uFEFF" +
+      ["이름", "카카오ID", "학번", "전공", "비고"].join(",") +
+      "\r\n" +
+      listWithKakao
+        .map((d) => {
+          const genLabel = `${currentGeneration ?? ""}기 가두모집`;
+          const rawName = (d.name || "").trim();
+          const name = rawName ? `${rawName} (${genLabel})` : genLabel;
+          const notes = `만취 ${d.generation ?? currentGeneration ?? ""}기`;
+          return [
+            escapeCsvField(name),
+            escapeCsvField((d.kakaoId || "").trim()),
+            escapeCsvField(String(d.studentId ?? "")),
+            escapeCsvField(d.major ?? ""),
+            escapeCsvField(notes),
+          ].join(",");
+        })
+        .join("\r\n");
+    const filename = `${currentGeneration}기_가두모집_카카오ID_${new Date().toISOString().slice(0, 10)}.csv`;
+    try {
+      downloadCsv(csv, filename);
+      manchuiModal(
+        `카카오ID 연락처 ${listWithKakao.length}명이 CSV로 저장되었습니다.`,
+      );
+    } catch (e) {
+      manchuiModal("CSV 저장에 실패했습니다.");
+    }
   };
 
   const baseList = useMemo(
@@ -276,15 +306,28 @@ const AdminJoin = () => {
   );
 
   const filteredList = useMemo(() => {
-    if (!searchQuery.trim()) return baseList;
-    const q = searchQuery.trim().toLowerCase();
-    return baseList.filter(
-      (d) =>
-        (d.name && d.name.toLowerCase().includes(q)) ||
-        String(d.studentId || "").includes(q) ||
-        (d.contact && d.contact.toLowerCase().includes(q)),
-    );
-  }, [baseList, searchQuery]);
+    let list = baseList;
+    if (contactFilter === "kakao") {
+      list = list.filter((d) => (d.kakaoId || "").trim());
+    } else if (contactFilter === "phone") {
+      list = list.filter(hasPhone);
+    }
+    if (statusFilter !== "all") {
+      list = list.filter((d) => (d.status || "신청") === statusFilter);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      list = list.filter(
+        (d) =>
+          (d.name && d.name.toLowerCase().includes(q)) ||
+          String(d.studentId || "").includes(q) ||
+          (d.phone && d.phone.toLowerCase().includes(q)) ||
+          (d.kakaoId && d.kakaoId.toLowerCase().includes(q)) ||
+          (d.contact && d.contact.toLowerCase().includes(q)),
+      );
+    }
+    return list;
+  }, [baseList, searchQuery, contactFilter, statusFilter]);
 
   const sortedList = useMemo(() => {
     const list = [...filteredList];
@@ -380,6 +423,29 @@ const AdminJoin = () => {
           <div className="toolbar">
             <select
               className="sortSelect"
+              value={contactFilter}
+              onChange={(e) => setContactFilter(e.target.value)}
+              title="연락처로 필터"
+            >
+              <option value="all">연락처: 전체</option>
+              <option value="kakao">카카오ID 있음</option>
+              <option value="phone">전화번호 있음</option>
+            </select>
+            <select
+              className="sortSelect"
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              title="상태로 필터"
+            >
+              <option value="all">상태: 전체</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <select
+              className="sortSelect"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
@@ -401,7 +467,7 @@ const AdminJoin = () => {
             <div className="searchBox">
               <input
                 type="text"
-                placeholder="이름, 학번, 연락처 검색"
+                placeholder="이름, 학번, 전화번호, 카카오ID 검색"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />

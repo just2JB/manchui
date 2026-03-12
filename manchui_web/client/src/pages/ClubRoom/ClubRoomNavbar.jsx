@@ -18,7 +18,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
         const res = await axios.post(
           `${serverUrl}/api/auth/logout`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
         if (res?.data?.message) message = res.data.message;
       } catch (e) {
@@ -43,7 +43,7 @@ const ClubRoomNavbar = ({ isLogin, setAuthIsOpen }) => {
             </div>
           </div>
           <div className="title">
-            <div>
+            <div className="logoBox">
               {location.pathname !== "이미지만띄우기" ? (
                 <img
                   src="/logos/longLogo_white.png"

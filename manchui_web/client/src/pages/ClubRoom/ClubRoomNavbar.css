@@ -46,7 +46,9 @@
   height: 40px;
   text-align: center;
 }
-
+.ClubRoomNavbar .logoBox {
+  height: 30px;
+}
 .ClubRoomNavbar .manchui-logo {
   scale: 0.55;
   margin: 0px;

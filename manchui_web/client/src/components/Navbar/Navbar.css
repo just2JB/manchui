@@ -1,4 +1,4 @@
-.navbar-top {
+.navbar .navbar-top {
   position: fixed;
   top: 0px;
   left: 0px;
@@ -11,7 +11,7 @@
   transition-duration: 0.3s;
 }
 
-.navbar-top--scrolled {
+.navbar .navbar-top--scrolled {
   background: linear-gradient(
     to bottom,
     var(--background-dark) 0%,
@@ -21,7 +21,7 @@
     transparent 100%
   );
 }
-.desktop {
+.navbar .desktop {
   display: flex;
   height: 100%;
   justify-content: space-between;
@@ -29,48 +29,48 @@
   margin: 0px 11%;
 }
 
-.logoBox {
+.navbar .logoBox {
   flex: 1;
 }
-.shortLogo {
+.navbar .shortLogo {
   height: 50px;
   width: fit-content;
   transition-duration: 0.3s;
 }
-.shortLogo:hover {
+.navbar .shortLogo:hover {
   height: 54px;
   transform: translateX(-2px);
 }
-.menuLogo {
+.navbar .menuLogo {
   height: 100%;
 }
-.menu {
+.navbar .menu {
   flex: 1;
   height: 100%;
   display: flex;
   justify-content: space-around;
 }
-.linkBox {
+.navbar .linkBox {
   height: 100%;
   text-align: center;
   align-content: center;
 }
-.link {
+.navbar .link {
   text-decoration: none;
   color: var(--text-more);
   font-size: 15px;
   font-weight: 400;
   transition-duration: 0.3s;
 }
-.link:hover {
+.navbar .link:hover {
   color: var(--brand-red);
 }
-.loginButtonBox {
+.navbar .loginButtonBox {
   flex: 1;
   display: flex;
   justify-content: end;
 }
-.loginButton {
+.navbar .loginButton {
   background-color: var(--brand-red);
   color: var(--text-primary);
   padding: 5px 20px;
@@ -80,11 +80,11 @@
   border-radius: 3px;
   transition-duration: 0.3s;
 }
-.loginButton:hover {
+.navbar .loginButton:hover {
   background-color: var(--accent-200);
 }
 
-.navbar-top .mobile {
+.navbar .navbar-top .mobile {
   visibility: hidden;
   height: 0px;
   display: flex;
@@ -93,18 +93,18 @@
   align-items: center;
   padding: 0px 10px;
 }
-.navbar-top .mobile > div {
+.navbar .navbar-top .mobile > div {
   flex: 1;
   text-align: center;
 }
-.navbar-top .logo_long {
+.navbar .navbar-top .logo_long {
   height: 50px;
 }
-.navbar-top .menu_btn {
+.navbar .navbar-top .menu_btn {
   text-align: end;
   color: var(--text-primary);
 }
-.mobileMenu {
+.navbar .mobileMenu {
   position: fixed;
   left: 0px;
   top: 100vh;
@@ -112,12 +112,12 @@
   width: 100vw;
   transition-duration: 0.3s;
 }
-.menuOn {
+.navbar .menuOn {
   top: 0px;
   transition-duration: 0.5s;
   transition-timing-function: ease-in-out;
 }
-.mobileMenu {
+.navbar .mobileMenu {
   width: 100%;
   height: 100vh;
   background: linear-gradient(#121212 8%, var(--brand-red));
@@ -127,7 +127,7 @@
   visibility: hidden;
 }
 
-.wave {
+.navbar .wave {
   opacity: 0.4;
   position: absolute;
   top: -10%;
@@ -142,17 +142,17 @@
   animation: drift 3000ms infinite linear;
 }
 
-.wave.-three {
+.navbar .wave.-three {
   animation: drift 5000ms infinite linear;
 }
 
-.wave.-two {
+.navbar .wave.-two {
   animation: drift 7000ms infinite linear;
   opacity: 0.1;
   background: var(--background-dark);
 }
 
-.menuContents {
+.navbar .menuContents {
   position: absolute;
   left: 0;
   top: 51vw;
@@ -163,7 +163,7 @@
   transform: translate3d(0, 0, 0);
   color: white;
 }
-.navbar-top .closeMenu {
+.navbar .navbar-top .closeMenu {
   position: absolute;
   left: calc(50% - 25px);
   top: 70%;
@@ -175,45 +175,45 @@
   text-align: center;
   align-content: center;
 }
-.floatButtons {
+.navbar .floatButtons {
   display: flex;
   width: 100%;
   justify-content: space-around;
 }
-.mobileLinkBox {
+.navbar .mobileLinkBox {
   position: relative;
   justify-items: center;
 }
-.mobileLinkButton {
+.navbar .mobileLinkButton {
   position: absolute;
   color: var(--text-primary);
   width: max-content;
   padding: 5px 20px;
   border-radius: 10px;
 }
-.mobileLinkButton .link {
+.navbar .mobileLinkButton .link {
   font-weight: 400;
   font-size: 17px;
 }
-.float0 {
+.navbar .float0 {
   animation: floatButton 950ms infinite linear;
 }
-.float1 {
+.navbar .float1 {
   animation: floatButton 920ms infinite linear;
 }
-.float2 {
+.navbar .float2 {
   animation: floatButton 970ms infinite linear;
 }
-.float3 {
+.navbar .float3 {
   animation: floatButton 900ms infinite linear;
 }
-.float4 {
+.navbar .float4 {
   animation: floatButton 960ms infinite linear;
 }
-.float5 {
+.navbar .float5 {
   animation: floatButton 900ms infinite linear;
 }
-.float6 {
+.navbar .float6 {
   animation: floatButton 700ms infinite linear;
 }
 
@@ -237,15 +237,15 @@
   }
 }
 @media screen and (max-width: 767px) {
-  .navbar-top .desktop {
+  .navbar .navbar-top .desktop {
     visibility: hidden;
     height: 0px;
   }
-  .navbar-top .mobile {
+  .navbar .navbar-top .mobile {
     visibility: visible;
     height: 60px;
   }
-  .mobileMenu {
+  .navbar .mobileMenu {
     visibility: visible;
   }
 }

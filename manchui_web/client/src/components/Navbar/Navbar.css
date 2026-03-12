@@ -93,6 +93,24 @@
   align-items: center;
   padding: 0px 10px;
 }
+
+.navbar .mobileLoginButtonBox {
+  padding: 10px 20px;
+  border-radius: 10px;
+  background-color: var(--brand-red);
+  position: absolute;
+  left: 50%;
+  top: 80%;
+  transform: translate(-50%, 0%);
+  flex: 1;
+  display: flex;
+  justify-content: start;
+}
+.navbar .mobileLoginButton {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
 .navbar .navbar-top .mobile > div {
   flex: 1;
   text-align: center;

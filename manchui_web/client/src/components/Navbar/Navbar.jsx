@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-import { IoMdMenu } from "react-icons/io";
+import { IoMdMenu, IoMdClose } from "react-icons/io";
 import "./Navbar.css";
 
 const ALL_PAGES = [
@@ -90,6 +90,12 @@ const Navbar = ({ siteRestricted = false }) => {
           </div>
         </div>
         <div className={`mobileMenu ${mobileMenu ? "menuOn" : ""}`}>
+          {" "}
+          <div className="mobileLoginButtonBox">
+            <Link to="/login" className="mobileLoginButton">
+              로그인
+            </Link>
+          </div>
           <div class="wave -one"></div>
           <div class="wave -two"></div>
           <div class="wave -three"></div>
@@ -120,7 +126,7 @@ const Navbar = ({ siteRestricted = false }) => {
             </div>
           </div>
           <div className="closeMenu" onClick={() => setMobileMenu(false)}>
-            X
+            <IoMdClose />
           </div>
         </div>
       </div>

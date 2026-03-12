@@ -1,0 +1,56 @@
+.contact-page {
+  min-height: 100vh;
+  background-color: var(--background-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+.contact-section {
+  text-align: center;
+  max-width: 420px;
+}
+
+.contact-title {
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem;
+  letter-spacing: 0.02em;
+}
+
+.contact-message {
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  color: var(--text-primary);
+  opacity: 0.9;
+  line-height: 1.6;
+  margin: 0 0 2rem;
+}
+
+.contact-instagram-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.contact-instagram-btn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+}
+
+.contact-instagram-btn:active {
+  transform: translateY(0);
+}

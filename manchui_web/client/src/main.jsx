@@ -4,6 +4,10 @@ import axios from "axios";
 import "./index.css";
 import App from "./App.jsx";
 
+if (typeof window !== "undefined") {
+  window.history.scrollRestoration = "manual";
+}
+
 // iOS Safari 등에서 크로스 사이트 쿠키가 막힐 때: localStorage 토큰을 Authorization 헤더로 전달
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 axios.interceptors.request.use((config) => {

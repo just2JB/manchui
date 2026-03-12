@@ -10,13 +10,23 @@
   user-select: none;
   transition-duration: 0.3s;
 }
+
+.navbar-top--scrolled {
+  background: linear-gradient(
+    to bottom,
+    var(--background-dark) 0%,
+    var(--background-dark) 55%,
+    rgba(18, 18, 18, 0.85) 75%,
+    rgba(18, 18, 18, 0.4) 90%,
+    transparent 100%
+  );
+}
 .desktop {
   display: flex;
   height: 100%;
   justify-content: space-between;
   align-items: center;
   margin: 0px 11%;
-  border-bottom: 1px solid #12121250;
 }
 
 .logoBox {
@@ -85,6 +95,7 @@
 }
 .navbar-top .mobile > div {
   flex: 1;
+  text-align: center;
 }
 .navbar-top .logo_long {
   height: 50px;

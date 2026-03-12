@@ -42,13 +42,12 @@ const Navbar = ({ siteRestricted = false }) => {
   return (
     <div className="navbar">
       <div
-        className="navbar-top"
+        className={`navbar-top ${scrolled ? "navbar-top--scrolled" : ""}`}
         style={{
           top:
             location.pathname.includes("/join") && location.pathname.length > 6
               ? "-80px"
               : "0px",
-          backgroundColor: scrolled ? "#121212" : "transparent",
         }}
       >
         <div className="desktop">
@@ -82,11 +81,7 @@ const Navbar = ({ siteRestricted = false }) => {
         <div className="mobile">
           <div></div>
           <div className="logo_long">
-            <img
-              src="/logos/longLogo_white.png"
-              alt="Logo"
-              className="menuLogo"
-            />
+            <img src="/logos/shortLogo.png" alt="Logo" className="menuLogo" />
           </div>
           <div>
             <div className="menu_btn" onClick={() => setMobileMenu(true)}>

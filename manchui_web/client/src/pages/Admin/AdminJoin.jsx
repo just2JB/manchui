@@ -46,6 +46,13 @@ const hasPhone = (d) => {
   return /^0\d/.test(p.replace(/\D/g, ""));
 };
 
+/** 카카오ID 있음: kakaoId 필드가 있거나, 레거시 contact가 전화번호 형식이 아닐 때(카카오ID로 입력했을 가능성) */
+const hasKakaoId = (d) => {
+  if ((d.kakaoId || "").trim()) return true;
+  const c = (d.contact || "").trim();
+  return c.length >= 2 && !/^0\d/.test(c.replace(/\D/g, ""));
+};
+
 /** 010- 형식으로 깔끔하게 (구글 주소록이 +82 대신 이걸 휴대폰 번호로 잘 인식) */
 const toDomesticPhone = (phone) => {
   const digits = (phone || "").replace(/\D/g, "");
@@ -260,7 +267,7 @@ const AdminJoin = () => {
   };
 
   const handleExportKakaoIdCsv = () => {
-    const listWithKakao = sortedList.filter((d) => (d.kakaoId || "").trim());
+    const listWithKakao = sortedList.filter(hasKakaoId);
     if (!listWithKakao.length) {
       manchuiModal("카카오ID가 있는 신청자가 없습니다.");
       return;
@@ -274,10 +281,11 @@ const AdminJoin = () => {
           const genLabel = `${currentGeneration ?? ""}기 가두모집`;
           const rawName = (d.name || "").trim();
           const name = rawName ? `${rawName} (${genLabel})` : genLabel;
+          const kakaoValue = (d.kakaoId || d.contact || "").trim();
           const notes = `만취 ${d.generation ?? currentGeneration ?? ""}기`;
           return [
             escapeCsvField(name),
-            escapeCsvField((d.kakaoId || "").trim()),
+            escapeCsvField(kakaoValue),
             escapeCsvField(String(d.studentId ?? "")),
             escapeCsvField(d.major ?? ""),
             escapeCsvField(notes),
@@ -308,7 +316,7 @@ const AdminJoin = () => {
   const filteredList = useMemo(() => {
     let list = baseList;
     if (contactFilter === "kakao") {
-      list = list.filter((d) => (d.kakaoId || "").trim());
+      list = list.filter(hasKakaoId);
     } else if (contactFilter === "phone") {
       list = list.filter(hasPhone);
     }
@@ -414,7 +422,7 @@ const AdminJoin = () => {
               type="button"
               className="configSave"
               onClick={handleExportKakaoIdCsv}
-              disabled={!sortedList.filter((d) => (d.kakaoId || "").trim()).length}
+              disabled={!sortedList.filter(hasKakaoId).length}
               title="카카오ID가 있는 신청만 CSV로 저장"
             >
               카카오ID CSV

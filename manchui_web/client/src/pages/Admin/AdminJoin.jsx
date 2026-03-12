@@ -79,13 +79,15 @@ const toDomesticPhone = (phone) => {
 const buildPhoneContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = ["Name", "Given Name", "Family Name", "Mobile", "Notes"];
+  const genLabel = `${generation ?? ""}기 가두모집`;
   const rows = list
     .filter(hasPhone)
     .map((d) => {
-      const name = (d.name || "").trim();
+      const rawName = (d.name || "").trim();
+      const name = rawName ? `${rawName} (${genLabel})` : genLabel;
       const phone = d.phone || d.contact || "";
-      const givenName = name.length > 1 ? name.slice(1) : "";
-      const familyName = name.length > 0 ? name.slice(0, 1) : "";
+      const givenName = rawName.length > 1 ? rawName.slice(1) : "";
+      const familyName = rawName.length > 0 ? rawName.slice(0, 1) : "";
       const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
       return [
         escapeCsvField(name),
@@ -102,10 +104,12 @@ const buildPhoneContactsCsv = (list, generation) => {
 const buildKakaoIdCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = ["이름", "카카오ID", "학번", "전공", "비고"];
+  const genLabel = `${generation ?? ""}기 가두모집`;
   const rows = list
     .filter((d) => (d.kakaoId || "").trim())
     .map((d) => {
-      const name = d.name || "";
+      const rawName = (d.name || "").trim();
+      const name = rawName ? `${rawName} (${genLabel})` : genLabel;
       const kakaoId = (d.kakaoId || "").trim();
       const notes = `만취 ${d.generation ?? generation ?? ""}기`;
       return [

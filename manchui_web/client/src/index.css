@@ -1,15 +1,32 @@
-* {
-  margin: 0px;
-  padding: 0px;
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 @font-face {
   font-family: "pretendard";
   src: url("./assets/fonts/PretendardVariable.ttf") format("truetype");
 }
+
+html {
+  overflow-x: hidden;
+  width: 100%;
+}
+
 body {
   font-family: "pretendard";
   background-color: var(--background-dark);
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
   overflow-x: hidden;
 }
 ::-webkit-scrollbar {

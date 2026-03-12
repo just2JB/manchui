@@ -224,31 +224,49 @@ const MainPage = () => {
       <section className="about" id="about">
         <div className="about-bg" aria-hidden="true" />
         <div className="about-inner">
-          <h2 className="about-title">
+          <motion.h2
+            className="about-title"
+            initial={{ x: 80, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
             <span className="about-title-line1">
               <span className="about-title-accent">만</span> 가지를
             </span>
             <span className="about-title-line2">
               <span className="about-title-accent">취</span> 하다
             </span>
-          </h2>
-          <p className="about-p">
-            한양대학교 ERICA 중앙동아리 소속{" "}
-            <span className="about-accent">종합예술댄스동아리 만취</span>는
-            &apos;만 가지를 취하다&apos;라는 뜻으로 여러 장르의 춤을
-            섭렵하겠다는 의미를 가진 댄스 동아리입니다.
-          </p>
-          <p className="about-p">
-            힙합을 베이스로, K-pop, 걸리쉬, 여러 댄서들의 코레오, 왁킹, 락킹,
-            팝핀, 보깅까지! <span className="about-accent">다양한 장르</span>의
-            스트릿댄스를 도전해오고 있습니다.
-          </p>
-          <p className="about-p">
-            춤에 대한 열정만 있다면{" "}
-            <span className="about-accent">
-              누구나 만취에 들어와 함께 배우고, 공유하며 춤출 수 있습니다!
-            </span>
-          </p>
+          </motion.h2>
+          <motion.div
+            className="about-body"
+            initial={{ x: 80, opacity: 0 }}
+            whileInView={{ x: 0, opacity: 1 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{
+              duration: 0.5,
+              delay: 0.2,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+          >
+            <p className="about-p">
+              한양대학교 ERICA 중앙동아리 소속{" "}
+              <span className="about-accent">종합예술댄스동아리 만취</span>는
+              &apos;만 가지를 취하다&apos;라는 뜻으로 여러 장르의 춤을
+              섭렵하겠다는 의미를 가진 댄스 동아리입니다.
+            </p>
+            <p className="about-p">
+              힙합을 베이스로, K-pop, 걸리쉬, 여러 댄서들의 코레오, 왁킹, 락킹,
+              팝핀, 보깅까지! <span className="about-accent">다양한 장르</span>의
+              스트릿댄스를 도전해오고 있습니다.
+            </p>
+            <p className="about-p">
+              춤에 대한 열정만 있다면{" "}
+              <span className="about-accent">
+                누구나 만취에 들어와 함께 배우고, 공유하며 춤출 수 있습니다!
+              </span>
+            </p>
+          </motion.div>
         </div>
       </section>
       <section className="keyword-band keyword-band--reverse">

@@ -177,7 +177,7 @@ function Layout() {
   const showPreparing = joinConfig.siteRestricted && !isJoinPath;
 
   return (
-    <>
+    <div className="layout-wrapper">
       <Navbar siteRestricted={joinConfig.siteRestricted} />
       {showPreparing ? (
         <PreparingPage />
@@ -185,7 +185,7 @@ function Layout() {
         <Outlet context={{ joinConfig, joinConfigLoading }} />
       )}
       <Footer />
-    </>
+    </div>
   );
 }
 

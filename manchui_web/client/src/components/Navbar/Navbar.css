@@ -106,25 +106,24 @@
 }
 .navbar .mobileMenu {
   position: fixed;
-  left: 0px;
+  left: 0;
   top: 100vh;
   height: 100vh;
-  width: 100vw;
-  transition-duration: 0.3s;
-}
-.navbar .menuOn {
-  top: 0px;
-  transition-duration: 0.5s;
-  transition-timing-function: ease-in-out;
-}
-.navbar .mobileMenu {
   width: 100%;
-  height: 100vh;
+  max-width: 100vw;
+  transition-duration: 0.3s;
   background: linear-gradient(#121212 8%, var(--brand-red));
-  position: relative;
   overflow: hidden;
   transform: translate3d(0, 0, 0);
   visibility: hidden;
+}
+.navbar .menuOn {
+  top: 0;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+}
+.navbar .menuOn.mobileMenu {
+  visibility: visible;
 }
 
 .navbar .wave {

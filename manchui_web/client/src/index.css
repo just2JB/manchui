@@ -11,6 +11,12 @@
   src: url("./assets/fonts/PretendardVariable.ttf") format("truetype");
 }
 
+/* MODERNIZ: 100% Free, 개인/상업용 사용 가능 (Eko Bimantara, dafont) */
+@font-face {
+  font-family: "Moderniz";
+  src: url("./assets/fonts/Moderniz.otf") format("opentype");
+}
+
 html {
   overflow-x: hidden;
   width: 100%;

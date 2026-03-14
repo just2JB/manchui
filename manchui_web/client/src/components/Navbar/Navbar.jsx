@@ -39,6 +39,10 @@ const Navbar = ({ siteRestricted = false }) => {
     setMobileMenu(false);
   };
 
+  const toMainPage = () => {
+    nav("/");
+    toTop();
+  };
   return (
     <div className="navbar">
       <div
@@ -52,7 +56,7 @@ const Navbar = ({ siteRestricted = false }) => {
       >
         <div className="desktop">
           <div className="logoBox">
-            <div className="shortLogo">
+            <div className="shortLogo" onClick={() => toMainPage()}>
               <img src="/logos/shortLogo.png" alt="Logo" className="menuLogo" />
             </div>
           </div>

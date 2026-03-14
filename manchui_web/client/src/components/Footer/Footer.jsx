@@ -36,11 +36,17 @@ const Footer = () => {
         <p className="footer-tagline">{footerData.tagline}</p>
 
         <nav className="footer-quick-links">
-          <Link to="/" onClick={scrollToTop}>동아리 소개</Link>
+          <Link to="/" onClick={scrollToTop}>
+            동아리 소개
+          </Link>
           <span className="footer-dot" aria-hidden="true" />
-          <Link to="/join" onClick={scrollToTop}>지원하기</Link>
+          <Link to="/join" onClick={scrollToTop}>
+            가입하기
+          </Link>
           <span className="footer-dot" aria-hidden="true" />
-          <Link to="/contact" onClick={scrollToTop}>문의하기</Link>
+          <Link to="/contact" onClick={scrollToTop}>
+            문의하기
+          </Link>
         </nav>
 
         <div className="footer-sns">
@@ -87,7 +93,11 @@ const Footer = () => {
         <p className="footer-reserved">
           ⓒ 2025–{new Date().getFullYear()} MANCHUI. All rights reserved.
           <span className="footer-legal-sep"> · </span>
-          <Link to="/privacy" className="footer-privacy-link" onClick={scrollToTop}>
+          <Link
+            to="/privacy"
+            className="footer-privacy-link"
+            onClick={scrollToTop}
+          >
             개인정보 처리방침
           </Link>
         </p>

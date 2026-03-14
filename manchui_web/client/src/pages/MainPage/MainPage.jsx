@@ -43,6 +43,10 @@ const SESSION_ITEMS = [
 
 const AWARDS_YEARS = [
   {
+    year: "2012~2022",
+    items: ["창립 및 다수의 교내 행사 수상"],
+  },
+  {
     year: "2023",
     items: [
       "봄축제 'ESPERO : PANG!' 끼페스티벌 4위 장려상",
@@ -111,6 +115,13 @@ const MainPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSessionIndex((prev) => (prev + 1) % SESSION_ITEMS.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="main-page">
       <section className={`copy ${phase === "content" ? "copy--header" : ""}`}>
@@ -160,7 +171,7 @@ const MainPage = () => {
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >
-                ——— BY CHANCE · HOWEVER YOU DANCE · FOREVER
+                ——— BY CHANCE · HOWEVER · YOU DANCE · FOREVER
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -215,13 +226,15 @@ const MainPage = () => {
                   to="/join"
                   className="copy-header-btn copy-header-btn--primary"
                 >
-                  가입
+                  가입 하기
                 </Link>
                 <button
                   type="button"
                   className="copy-header-btn copy-header-btn--secondary"
                   onClick={() =>
-                    document.getElementById("session")?.scrollIntoView({ behavior: "smooth" })
+                    document
+                      .getElementById("session")
+                      ?.scrollIntoView({ behavior: "smooth" })
                   }
                 >
                   활동 보기
@@ -314,7 +327,7 @@ const MainPage = () => {
             className="about-title"
             initial={{ x: 80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <span className="about-title-line1">
@@ -328,7 +341,7 @@ const MainPage = () => {
             className="about-body"
             initial={{ x: 80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.2 }}
+            viewport={{ once: true, amount: 0.6 }}
             transition={{
               duration: 0.5,
               delay: 0.2,
@@ -517,7 +530,7 @@ const MainPage = () => {
               className="qna-item"
               initial={{ opacity: 0, x: i % 2 === 0 ? -28 : 28 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.25 }}
+              viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               <p className="qna-q">
@@ -529,7 +542,13 @@ const MainPage = () => {
         </div>
       </section>
       <section className="toJoin" id="toJoin">
-        <div className="toJoin-inner">
+        <motion.div
+          className="toJoin-inner"
+          initial={{ y: -56, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        >
           <p className="toJoin-tagline">JOIN THE CREW</p>
           <h2 className="toJoin-title">
             누구나
@@ -556,7 +575,7 @@ const MainPage = () => {
               인스타그램 팔로우
             </a>
           </div>
-        </div>
+        </motion.div>
       </section>
     </div>
   );

@@ -1,0 +1,6 @@
+# 만취 한양대 댄스동아리 - 검색엔진 크롤링 허용
+User-agent: *
+Allow: /
+
+# 사이트맵 위치 (실제 배포 URL로 변경 권장)
+Sitemap: https://maaaaaaanchui.com/sitemap.xml

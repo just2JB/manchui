@@ -386,7 +386,8 @@
   .copy--header {
     align-items: center;
     text-align: center;
-    padding-left: clamp(2rem, 6vw, 3rem);
+    padding-left: 10px;
+    padding-right: 10px;
   }
 
   .copy-header {
@@ -394,11 +395,17 @@
   }
 
   .copy-header-tagline {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
+    white-space: normal;
+    letter-spacing: 0.04em;
   }
 
   .copy-header-buttons {
     justify-content: center;
+  }
+
+  .copy-header-logo {
+    max-width: calc(100% - 20px);
   }
 }
 

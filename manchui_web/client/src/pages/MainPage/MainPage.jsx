@@ -7,7 +7,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "./MainPage.css";
 
-const COPY_LINES = ["by chance,", "however you dance,", "forever"];
+const COPY_LINES = ["by chance,", "however", "you dance,", "forever"];
 const CHUNK_STAGGER = 0.32;
 const BLANK_AFTER_TYPING_MS = 2200;
 const CONTENT_AFTER_BLANK_MS = 500;
@@ -171,7 +171,7 @@ const MainPage = () => {
                   ease: [0.22, 1, 0.36, 1],
                 }}
               >
-                ——— BY CHANCE · HOWEVER · YOU DANCE · FOREVER
+                BY CHANCE · HOWEVER · YOU DANCE · FOREVER
               </motion.p>
               <motion.div
                 initial={{ opacity: 0, y: 12 }}

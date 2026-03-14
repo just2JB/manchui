@@ -84,7 +84,7 @@ const Navbar = ({ siteRestricted = false }) => {
         </div>
         <div className="mobile">
           <div></div>
-          <div className="logo_long">
+          <div className="logo_long" onClick={() => toMainPage()}>
             <img src="/logos/shortLogo.png" alt="Logo" className="menuLogo" />
           </div>
           <div>

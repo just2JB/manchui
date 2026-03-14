@@ -140,8 +140,9 @@
 }
 
 .keyword-band-word {
-  font-size: 1.05rem;
-  font-weight: 400;
+  font-family: "Moderniz", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 300;
   letter-spacing: 0.08em;
   color: var(--background-dark);
   white-space: nowrap;
@@ -150,7 +151,7 @@
 
 .keyword-band:not(.keyword-band--reverse) .keyword-band-word,
 .keyword-band:not(.keyword-band--reverse) .keyword-band-word-hover {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .keyword-band-item:hover .keyword-band-word {
@@ -158,12 +159,13 @@
 }
 
 .keyword-band-word-hover {
+  font-family: "Moderniz", sans-serif;
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  font-size: 1.05rem;
-  font-weight: 400;
+  font-size: 0.95rem;
+  font-weight: 300;
   letter-spacing: 0.04em;
   color: var(--background-dark);
   white-space: nowrap;
@@ -200,7 +202,7 @@
   }
   .keyword-band-word,
   .keyword-band-word-hover {
-    font-size: 1.15rem;
+    font-size: 1rem;
   }
   .keyword-band-diamond {
     width: 10px;
@@ -281,10 +283,22 @@
   letter-spacing: 0.08em;
   color: var(--brand-red);
   margin: 0;
+  white-space: nowrap;
+}
+
+.copy-header-tagline::before {
+  content: "";
+  display: inline-block;
+  width: 3em;
+  height: 2px;
+  background: currentColor;
+  vertical-align: middle;
+  margin-right: 0.6em;
+  transform: translateY(-3px);
 }
 
 .copy-header-logo {
-  max-width: 320px;
+  max-width: 420px;
   width: 100%;
   height: auto;
   object-fit: contain;
@@ -292,9 +306,10 @@
 }
 
 .copy-header-crew {
+  font-family: "Moderniz", sans-serif;
   font-size: 1.35rem;
   font-weight: 300;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.08em;
   color: var(--text-more);
   margin: 0;
 }
@@ -389,14 +404,14 @@
 
 @media (min-width: 768px) {
   .copy-header-logo {
-    max-width: 420px;
+    max-width: 520px;
   }
   .copy-header-tagline {
     font-size: 0.9rem;
   }
   .copy-header-crew {
     font-size: 1.6rem;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.1em;
   }
   .copy-header-desc {
     font-size: 1.1rem;

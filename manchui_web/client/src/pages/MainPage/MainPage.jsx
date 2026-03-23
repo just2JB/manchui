@@ -327,7 +327,7 @@ const MainPage = () => {
             className="about-title"
             initial={{ x: 80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.9 }}
+            viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <span className="about-title-line1">
@@ -341,7 +341,7 @@ const MainPage = () => {
             className="about-body"
             initial={{ x: 80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.9 }}
+            viewport={{ once: true, amount: 0.6 }}
             transition={{
               duration: 0.5,
               delay: 0.2,

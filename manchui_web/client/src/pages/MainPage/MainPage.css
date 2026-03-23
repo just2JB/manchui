@@ -151,7 +151,7 @@
 
 .keyword-band:not(.keyword-band--reverse) .keyword-band-word,
 .keyword-band:not(.keyword-band--reverse) .keyword-band-word-hover {
-  font-weight: 600;
+  font-weight: 900;
 }
 
 .keyword-band-item:hover .keyword-band-word {
@@ -165,7 +165,7 @@
   top: 50%;
   transform: translate(-50%, -50%);
   font-size: 0.95rem;
-  font-weight: 300;
+  font-weight: 900;
   letter-spacing: 0.08em;
   color: var(--background-dark);
   white-space: nowrap;

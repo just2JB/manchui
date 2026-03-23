@@ -327,7 +327,7 @@ const MainPage = () => {
             className="about-title"
             initial={{ x: 80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.6 }}
+            viewport={{ once: true, amount: 0.9 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           >
             <span className="about-title-line1">
@@ -341,7 +341,7 @@ const MainPage = () => {
             className="about-body"
             initial={{ x: 80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.6 }}
+            viewport={{ once: true, amount: 0.9 }}
             transition={{
               duration: 0.5,
               delay: 0.2,
@@ -530,7 +530,7 @@ const MainPage = () => {
               className="qna-item"
               initial={{ opacity: 0, x: i % 2 === 0 ? -28 : 28 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, amount: 0.6 }}
+              viewport={{ once: true, amount: 0.9 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               <p className="qna-q">
@@ -546,7 +546,7 @@ const MainPage = () => {
           className="toJoin-inner"
           initial={{ y: -56, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
-          viewport={{ once: true, amount: 0.6 }}
+          viewport={{ once: true, amount: 0.9 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="toJoin-tagline">JOIN THE CREW</p>

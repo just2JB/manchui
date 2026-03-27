@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -96,9 +96,31 @@ const QNA_ITEMS = [
   },
 ];
 
+const AWARDS_HIGHLIGHT_REGEX =
+  /(에리카 댄스 대표|1위 대상|장려상|우수상|대상|대표|1등)/g;
+const AWARDS_HIGHLIGHT_WORDS = new Set([
+  "에리카 댄스 대표",
+  "1위 대상",
+  "장려상",
+  "우수상",
+  "대상",
+  "대표",
+  "1등",
+]);
+
+const renderAwardsTextWithHighlight = (text) =>
+  text.split(AWARDS_HIGHLIGHT_REGEX).map((part, idx) =>
+    AWARDS_HIGHLIGHT_WORDS.has(part) ? (
+      <strong key={`${part}-${idx}`}>{part}</strong>
+    ) : (
+      <React.Fragment key={`${part}-${idx}`}>{part}</React.Fragment>
+    ),
+  );
+
 const MainPage = () => {
   const [phase, setPhase] = useState("typing");
   const [sessionIndex, setSessionIndex] = useState(0);
+  const [sessionDirection, setSessionDirection] = useState(1);
 
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
@@ -118,6 +140,7 @@ const MainPage = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
+      setSessionDirection(1);
       setSessionIndex((prev) => (prev + 1) % SESSION_ITEMS.length);
     }, 4000);
     return () => clearInterval(interval);
@@ -130,7 +153,7 @@ const MainPage = () => {
           hueShift={245}
           noiseIntensity={0.28}
           scanlineIntensity={1}
-          speed={1}
+          speed={0.5}
           scanlineFrequency={1}
           warpAmount={3.4}
         />
@@ -334,49 +357,57 @@ const MainPage = () => {
       <section className="about" id="about">
         <div className="about-bg" aria-hidden="true" />
         <div className="about-inner">
-          <motion.h2
-            className="about-title"
-            initial={{ x: 80, opacity: 0 }}
+          <motion.img
+            className="about-short-logo"
+            src="/logos/shortLogo.png"
+            alt=""
+            aria-hidden="true"
+            initial={{ x: -80, opacity: 0 }}
             whileInView={{ x: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <span className="about-title-line1">
-              <span className="about-title-accent">만</span> 가지를
-            </span>
-            <span className="about-title-line2">
-              <span className="about-title-accent">취</span> 하다
-            </span>
-          </motion.h2>
-          <motion.div
-            className="about-body"
-            initial={{ x: 80, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            viewport={{ once: true, amount: 0.6 }}
-            transition={{
-              duration: 0.5,
-              delay: 0.2,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-          >
-            <p className="about-p">
-              한양대학교 ERICA 중앙동아리 소속{" "}
-              <span className="about-accent">종합예술댄스동아리 만취</span>는
-              &apos;만 가지를 취하다&apos;라는 뜻으로 여러 장르의 춤을
-              섭렵하겠다는 의미를 가진 댄스 동아리입니다.
-            </p>
-            <p className="about-p">
-              힙합을 베이스로, K-pop, 걸리쉬, 여러 댄서들의 코레오, 왁킹, 락킹,
-              팝핀, 보깅까지! <span className="about-accent">다양한 장르</span>
-              의 스트릿댄스를 도전해오고 있습니다.
-            </p>
-            <p className="about-p">
-              춤에 대한 열정만 있다면{" "}
-              <span className="about-accent">
-                누구나 만취에 들어와 함께 배우고, 공유하며 춤출 수 있습니다!
-              </span>
-            </p>
-          </motion.div>
+          />
+          <div className="about-text">
+            <motion.h2
+              className="about-title"
+              initial={{ x: 80, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            >
+              만 가지를 취하다
+            </motion.h2>
+            <motion.div
+              className="about-body"
+              initial={{ x: 80, opacity: 0 }}
+              whileInView={{ x: 0, opacity: 1 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.2,
+                ease: [0.22, 1, 0.36, 1],
+              }}
+            >
+              <p className="about-p">
+                한양대학교 ERICA 중앙동아리 소속{" "}
+                <span className="about-accent">종합예술댄스동아리 만취</span>는
+                &apos;만 가지를 취하다&apos;라는 뜻으로 여러 장르의 춤을
+                섭렵하겠다는 의미를 가진 댄스 동아리입니다.
+              </p>
+              <p className="about-p">
+                힙합을 베이스로, K-pop, 걸리쉬, 여러 댄서들의 코레오, 왁킹,
+                락킹, 팝핀, 보깅까지!{" "}
+                <span className="about-accent">다양한 장르</span>의 스트릿댄스를
+                도전해오고 있습니다.
+              </p>
+              <p className="about-p">
+                춤에 대한 열정만 있다면{" "}
+                <span className="about-accent">
+                  누구나 만취에 들어와 함께 배우고, 공유하며 춤출 수 있습니다!
+                </span>
+              </p>
+            </motion.div>
+          </div>
         </div>
       </section>
       <section className="keyword-band">
@@ -463,7 +494,11 @@ const MainPage = () => {
               key={item.id}
               type="button"
               className={`session-menu-btn ${i === sessionIndex ? "session-menu-btn--active" : ""}`}
-              onClick={() => setSessionIndex(i)}
+              onClick={() => {
+                if (i === sessionIndex) return;
+                setSessionDirection(i > sessionIndex ? 1 : -1);
+                setSessionIndex(i);
+              }}
             >
               {item.title}
             </button>
@@ -474,10 +509,11 @@ const MainPage = () => {
             <motion.div
               key={sessionIndex}
               className="session-content"
-              initial={{ y: 40, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -40, opacity: 0 }}
-              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+              custom={sessionDirection}
+              initial={(dir) => ({ x: dir > 0 ? 72 : -72, opacity: 0 })}
+              animate={{ x: 0, opacity: 1 }}
+              exit={(dir) => ({ x: dir > 0 ? -72 : 72, opacity: 0 })}
+              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             >
               <div className="session-image-placeholder">
                 <span className="session-image-placeholder-text">
@@ -495,7 +531,7 @@ const MainPage = () => {
         </div>
       </section>
       <section className="awards" id="awards">
-        <h2 className="awards-title">주요 행적</h2>
+        <h2 className="awards-title">자주 묻는 질문</h2>
         <div className="awards-swiper-wrap">
           <Swiper
             className="awards-swiper"
@@ -517,14 +553,14 @@ const MainPage = () => {
               900: { slidesPerView: 3 },
             }}
           >
-            {AWARDS_YEARS.map((block) => (
-              <SwiperSlide key={block.year}>
+            {QNA_ITEMS.map((item) => (
+              <SwiperSlide key={item.q}>
                 <article className="awards-year">
-                  <h3 className="awards-year-title">{block.year}</h3>
+                  <h3 className="awards-year-title">
+                    <span className="awards-q-mark">Q.</span> {item.q}
+                  </h3>
                   <ul className="awards-list">
-                    {block.items.map((text, i) => (
-                      <li key={i}>{text}</li>
-                    ))}
+                    <li>{item.a}</li>
                   </ul>
                 </article>
               </SwiperSlide>
@@ -532,22 +568,29 @@ const MainPage = () => {
           </Swiper>
         </div>
       </section>
-      <section className="qna" id="qna">
-        <h2 className="qna-heading">자주 묻는 질문</h2>
+      <section className="qna qna--awards" id="qna">
+        <h2 className="qna-heading">주요 행적</h2>
         <div className="qna-list">
-          {QNA_ITEMS.map((item, i) => (
+          {AWARDS_YEARS.map((block, i) => (
             <motion.div
-              key={i}
+              key={block.year}
               className="qna-item"
               initial={{ opacity: 0, x: i % 2 === 0 ? -28 : 28 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, amount: 0.9 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="qna-q">
-                <span className="qna-q-mark">Q.</span> {item.q}
+              <p className="qna-q">{block.year}</p>
+              <p className="qna-a">
+                {block.items.map((text, idx) => (
+                  <span className="qna-awards-line" key={`${block.year}-${idx}`}>
+                    <span className="qna-awards-bullet" aria-hidden="true">
+                      •
+                    </span>{" "}
+                    {renderAwardsTextWithHighlight(text)}
+                  </span>
+                ))}
               </p>
-              <p className="qna-a">{item.a}</p>
             </motion.div>
           ))}
         </div>

@@ -181,6 +181,7 @@
   color: white;
 }
 .navbar .navbar-top .closeMenu {
+  z-index: 100;
   position: absolute;
   left: calc(50% - 25px);
   top: 70%;
@@ -191,6 +192,17 @@
   color: var(--text-primary);
   text-align: center;
   align-content: center;
+}
+
+.navbar .navbar-top .closeMenu:hover {
+  background-color: var(--accent-200);
+}
+
+.navber .mobileLoginButton {
+  z-index: 100;
+}
+.navbar .mobileLoginButton:hover {
+  background-color: var(--accent-200);
 }
 .navbar .floatButtons {
   display: flex;

@@ -97,10 +97,10 @@
   align-items: center;
   justify-content: center;
   align-self: stretch;
-  width: 140px;
-  min-width: 140px;
+  width: 156px;
+  min-width: 156px;
   gap: 0.5rem;
-  padding: 0;
+  padding: 0 0.75rem;
   border: 1px solid transparent;
   box-sizing: border-box;
   cursor: default;
@@ -197,8 +197,8 @@
     height: 56px;
   }
   .keyword-band-item {
-    width: 160px;
-    min-width: 160px;
+    width: 176px;
+    min-width: 176px;
   }
   .keyword-band-word,
   .keyword-band-word-hover {

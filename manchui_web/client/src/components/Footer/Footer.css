@@ -7,6 +7,7 @@
   padding: 24px 16px 20px;
   justify-content: space-between;
   align-items: center;
+  position: relative;
   z-index: 50;
 }
 
@@ -92,7 +93,7 @@
   padding: 0 8px;
 }
 
-/* 데스크톱 */
+/* ?�스?�톱 */
 @media screen and (min-width: 768px) {
   .footer-info {
     padding-top: 16px;
@@ -189,3 +190,4 @@
     font-size: 11px;
   }
 }
+

@@ -4,7 +4,7 @@
   left: 0px;
   width: 100%;
   height: 90px;
-  align-items: center;
+  align-items: start;
   background-color: transparent;
   z-index: 50;
   user-select: none;
@@ -33,14 +33,18 @@
   flex: 1;
 }
 .navbar .shortLogo {
-  height: 50px;
+  height: 56px;
   width: fit-content;
+  font-family: "Moderniz", sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #e0e0e0;
+  line-height: 56px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
   transition-duration: 0.3s;
 }
-.navbar .shortLogo:hover {
-  height: 54px;
-  transform: translateX(-2px);
-}
+
 .navbar .menuLogo {
   height: 100%;
 }
@@ -58,7 +62,7 @@
 .navbar .link {
   text-decoration: none;
   color: var(--text-more);
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   transition-duration: 0.3s;
 }
@@ -71,17 +75,34 @@
   justify-content: end;
 }
 .navbar .loginButton {
-  background-color: var(--brand-red);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: max-content;
+  min-height: 48px;
+  padding: 0.85rem 1.5rem;
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
   color: var(--text-primary);
-  padding: 5px 20px;
-  height: min-content;
-  width: fit-content;
-  border: none;
-  border-radius: 3px;
-  transition-duration: 0.3s;
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
 }
 .navbar .loginButton:hover {
-  background-color: var(--accent-200);
+  opacity: 1;
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
 }
 
 .navbar .navbar-top .mobile {
@@ -95,32 +116,53 @@
 }
 
 .navbar .mobileLoginButtonBox {
-  padding: 10px 20px;
-  border-radius: 10px;
-  background-color: var(--brand-red);
   position: absolute;
   left: 50%;
   top: 80%;
   transform: translate(-50%, 0%);
-  flex: 1;
-  display: flex;
-  justify-content: start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.85rem 1.5rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
+  transition:
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+.navbar .mobileLoginButtonBox:hover {
+  opacity: 1;
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
 }
 .navbar .mobileLoginButton {
   color: var(--text-primary);
   text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .navbar .navbar-top .mobile > div {
   flex: 1;
-  text-align: center;
+  text-align: start;
 }
 .navbar .navbar-top .logo_long {
-  height: 50px;
+  height: 56px;
+}
+.navbar .mobileShortLogo {
+  display: inline-block;
+  font-size: 1rem;
 }
 .navbar .navbar-top .menu_btn {
   text-align: end;
-  color: var(--text-primary);
+  color: #e0e0e0;
+  font-size: 1.5rem;
 }
 .navbar .mobileMenu {
   position: fixed;
@@ -188,8 +230,8 @@
   background-color: var(--box-1);
   border-radius: 50px;
   width: 50px;
-  height: 50px;
-  color: var(--text-primary);
+  height: 56px;
+  color: #e0e0e0;
   text-align: center;
   align-content: center;
 }
@@ -215,14 +257,14 @@
 }
 .navbar .mobileLinkButton {
   position: absolute;
-  color: var(--text-primary);
+  color: #e0e0e0;
   width: max-content;
-  padding: 5px 20px;
-  border-radius: 10px;
+  padding: 4px 14px;
+  border-radius: 12px;
 }
 .navbar .mobileLinkButton .link {
   font-weight: 400;
-  font-size: 17px;
+  font-size: 20px;
 }
 .navbar .float0 {
   animation: floatButton 950ms infinite linear;

@@ -57,7 +57,7 @@ const Navbar = ({ siteRestricted = false }) => {
         <div className="desktop">
           <div className="logoBox">
             <div className="shortLogo" onClick={() => toMainPage()}>
-              <img src="/logos/shortLogo.png" alt="Logo" className="menuLogo" />
+              MANCHUI
             </div>
           </div>
           <div className="menu">
@@ -83,9 +83,8 @@ const Navbar = ({ siteRestricted = false }) => {
           </div>
         </div>
         <div className="mobile">
-          <div></div>
           <div className="logo_long" onClick={() => toMainPage()}>
-            <img src="/logos/shortLogo.png" alt="Logo" className="menuLogo" />
+            <span className="shortLogo mobileShortLogo">MANCHUI</span>
           </div>
           <div>
             <div className="menu_btn" onClick={() => setMobileMenu(true)}>

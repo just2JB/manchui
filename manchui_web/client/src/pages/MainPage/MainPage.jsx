@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+﻿import React, { useState, useEffect, useLayoutEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -6,6 +6,7 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
 import "./MainPage.css";
+import DarkVeil from "../../components/DarkVeil/DarkVeil";
 
 const COPY_LINES = ["by chance,", "however", "you dance,", "forever"];
 const CHUNK_STAGGER = 0.32;
@@ -124,6 +125,16 @@ const MainPage = () => {
 
   return (
     <div className="main-page">
+      <div className="main-page-bg" aria-hidden="true">
+        <DarkVeil
+          hueShift={245}
+          noiseIntensity={0.28}
+          scanlineIntensity={1}
+          speed={1}
+          scanlineFrequency={1}
+          warpAmount={3.4}
+        />
+      </div>
       <section className={`copy ${phase === "content" ? "copy--header" : ""}`}>
         <AnimatePresence mode="wait">
           {phase === "typing" && (
@@ -244,7 +255,7 @@ const MainPage = () => {
           )}
         </AnimatePresence>
       </section>
-      <section className="keyword-band">
+      <section className="keyword-band keyword-band--reverse keyword-band--top">
         <div className="keyword-band-viewport">
           <div className="keyword-band-track">
             <span className="keyword-band-inner">
@@ -368,7 +379,7 @@ const MainPage = () => {
           </motion.div>
         </div>
       </section>
-      <section className="keyword-band keyword-band--reverse">
+      <section className="keyword-band">
         <div className="keyword-band-viewport">
           <div className="keyword-band-track">
             <span className="keyword-band-inner">

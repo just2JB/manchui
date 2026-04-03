@@ -1,13 +1,20 @@
 import React, { useEffect } from "react";
 import "./AuthWindow.css";
 import axios from "axios";
-import { useNavigate, useOutletContext, Link } from "react-router-dom";
+import {
+  useNavigate,
+  useOutletContext,
+  Link,
+  useLocation,
+} from "react-router-dom";
+import { scrollWindowTopAfterNav } from "../../../utils/navScroll";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const AuthWindow = () => {
   const { redirectTo } = useOutletContext() ?? {};
   const nav = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const verifyToken = async () => {
@@ -54,7 +61,11 @@ const AuthWindow = () => {
             <span className="auth-btn-sub">새로 계정 만들기</span>
           </button>
         </div>
-        <Link to="/" className="auth-window-home">
+        <Link
+          to="/"
+          className="auth-window-home"
+          onClick={() => scrollWindowTopAfterNav("/", location)}
+        >
           홈페이지로 돌아가기
         </Link>
       </div>

@@ -1,8 +1,10 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { scrollWindowTopAfterNav } from "../../utils/navScroll";
 import "./Privacy.css";
 
 const Privacy = () => {
+  const location = useLocation();
   return (
     <div className="privacy-page">
       <div className="privacy-container">
@@ -88,7 +90,11 @@ const Privacy = () => {
         </section>
 
         <div className="privacy-back">
-          <Link to="/" className="privacy-back-link">
+          <Link
+            to="/"
+            className="privacy-back-link"
+            onClick={() => scrollWindowTopAfterNav("/", location)}
+          >
             메인으로 돌아가기
           </Link>
         </div>

@@ -123,30 +123,6 @@
   transition: background-color 0.2s ease;
 }
 
-.keyword-band-item:hover {
-  background-color: var(--text-primary);
-  transform: translateY(-1px);
-  height: calc(100% + 2px);
-}
-
-.keyword-band:not(.keyword-band--reverse) .keyword-band-item:hover {
-  background-color: var(--background-dark);
-}
-
-.keyword-band:not(.keyword-band--reverse)
-  .keyword-band-item:hover
-  .keyword-band-word-hover {
-  color: var(--text-primary);
-}
-
-.keyword-band:not(.keyword-band--reverse)
-  .keyword-band-item:hover
-  .keyword-band-diamond
-  svg
-  path {
-  fill: var(--text-primary);
-}
-
 .keyword-band-word-wrap {
   position: relative;
   display: inline-flex;
@@ -251,20 +227,12 @@
   color: var(--brand-red);
 }
 
-.keyword-band--reverse .keyword-band-diamond svg path {
-  fill: var(--brand-red);
-}
-
 .keyword-band--reverse .keyword-band-item:hover {
   background-color: var(--brand-red);
 }
 
 .keyword-band--reverse .keyword-band-item:hover .keyword-band-word-hover {
   color: var(--text-primary);
-}
-
-.keyword-band--reverse .keyword-band-item:hover .keyword-band-diamond svg path {
-  fill: var(--text-primary);
 }
 
 @keyframes keyword-band-scroll-reverse {
@@ -673,6 +641,12 @@
   align-items: center;
 }
 
+.awards.faq-section {
+  min-height: 100vh;
+  box-sizing: border-box;
+  justify-content: center;
+}
+
 .awards-title {
   font-size: clamp(1.75rem, 5vw, 2.25rem);
   font-weight: 700;
@@ -683,93 +657,94 @@
   width: 100%;
 }
 
-.awards-swiper-wrap {
+.faq-section .faq-list {
   width: 100%;
-  max-width: 900px;
-  touch-action: pan-y;
+  max-width: 720px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
-.awards-swiper {
-  overflow: hidden;
-  padding: 0.25rem 0 1rem;
-  cursor: grab;
-  user-select: none;
+.faq-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.awards-swiper:active {
-  cursor: grabbing;
+.faq-item:first-child {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-.awards-swiper .swiper-slide {
-  height: auto;
-  box-sizing: border-box;
-}
-
-.awards-swiper .swiper-pagination {
-  position: relative;
-  margin-top: 1rem;
-  bottom: auto;
-}
-
-.awards-swiper .swiper-pagination-bullet {
-  width: 8px;
-  height: 8px;
-  background: rgba(255, 255, 255, 0.3);
-  opacity: 1;
-  transition:
-    background 0.2s,
-    transform 0.2s;
-}
-
-.awards-swiper .swiper-pagination-bullet-active {
-  background: var(--brand-red);
-  transform: scale(1.2);
-}
-
-.awards-year {
-  flex-shrink: 0;
-  width: min(320px, 85vw);
-  min-width: 280px;
-  padding: 1rem 1.5rem 1rem 0;
-  padding-left: 1.5rem;
-  border-left: 2px solid rgba(255, 255, 255, 0.2);
-  box-sizing: border-box;
-}
-
-.awards-year:first-child {
-  padding-left: 0;
-  border-left: none;
-}
-
-.awards-year-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+.faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0.25rem 1rem 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: clamp(0.95rem, 2.2vw, 1.05rem);
+  font-weight: 500;
   color: var(--text-primary);
-  margin: 0 0 0.75rem;
+  text-align: left;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: color 0.2s;
 }
 
-.awards-q-mark {
+.faq-question:hover {
+  color: #f0f0f0;
+}
+
+.faq-question-inner {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.faq-q-mark {
+  flex-shrink: 0;
+  color: var(--brand-red);
+  font-weight: 700;
+}
+
+.faq-q-text {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.45;
+}
+
+.faq-chevron {
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform 0.3s ease,
+    color 0.2s;
+}
+
+.faq-item--open .faq-chevron {
+  transform: rotate(180deg);
   color: var(--brand-red);
 }
 
-.awards-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.faq-answer-outer {
+  overflow: hidden;
 }
 
-.awards-list li {
-  font-size: 0.9rem;
+.faq-answer {
+  padding: 0 0 1.1rem 1.85rem;
+  font-size: clamp(0.875rem, 2vw, 0.95rem);
   font-weight: 300;
-  line-height: 1.6;
+  line-height: 1.7;
   color: #b8b8b8;
-  margin-bottom: 0.6rem;
-  padding-left: 0;
-}
-
-.awards-list li:last-child {
-  margin-bottom: 0;
+  max-width: 100%;
 }
 
 /* ---------- Session Section ---------- */
@@ -875,8 +850,14 @@
 
 /* ---------- QnA Section ---------- */
 .qna {
+  min-height: 100vh;
+  box-sizing: border-box;
   padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
   background: linear-gradient(var(--background-dark) 70%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .qna-heading {
@@ -974,8 +955,8 @@
   .qna-item,
   .qna-item:nth-child(odd),
   .qna-item:nth-child(even) {
-    align-self: stretch;
-    max-width: 100%;
+    align-self: center;
+    max-width: min(360px, 90vw);
     padding-left: 0;
     padding-right: 0;
     margin-bottom: 1.25rem;
@@ -1035,6 +1016,35 @@
 .qna--awards .qna-a strong {
   font-weight: 600;
   color: #d0d0d0;
+}
+
+/* 주요 행적 모바일: 데스크톱 좌·우 규칙보다 뒤에 두어 연도·본문 모두 가운데 */
+@media (max-width: 767px) {
+  .qna--awards .qna-list {
+    align-items: center;
+  }
+
+  .qna--awards .qna-item:nth-child(odd) .qna-q,
+  .qna--awards .qna-item:nth-child(odd) .qna-a,
+  .qna--awards .qna-item:nth-child(even) .qna-q,
+  .qna--awards .qna-item:nth-child(even) .qna-a {
+    text-align: center;
+  }
+
+  .qna--awards .qna-q {
+    text-align: center;
+    width: 100%;
+  }
+
+  .qna--awards .qna-item:nth-child(odd) .qna-a,
+  .qna--awards .qna-item:nth-child(even) .qna-a {
+    align-items: center;
+  }
+
+  .qna--awards .qna-awards-line {
+    margin-left: auto;
+    margin-right: auto;
+  }
 }
 
 .qna-awards-line {
@@ -1216,10 +1226,6 @@
 
 .keyword-band .keyword-band-item:hover .keyword-band-word-hover {
   opacity: 0 !important;
-}
-
-.keyword-band .keyword-band-item:hover .keyword-band-diamond svg path {
-  fill: inherit !important;
 }
 
 /* ---------- Keyword spacing consistency ---------- */

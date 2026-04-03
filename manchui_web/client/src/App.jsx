@@ -42,14 +42,20 @@ import SignUpEmail from "./pages/ClubRoom/AuthWindow/SignUpEmail";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
 import NotFound from "./pages/NotFound/NotFound";
+import { scrollWindowTopAfterNav } from "./utils/navScroll";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 function PreparingPage() {
+  const location = useLocation();
   return (
     <div className="preparingPage">
       <p className="preparingMessage">현재 준비중입니다.</p>
-      <Link to="/join" className="preparingLink">
+      <Link
+        to="/join"
+        className="preparingLink"
+        onClick={() => scrollWindowTopAfterNav("/join", location)}
+      >
         가입하러 가기
       </Link>
     </div>

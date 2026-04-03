@@ -1,10 +1,7 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
-import { Link } from "react-router-dom";
+﻿import React, { useState, useEffect, useLayoutEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { scrollWindowTopAfterNav } from "../../utils/navScroll";
 import { motion, AnimatePresence } from "motion/react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
 import "./MainPage.css";
 import DarkVeil from "../../components/DarkVeil/DarkVeil";
 
@@ -109,22 +106,34 @@ const AWARDS_HIGHLIGHT_WORDS = new Set([
 ]);
 
 const renderAwardsTextWithHighlight = (text) =>
-  text.split(AWARDS_HIGHLIGHT_REGEX).map((part, idx) =>
-    AWARDS_HIGHLIGHT_WORDS.has(part) ? (
-      <strong key={`${part}-${idx}`}>{part}</strong>
-    ) : (
-      <React.Fragment key={`${part}-${idx}`}>{part}</React.Fragment>
-    ),
-  );
+  text
+    .split(AWARDS_HIGHLIGHT_REGEX)
+    .map((part, idx) =>
+      AWARDS_HIGHLIGHT_WORDS.has(part) ? (
+        <strong key={`${part}-${idx}`}>{part}</strong>
+      ) : (
+        <React.Fragment key={`${part}-${idx}`}>{part}</React.Fragment>
+      ),
+    );
 
 const MainPage = () => {
+  const location = useLocation();
   const [phase, setPhase] = useState("typing");
   const [sessionIndex, setSessionIndex] = useState(0);
   const [sessionDirection, setSessionDirection] = useState(1);
+  const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   useLayoutEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+    if (location.hash === "#session") {
+      requestAnimationFrame(() => {
+        document
+          .getElementById("session")
+          ?.scrollIntoView({ behavior: "instant" });
+      });
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [location.hash]);
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase("blank"), BLANK_AFTER_TYPING_MS);
@@ -153,7 +162,7 @@ const MainPage = () => {
           hueShift={245}
           noiseIntensity={0.28}
           scanlineIntensity={1}
-          speed={0.5}
+          speed={1}
           scanlineFrequency={1}
           warpAmount={3.4}
         />
@@ -259,6 +268,7 @@ const MainPage = () => {
                 <Link
                   to="/join"
                   className="copy-header-btn copy-header-btn--primary"
+                  onClick={() => scrollWindowTopAfterNav("/join", location)}
                 >
                   가입 하기
                 </Link>
@@ -295,12 +305,6 @@ const MainPage = () => {
                 <span key={word} className="keyword-band-item">
                   <span className="keyword-band-word-wrap">
                     <span className="keyword-band-word">{word}</span>
-                    <span
-                      className="keyword-band-word-hover"
-                      aria-hidden="true"
-                    >
-                      취하다
-                    </span>
                   </span>
                   <span className="keyword-band-diamond" aria-hidden="true">
                     <svg
@@ -330,12 +334,6 @@ const MainPage = () => {
                 <span key={word} className="keyword-band-item">
                   <span className="keyword-band-word-wrap">
                     <span className="keyword-band-word">{word}</span>
-                    <span
-                      className="keyword-band-word-hover"
-                      aria-hidden="true"
-                    >
-                      취하다
-                    </span>
                   </span>
                   <span className="keyword-band-diamond" aria-hidden="true">
                     <svg
@@ -427,12 +425,6 @@ const MainPage = () => {
                 <span key={word} className="keyword-band-item">
                   <span className="keyword-band-word-wrap">
                     <span className="keyword-band-word">{word}</span>
-                    <span
-                      className="keyword-band-word-hover"
-                      aria-hidden="true"
-                    >
-                      취하다
-                    </span>
                   </span>
                   <span className="keyword-band-diamond" aria-hidden="true">
                     <svg
@@ -462,12 +454,6 @@ const MainPage = () => {
                 <span key={`rev-${word}`} className="keyword-band-item">
                   <span className="keyword-band-word-wrap">
                     <span className="keyword-band-word">{word}</span>
-                    <span
-                      className="keyword-band-word-hover"
-                      aria-hidden="true"
-                    >
-                      취하다
-                    </span>
                   </span>
                   <span className="keyword-band-diamond" aria-hidden="true">
                     <svg
@@ -530,42 +516,73 @@ const MainPage = () => {
           </AnimatePresence>
         </div>
       </section>
-      <section className="awards" id="awards">
+      <section className="awards faq-section" id="awards">
         <h2 className="awards-title">자주 묻는 질문</h2>
-        <div className="awards-swiper-wrap">
-          <Swiper
-            className="awards-swiper"
-            modules={[Autoplay, Pagination]}
-            direction="horizontal"
-            slidesPerView={3}
-            spaceBetween={20}
-            loop={true}
-            allowTouchMove={true}
-            simulateTouch={true}
-            pagination={{ clickable: true }}
-            autoplay={{
-              delay: 3000,
-              disableOnInteraction: false,
-            }}
-            breakpoints={{
-              320: { slidesPerView: 1 },
-              640: { slidesPerView: 2 },
-              900: { slidesPerView: 3 },
-            }}
-          >
-            {QNA_ITEMS.map((item) => (
-              <SwiperSlide key={item.q}>
-                <article className="awards-year">
-                  <h3 className="awards-year-title">
-                    <span className="awards-q-mark">Q.</span> {item.q}
-                  </h3>
-                  <ul className="awards-list">
-                    <li>{item.a}</li>
-                  </ul>
-                </article>
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        <div className="faq-list">
+          {QNA_ITEMS.map((item, i) => {
+            const isOpen = openFaqIndex === i;
+            return (
+              <div
+                key={item.q}
+                className={`faq-item ${isOpen ? "faq-item--open" : ""}`}
+              >
+                <button
+                  type="button"
+                  className="faq-question"
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-answer-${i}`}
+                  id={`faq-question-${i}`}
+                  onClick={() =>
+                    setOpenFaqIndex((prev) => (prev === i ? null : i))
+                  }
+                >
+                  <span className="faq-question-inner">
+                    <span className="faq-q-mark" aria-hidden="true">
+                      Q.
+                    </span>
+                    <span className="faq-q-text">{item.q}</span>
+                  </span>
+                  <span className="faq-chevron" aria-hidden="true">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M2.5 4.5L6 8L9.5 4.5"
+                        stroke="currentColor"
+                        strokeWidth="1.4"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </span>
+                </button>
+                <AnimatePresence initial={false}>
+                  {isOpen && (
+                    <motion.div
+                      id={`faq-answer-${i}`}
+                      role="region"
+                      aria-labelledby={`faq-question-${i}`}
+                      className="faq-answer-outer"
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{
+                        duration: 0.32,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      style={{ overflow: "hidden" }}
+                    >
+                      <div className="faq-answer">{item.a}</div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            );
+          })}
         </div>
       </section>
       <section className="qna qna--awards" id="qna">
@@ -583,7 +600,10 @@ const MainPage = () => {
               <p className="qna-q">{block.year}</p>
               <p className="qna-a">
                 {block.items.map((text, idx) => (
-                  <span className="qna-awards-line" key={`${block.year}-${idx}`}>
+                  <span
+                    className="qna-awards-line"
+                    key={`${block.year}-${idx}`}
+                  >
                     <span className="qna-awards-bullet" aria-hidden="true">
                       •
                     </span>{" "}
@@ -617,17 +637,13 @@ const MainPage = () => {
             당신의 이야기를 우리와 함께 써내려가세요.
           </p>
           <div className="toJoin-buttons">
-            <Link to="/join" className="toJoin-btn toJoin-btn--primary">
+            <Link
+              to="/join"
+              onClick={() => scrollWindowTopAfterNav("/join", location)}
+              className="toJoin-btn toJoin-btn--primary"
+            >
               가입하기
             </Link>
-            <a
-              href="https://www.instagram.com/maaaaaaanchui/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="toJoin-btn toJoin-btn--secondary"
-            >
-              인스타그램 팔로우
-            </a>
           </div>
         </motion.div>
       </section>

@@ -1,9 +1,11 @@
 import React from "react";
-import { useOutletContext, Link } from "react-router-dom";
+import { useOutletContext, Link, useLocation } from "react-router-dom";
+import { scrollWindowTopAfterNav } from "../../../utils/navScroll";
 import "./AuthWindow.css";
 
 const SignUpEmail = () => {
   const { formData, handleChange, signUpHandle, nav } = useOutletContext();
+  const location = useLocation();
 
   return (
     <div className="signUpEmail formPage">
@@ -16,7 +18,11 @@ const SignUpEmail = () => {
         >
           ← 로그인 선택으로
         </button>
-        <Link to="/" className="auth-form-home">
+        <Link
+          to="/"
+          className="auth-form-home"
+          onClick={() => scrollWindowTopAfterNav("/", location)}
+        >
           홈페이지로
         </Link>
       </div>

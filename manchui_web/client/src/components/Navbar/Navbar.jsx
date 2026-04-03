@@ -2,19 +2,39 @@ import React, { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { IoMdMenu, IoMdClose } from "react-icons/io";
+import {
+  isSameLinkDestination,
+  scrollWindowTopAfterNav,
+} from "../../utils/navScroll";
 import "./Navbar.css";
 
 const ALL_PAGES = [
-  { name: "홈", path: "/" },
-  { name: "가입", path: "/join" },
-  { name: "문의", path: "/contact" },
-  { name: "굿즈", path: "/goods" },
+  { name: "홈", nameEn: "HOME", path: "/" },
+  {
+    name: "주요 활동",
+    nameEn: "SESSION",
+    path: "/",
+    scrollToId: "session",
+  },
+  { name: "가입", nameEn: "JOIN", path: "/join" },
+  { name: "문의", nameEn: "CONTACT", path: "/contact" },
+  { name: "굿즈", nameEn: "GOODS", path: "/goods" },
 ];
-/** siteRestricted일 때는 가입만 표시 */
-const RESTRICTED_PAGES = [{ name: "가입", path: "/join" }];
 
-function toTop() {
-  window.scrollTo({ top: 0, behavior: "smooth" });
+function isNavItemActive(page, location) {
+  if (page.scrollToId) {
+    return location.pathname === "/" && location.hash === `#${page.scrollToId}`;
+  }
+  if (page.path === "/") {
+    return location.pathname === "/" && location.hash !== "#session";
+  }
+  return location.pathname === page.path;
+}
+/** siteRestricted일 때는 가입만 표시 */
+const RESTRICTED_PAGES = [{ name: "가입", nameEn: "JOIN", path: "/join" }];
+
+function toTopInstant() {
+  window.scrollTo({ top: 0, behavior: "instant" });
 }
 
 const Navbar = ({ siteRestricted = false }) => {
@@ -34,14 +54,35 @@ const Navbar = ({ siteRestricted = false }) => {
 
   const pages = siteRestricted ? RESTRICTED_PAGES : ALL_PAGES;
 
-  const clickMobileLink = () => {
-    toTop();
+  const closeMobileMenu = () => {
     setMobileMenu(false);
   };
 
+  const afterMobileNavClick = (page) => {
+    closeMobileMenu();
+    if (page?.scrollToId) {
+      if (
+        location.pathname === "/" &&
+        location.hash === `#${page.scrollToId}`
+      ) {
+        requestAnimationFrame(() =>
+          document
+            .getElementById(page.scrollToId)
+            ?.scrollIntoView({ behavior: "smooth" }),
+        );
+      }
+      return;
+    }
+    scrollWindowTopAfterNav(page.path, location);
+  };
+
   const toMainPage = () => {
+    if (isSameLinkDestination("/", location)) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     nav("/");
-    toTop();
+    toTopInstant();
   };
   return (
     <div className="navbar">
@@ -62,14 +103,34 @@ const Navbar = ({ siteRestricted = false }) => {
           </div>
           <div className="menu">
             {pages.map((page) => (
-              <div key={page.path} className="linkBox">
+              <div
+                key={page.scrollToId ? `scroll-${page.scrollToId}` : page.path}
+                className="linkBox"
+              >
                 <Link
                   className="link"
-                  to={page.path}
+                  to={
+                    page.scrollToId
+                      ? { pathname: "/", hash: page.scrollToId }
+                      : page.path
+                  }
                   style={{
-                    color: location.pathname === page.path ? "#ffffff" : "",
+                    color: isNavItemActive(page, location) ? "#ffffff" : "",
                   }}
-                  onClick={() => toTop()}
+                  onClick={() => {
+                    if (page.scrollToId) {
+                      if (
+                        location.pathname === "/" &&
+                        location.hash === `#${page.scrollToId}`
+                      ) {
+                        document
+                          .getElementById(page.scrollToId)
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }
+                      return;
+                    }
+                    scrollWindowTopAfterNav(page.path, location);
+                  }}
                 >
                   {page.name}
                 </Link>
@@ -77,7 +138,17 @@ const Navbar = ({ siteRestricted = false }) => {
             ))}
           </div>
           <div className="loginButtonBox">
-            <button className="loginButton" onClick={() => nav("/login")}>
+            <button
+              className="loginButton"
+              onClick={() => {
+                if (isSameLinkDestination("/login", location)) {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  return;
+                }
+                nav("/login");
+                toTopInstant();
+              }}
+            >
               로그인
             </button>
           </div>
@@ -92,44 +163,61 @@ const Navbar = ({ siteRestricted = false }) => {
             </div>
           </div>
         </div>
-        <div className={`mobileMenu ${mobileMenu ? "menuOn" : ""}`}>
-          {" "}
-          <div className="mobileLoginButtonBox">
-            <Link to="/login" className="mobileLoginButton">
-              로그인
-            </Link>
-          </div>
-          <div class="wave -one"></div>
-          <div class="wave -two"></div>
-          <div class="wave -three"></div>
-          <div class="menuContents">
-            <div className="floatButtons">
-              {pages.map((page, index) => (
-                <div key={page.path} className="mobileLinkBox">
-                  <div
-                    className={`mobileLinkButton float${index}`}
-                    style={{
-                      top: `-${((pages.length - index) ^ 2) * 4}px`,
-                      rotate: `-${((pages.length - index - 1) ^ 2) * 5}deg`,
-                    }}
+        <div
+          className={`mobileMenu ${mobileMenu ? "menuOn" : ""}`}
+          role="dialog"
+          aria-modal="true"
+          aria-label="모바일 메뉴"
+        >
+          <div className="mobileMenu-shell">
+            <header className="mobileMenu-top">
+              <span className="mobileMenu-top-spacer" aria-hidden="true" />
+              <button
+                type="button"
+                className="mobileMenu-close"
+                onClick={() => setMobileMenu(false)}
+                aria-label="메뉴 닫기"
+              >
+                <IoMdClose aria-hidden />
+              </button>
+            </header>
+            <nav className="mobileMenu-nav" aria-label="페이지 이동">
+              <ul className="mobileMenu-list">
+                {pages.map((page) => (
+                  <li
+                    key={
+                      page.scrollToId ? `scroll-${page.scrollToId}` : page.path
+                    }
+                    className="mobileMenu-item"
                   >
                     <Link
-                      className="link"
-                      to={page.path}
-                      style={{
-                        color: location.pathname === page.path ? "#ffffff" : "",
-                      }}
-                      onClick={() => clickMobileLink()}
+                      className={`mobileMenu-link ${isNavItemActive(page, location) ? "mobileMenu-link--active" : ""}`}
+                      to={
+                        page.scrollToId
+                          ? { pathname: "/", hash: page.scrollToId }
+                          : page.path
+                      }
+                      onClick={() => afterMobileNavClick(page)}
                     >
-                      {page.name}
+                      {page.nameEn}
                     </Link>
-                  </div>
-                </div>
-              ))}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+            <div className="mobileMenu-bottom">
+              <div className="mobileMenu-divider" aria-hidden="true" />
+              <Link
+                to="/login"
+                className="mobileMenu-loginCta"
+                onClick={() => {
+                  closeMobileMenu();
+                  scrollWindowTopAfterNav("/login", location);
+                }}
+              >
+                로그인
+              </Link>
             </div>
-          </div>
-          <div className="closeMenu" onClick={() => setMobileMenu(false)}>
-            <IoMdClose />
           </div>
         </div>
       </div>

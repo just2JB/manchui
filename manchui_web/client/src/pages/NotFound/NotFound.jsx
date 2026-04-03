@@ -1,11 +1,13 @@
 import { Link, useLocation } from "react-router-dom";
 import { scrollWindowTopAfterNav } from "../../utils/navScroll";
+import { ScrollToTopOnRoute } from "../../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import "./NotFound.css";
 
 function NotFound() {
   const location = useLocation();
   return (
     <div className="not-found">
+      <ScrollToTopOnRoute />
       <h1>404</h1>
       <p>페이지를 찾을 수 없습니다.</p>
 

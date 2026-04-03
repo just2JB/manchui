@@ -30,11 +30,12 @@ export function isSameLinkDestination(to, location) {
   return hash === locHash;
 }
 
-/** 라우트 이동 직후 맨 위로: 다른 페이지로 가면 즉시, 같은 링크 재클릭이면 부드럽게 */
+/**
+ * 같은 목적지 링크 재클릭일 때만 맨 위로 부드럽게 스크롤.
+ * 다른 페이지로 갈 때 스크롤은 ScrollToTopOnRoute(useLayoutEffect)에서 처리.
+ */
 export function scrollWindowTopAfterNav(to, location) {
   if (isSameLinkDestination(to, location)) {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  } else {
-    window.scrollTo({ top: 0, behavior: "instant" });
   }
 }

@@ -33,10 +33,6 @@ function isNavItemActive(page, location) {
 /** siteRestricted일 때는 가입만 표시 */
 const RESTRICTED_PAGES = [{ name: "가입", nameEn: "JOIN", path: "/join" }];
 
-function toTopInstant() {
-  window.scrollTo({ top: 0, behavior: "instant" });
-}
-
 const Navbar = ({ siteRestricted = false }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
@@ -82,7 +78,6 @@ const Navbar = ({ siteRestricted = false }) => {
       return;
     }
     nav("/");
-    toTopInstant();
   };
   return (
     <div className="navbar">
@@ -146,7 +141,6 @@ const Navbar = ({ siteRestricted = false }) => {
                   return;
                 }
                 nav("/login");
-                toTopInstant();
               }}
             >
               로그인

@@ -43,6 +43,7 @@ import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
 import NotFound from "./pages/NotFound/NotFound";
 import { scrollWindowTopAfterNav } from "./utils/navScroll";
+import { ScrollToTopOnRoute } from "./components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -138,7 +139,14 @@ function AdminRoute() {
   if (isAuthenticated === null) {
     return null;
   }
-  return isAuthenticated ? <Outlet context={{ user }} /> : notAuth();
+  return isAuthenticated ? (
+    <>
+      <ScrollToTopOnRoute />
+      <Outlet context={{ user }} />
+    </>
+  ) : (
+    notAuth()
+  );
 }
 
 const JOIN_PATHS = ["/join", "/join/check", "/join/form"];
@@ -185,6 +193,7 @@ function Layout() {
 
   return (
     <div className="layout-wrapper">
+      <ScrollToTopOnRoute />
       <Navbar siteRestricted={joinConfig.siteRestricted} />
       {showPreparing ? (
         <PreparingPage />
@@ -223,6 +232,7 @@ function ClubRoomLayout() {
 
   return (
     <>
+      <ScrollToTopOnRoute />
       <div className="clubRoomLayout">
         <ClubRoomNavbar isLogin={isLogin} setIsLogin={setIsLogin} />
         <div className="clubRoombody">
@@ -308,6 +318,7 @@ function LoginRoute() {
 
   return (
     <div className="loginPage">
+      <ScrollToTopOnRoute />
       <Outlet
         context={{
           formData,

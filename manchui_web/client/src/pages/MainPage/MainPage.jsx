@@ -121,7 +121,7 @@ const MainPage = () => {
   const [phase, setPhase] = useState("typing");
   const [sessionIndex, setSessionIndex] = useState(0);
   const [sessionDirection, setSessionDirection] = useState(1);
-  const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [openFaqIndices, setOpenFaqIndices] = useState(() => new Set());
 
   useLayoutEffect(() => {
     if (location.hash === "#session") {
@@ -520,7 +520,7 @@ const MainPage = () => {
         <h2 className="awards-title">자주 묻는 질문</h2>
         <div className="faq-list">
           {QNA_ITEMS.map((item, i) => {
-            const isOpen = openFaqIndex === i;
+            const isOpen = openFaqIndices.has(i);
             return (
               <div
                 key={item.q}
@@ -533,7 +533,12 @@ const MainPage = () => {
                   aria-controls={`faq-answer-${i}`}
                   id={`faq-question-${i}`}
                   onClick={() =>
-                    setOpenFaqIndex((prev) => (prev === i ? null : i))
+                    setOpenFaqIndices((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(i)) next.delete(i);
+                      else next.add(i);
+                      return next;
+                    })
                   }
                 >
                   <span className="faq-question-inner">

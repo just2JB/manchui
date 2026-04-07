@@ -1,0 +1,31 @@
+.terms-page {
+  color: var(--text-primary);
+  background: var(--background-dark);
+  min-height: 60vh;
+  padding: 2rem 1.25rem;
+  max-width: 720px;
+  margin: 0 auto;
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.terms-page h1 {
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.terms-page .terms-lead {
+  color: var(--text-more);
+  font-size: 0.95rem;
+}
+
+.terms-page .terms-back {
+  display: inline-block;
+  margin-top: 1.5rem;
+  color: var(--brand-red);
+  text-decoration: none;
+}
+
+.terms-page .terms-back:hover {
+  text-decoration: underline;
+}

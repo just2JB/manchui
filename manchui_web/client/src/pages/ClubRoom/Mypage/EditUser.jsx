@@ -19,7 +19,7 @@ const Mypage = () => {
   });
   const parmas = useParams();
   const nav = useNavigate();
-  const [selectedForm, setSelectedForm] = useState(parmas.data.slice(1));
+  const [selectedForm, setSelectedForm] = useState(parmas.data ?? "");
 
   const handleChange = (e) => {
     if (selectedForm === "Identification") {

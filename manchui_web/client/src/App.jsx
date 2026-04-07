@@ -8,7 +8,9 @@ import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import Join from "./pages/Join/Join";
 import Contact from "./pages/Contact/Contact";
 import Privacy from "./pages/Privacy/Privacy";
+import Terms from "./pages/Terms/Terms";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
+import EditProfile from "./pages/ClubRoom/Mypage/EditProfile";
 import EditUser from "./pages/ClubRoom/Mypage/EditUser";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
@@ -30,6 +32,7 @@ const router = createBrowserRouter([
       { index: true, element: <MainPage /> },
       { path: "/contact", element: <Contact /> },
       { path: "/privacy", element: <Privacy /> },
+      { path: "/terms", element: <Terms /> },
       { path: "/goods", element: <Goods /> },
       { path: "/join", element: <Join /> },
       { path: "/join/check", element: <JoinCheck /> },
@@ -45,6 +48,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <ClubRoom /> },
           { path: "mypage", element: <Mypage /> },
+          { path: "mypage/profile", element: <EditProfile /> },
           { path: "mypage/:data", element: <EditUser /> },
         ],
       },

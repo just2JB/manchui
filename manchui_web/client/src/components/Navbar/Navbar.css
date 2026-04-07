@@ -331,7 +331,7 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   text-decoration: none;
-  color: #0a0a0a;
+  color: var(--text-primary);
   background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
   border: none;
   border-radius: 0;
@@ -387,7 +387,7 @@
 }
 
 .navbar .mobileMenu-user-link--primary {
-  color: #0a0a0a;
+  color: var(--text-primary);
   background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
   border: none;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.25);

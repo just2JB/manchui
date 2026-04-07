@@ -34,7 +34,9 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email }).select("+password");
     if (!user) {
-      return res.status(401).json({ message: "이메일 또는 비밀번호가 올바르지 않습니다." });
+      return res
+        .status(401)
+        .json({ message: "이메일 또는 비밀번호가 올바르지 않습니다." });
     }
     const isValidPassword = await bcrypt.compare(password, user.password);
 
@@ -42,17 +44,19 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "비밀번호가 틀렸습니다." });
     }
 
+    const sessionMs = 30 * 24 * 60 * 60 * 1000; // JWT·쿠키 동일 (약 30일)
+
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: "30d" },
     );
 
     res.cookie("token", token, {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: sessionMs,
     });
 
     const userWithoutPassword = user.toObject();
@@ -132,7 +136,7 @@ router.post("/edit/:data", async (req, res) => {
       const checkPassword = formData.checkPassword;
       const isValidPassword = await bcrypt.compare(
         formData.password,
-        user.password
+        user.password,
       );
 
       if (!isValidPassword) {

@@ -81,7 +81,157 @@
 .mypage .arrowRight {
   position: absolute;
   right: 15px;
-  top: calc(50%-15px);
+  top: calc(50% - 15px);
+}
+
+/* 마이페이지 허브 (내 정보 → 프로필 편집, 하단 약관·로그아웃) */
+.mypageHub {
+  color: var(--text-primary);
+  background-color: var(--background-dark);
+  width: 100%;
+  min-height: calc(100vh - 70px);
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 12px 14px 24px;
+}
+
+.mypageHub__infoCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 14px;
+  border: 1px solid var(--primary-200);
+  border-radius: 12px;
+  background: var(--box-1);
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.mypageHub__infoCard:hover {
+  background: var(--box-2);
+}
+
+.mypageHub__infoMain {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.mypageHub__infoTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.mypageHub__infoSub {
+  font-size: 0.88rem;
+  color: var(--text-gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mypageHub__infoArrow {
+  flex-shrink: 0;
+  font-size: 1.5rem;
+  color: var(--text-more);
+}
+
+.mypageHub__section {
+  flex: 1;
+  margin-top: 20px;
+}
+
+.mypageHub__sectionTitle {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-more);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.mypageHub__menuList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--primary-200);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.mypageHub__menuItem {
+  padding: 14px 12px;
+  font-size: 0.95rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.mypageHub__menuItem:last-child {
+  border-bottom: none;
+}
+
+.mypageHub__menuItem--muted {
+  color: var(--text-more);
+}
+
+.mypageHub__footer {
+  margin-top: auto;
+  padding-top: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.mypageHub__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 10px;
+  font-size: 0.85rem;
+}
+
+.mypageHub__legalLink {
+  color: var(--text-gray);
+  text-decoration: none;
+}
+
+.mypageHub__legalLink:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.mypageHub__legalDot {
+  color: var(--text-more);
+  user-select: none;
+}
+
+.mypageHub__logout {
+  width: 100%;
+  max-width: 320px;
+  padding: 12px 16px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.mypageHub__logout:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.35);
 }
 
 .editUser .popForm {

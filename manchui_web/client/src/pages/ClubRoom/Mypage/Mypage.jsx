@@ -4,6 +4,7 @@ import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import axios from "axios";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { DEVELOPER_CONTACT_MODAL_MESSAGE } from "../../../constants/developerContact";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
@@ -11,6 +12,7 @@ const Mypage = () => {
   const { user } = useOutletContext();
   const manchuiModal = useManchuiModal();
   const nav = useNavigate();
+  const isExecutive = user?.position === "임원진";
 
   const handleLogout = async () => {
     if (!(await manchuiModal("로그아웃 하시겠습니까?", "confirm"))) return;
@@ -33,16 +35,40 @@ const Mypage = () => {
 
   return (
     <div className="mypageHub">
+      <h1 className="mypageHub__pageTitle">마이페이지</h1>
+
       <button
         type="button"
         className="mypageHub__infoCard"
         onClick={() => nav("/club/mypage/profile")}
       >
-        <div className="mypageHub__infoMain">
-          <span className="mypageHub__infoTitle">내 정보</span>
-          {user?.username ? (
-            <span className="mypageHub__infoSub">{user.username}</span>
-          ) : null}
+        <div className="mypageHub__infoCardBody">
+          <div className="mypageHub__avatar" aria-hidden="true">
+            <img
+              className="mypageHub__avatarImg"
+              src="/logos/longLogo_white.png"
+              alt=""
+            />
+          </div>
+          <div className="mypageHub__infoMain">
+            <span className="mypageHub__infoName">
+              {user?.username ?? "이름 없음"}
+            </span>
+            <div className="mypageHub__infoMeta">
+              <span className="mypageHub__infoMetaItem">
+                <span className="mypageHub__infoMetaLabel">아이디</span>
+                <span className="mypageHub__infoMetaValue">
+                  {user?.Identification ?? "—"}
+                </span>
+              </span>
+              <span className="mypageHub__infoMetaItem">
+                <span className="mypageHub__infoMetaLabel">직책</span>
+                <span className="mypageHub__infoMetaValue">
+                  {user?.position ? `만취 ${user.position}` : "—"}
+                </span>
+              </span>
+            </div>
+          </div>
         </div>
         <MdOutlineKeyboardArrowRight className="mypageHub__infoArrow" />
       </button>
@@ -50,9 +76,47 @@ const Mypage = () => {
       <section className="mypageHub__section" aria-label="메뉴">
         <div className="mypageHub__sectionTitle">메뉴</div>
         <ul className="mypageHub__menuList">
-          <li className="mypageHub__menuItem mypageHub__menuItem--muted">
-            추가 메뉴는 추후 연결 예정입니다.
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/")}
+            >
+              <span>홈페이지</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
           </li>
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => manchuiModal(DEVELOPER_CONTACT_MODAL_MESSAGE)}
+            >
+              <span>개발자 문의</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+          {isExecutive ? (
+            <li className="mypageHub__menuItem">
+              <button
+                type="button"
+                className="mypageHub__menuRow"
+                onClick={() => nav("/admin")}
+              >
+                <span>관리자 페이지</span>
+                <MdOutlineKeyboardArrowRight
+                  className="mypageHub__menuRowArrow"
+                  aria-hidden
+                />
+              </button>
+            </li>
+          ) : null}
         </ul>
       </section>
 

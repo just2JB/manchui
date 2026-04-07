@@ -6,6 +6,8 @@
 }
 
 .clubRoomLayout {
+  /* ClubRoomBottomNav: min-height 56 + 세로 padding 12 + 보더 1 + safe-area */
+  --club-room-bottom-nav: calc(68px + env(safe-area-inset-bottom, 0px));
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -14,12 +16,18 @@
   user-select: none;
 }
 .clubRoombody {
-  width: 700px;
-  min-height: calc(100vh - 40px);
+  width: 600px;
+  min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--background-dark);
-  margin-top: 35px;
+  margin-top: 0;
+  padding-bottom: var(--club-room-bottom-nav);
+  box-sizing: border-box;
   user-select: none;
   z-index: 100;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .loginPage {
   background-color: var(--background-dark);
@@ -68,5 +76,11 @@
   .clubRoombody {
     width: 100%;
     position: fixed;
+    inset: 0;
+    min-height: 0;
+    height: auto;
+    max-height: none;
+    padding-bottom: var(--club-room-bottom-nav);
+    overscroll-behavior-y: contain;
   }
 }

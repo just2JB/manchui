@@ -255,6 +255,14 @@ function isValidStudentId(str) {
   return digits.length === 10;
 }
 
+/** 다음 버튼: 선택 단계는 항상 옵션 패널이 열린 번호(4,6,8,10)로 이동 (3,5,7,9 건너뜀) */
+function getNextFormStep(current) {
+  if (current >= 13) return current;
+  let next = current + 1;
+  if (next === 3 || next === 5 || next === 7 || next === 9) next += 1;
+  return next;
+}
+
 const JoinForm = () => {
   const nav = useNavigate();
   const nameRef = useRef();
@@ -432,9 +440,10 @@ const JoinForm = () => {
   const toggleLang = () => setLang((prev) => (prev === "ko" ? "en" : "ko"));
 
   const handleNext = (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     const t = TRANSLATIONS[lang];
-    if (formNum === 1) {
+    const atNameStep = formNum === 0 || formNum === 1;
+    if (atNameStep) {
       const nameTrim = (formData.name || "").trim();
       if (nameTrim.length === 0) {
         setNameError(t.nameErrorEmpty);
@@ -466,7 +475,16 @@ const JoinForm = () => {
       setContactError(null);
     }
     if (formNum < 13) {
-      setFormNum(formNum + 1);
+      if (atNameStep || formNum === 2 || formNum === 11) {
+        const ae = document.activeElement;
+        if (
+          ae &&
+          (ae.tagName === "INPUT" || ae.tagName === "TEXTAREA")
+        ) {
+          ae.blur();
+        }
+      }
+      setFormNum(getNextFormStep(formNum === 0 ? 1 : formNum));
     }
   };
 
@@ -564,6 +582,7 @@ const JoinForm = () => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Enter") {
+        if (e.isComposing) return;
         e.preventDefault();
         if (formNum < 13) {
           document.querySelector(".nextButton")?.click();
@@ -708,7 +727,7 @@ const JoinForm = () => {
         </div>
         <div className="stateBarRow">
           <div className="text">
-            {formNum === 1
+            {formNum === 0 || formNum === 1
               ? t.promptName
               : formNum === 2
                 ? t.promptStudentId
@@ -726,7 +745,7 @@ const JoinForm = () => {
                             ? t.promptWish
                             : t.promptConfirm}
           </div>
-          {nameError && formNum === 1 && (
+          {nameError && (formNum === 0 || formNum === 1) && (
             <div className="nameError inputErrorShake">{nameError}</div>
           )}
           {studentIdError && formNum === 2 && (
@@ -740,8 +759,15 @@ const JoinForm = () => {
         </div>
       </div>
 
-      <form className="form" onSubmit={handleSubmit}>
+      <form
+        className="form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          handleNext(e);
+        }}
+      >
         <button
+          type="button"
           ref={confirmButtonRef}
           className="nextButton"
           onClick={handleNext}
@@ -749,15 +775,19 @@ const JoinForm = () => {
           {t.next}
         </button>
         <div
-          className={`name inputbox ${nameError && formNum === 1 ? "inputboxShake" : ""}`}
+          className={`name inputbox ${nameError && (formNum === 0 || formNum === 1) ? "inputboxShake" : ""}`}
         >
-          <label className={`label ${formNum === 1 ? "activeLabel" : ""}`}>
+          <label
+            className={`label ${formNum === 0 || formNum === 1 ? "activeLabel" : ""}`}
+          >
             {t.labelName}
           </label>
           <input
             ref={nameRef}
             name="name"
             placeholder={t.placeholderName}
+            enterKeyHint="next"
+            autoComplete="name"
             onFocus={() => handleFocus(1)}
             onChange={handleChange}
             value={formData.name}
@@ -772,6 +802,10 @@ const JoinForm = () => {
           <input
             ref={studentIdRef}
             name="studentId"
+            enterKeyHint="next"
+            inputMode="numeric"
+            pattern="[0-9]*"
+            autoComplete="off"
             onFocus={() => handleFocus(2)}
             onChange={handleChange}
             value={formData.studentId}
@@ -1013,6 +1047,8 @@ const JoinForm = () => {
           <input
             ref={contactRef}
             name="contact"
+            enterKeyHint="done"
+            autoComplete="tel"
             onFocus={() => handleFocus(11)}
             onChange={handleChange}
             value={formData.contact}

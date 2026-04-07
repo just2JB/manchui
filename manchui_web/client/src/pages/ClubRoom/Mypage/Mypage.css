@@ -2,11 +2,12 @@
   color: var(--text-primary);
   background-color: var(--background-dark);
   width: 100%;
-  height: calc(100vh - 70px);
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
   display: flex;
   flex-direction: column;
   position: relative;
   padding-top: 5px;
+  box-sizing: border-box;
 }
 .mypage .profil {
   display: flex;
@@ -89,19 +90,30 @@
   color: var(--text-primary);
   background-color: var(--background-dark);
   width: 100%;
-  min-height: calc(100vh - 70px);
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding: 12px 14px 24px;
+  padding: 8px 14px 24px;
+}
+
+.mypageHub__pageTitle {
+  margin: 14px 0 14px;
+  padding: 0 2px;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  text-align: left;
 }
 
 .mypageHub__infoCard {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   width: 100%;
-  padding: 16px 14px;
+  padding: 14px 12px 14px 14px;
   border: 1px solid var(--primary-200);
   border-radius: 12px;
   background: var(--box-1);
@@ -110,6 +122,38 @@
   color: inherit;
   text-align: left;
   transition: background-color 0.2s ease;
+}
+
+.mypageHub__infoCardBody {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  flex: 1;
+}
+
+.mypageHub__avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--box-2) 0%, #151515 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.mypageHub__avatarImg {
+  width: 92%;
+  height: auto;
+  max-height: 48%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  opacity: 0.95;
 }
 
 .mypageHub__infoCard:hover {
@@ -123,17 +167,43 @@
   min-width: 0;
 }
 
-.mypageHub__infoTitle {
+.mypageHub__infoName {
   font-size: 1.05rem;
   font-weight: 700;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.mypageHub__infoSub {
-  font-size: 0.88rem;
+.mypageHub__infoMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.mypageHub__infoMetaItem {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 8px;
+  font-size: 0.82rem;
+  line-height: 1.35;
+}
+
+.mypageHub__infoMetaLabel {
+  flex-shrink: 0;
+  color: var(--text-more);
+  min-width: 2.8em;
+}
+
+.mypageHub__infoMetaValue {
   color: var(--text-gray);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
 }
 
 .mypageHub__infoArrow {
@@ -166,7 +236,7 @@
 }
 
 .mypageHub__menuItem {
-  padding: 14px 12px;
+  padding: 0;
   font-size: 0.95rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -177,6 +247,39 @@
 
 .mypageHub__menuItem--muted {
   color: var(--text-more);
+  padding: 14px 12px;
+}
+
+.mypageHub__menuRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 12px;
+  margin: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: inherit;
+  color: var(--text-gray);
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.mypageHub__menuRow:hover {
+  background: var(--box-2);
+  color: var(--text-primary);
+}
+
+.mypageHub__menuRowArrow {
+  flex-shrink: 0;
+  font-size: 1.35rem;
+  color: var(--text-more);
+}
+
+.mypageHub__menuRow:hover .mypageHub__menuRowArrow {
+  color: var(--text-gray);
 }
 
 .mypageHub__footer {
@@ -238,12 +341,13 @@
   color: var(--text-primary);
   background-color: var(--background-dark);
   width: 100%;
-  height: calc(100vh - 70px);
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
   display: flex;
   flex-direction: column;
   position: relative;
   padding-top: 15px;
   justify-content: space-between;
+  box-sizing: border-box;
 }
 .editUser .formHead {
   font-size: 23px;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useOutletContext, Link } from "react-router-dom";
+import { useOutletContext } from "react-router-dom";
 import axios from "axios";
 import "./AdminJoin.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
@@ -87,23 +87,21 @@ const buildPhoneContactsCsv = (list, generation) => {
   const BOM = "\uFEFF";
   const headers = ["Name", "Given Name", "Family Name", "Mobile", "Notes"];
   const genLabel = `${generation ?? ""}기 가두모집`;
-  const rows = list
-    .filter(hasPhone)
-    .map((d) => {
-      const rawName = (d.name || "").trim();
-      const name = rawName ? `${rawName} (${genLabel})` : genLabel;
-      const phone = d.phone || d.contact || "";
-      const givenName = rawName.length > 1 ? rawName.slice(1) : "";
-      const familyName = rawName.length > 0 ? rawName.slice(0, 1) : "";
-      const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
-      return [
-        escapeCsvField(name),
-        escapeCsvField(givenName),
-        escapeCsvField(familyName),
-        escapeCsvField(toDomesticPhone(phone)),
-        escapeCsvField(notes),
-      ].join(",");
-    });
+  const rows = list.filter(hasPhone).map((d) => {
+    const rawName = (d.name || "").trim();
+    const name = rawName ? `${rawName} (${genLabel})` : genLabel;
+    const phone = d.phone || d.contact || "";
+    const givenName = rawName.length > 1 ? rawName.slice(1) : "";
+    const familyName = rawName.length > 0 ? rawName.slice(0, 1) : "";
+    const notes = `만취 ${d.generation ?? generation ?? ""}기 / 학번: ${d.studentId ?? ""} / ${d.major ?? ""}`;
+    return [
+      escapeCsvField(name),
+      escapeCsvField(givenName),
+      escapeCsvField(familyName),
+      escapeCsvField(toDomesticPhone(phone)),
+      escapeCsvField(notes),
+    ].join(",");
+  });
   return BOM + [headers.join(","), ...rows].join("\r\n");
 };
 
@@ -361,12 +359,7 @@ const AdminJoin = () => {
 
   return (
     <div className="adminJoin">
-      <div className="topMenu">
-        <div className="menu">
-          <Link to="../">돌아가기</Link>
-          <div className="title">가입 신청 관리</div>
-        </div>
-      </div>
+      <h1 className="admin-page-heading">가입 신청 관리</h1>
 
       <div className="adminJoinConfig">
         <h3 className="configTitle">가입 폼 설정</h3>

@@ -3,62 +3,39 @@ import { useNavigate, useOutletContext } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import axios from "axios";
-import Loading from "../../../components/Loading/Loading";
 const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 
 const Mypage = () => {
-  const { user, setIsLogin } = useOutletContext();
-  const [formData, setFormData] = useState({
-    username: "",
-    Identification: "",
-    password: "",
-    changePassword: "",
-    checkPassword: "",
-  });
-  const [selectedForm, setSelectedForm] = useState("unSelcet");
+  const { user } = useOutletContext();
+  const manchuiModal = useManchuiModal();
   const nav = useNavigate();
-  const handleChange = (e) => {
-    if (selectedForm === "Identification") {
-      setFormData({
-        ...formData,
-        [e.target.name]: "@" + e.target.value.split("@").join(""),
-      });
-    } else {
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
-      });
-    }
-  };
 
   const deleteUserHandle = async () => {
-    if (confirm("정말로 삭제하시겠습니까")) {
+    if (manchuiModal("정말로 삭제하시겠습니까", "confirm")) {
       try {
         const response = await axios.post(
           `${serverUrl}/api/auth/delete/${user._id}`,
           {},
-          { withCredentials: true }
+          { withCredentials: true },
         );
         localStorage.removeItem("token");
-        alert(response.data.message);
+        manchuiModal(response.data.message);
         nav("/club");
-        setIsLogin(false);
       } catch (error) {
-        alert(error.response.data.message);
-      } finally {
+        manchuiModal(error.response.data.message);
       }
-      setIsLogin(false);
     }
   };
   return (
     <div className="mypage">
       <div className="profil">
         <div className="userImage"></div>
-        <div className="username">{user.username}</div>
+        <div className="username">{user?.username}</div>
         <div className="userInfo">
-          <div className="userName">{user.Identification}</div>
+          <div className="userName">{user?.Identification}</div>
           <div className="infoCircle"></div>
-          <div className="userPosition">만취 {user.position}</div>
+          <div className="userPosition">만취 {user?.position}</div>
         </div>
       </div>
       <div className="list">

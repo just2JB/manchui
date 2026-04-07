@@ -1,30 +1,68 @@
+/* 관리자 홈 — 네비는 AdminNavbar, 본문은 카드 링크만 */
+
 .adminHome {
-  color: #f5f5f5;
+  width: 100%;
+  box-sizing: border-box;
+  color: var(--text-primary);
 }
 
-.adminHome .adminTopMenu {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid var(--primary-300);
-}
-.adminHome .adminTopMenu > * {
-  flex: 1;
-  text-align: center;
+.adminHome__lead {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-more);
 }
 
 .adminHome .linkBox {
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  gap: 0.75rem;
+  max-width: 520px;
+}
+
+@media screen and (min-width: 640px) {
+  .adminHome .linkBox {
+    max-width: 640px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
 }
 
 .adminHome .linkbutton {
-  border-radius: 5px;
-  margin: 0px 20px;
-  padding: 15px;
-  background-color: var(--box-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 56px;
+  margin: 0;
+  padding: 1rem 1.25rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
   text-align: center;
   text-decoration: none;
+  border-radius: 12px;
+  background: var(--box-1);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  transition:
+    transform 0.15s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.adminHome .linkbutton:hover {
+  background: var(--box-2);
+  border-color: rgba(179, 0, 0, 0.35);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+}
+
+.adminHome .linkbutton:active {
+  transform: scale(0.99);
+}
+
+.adminHome .linkbutton:focus-visible {
+  outline: 2px solid var(--brand-red);
+  outline-offset: 3px;
 }

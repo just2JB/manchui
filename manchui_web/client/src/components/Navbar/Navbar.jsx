@@ -7,7 +7,6 @@ import {
   scrollWindowTopAfterNav,
 } from "../../utils/navScroll";
 import "./Navbar.css";
-
 const ALL_PAGES = [
   { name: "홈", nameEn: "HOME", path: "/" },
   {
@@ -33,9 +32,15 @@ function isNavItemActive(page, location) {
 /** siteRestricted일 때는 가입만 표시 */
 const RESTRICTED_PAGES = [{ name: "가입", nameEn: "JOIN", path: "/join" }];
 
-const Navbar = ({ siteRestricted = false }) => {
+const Navbar = ({
+  siteRestricted = false,
+  setOpenAuthWindow,
+  user,
+  setUser,
+}) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
+
   const location = useLocation();
   const nav = useNavigate();
 
@@ -133,18 +138,31 @@ const Navbar = ({ siteRestricted = false }) => {
             ))}
           </div>
           <div className="loginButtonBox">
-            <button
-              className="loginButton"
-              onClick={() => {
-                if (isSameLinkDestination("/login", location)) {
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                  return;
-                }
-                nav("/login");
-              }}
-            >
-              로그인
-            </button>
+            {user ? (
+              <div className="navbar-user-actions">
+                <Link
+                  className="navbar-user-link navbar-user-link--ghost"
+                  to="/club"
+                >
+                  어시스턴트
+                </Link>
+                <Link
+                  className="navbar-user-link navbar-user-link--primary"
+                  to="/club/mypage"
+                >
+                  마이페이지
+                </Link>
+              </div>
+            ) : (
+              <button
+                className="loginButton"
+                onClick={() => {
+                  setOpenAuthWindow(true);
+                }}
+              >
+                로그인
+              </button>
+            )}
           </div>
         </div>
         <div className="mobile">
@@ -201,16 +219,33 @@ const Navbar = ({ siteRestricted = false }) => {
             </nav>
             <div className="mobileMenu-bottom">
               <div className="mobileMenu-divider" aria-hidden="true" />
-              <Link
-                to="/login"
-                className="mobileMenu-loginCta"
-                onClick={() => {
-                  closeMobileMenu();
-                  scrollWindowTopAfterNav("/login", location);
-                }}
-              >
-                로그인
-              </Link>
+              {user ? (
+                <div className="mobileMenu-user-actions">
+                  <Link
+                    className="mobileMenu-user-link mobileMenu-user-link--ghost"
+                    to="/club"
+                    onClick={() => closeMobileMenu()}
+                  >
+                    어시스턴트
+                  </Link>
+                  <Link
+                    className="mobileMenu-user-link mobileMenu-user-link--primary"
+                    to="/club/mypage"
+                    onClick={() => closeMobileMenu()}
+                  >
+                    마이페이지
+                  </Link>
+                </div>
+              ) : (
+                <button
+                  className="mobileMenu-loginCta"
+                  onClick={() => {
+                    setOpenAuthWindow(true);
+                  }}
+                >
+                  로그인
+                </button>
+              )}
             </div>
           </div>
         </div>

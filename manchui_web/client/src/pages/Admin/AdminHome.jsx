@@ -1,19 +1,11 @@
 import React from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./AdminHome.css";
 
 const AdminHome = () => {
-  const { user } = useOutletContext();
-
   return (
     <div className="adminHome">
-      <div className="adminTopMenu">
-        <Link className="linkClubRoom" to="/club">
-          동아리방으로
-        </Link>
-        <div className="title">관리자 페이지</div>
-        <div className="info">{user.username}</div>
-      </div>
+      <p className="adminHome__lead">업무 메뉴를 선택하세요.</p>
 
       <div className="linkBox">
         <Link className="linkbutton" to="/admin/join">

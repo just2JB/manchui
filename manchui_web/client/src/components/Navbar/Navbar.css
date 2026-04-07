@@ -75,6 +75,60 @@
   display: flex;
   justify-content: end;
 }
+
+/* 로그인 후: 어시스턴트 / 마이페이지 (데스크톱) */
+.navbar .navbar-user-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.navbar .navbar-user-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 0.45rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.navbar .navbar-user-link--ghost {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.navbar .navbar-user-link--ghost:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.navbar .navbar-user-link--primary {
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  border: 1px solid transparent;
+  box-shadow: 0 3px 14px rgba(179, 0, 0, 0.35);
+}
+
+.navbar .navbar-user-link--primary:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+  box-shadow: 0 5px 18px rgba(179, 0, 0, 0.45);
+}
+
 .navbar .loginButton {
   display: inline-flex;
   align-items: center;
@@ -290,6 +344,59 @@
 .navbar .mobileMenu-loginCta:hover {
   background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
 }
+
+/* 로그인 후: 어시스턴트 / 마이페이지 (모바일 메뉴 하단) */
+.navbar .mobileMenu-user-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0 1rem 0.25rem;
+  box-sizing: border-box;
+}
+
+.navbar .mobileMenu-user-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+  padding: 0.75rem 1rem;
+  box-sizing: border-box;
+  font-family: "pretendard", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  border-radius: 0;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.navbar .mobileMenu-user-link--ghost {
+  color: var(--text-primary);
+  background: #2a2a2a;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.navbar .mobileMenu-user-link--ghost:hover {
+  background: #353535;
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.navbar .mobileMenu-user-link--primary {
+  color: #0a0a0a;
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  border: none;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.25);
+}
+
+.navbar .mobileMenu-user-link--primary:hover {
+  background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+}
+
 @media screen and (max-width: 767px) {
   .navbar .navbar-top .desktop {
     visibility: hidden;

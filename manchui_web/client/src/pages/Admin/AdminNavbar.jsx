@@ -16,7 +16,7 @@ const AdminNavbar = ({ user }) => {
       <div className="admin-nav__inner">
         <Link to="/admin" className="admin-nav__brand" title="관리자 홈">
           <span className="admin-nav__brand-mark">MANCHUI</span>
-          <span className="admin-nav__brand-sub">Admin</span>
+          <span className="admin-nav__brand-sub">임원진</span>
         </Link>
 
         <nav className="admin-nav__links" aria-label="관리자 메뉴">

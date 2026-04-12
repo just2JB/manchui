@@ -22,7 +22,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "댄서",
   },
-});
+}, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;

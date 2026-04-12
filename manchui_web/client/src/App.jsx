@@ -12,9 +12,11 @@ import Terms from "./pages/Terms/Terms";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
 import EditProfile from "./pages/ClubRoom/Mypage/EditProfile";
 import EditUser from "./pages/ClubRoom/Mypage/EditUser";
+import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
+import AdminMember from "./pages/Admin/AdminMember";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
@@ -47,6 +49,7 @@ const router = createBrowserRouter([
         element: <ProtectedRoute />,
         children: [
           { index: true, element: <ClubRoom /> },
+          { path: "reservation", element: <Reservation /> },
           { path: "mypage", element: <Mypage /> },
           { path: "mypage/profile", element: <EditProfile /> },
           { path: "mypage/:data", element: <EditUser /> },
@@ -63,6 +66,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <AdminHome /> },
           { path: "join", element: <AdminJoin /> },
+          { path: "member", element: <AdminMember /> },
           { path: "setting", element: <AdminSetting /> },
         ],
       },

@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const getToken = require("../utils/getToken");
+const requireExecutive = require("../middleware/requireExecutive");
 
 router.post("/signup", async (req, res) => {
   try {
@@ -184,6 +185,107 @@ router.post("/delete/:id", async (req, res) => {
     res.json({ message: "계정이 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** --- 임원진 전용: 부원 목록·직책 변경·강제 탈퇴 --- */
+const EXECUTIVE_POSITION = "임원진";
+const MEMBER_POSITION_DEFAULT = "댄서";
+
+router.get("/admin/members", requireExecutive, async (req, res) => {
+  try {
+    const raw = await User.find({})
+      .select("-password")
+      .sort({ username: 1 })
+      .lean();
+    const members = raw.map((doc) => {
+      let joinedAt = doc.createdAt || null;
+      if (!joinedAt && doc._id?.getTimestamp) {
+        try {
+          joinedAt = doc._id.getTimestamp();
+        } catch (_) {
+          joinedAt = null;
+        }
+      }
+      return {
+        ...doc,
+        joinedAt: joinedAt ? joinedAt.toISOString() : null,
+      };
+    });
+    res.json({ members });
+  } catch (error) {
+    res.status(500).json({ message: "회원 목록을 불러오지 못했습니다." });
+  }
+});
+
+router.patch("/admin/members/:id/position", requireExecutive, async (req, res) => {
+  try {
+    const { position } = req.body;
+    const allowed = [EXECUTIVE_POSITION, MEMBER_POSITION_DEFAULT];
+    if (!allowed.includes(position)) {
+      return res.status(400).json({ message: "허용되지 않은 직책입니다." });
+    }
+    const targetId = req.params.id;
+    if (String(req.adminUserId) === String(targetId) && position !== EXECUTIVE_POSITION) {
+      return res.status(400).json({ message: "본인의 임원진 권한은 여기서 해제할 수 없습니다." });
+    }
+
+    const targetUser = await User.findById(targetId);
+    if (!targetUser) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    if (
+      targetUser.position === EXECUTIVE_POSITION &&
+      position !== EXECUTIVE_POSITION
+    ) {
+      const executiveCount = await User.countDocuments({
+        position: EXECUTIVE_POSITION,
+      });
+      if (executiveCount <= 1) {
+        return res
+          .status(400)
+          .json({ message: "최소 한 명의 임원진이 필요합니다." });
+      }
+    }
+
+    targetUser.position = position;
+    await targetUser.save();
+    const user = targetUser.toObject();
+    delete user.password;
+    res.json({ message: "직책이 변경되었습니다.", user });
+  } catch (error) {
+    res.status(500).json({ message: "직책 변경에 실패했습니다." });
+  }
+});
+
+router.delete("/admin/members/:id", requireExecutive, async (req, res) => {
+  try {
+    const targetId = req.params.id;
+    if (String(req.adminUserId) === String(targetId)) {
+      return res.status(400).json({ message: "본인 계정은 삭제할 수 없습니다." });
+    }
+
+    const targetUser = await User.findById(targetId);
+    if (!targetUser) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    if (targetUser.position === EXECUTIVE_POSITION) {
+      const executiveCount = await User.countDocuments({
+        position: EXECUTIVE_POSITION,
+      });
+      if (executiveCount <= 1) {
+        return res.status(400).json({
+          message: "마지막 임원진 계정은 삭제할 수 없습니다.",
+        });
+      }
+    }
+
+    await User.findByIdAndDelete(targetId);
+    res.json({ message: "회원이 삭제되었습니다." });
+  } catch (error) {
+    res.status(500).json({ message: "삭제에 실패했습니다." });
   }
 });
 

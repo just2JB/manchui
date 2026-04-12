@@ -232,7 +232,7 @@ const AuthWindow = ({ setUser, setOpenAuthWindow }) => {
               />
             </div>
             <button className="auth-submit" type="submit" disabled={loading}>
-              {loading ? "만취 중…" : "로그인"}
+              {loading ? "취하는 중…" : "로그인"}
             </button>
           </form>
         )}

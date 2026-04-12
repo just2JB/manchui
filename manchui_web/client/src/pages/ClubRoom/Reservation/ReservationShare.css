@@ -1,0 +1,105 @@
+.reservationShare {
+  width: 100%;
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+  box-sizing: border-box;
+  padding: 12px 14px 28px;
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+}
+
+.reservationShare__title {
+  margin: 10px 0 8px;
+  font-size: clamp(1.55rem, 4.2vw, 1.85rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
+.reservationShare__lead {
+  margin: 0 0 16px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-more);
+}
+
+.reservationShare__status {
+  font-size: 0.9rem;
+  color: var(--text-more);
+}
+
+.reservationShare__error {
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(179, 0, 0, 0.45);
+  background: rgba(179, 0, 0, 0.12);
+  color: #ffb3b3;
+  font-size: 0.9rem;
+}
+
+.reservationShare__card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: var(--box-1);
+  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+  padding: 14px 14px 16px;
+}
+
+.reservationShare__dl {
+  margin: 0;
+}
+
+.reservationShare__row {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 0.92rem;
+}
+
+.reservationShare__row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.reservationShare__row dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-more);
+  font-size: 0.82rem;
+}
+
+.reservationShare__row dd {
+  margin: 0;
+  color: var(--text-gray);
+  word-break: break-all;
+}
+
+.reservationShare__footer {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reservationShare__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-primary);
+  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
+  box-shadow: 0 4px 18px rgba(179, 0, 0, 0.35);
+}
+
+.reservationShare__link--sub {
+  background: transparent;
+  border: 1px solid var(--primary-200);
+  color: var(--text-gray);
+  box-shadow: none;
+  font-weight: 500;
+}

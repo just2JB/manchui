@@ -13,10 +13,12 @@ import Mypage from "./pages/ClubRoom/Mypage/Mypage";
 import EditProfile from "./pages/ClubRoom/Mypage/EditProfile";
 import EditUser from "./pages/ClubRoom/Mypage/EditUser";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
+import ReservationShare from "./pages/ClubRoom/Reservation/ReservationShare";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import AdminMember from "./pages/Admin/AdminMember";
+import AdminReservation from "./pages/Admin/AdminReservation";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
@@ -46,6 +48,10 @@ const router = createBrowserRouter([
     element: <ClubRoomLayout />,
     children: [
       {
+        path: "reservation/share/:id",
+        element: <ReservationShare />,
+      },
+      {
         element: <ProtectedRoute />,
         children: [
           { index: true, element: <ClubRoom /> },
@@ -67,6 +73,7 @@ const router = createBrowserRouter([
           { index: true, element: <AdminHome /> },
           { path: "join", element: <AdminJoin /> },
           { path: "member", element: <AdminMember /> },
+          { path: "reservation", element: <AdminReservation /> },
           { path: "setting", element: <AdminSetting /> },
         ],
       },

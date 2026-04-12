@@ -5,6 +5,7 @@ import "./AdminNavbar.css";
 const NAV_ITEMS = [
   { to: "/admin", label: "홈", end: true },
   { to: "/admin/join", label: "가입 신청" },
+  { to: "/admin/reservation", label: "예약 관리" },
   { to: "/admin/setting", label: "웹 설정" },
   { to: "/admin/contact", label: "문의" },
   { to: "/admin/member", label: "부원" },

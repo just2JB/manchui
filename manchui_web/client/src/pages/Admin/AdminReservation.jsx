@@ -6,25 +6,25 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import { useOutletContext } from "react-router-dom";
 import axios from "axios";
-import {
-  IoChevronBack,
-  IoChevronForward,
-  IoShareSocialOutline,
-} from "react-icons/io5";
-import { useManchuiModal } from "../../../hooks/ManchuiModal";
-import "./Reservation.css";
-import { formatReservationTimeRange } from "./reservationTimeFormat";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { useManchuiModal } from "../../hooks/ManchuiModal";
+import "../ClubRoom/Reservation/Reservation.css";
+import { formatReservationTimeRange } from "../ClubRoom/Reservation/reservationTimeFormat";
+import "./AdminReservation.css";
 
 const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-/** 예약 슬롯: 0시~23시 (24칸, 정시 단위) */
 const FIRST_HOUR = 0;
 const LAST_HOUR = 23;
 
-/** 프론트 전용: 계정당 예약 건수 상한 */
-const MAX_RESERVATIONS_PER_ACCOUNT = 3;
+const authConfig = () => {
+  const token = localStorage.getItem("token");
+  return {
+    withCredentials: true,
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  };
+};
 
 function isConsecutiveHours(hours) {
   if (hours.length <= 1) return true;
@@ -34,8 +34,6 @@ function isConsecutiveHours(hours) {
   }
   return true;
 }
-
-const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 
 function formatDateKey(d) {
   const y = d.getFullYear();
@@ -76,14 +74,94 @@ function collectReservedHoursForDate(dateKey, reservations) {
   return set;
 }
 
-const Reservation = () => {
-  const { user } = useOutletContext();
+const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
+
+function memberLabel(r) {
+  const u = r.userId;
+  if (u && typeof u === "object") {
+    const name = u.username || "—";
+    const id = u.Identification ? ` (${u.Identification})` : "";
+    return `${name}${id}`;
+  }
+  return "—";
+}
+
+/** 서버 `bookingType === 'admin'` (구 데이터는 general로 간주) */
+function isAdminBooking(r) {
+  return r.bookingType === "admin";
+}
+
+function sortReservationRowsDesc(rows) {
+  return [...rows].sort((a, b) => {
+    const da = new Date(a.date).getTime();
+    const db = new Date(b.date).getTime();
+    if (da !== db) return db - da;
+    const minA = Math.min(...(a.time || []).map(Number));
+    const minB = Math.min(...(b.time || []).map(Number));
+    return minB - minA;
+  });
+}
+
+function AdminReservationTable({
+  rows,
+  busyId,
+  onDeleteOne,
+  isPastDateKey,
+}) {
+  if (rows.length === 0) return null;
+  return (
+    <div className="admin-reservation__tableWrap">
+      <table className="admin-reservation__table">
+        <thead>
+          <tr>
+            <th scope="col">날짜</th>
+            <th scope="col">시간</th>
+            <th scope="col">연락처</th>
+            <th scope="col">인원</th>
+            <th scope="col">예약 계정</th>
+            <th scope="col">관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => {
+            const past = isPastDateKey(r.date);
+            const timeStr = formatReservationTimeRange(r.time);
+            return (
+              <tr
+                key={r._id}
+                className={past ? "admin-reservation__row--past" : undefined}
+              >
+                <td>{r.date}</td>
+                <td>{timeStr}</td>
+                <td>{r.agentId ?? "—"}</td>
+                <td>{r.headcount != null ? `${r.headcount}명` : "—"}</td>
+                <td>{memberLabel(r)}</td>
+                <td>
+                  <button
+                    type="button"
+                    className="admin-reservation__rowDelete"
+                    disabled={busyId === r._id}
+                    onClick={() => onDeleteOne(r._id)}
+                  >
+                    {busyId === r._id ? "…" : "삭제"}
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+const AdminReservation = () => {
   const modal = useManchuiModal();
 
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
   const [allReservations, setAllReservations] = useState([]);
-  const [myReservations, setMyReservations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [listError, setListError] = useState("");
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedDateKey, setSelectedDateKey] = useState(null);
 
@@ -91,29 +169,26 @@ const Reservation = () => {
   const [contact, setContact] = useState("");
   const [headcount, setHeadcount] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [busyId, setBusyId] = useState(null);
+  const [purging, setPurging] = useState(false);
 
-  const loadAll = useCallback(async () => {
+  const loadList = useCallback(async () => {
     if (!serverUrl) return;
+    setListError("");
     try {
-      const res = await axios.get(`${serverUrl}/api/reservation`);
+      const res = await axios.get(
+        `${serverUrl}/api/reservation/admin/list`,
+        authConfig(),
+      );
       setAllReservations(Array.isArray(res.data) ? res.data : []);
     } catch (e) {
       console.error(e);
+      setListError(
+        e.response?.data?.message || "예약 목록을 불러오지 못했습니다.",
+      );
+      setAllReservations([]);
     }
   }, []);
-
-  const loadMine = useCallback(async () => {
-    if (!serverUrl || !user?._id) return;
-    try {
-      const res = await axios.get(`${serverUrl}/api/reservation/mine`, {
-        withCredentials: true,
-      });
-      setMyReservations(Array.isArray(res.data) ? res.data : []);
-    } catch (e) {
-      console.error(e);
-      setMyReservations([]);
-    }
-  }, [user?._id]);
 
   useEffect(() => {
     let cancelled = false;
@@ -123,17 +198,13 @@ const Reservation = () => {
         return;
       }
       setLoading(true);
-      await loadAll();
+      await loadList();
       if (!cancelled) setLoading(false);
     })();
     return () => {
       cancelled = true;
     };
-  }, [loadAll]);
-
-  useEffect(() => {
-    loadMine();
-  }, [loadMine]);
+  }, [loadList]);
 
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
   const todayStart = useMemo(() => {
@@ -152,8 +223,8 @@ const Reservation = () => {
     return list;
   }, []);
 
-  const canCreateReservation =
-    myReservations.length < MAX_RESERVATIONS_PER_ACCOUNT;
+  /** 관리자 화면: 계정당 예약 건수 제한 없음 */
+  const canCreateReservation = true;
 
   const openSheetForDate = (dateKey) => {
     setSelectedDateKey(dateKey);
@@ -228,10 +299,6 @@ const Reservation = () => {
       await modal("연속된 시간만 예약할 수 있습니다.", "alert");
       return;
     }
-    if (myReservations.length >= MAX_RESERVATIONS_PER_ACCOUNT) {
-      await modal("한 계정당 예약은 최대 3건까지 가능합니다.", "alert");
-      return;
-    }
     const phone = contact.trim();
     if (!phone) {
       await modal("대표자 연락처를 입력해 주세요.", "alert");
@@ -246,19 +313,18 @@ const Reservation = () => {
     setSubmitting(true);
     try {
       await axios.post(
-        `${serverUrl}/api/reservation/make`,
+        `${serverUrl}/api/reservation/admin/make`,
         {
           date: selectedDateKey,
           agentId: phone,
           time: selectedHours.map(Number),
           headcount: hc,
         },
-        { withCredentials: true },
+        authConfig(),
       );
       await modal("예약이 완료되었습니다.", "alert");
       closeSheet();
-      await loadAll();
-      await loadMine();
+      await loadList();
     } catch (err) {
       const msg =
         err.response?.data?.message || err.message || "예약에 실패했습니다.";
@@ -268,68 +334,78 @@ const Reservation = () => {
     }
   };
 
-  const handleDeleteMine = async (id) => {
+  const handleDeleteOne = async (id) => {
     if (!serverUrl) return;
-    const ok = await modal("이 예약을 취소할까요?", "confirm");
+    const ok = await modal("이 예약을 삭제할까요?", "confirm");
     if (!ok) return;
+    setBusyId(id);
     try {
-      await axios.delete(`${serverUrl}/api/reservation/${id}`, {
-        withCredentials: true,
-      });
-      await modal("예약이 취소되었습니다.", "alert");
-      await loadAll();
-      await loadMine();
+      await axios.delete(
+        `${serverUrl}/api/reservation/admin/by-id/${id}`,
+        authConfig(),
+      );
+      await modal("삭제되었습니다.", "alert");
+      await loadList();
     } catch (err) {
       const msg =
-        err.response?.data?.message || err.message || "취소에 실패했습니다.";
+        err.response?.data?.message || err.message || "삭제에 실패했습니다.";
       await modal(msg, "alert");
+    } finally {
+      setBusyId(null);
     }
   };
 
-  const buildShareUrl = (reservationId) => {
-    const base = typeof window !== "undefined" ? window.location.origin : "";
-    return `${base}/club/reservation/share/${reservationId}`;
-  };
-
-  const handleShareReservation = async (reservationId) => {
-    const url = buildShareUrl(reservationId);
+  const handlePurgePast = async () => {
+    if (!serverUrl) return;
+    const ok = await modal(
+      "오늘 이전 날짜의 예약을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.",
+      "confirm",
+    );
+    if (!ok) return;
+    setPurging(true);
     try {
-      if (typeof navigator !== "undefined" && navigator.share) {
-        await navigator.share({
-          title: "동아리방 예약",
-          text: "예약 정보를 확인해 주세요.",
-          url,
-        });
-        return;
-      }
-    } catch (e) {
-      if (e && e.name === "AbortError") return;
-    }
-    try {
-      await navigator.clipboard.writeText(url);
-      await modal("공유 링크를 복사했습니다.", "alert");
-    } catch {
-      try {
-        window.prompt("아래 링크를 복사해 주세요:", url);
-      } catch {
-        await modal("링크 복사에 실패했습니다.", "alert");
-      }
+      const res = await axios.post(
+        `${serverUrl}/api/reservation/admin/delete-past`,
+        {},
+        authConfig(),
+      );
+      const n = res.data?.deletedCount ?? 0;
+      await modal(`지난 예약 ${n}건을 삭제했습니다.`, "alert");
+      await loadList();
+    } catch (err) {
+      const msg =
+        err.response?.data?.message || err.message || "삭제에 실패했습니다.";
+      await modal(msg, "alert");
+    } finally {
+      setPurging(false);
     }
   };
 
   const monthTitle = `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
   const grid = useMemo(() => buildMonthGrid(viewMonth), [viewMonth]);
 
-  const goPrevMonth = () => {
-    setViewMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
-  };
-
-  const goNextMonth = () => {
-    setViewMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-  };
-
   const hasReservationOnDate = (dateKey) => {
     return collectReservedHoursForDate(dateKey, allReservations).size > 0;
+  };
+
+  const { generalReservationRows, adminReservationRows } = useMemo(() => {
+    const general = [];
+    const admin = [];
+    for (const r of allReservations) {
+      if (isAdminBooking(r)) admin.push(r);
+      else general.push(r);
+    }
+    return {
+      generalReservationRows: sortReservationRowsDesc(general),
+      adminReservationRows: sortReservationRowsDesc(admin),
+    };
+  }, [allReservations]);
+
+  const isPastDateKey = (dateKey) => {
+    const [y, m, d] = dateKey.split("-").map(Number);
+    if (!y || !m || !d) return false;
+    const t = new Date(y, m - 1, d).getTime();
+    return t < todayStart;
   };
 
   if (!serverUrl) {
@@ -343,8 +419,75 @@ const Reservation = () => {
   }
 
   return (
-    <div className="reservation">
-      <h1 className="reservation__title">동아리방 예약</h1>
+    <div className="reservation admin-reservation">
+      <h1 className="admin-page-heading reservation__title">예약 관리</h1>
+      <p className="admin-reservation__lead">
+        전체 예약을 조회·삭제하고, 계정당 건수 제한 없이 새 예약을 등록할 수
+        있습니다.
+      </p>
+
+      <section
+        className="admin-reservation__listSection"
+        aria-label="예약 목록"
+      >
+        <div className="admin-reservation__toolbar">
+          <h2 className="admin-reservation__listTitle">예약 목록</h2>
+          <button
+            type="button"
+            className="admin-reservation__purgeBtn"
+            disabled={purging || loading}
+            onClick={() => void handlePurgePast()}
+          >
+            {purging ? "처리 중…" : "지난 예약 일괄 삭제"}
+          </button>
+        </div>
+        {listError ? (
+          <p className="reservation__warn" role="alert">
+            {listError}
+          </p>
+        ) : null}
+        {loading ? (
+          <p className="reservation__hint">목록을 불러오는 중…</p>
+        ) : generalReservationRows.length === 0 &&
+          adminReservationRows.length === 0 ? (
+          <p className="reservation__empty">등록된 예약이 없습니다.</p>
+        ) : (
+          <>
+            <div className="admin-reservation__block">
+              <h3 className="admin-reservation__subTitle">일반 예약</h3>
+              <p className="admin-reservation__subHint">
+                동아리방 예약 서비스(/club/reservation)에서 등록한 내역입니다.
+              </p>
+              {generalReservationRows.length === 0 ? (
+                <p className="admin-reservation__emptyBlock">해당 내역이 없습니다.</p>
+              ) : (
+                <AdminReservationTable
+                  rows={generalReservationRows}
+                  busyId={busyId}
+                  onDeleteOne={(id) => void handleDeleteOne(id)}
+                  isPastDateKey={isPastDateKey}
+                />
+              )}
+            </div>
+            <div className="admin-reservation__block admin-reservation__block--executive">
+              <h3 className="admin-reservation__subTitle">관리자 예약</h3>
+              <p className="admin-reservation__subHint">
+                관리자 예약 관리 화면에서 등록한 내역입니다.
+              </p>
+              {adminReservationRows.length === 0 ? (
+                <p className="admin-reservation__emptyBlock">해당 내역이 없습니다.</p>
+              ) : (
+                <AdminReservationTable
+                  rows={adminReservationRows}
+                  busyId={busyId}
+                  onDeleteOne={(id) => void handleDeleteOne(id)}
+                  isPastDateKey={isPastDateKey}
+                />
+              )}
+            </div>
+          </>
+        )}
+      </section>
 
       <section
         className="reservation__calendarSection"
@@ -354,7 +497,11 @@ const Reservation = () => {
           <button
             type="button"
             className="reservation__monthBtn"
-            onClick={goPrevMonth}
+            onClick={() =>
+              setViewMonth(
+                (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
+              )
+            }
             aria-label="이전 달"
           >
             <IoChevronBack />
@@ -363,7 +510,11 @@ const Reservation = () => {
           <button
             type="button"
             className="reservation__monthBtn"
-            onClick={goNextMonth}
+            onClick={() =>
+              setViewMonth(
+                (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
+              )
+            }
             aria-label="다음 달"
           >
             <IoChevronForward />
@@ -406,62 +557,10 @@ const Reservation = () => {
             );
           })}
         </div>
-        {loading ? (
-          <p className="reservation__hint">일정을 불러오는 중…</p>
-        ) : (
-          <p className="reservation__hint">
-            날짜를 눌러 예약할 시간(0~23시)과 연락처를 입력하세요.
-          </p>
-        )}
-      </section>
-
-      <section className="reservation__mySection" aria-label="내 예약">
-        <h2 className="reservation__sectionTitle">내 예약</h2>
-        <p className="reservation__quotaNote" aria-live="polite">
-          계정당 예약 최대 {MAX_RESERVATIONS_PER_ACCOUNT}건 (현재{" "}
-          {myReservations.length}/{MAX_RESERVATIONS_PER_ACCOUNT})
+        <p className="reservation__hint">
+          날짜를 눌러 예약할 시간과 연락처를 입력하세요. (관리자: 건수 제한
+          없음)
         </p>
-        {myReservations.length === 0 ? (
-          <p className="reservation__empty">예약 내역이 없습니다.</p>
-        ) : (
-          <ul className="reservation__myList">
-            {myReservations.map((r) => (
-              <li key={r._id} className="reservation__myCard">
-                <div className="reservation__myMain">
-                  <span className="reservation__myDate">{r.date}</span>
-                  <span className="reservation__myTime">
-                    {formatReservationTimeRange(r.time)}
-                  </span>
-                  <span className="reservation__myMeta">
-                    연락처 {r.agentId ?? "—"}
-                    {r.headcount != null ? ` · 인원 ${r.headcount}명` : ""}
-                  </span>
-                </div>
-                <div className="reservation__myActions">
-                  <button
-                    type="button"
-                    className="reservation__shareBtn"
-                    onClick={() => handleShareReservation(r._id)}
-                    aria-label="예약 공유"
-                    title="공유"
-                  >
-                    <IoShareSocialOutline
-                      className="reservation__shareBtnIcon"
-                      aria-hidden
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    className="reservation__cancelBtn"
-                    onClick={() => handleDeleteMine(r._id)}
-                  >
-                    취소
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
       </section>
 
       {sheetOpen && selectedDateKey
@@ -477,28 +576,23 @@ const Reservation = () => {
                 className="reservation__sheet"
                 role="dialog"
                 aria-modal="true"
-                aria-labelledby="reservation-sheet-title"
+                aria-labelledby="admin-reservation-sheet-title"
               >
                 <div className="reservation__sheetHandleWrap">
                   <span className="reservation__sheetHandle" aria-hidden />
                 </div>
                 <h2
-                  id="reservation-sheet-title"
+                  id="admin-reservation-sheet-title"
                   className="reservation__sheetTitle"
                 >
-                  {selectedDateKey} 예약
+                  {selectedDateKey} 예약 (관리자)
                 </h2>
-                {!canCreateReservation ? (
-                  <p className="reservation__limitBanner" role="status">
-                    한 계정당 예약은 최대 {MAX_RESERVATIONS_PER_ACCOUNT}
-                    건입니다. 취소한 뒤 새로 예약할 수 있어요.
-                  </p>
-                ) : null}
+                <p className="admin-reservation__quotaNote" role="status">
+                  이 화면에서 등록하는 예약은 서버에 관리자 예약으로 저장됩니다.
+                  계정당 예약 건수 제한은 적용되지 않습니다.
+                </p>
                 <form className="reservation__form" onSubmit={handleSubmit}>
-                  <fieldset
-                    className="reservation__field"
-                    disabled={!canCreateReservation}
-                  >
+                  <fieldset className="reservation__field">
                     <legend className="reservation__label">
                       시간 (0~23시)
                     </legend>
@@ -560,7 +654,6 @@ const Reservation = () => {
                       onChange={(e) => setContact(e.target.value)}
                       placeholder="전화번호"
                       autoComplete="tel"
-                      disabled={!canCreateReservation}
                     />
                   </label>
 
@@ -582,7 +675,6 @@ const Reservation = () => {
                         if (!Number.isFinite(n)) return;
                         setHeadcount(Math.max(1, Math.min(99, n)));
                       }}
-                      disabled={!canCreateReservation}
                     />
                   </label>
 
@@ -597,11 +689,7 @@ const Reservation = () => {
                     <button
                       type="submit"
                       className="reservation__btn reservation__btn--primary"
-                      disabled={
-                        submitting ||
-                        !canCreateReservation ||
-                        selectedHours.length === 0
-                      }
+                      disabled={submitting || selectedHours.length === 0}
                     >
                       {submitting ? "처리 중…" : "예약하기"}
                     </button>
@@ -616,4 +704,4 @@ const Reservation = () => {
   );
 };
 
-export default Reservation;
+export default AdminReservation;

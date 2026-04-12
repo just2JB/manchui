@@ -11,6 +11,9 @@ const AdminHome = () => {
         <Link className="linkbutton" to="/admin/join">
           가입 신청 관리
         </Link>
+        <Link className="linkbutton" to="/admin/reservation">
+          예약 관리
+        </Link>
         <Link className="linkbutton" to="/admin/contact">
           문의관리
         </Link>

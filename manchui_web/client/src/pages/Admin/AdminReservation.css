@@ -1,0 +1,148 @@
+.admin-reservation {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.admin-reservation__lead {
+  margin: 0 0 1rem;
+  padding: 0 2px;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.admin-reservation__listSection {
+  margin-bottom: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: var(--box-1, #1e1e1e);
+  padding: 12px 12px 14px;
+}
+
+.admin-reservation__block {
+  margin-top: 1rem;
+}
+
+.admin-reservation__block:first-of-type {
+  margin-top: 0;
+}
+
+.admin-reservation__block--executive {
+  margin-top: 1.35rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-reservation__subTitle {
+  margin: 0 0 0.35rem;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.admin-reservation__subHint {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.admin-reservation__emptyBlock {
+  margin: 0;
+  padding: 10px 0 4px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.admin-reservation__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.admin-reservation__listTitle {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.admin-reservation__purgeBtn {
+  padding: 8px 14px;
+  border: 1px solid rgba(179, 0, 0, 0.45);
+  border-radius: 10px;
+  background: rgba(179, 0, 0, 0.15);
+  color: var(--text-primary, #fff);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-reservation__purgeBtn:hover:not(:disabled) {
+  background: rgba(179, 0, 0, 0.28);
+}
+
+.admin-reservation__purgeBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.admin-reservation__tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-reservation__table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-reservation__table th,
+.admin-reservation__table td {
+  padding: 8px 10px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  vertical-align: top;
+}
+
+.admin-reservation__table th {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+}
+
+.admin-reservation__row--past td {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.admin-reservation__rowDelete {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #fff);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.admin-reservation__rowDelete:hover:not(:disabled) {
+  background: rgba(179, 0, 0, 0.35);
+}
+
+.admin-reservation__rowDelete:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.admin-reservation__quotaNote {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(179, 0, 0, 0.12);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+}

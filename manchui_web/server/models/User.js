@@ -22,6 +22,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "댄서",
   },
+  recommendationLikes: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "SongRecommendation" },
+  ],
+  recommendationScraps: [
+    { type: mongoose.Schema.Types.ObjectId, ref: "SongRecommendation" },
+  ],
 }, { timestamps: true });
 
 const User = mongoose.model("User", userSchema);

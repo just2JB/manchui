@@ -116,6 +116,8 @@ router.post("/verify-token", async (req, res) => {
     const user = await User.findById(decoded.userId);
     const userWithoutSchedule = user.toObject();
     delete userWithoutSchedule.schedule;
+    delete userWithoutSchedule.recommendationLikes;
+    delete userWithoutSchedule.recommendationScraps;
     return res.status(201).json({ isValid: true, user: userWithoutSchedule });
   } catch (error) {
     return res

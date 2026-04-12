@@ -30,7 +30,8 @@
 .adminHome .linkbutton {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
   min-height: 56px;
   margin: 0;
   padding: 1rem 1.25rem;
@@ -39,7 +40,7 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--text-primary);
-  text-align: center;
+  text-align: left;
   text-decoration: none;
   border-radius: 12px;
   background: var(--box-1);
@@ -50,6 +51,23 @@
     border-color 0.2s ease,
     background-color 0.2s ease,
     box-shadow 0.2s ease;
+}
+
+.adminHome__linkIcon {
+  flex-shrink: 0;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--brand-red);
+  opacity: 0.95;
+}
+
+.adminHome .linkbutton:hover .adminHome__linkIcon {
+  opacity: 1;
+}
+
+.adminHome__linkLabel {
+  flex: 1;
+  min-width: 0;
 }
 
 .adminHome .linkbutton:hover {

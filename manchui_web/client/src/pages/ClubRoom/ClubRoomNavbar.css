@@ -50,6 +50,11 @@
   opacity: 0.55;
 }
 
+.ClubRoomBottomNav__item:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 .ClubRoomBottomNav__item:not(:disabled):active {
   opacity: 0.85;
 }

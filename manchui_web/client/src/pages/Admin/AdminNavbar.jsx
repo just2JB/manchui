@@ -1,17 +1,54 @@
 import React from "react";
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useManchuiModal } from "../../hooks/ManchuiModal";
+import {
+  IoAlbumsOutline,
+  IoCalendarOutline,
+  IoChatbubbleEllipsesOutline,
+  IoClipboardOutline,
+  IoHomeOutline,
+  IoMusicalNotesOutline,
+  IoPeopleOutline,
+  IoSettingsOutline,
+} from "react-icons/io5";
 import "./AdminNavbar.css";
 
+const serverUrl = import.meta.env.VITE_SERVER_URL;
+
 const NAV_ITEMS = [
-  { to: "/admin", label: "홈", end: true },
-  { to: "/admin/join", label: "가입 신청" },
-  { to: "/admin/reservation", label: "예약 관리" },
-  { to: "/admin/setting", label: "웹 설정" },
-  { to: "/admin/contact", label: "문의" },
-  { to: "/admin/member", label: "부원" },
+  { to: "/admin", label: "홈", end: true, Icon: IoHomeOutline },
+  { to: "/admin/join", label: "가입 신청", Icon: IoClipboardOutline },
+  { to: "/admin/reservation", label: "예약 관리", Icon: IoCalendarOutline },
+  { to: "/admin/recommendation", label: "곡 추천", Icon: IoMusicalNotesOutline },
+  { to: "/admin/setting", label: "웹 설정", Icon: IoSettingsOutline },
+  { to: "/admin/contact", label: "문의", Icon: IoChatbubbleEllipsesOutline },
+  { to: "/admin/member", label: "부원", Icon: IoPeopleOutline },
 ];
 
 const AdminNavbar = ({ user }) => {
+  const nav = useNavigate();
+  const manchuiModal = useManchuiModal();
+
+  const handleLogout = async () => {
+    if (!(await manchuiModal("로그아웃 하시겠습니까?", "confirm"))) return;
+    let message = "로그아웃 되었습니다.";
+    try {
+      const res = await axios.post(
+        `${serverUrl}/api/auth/logout`,
+        {},
+        { withCredentials: true },
+      );
+      if (res?.data?.message) message = res.data.message;
+    } catch (e) {
+      console.log(e);
+    } finally {
+      await manchuiModal(message);
+      localStorage.removeItem("token");
+      nav("/");
+    }
+  };
+
   return (
     <header className="admin-nav">
       <div className="admin-nav__inner">
@@ -21,7 +58,7 @@ const AdminNavbar = ({ user }) => {
         </Link>
 
         <nav className="admin-nav__links" aria-label="관리자 메뉴">
-          {NAV_ITEMS.map(({ to, label, end }) => (
+          {NAV_ITEMS.map(({ to, label, end, Icon }) => (
             <NavLink
               key={to}
               to={to}
@@ -30,7 +67,8 @@ const AdminNavbar = ({ user }) => {
                 `admin-nav__link${isActive ? " admin-nav__link--active" : ""}`
               }
             >
-              {label}
+              <Icon className="admin-nav__linkIcon" aria-hidden />
+              <span className="admin-nav__linkText">{label}</span>
             </NavLink>
           ))}
         </nav>
@@ -42,8 +80,16 @@ const AdminNavbar = ({ user }) => {
             </span>
           ) : null}
           <Link to="/club" className="admin-nav__club">
-            동아리방
+            <IoAlbumsOutline className="admin-nav__clubIcon" aria-hidden />
+            <span>동아리방</span>
           </Link>
+          <button
+            type="button"
+            className="admin-nav__logout"
+            onClick={handleLogout}
+          >
+            로그아웃
+          </button>
         </div>
       </div>
     </header>

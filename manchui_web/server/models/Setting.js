@@ -14,6 +14,11 @@ const settingSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  /** false면 메인 네비에서 로그인·동아리방(어시스턴트)·마이페이지 비활성화, /club 접근 제한 */
+  assistantEnabled: {
+    type: Boolean,
+    default: true,
+  },
   /** 회장 정보 */
   president: {
     name: { type: String, default: "" },

@@ -15,6 +15,7 @@ router.get("/config", async (req, res) => {
       formOpen: setting.joinForm === 1,
       currentGeneration: setting.currentGeneration ?? 1,
       siteRestricted: Boolean(setting.siteRestricted),
+      assistantEnabled: setting.assistantEnabled !== false,
       president: {
         name: president.name ?? "",
         contact: president.contact ?? "",
@@ -47,6 +48,9 @@ router.put("/config", async (req, res) => {
     if (typeof req.body.siteRestricted === "boolean") {
       setting.siteRestricted = req.body.siteRestricted;
     }
+    if (typeof req.body.assistantEnabled === "boolean") {
+      setting.assistantEnabled = req.body.assistantEnabled;
+    }
     if (req.body.president && typeof req.body.president === "object") {
       if (!setting.president) setting.president = {};
       if (typeof req.body.president.name === "string")
@@ -62,6 +66,7 @@ router.put("/config", async (req, res) => {
       formOpen: setting.joinForm === 1,
       currentGeneration: setting.currentGeneration,
       siteRestricted: Boolean(setting.siteRestricted),
+      assistantEnabled: setting.assistantEnabled !== false,
       president: {
         name: president.name ?? "",
         contact: president.contact ?? "",

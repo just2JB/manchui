@@ -14,11 +14,15 @@ import EditProfile from "./pages/ClubRoom/Mypage/EditProfile";
 import EditUser from "./pages/ClubRoom/Mypage/EditUser";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import ReservationShare from "./pages/ClubRoom/Reservation/ReservationShare";
+import Recommend from "./pages/ClubRoom/Recommend/Recommend";
+import RecommendEditor from "./pages/ClubRoom/Recommend/RecommendEditor";
+import MypageSavedRecommendations from "./pages/ClubRoom/Mypage/MypageSavedRecommendations";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import AdminMember from "./pages/Admin/AdminMember";
 import AdminReservation from "./pages/Admin/AdminReservation";
+import AdminRecommend from "./pages/Admin/AdminRecommend";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
@@ -56,8 +60,12 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <ClubRoom /> },
           { path: "reservation", element: <Reservation /> },
-          { path: "mypage", element: <Mypage /> },
+          { path: "recommend/new", element: <RecommendEditor /> },
+          { path: "recommend/:id/edit", element: <RecommendEditor /> },
+          { path: "recommend", element: <Recommend /> },
+          { path: "mypage/recommendations/:kind", element: <MypageSavedRecommendations /> },
           { path: "mypage/profile", element: <EditProfile /> },
+          { path: "mypage", element: <Mypage /> },
           { path: "mypage/:data", element: <EditUser /> },
         ],
       },
@@ -74,6 +82,7 @@ const router = createBrowserRouter([
           { path: "join", element: <AdminJoin /> },
           { path: "member", element: <AdminMember /> },
           { path: "reservation", element: <AdminReservation /> },
+          { path: "recommendation", element: <AdminRecommend /> },
           { path: "setting", element: <AdminSetting /> },
         ],
       },

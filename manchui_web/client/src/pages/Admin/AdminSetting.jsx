@@ -12,8 +12,10 @@ const AdminSetting = () => {
     contact: "",
     major: "",
   });
+  const [assistantEnabled, setAssistantEnabled] = useState(true);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [savingAssistant, setSavingAssistant] = useState(false);
+  const [savingPresident, setSavingPresident] = useState(false);
 
   useEffect(() => {
     if (!serverUrl) {
@@ -23,6 +25,7 @@ const AdminSetting = () => {
     axios
       .get(`${serverUrl}/api/join/config`)
       .then((res) => {
+        setAssistantEnabled(res.data.assistantEnabled !== false);
         if (res.data.president) {
           setPresident({
             name: res.data.president.name ?? "",
@@ -35,19 +38,35 @@ const AdminSetting = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleSave = async () => {
+  const saveAssistant = async () => {
     if (!serverUrl || !user?._id) return;
-    setSaving(true);
+    setSavingAssistant(true);
+    try {
+      await axios.put(`${serverUrl}/api/join/config`, {
+        userId: user._id,
+        assistantEnabled,
+      });
+      alert("어시스턴트 설정이 저장되었습니다.");
+    } catch (err) {
+      alert(err.response?.data?.message || "저장에 실패했습니다.");
+    } finally {
+      setSavingAssistant(false);
+    }
+  };
+
+  const savePresident = async () => {
+    if (!serverUrl || !user?._id) return;
+    setSavingPresident(true);
     try {
       await axios.put(`${serverUrl}/api/join/config`, {
         userId: user._id,
         president,
       });
-      alert("설정이 저장되었습니다.");
+      alert("회장 정보가 저장되었습니다.");
     } catch (err) {
-      alert(err.response?.data?.message || "설정 저장에 실패했습니다.");
+      alert(err.response?.data?.message || "저장에 실패했습니다.");
     } finally {
-      setSaving(false);
+      setSavingPresident(false);
     }
   };
 
@@ -63,6 +82,61 @@ const AdminSetting = () => {
   return (
     <div className="adminSetting">
       <h1 className="admin-page-heading">웹페이지 설정</h1>
+      <div className="joinSetting joinSetting--assistant">
+        <h3 className="configTitle">동아리방 (어시스턴트)</h3>
+        <p className="configHint">
+          끄면 메인 사이트 네비게이션의 로그인·어시스턴트·마이페이지를 누를 수
+          없고, 동아리방 진입도 제한됩니다. (예약 공유 링크 열람은 가능)
+        </p>
+        <div
+          className="assistantToggle"
+          role="radiogroup"
+          aria-label="어시스턴트 사용 여부"
+        >
+          <div
+            className={`assistantStatus assistantStatus--${assistantEnabled ? "on" : "off"}`}
+            aria-live="polite"
+          >
+            <span className="assistantStatus__dot" aria-hidden />
+            <span className="assistantStatus__text">
+              {assistantEnabled ? "켜짐" : "꺼짐"}
+            </span>
+            <span className="assistantStatus__sub">
+              {assistantEnabled
+                ? "회원이 동아리방을 이용할 수 있습니다."
+                : "동아리방·로그인 진입이 막힙니다."}
+            </span>
+          </div>
+          <div className="assistantToggle__btns">
+            <button
+              type="button"
+              className={`assistantToggle__btn assistantToggle__btn--on${assistantEnabled ? " assistantToggle__btn--selected" : ""}`}
+              onClick={() => setAssistantEnabled(true)}
+              aria-checked={assistantEnabled}
+              role="radio"
+            >
+              켜기
+            </button>
+            <button
+              type="button"
+              className={`assistantToggle__btn assistantToggle__btn--off${!assistantEnabled ? " assistantToggle__btn--selected" : ""}`}
+              onClick={() => setAssistantEnabled(false)}
+              aria-checked={!assistantEnabled}
+              role="radio"
+            >
+              끄기
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="configSave configSave--block"
+          onClick={saveAssistant}
+          disabled={savingAssistant}
+        >
+          {savingAssistant ? "저장 중…" : "설정 저장"}
+        </button>
+      </div>
       <div className="joinSetting">
         <h3 className="configTitle">회장 정보</h3>
         <div className="configRow">
@@ -103,11 +177,11 @@ const AdminSetting = () => {
         </div>
         <button
           type="button"
-          className="configSave"
-          onClick={handleSave}
-          disabled={saving}
+          className="configSave configSave--block"
+          onClick={savePresident}
+          disabled={savingPresident}
         >
-          {saving ? "저장 중…" : "설정 저장"}
+          {savingPresident ? "저장 중…" : "설정 저장"}
         </button>
       </div>
     </div>

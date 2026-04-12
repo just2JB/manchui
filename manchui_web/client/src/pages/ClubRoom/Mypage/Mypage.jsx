@@ -73,8 +73,44 @@ const Mypage = () => {
         <MdOutlineKeyboardArrowRight className="mypageHub__infoArrow" />
       </button>
 
-      <section className="mypageHub__section" aria-label="메뉴">
-        <div className="mypageHub__sectionTitle">메뉴</div>
+      <section className="mypageHub__section" aria-label="추천">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          추천
+        </div>
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/recommendations/likes")}
+            >
+              <span>좋아요한 추천</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/recommendations/scraps")}
+            >
+              <span>스크랩한 추천</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <section className="mypageHub__section" aria-label="기타">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          기타
+        </div>
         <ul className="mypageHub__menuList">
           <li className="mypageHub__menuItem">
             <button

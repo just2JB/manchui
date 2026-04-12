@@ -1,0 +1,196 @@
+/* 준비 중 / 접근 제한 화면 (메인·동아리방 공통 카드) */
+
+.preparingPage {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.preparingPage--club {
+  min-height: min(560px, 85dvh);
+  padding: 1.25rem 1rem calc(1.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.preparingPage--main {
+  min-height: 50vh;
+}
+
+.preparingCard {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  padding: clamp(1.5rem, 4vw, 2rem) clamp(1.25rem, 3vw, 1.75rem);
+  border-radius: 20px;
+  background: linear-gradient(
+    165deg,
+    rgba(32, 32, 36, 0.96) 0%,
+    rgba(18, 18, 22, 0.98) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 24px 48px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.preparingCard--compact {
+  max-width: 380px;
+}
+
+.preparingCard__ambient {
+  position: absolute;
+  inset: -40% -20% auto;
+  height: 70%;
+  background: radial-gradient(
+    ellipse 80% 60% at 50% 0%,
+    rgba(179, 0, 0, 0.18) 0%,
+    transparent 65%
+  );
+  pointer-events: none;
+}
+
+.preparingCard__ambient--soft {
+  opacity: 0.75;
+}
+
+.preparingCard__iconRing {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(179, 0, 0, 0.12);
+  border: 1px solid rgba(179, 0, 0, 0.28);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.preparingCard__iconRing--small {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1rem;
+}
+
+.preparingCard__icon {
+  width: 34px;
+  height: 34px;
+  color: #e8a0a0;
+}
+
+.preparingCard__iconRing--small .preparingCard__icon {
+  width: 28px;
+  height: 28px;
+}
+
+.preparingCard__eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-more, #888);
+  text-align: center;
+}
+
+.preparingCard__title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.2rem, 3.8vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.35;
+  color: var(--text-primary, #f5f5f5);
+  text-align: center;
+}
+
+.preparingCard__title--main {
+  font-size: clamp(1.15rem, 3.5vw, 1.35rem);
+}
+
+.preparingCard__desc {
+  margin: 0 0 1.5rem;
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--text-gray, #aaa);
+  text-align: center;
+}
+
+.preparingCard__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.preparingCard__actions--single {
+  align-items: stretch;
+}
+
+.preparingCard__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 0.65rem 1.15rem;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  border-radius: 12px;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.preparingCard__btn--primary {
+  color: var(--text-primary, #fff);
+  background: linear-gradient(145deg, #c40000 0%, #8a0000 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.35);
+}
+
+.preparingCard__btn--primary:hover {
+  filter: brightness(1.06);
+  box-shadow: 0 8px 26px rgba(179, 0, 0, 0.42);
+}
+
+.preparingCard__btn--primary:active {
+  transform: scale(0.98);
+}
+
+.preparingCard__btn--ghost {
+  color: var(--text-gray, #bbb);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.preparingCard__btn--ghost:hover {
+  color: var(--text-primary, #fff);
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.preparingCard__btn:focus-visible {
+  outline: 2px solid var(--brand-red, #b30000);
+  outline-offset: 2px;
+}
+
+@media screen and (min-width: 420px) {
+  .preparingCard__actions:not(.preparingCard__actions--single) {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .preparingCard__actions:not(.preparingCard__actions--single) .preparingCard__btn {
+    flex: 1 1 auto;
+    min-width: 140px;
+  }
+}

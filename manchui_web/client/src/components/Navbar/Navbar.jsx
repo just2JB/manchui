@@ -6,7 +6,10 @@ import {
   isSameLinkDestination,
   scrollWindowTopAfterNav,
 } from "../../utils/navScroll";
+import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "./Navbar.css";
+
+const PREPARING_FEATURE_MSG = "준비 중인 기능입니다.";
 const ALL_PAGES = [
   { name: "홈", nameEn: "HOME", path: "/" },
   {
@@ -32,17 +35,17 @@ function isNavItemActive(page, location) {
 /** siteRestricted일 때는 가입만 표시 */
 const RESTRICTED_PAGES = [{ name: "가입", nameEn: "JOIN", path: "/join" }];
 
-const Navbar = ({
-  siteRestricted = false,
-  setOpenAuthWindow,
-  user,
-  setUser,
-}) => {
+const Navbar = ({ siteRestricted = false, user }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
 
   const location = useLocation();
   const nav = useNavigate();
+  const modal = useManchuiModal();
+
+  const showPreparingFeatureModal = () => {
+    void modal(PREPARING_FEATURE_MSG, "alert");
+  };
 
   const handleScroll = () => {
     const isAtTop = window.scrollY < 10;
@@ -140,25 +143,26 @@ const Navbar = ({
           <div className="loginButtonBox">
             {user ? (
               <div className="navbar-user-actions">
-                <Link
+                <button
+                  type="button"
                   className="navbar-user-link navbar-user-link--ghost"
-                  to="/club"
+                  onClick={showPreparingFeatureModal}
                 >
                   어시스턴트
-                </Link>
-                <Link
+                </button>
+                <button
+                  type="button"
                   className="navbar-user-link navbar-user-link--primary"
-                  to="/club/mypage"
+                  onClick={showPreparingFeatureModal}
                 >
                   마이페이지
-                </Link>
+                </button>
               </div>
             ) : (
               <button
+                type="button"
                 className="loginButton"
-                onClick={() => {
-                  setOpenAuthWindow(true);
-                }}
+                onClick={showPreparingFeatureModal}
               >
                 로그인
               </button>
@@ -221,26 +225,34 @@ const Navbar = ({
               <div className="mobileMenu-divider" aria-hidden="true" />
               {user ? (
                 <div className="mobileMenu-user-actions">
-                  <Link
+                  <button
+                    type="button"
                     className="mobileMenu-user-link mobileMenu-user-link--ghost"
-                    to="/club"
-                    onClick={() => closeMobileMenu()}
+                    onClick={() => {
+                      closeMobileMenu();
+                      showPreparingFeatureModal();
+                    }}
                   >
                     어시스턴트
-                  </Link>
-                  <Link
+                  </button>
+                  <button
+                    type="button"
                     className="mobileMenu-user-link mobileMenu-user-link--primary"
-                    to="/club/mypage"
-                    onClick={() => closeMobileMenu()}
+                    onClick={() => {
+                      closeMobileMenu();
+                      showPreparingFeatureModal();
+                    }}
                   >
                     마이페이지
-                  </Link>
+                  </button>
                 </div>
               ) : (
                 <button
+                  type="button"
                   className="mobileMenu-loginCta"
                   onClick={() => {
-                    setOpenAuthWindow(true);
+                    closeMobileMenu();
+                    showPreparingFeatureModal();
                   }}
                 >
                   로그인

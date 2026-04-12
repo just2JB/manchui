@@ -1,0 +1,11 @@
+.admin-route-loading {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0a0a0a;
+  color: var(--text-more, #888);
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+}

@@ -3,7 +3,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
-import AuthWindow from "../pages/ClubRoom/AuthWindow/AuthWindow";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import PreparingPage from "./PreparingPage";
 
@@ -17,10 +16,10 @@ const MainLayout = () => {
     formOpen: true,
     currentGeneration: null,
     siteRestricted: false,
+    assistantEnabled: true,
     president: { name: "", contact: "", major: "" },
   });
   const [joinConfigLoading, setJoinConfigLoading] = useState(true);
-  const [openAuthWindow, setOpenAuthWindow] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -50,6 +49,7 @@ const MainLayout = () => {
           formOpen: res.data.formOpen !== false,
           currentGeneration: res.data.currentGeneration ?? null,
           siteRestricted: Boolean(res.data.siteRestricted),
+          assistantEnabled: res.data.assistantEnabled !== false,
           president: res.data.president
             ? {
                 name: res.data.president.name ?? "",
@@ -71,23 +71,13 @@ const MainLayout = () => {
   return (
     <div className="layout-wrapper">
       <ScrollToTopOnRoute />
-      <Navbar
-        siteRestricted={joinConfig.siteRestricted}
-        setOpenAuthWindow={setOpenAuthWindow}
-        user={user}
-        setUser={setUser}
-      />
+      <Navbar siteRestricted={joinConfig.siteRestricted} user={user} />
       {showPreparing ? (
-        <PreparingPage />
+        <PreparingPage variant="main" />
       ) : (
         <Outlet context={{ joinConfig, joinConfigLoading }} />
       )}
       <Footer />
-      {openAuthWindow ? (
-        <AuthWindow setUser={setUser} setOpenAuthWindow={setOpenAuthWindow} />
-      ) : (
-        ""
-      )}
     </div>
   );
 };

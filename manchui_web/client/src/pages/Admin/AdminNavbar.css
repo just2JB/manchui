@@ -78,6 +78,9 @@
 }
 
 .admin-nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.45rem 0.65rem;
   font-size: 0.85rem;
   font-weight: 600;
@@ -87,6 +90,21 @@
   transition:
     color 0.2s ease,
     background-color 0.2s ease;
+}
+
+.admin-nav__linkIcon {
+  flex-shrink: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  opacity: 0.9;
+}
+
+.admin-nav__link--active .admin-nav__linkIcon {
+  opacity: 1;
+}
+
+.admin-nav__linkText {
+  white-space: nowrap;
 }
 
 .admin-nav__link:hover {
@@ -133,6 +151,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 0.35rem;
   padding: 0.4rem 0.85rem;
   font-size: 0.82rem;
   font-weight: 600;
@@ -147,12 +166,45 @@
     background-color 0.2s ease;
 }
 
+.admin-nav__clubIcon {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.9;
+}
+
 .admin-nav__club:hover {
   color: var(--text-primary);
   border-color: rgba(255, 255, 255, 0.22);
   background: rgba(255, 255, 255, 0.09);
 }
 
+.admin-nav__logout {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.4rem 0.75rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-more);
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.admin-nav__logout:hover {
+  color: var(--text-primary);
+  border-color: rgba(255, 120, 120, 0.45);
+  background: rgba(255, 80, 80, 0.08);
+}
+
+.admin-nav__logout:focus-visible,
 .admin-nav__club:focus-visible,
 .admin-nav__brand:focus-visible,
 .admin-nav__link:focus-visible {

@@ -226,6 +226,12 @@
   text-transform: uppercase;
 }
 
+.mypageHub__sectionTitle--ko {
+  text-transform: none;
+  letter-spacing: -0.01em;
+  font-size: 0.85rem;
+}
+
 .mypageHub__menuList {
   list-style: none;
   margin: 0;
@@ -335,6 +341,23 @@
 .mypageHub__logout:hover {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.35);
+}
+
+.mypageSaved__back {
+  align-self: flex-start;
+  margin-bottom: 4px;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.mypageSaved__back:hover {
+  color: var(--text-primary);
 }
 
 .editUser .popForm {

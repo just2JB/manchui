@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
+import AuthWindow from "../pages/ClubRoom/AuthWindow/AuthWindow";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import PreparingPage from "./PreparingPage";
 
@@ -20,6 +21,7 @@ const MainLayout = () => {
     president: { name: "", contact: "", major: "" },
   });
   const [joinConfigLoading, setJoinConfigLoading] = useState(true);
+  const [openAuthWindow, setOpenAuthWindow] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -71,13 +73,24 @@ const MainLayout = () => {
   return (
     <div className="layout-wrapper">
       <ScrollToTopOnRoute />
-      <Navbar siteRestricted={joinConfig.siteRestricted} user={user} />
+      <Navbar
+        siteRestricted={joinConfig.siteRestricted}
+        assistantEnabled={joinConfig.assistantEnabled}
+        setOpenAuthWindow={setOpenAuthWindow}
+        user={user}
+        setUser={setUser}
+      />
       {showPreparing ? (
         <PreparingPage variant="main" />
       ) : (
         <Outlet context={{ joinConfig, joinConfigLoading }} />
       )}
       <Footer />
+      {openAuthWindow ? (
+        <AuthWindow setUser={setUser} setOpenAuthWindow={setOpenAuthWindow} />
+      ) : (
+        ""
+      )}
     </div>
   );
 };

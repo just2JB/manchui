@@ -98,14 +98,23 @@
   letter-spacing: 0.03em;
   text-decoration: none;
   border-radius: 8px;
-  cursor: pointer;
-  margin: 0;
   transition:
     background-color 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease,
     box-shadow 0.2s ease,
     opacity 0.2s ease;
+}
+
+.navbar button.navbar-user-link {
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+}
+
+.navbar .navbar-user-link--prep {
+  opacity: 0.62;
+  cursor: pointer;
 }
 
 .navbar .navbar-user-link--ghost {
@@ -160,6 +169,15 @@
   opacity: 1;
   background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
   box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
+}
+
+.navbar .loginButton--prep {
+  opacity: 0.62;
+  cursor: pointer;
+}
+
+.navbar .loginButton--prep:hover {
+  opacity: 0.72;
 }
 
 .navbar .navbar-top .mobile {
@@ -371,8 +389,6 @@
   letter-spacing: 0.05em;
   text-decoration: none;
   border-radius: 0;
-  cursor: pointer;
-  margin: 0;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -399,6 +415,26 @@
 
 .navbar .mobileMenu-user-link--primary:hover {
   background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
+}
+
+.navbar button.mobileMenu-user-link {
+  margin: 0;
+  cursor: pointer;
+  appearance: none;
+}
+
+.navbar .mobileMenu-user-link--prep {
+  opacity: 0.62;
+  cursor: pointer;
+}
+
+.navbar .mobileMenu-loginCta--prep {
+  opacity: 0.62;
+  cursor: pointer;
+}
+
+.navbar .mobileMenu-loginCta--prep:hover {
+  opacity: 0.72;
 }
 
 @media screen and (max-width: 767px) {

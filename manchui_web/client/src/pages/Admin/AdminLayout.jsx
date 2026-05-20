@@ -1,10 +1,11 @@
 import React from "react";
-import { Outlet, useOutletContext } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import AdminNavbar from "./AdminNavbar";
 import "./AdminLayout.css";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminLayout = () => {
-  const { user } = useOutletContext();
+  const { user } = useAuth();
 
   return (
     <div className="admin-layout">

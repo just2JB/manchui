@@ -1,10 +1,10 @@
-import React, { useEffect, useId, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
-  IoHeart,
-  IoHeartOutline,
   IoBookmark,
   IoBookmarkOutline,
-  IoChevronDown,
+  IoHeart,
+  IoHeartOutline,
   IoMusicalNotesOutline,
 } from "react-icons/io5";
 import { getLinkThumbnailUrl } from "./linkThumbnailUrl";
@@ -16,17 +16,13 @@ const RecommendationCard = ({
   busyScrap,
   onToggleLike,
   onToggleScrap,
-  onEdit,
-  onDelete,
   onTagClick,
   showMeta = true,
 }) => {
-  const detailId = useId();
-  const [expanded, setExpanded] = useState(false);
+  const navigate = useNavigate();
+  const detailTo = `/club/recommend/${item._id}`;
   const canInteract = Boolean(user?._id);
-  const showManage = Boolean(item.canEdit && (onEdit || onDelete));
   const tags = Array.isArray(item.tags) ? item.tags : [];
-  const hasBody = Boolean(item.body && String(item.body).trim());
 
   const thumbUrl = useMemo(
     () => getLinkThumbnailUrl(item.videoUrl, item.thumbnailUrl),
@@ -39,14 +35,28 @@ const RecommendationCard = ({
 
   const showThumbImg = Boolean(thumbUrl && !thumbFailed);
 
+  const listDateLabel =
+    showMeta && item.createdAt
+      ? new Date(item.createdAt).toLocaleDateString("ko-KR", {
+          year: "2-digit",
+          month: "numeric",
+          day: "numeric",
+        })
+      : null;
+
+  const handleCardClick = (e) => {
+    const t = e.target;
+    if (t.closest("a[href]") || t.closest("button")) return;
+    navigate(detailTo);
+  };
+
   return (
-    <article className={`recCard${expanded ? " recCard--expanded" : ""}`}>
-      <a
-        href={item.videoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+    <article className="recCard" onClick={handleCardClick}>
+      <Link
+        to={detailTo}
         className="recCard__thumbWrap recCard__thumbLink"
-        aria-label="영상·음원 링크 열기"
+        aria-label="상세 보기"
+        onClick={(e) => e.stopPropagation()}
       >
         {showThumbImg ? (
           <img
@@ -60,59 +70,39 @@ const RecommendationCard = ({
         ) : (
           <IoMusicalNotesOutline className="recCard__thumbIcon" aria-hidden />
         )}
-      </a>
+      </Link>
 
       <div className="recCard__main">
-        <div className="recCard__lead">
-          <div className="recCard__head">
-            <button
-              type="button"
-              className="recCard__titleTap"
-              aria-expanded={expanded}
-              aria-controls={detailId}
-              onClick={() => setExpanded((v) => !v)}
+        <div className="recCard__topRow">
+          <Link
+            to={detailTo}
+            className="recCard__titleTap"
+            aria-label={`${item.title} 상세`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h2 className="recCard__title">{item.title}</h2>
+          </Link>
+          {listDateLabel ? (
+            <time
+              className="recCard__listDate"
+              dateTime={
+                item.createdAt
+                  ? new Date(item.createdAt).toISOString()
+                  : undefined
+              }
             >
-              <h2 className="recCard__title">{item.title}</h2>
-              <IoChevronDown
-                className="recCard__chev"
-                aria-hidden
-              />
-            </button>
-            <div className="recCard__actions">
-              <span className="recCard__likeCount" aria-label="좋아요 수">
-                {item.likeCount ?? 0}
-              </span>
-              <button
-                type="button"
-                className={`recCard__iconBtn${item.likedByMe ? " recCard__iconBtn--active" : ""}`}
-                disabled={!canInteract || busyLike}
-                title={canInteract ? "좋아요" : "로그인 후 이용 가능"}
-                aria-pressed={Boolean(item.likedByMe)}
-                onClick={() => onToggleLike?.(item)}
-              >
-                {item.likedByMe ? (
-                  <IoHeart aria-hidden className="recCard__heart" />
-                ) : (
-                  <IoHeartOutline aria-hidden />
-                )}
-              </button>
-              <button
-                type="button"
-                className={`recCard__iconBtn${item.scrapedByMe ? " recCard__iconBtn--scrapActive" : ""}`}
-                disabled={!canInteract || busyScrap}
-                title={canInteract ? "스크랩" : "로그인 후 이용 가능"}
-                aria-pressed={Boolean(item.scrapedByMe)}
-                onClick={() => onToggleScrap?.(item)}
-              >
-                {item.scrapedByMe ? (
-                  <IoBookmark aria-hidden />
-                ) : (
-                  <IoBookmarkOutline aria-hidden />
-                )}
-              </button>
-            </div>
-          </div>
+              {listDateLabel}
+            </time>
+          ) : null}
+        </div>
 
+        <div
+          className={
+            tags.length > 0
+              ? "recCard__foot recCard__foot--hasTags"
+              : "recCard__foot"
+          }
+        >
           {tags.length > 0 ? (
             <div className="recCard__tags">
               {tags.map((t) => {
@@ -134,69 +124,65 @@ const RecommendationCard = ({
                   );
                 }
                 return (
-                  <span key={`${item._id}-${label}`} className="recCard__hashtag">
+                  <span
+                    key={`${item._id}-${label}`}
+                    className="recCard__hashtag"
+                  >
                     #{label}
                   </span>
                 );
               })}
             </div>
           ) : null}
-        </div>
 
-        <div id={detailId} className="recCard__detail" hidden={!expanded}>
-          <div className="recCard__detailBlock">
-            <h3 className="recCard__detailHeading">추천 설명</h3>
-            {hasBody ? (
-              <p className="recCard__body recCard__body--detail">{item.body}</p>
-            ) : (
-              <p
-                className="recCard__body recCard__body--empty recCard__body--detail"
-                style={{ color: "var(--text-more)" }}
-              >
-                추천 설명이 없습니다.
-              </p>
-            )}
+          <div className="recCard__statsRow">
+            <div className="recCard__actions">
+              <div className="recCard__stat">
+                <button
+                  type="button"
+                  className={`recCard__iconBtn${item.likedByMe ? " recCard__iconBtn--active" : ""}`}
+                  disabled={!canInteract || busyLike}
+                  title={canInteract ? "좋아요" : "로그인 후 이용 가능"}
+                  aria-pressed={Boolean(item.likedByMe)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleLike?.(item);
+                  }}
+                >
+                  {item.likedByMe ? (
+                    <IoHeart aria-hidden className="recCard__heart" />
+                  ) : (
+                    <IoHeartOutline aria-hidden />
+                  )}
+                </button>
+                <span className="recCard__statNum" aria-label="좋아요 수">
+                  {item.likeCount ?? 0}
+                </span>
+              </div>
+              <div className="recCard__stat">
+                <button
+                  type="button"
+                  className={`recCard__iconBtn${item.scrapedByMe ? " recCard__iconBtn--scrapActive" : ""}`}
+                  disabled={!canInteract || busyScrap}
+                  title={canInteract ? "스크랩" : "로그인 후 이용 가능"}
+                  aria-pressed={Boolean(item.scrapedByMe)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleScrap?.(item);
+                  }}
+                >
+                  {item.scrapedByMe ? (
+                    <IoBookmark aria-hidden />
+                  ) : (
+                    <IoBookmarkOutline aria-hidden />
+                  )}
+                </button>
+                <span className="recCard__statNum" aria-label="스크랩 수">
+                  {item.scrapCount ?? 0}
+                </span>
+              </div>
+            </div>
           </div>
-
-          {item.authorName ? (
-            <div className="recCard__author recCard__author--detail">
-              작성자{" "}
-              <span className="recCard__authorName">{item.authorName}</span>
-            </div>
-          ) : null}
-
-          {showMeta && item.createdAt ? (
-            <div className="recCard__meta">
-              등록{" "}
-              {new Date(item.createdAt).toLocaleString("ko-KR", {
-                dateStyle: "medium",
-                timeStyle: "short",
-              })}
-            </div>
-          ) : null}
-
-          {showManage ? (
-            <div className="recCard__manage">
-              {onEdit ? (
-                <button
-                  type="button"
-                  className="recCard__manageBtn"
-                  onClick={() => onEdit(item)}
-                >
-                  수정
-                </button>
-              ) : null}
-              {onDelete ? (
-                <button
-                  type="button"
-                  className="recCard__manageBtn recCard__manageBtn--danger"
-                  onClick={() => onDelete(item)}
-                >
-                  삭제
-                </button>
-              ) : null}
-            </div>
-          ) : null}
         </div>
       </div>
     </article>

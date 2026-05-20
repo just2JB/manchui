@@ -1,10 +1,13 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ModalProvider } from "./hooks/ManchuiModal";
+import { AppSettingsProvider } from "./context/AppSettingsContext";
+import { AuthProvider } from "./context/AuthContext";
 
 import MainPage from "./pages/MainPage/MainPage";
 import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
+import ClubLogin from "./pages/ClubRoom/ClubLogin";
 import Join from "./pages/Join/Join";
 import Contact from "./pages/Contact/Contact";
 import Privacy from "./pages/Privacy/Privacy";
@@ -15,6 +18,7 @@ import EditUser from "./pages/ClubRoom/Mypage/EditUser";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import ReservationShare from "./pages/ClubRoom/Reservation/ReservationShare";
 import Recommend from "./pages/ClubRoom/Recommend/Recommend";
+import RecommendDetail from "./pages/ClubRoom/Recommend/RecommendDetail";
 import RecommendEditor from "./pages/ClubRoom/Recommend/RecommendEditor";
 import MypageSavedRecommendations from "./pages/ClubRoom/Mypage/MypageSavedRecommendations";
 import AdminHome from "./pages/Admin/AdminHome";
@@ -23,6 +27,7 @@ import AdminSetting from "./pages/Admin/AdminSetting";
 import AdminMember from "./pages/Admin/AdminMember";
 import AdminReservation from "./pages/Admin/AdminReservation";
 import AdminRecommend from "./pages/Admin/AdminRecommend";
+import AdminLottery from "./pages/Admin/AdminLottery";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
@@ -51,6 +56,7 @@ const router = createBrowserRouter([
     path: "/club",
     element: <ClubRoomLayout />,
     children: [
+      { path: "login", element: <ClubLogin /> },
       {
         path: "reservation/share/:id",
         element: <ReservationShare />,
@@ -62,6 +68,7 @@ const router = createBrowserRouter([
           { path: "reservation", element: <Reservation /> },
           { path: "recommend/new", element: <RecommendEditor /> },
           { path: "recommend/:id/edit", element: <RecommendEditor /> },
+          { path: "recommend/:id", element: <RecommendDetail /> },
           { path: "recommend", element: <Recommend /> },
           { path: "mypage/recommendations/:kind", element: <MypageSavedRecommendations /> },
           { path: "mypage/profile", element: <EditProfile /> },
@@ -83,6 +90,7 @@ const router = createBrowserRouter([
           { path: "member", element: <AdminMember /> },
           { path: "reservation", element: <AdminReservation /> },
           { path: "recommendation", element: <AdminRecommend /> },
+          { path: "lottery", element: <AdminLottery /> },
           { path: "setting", element: <AdminSetting /> },
         ],
       },
@@ -94,7 +102,11 @@ const router = createBrowserRouter([
 function App() {
   return (
     <ModalProvider>
-      <RouterProvider router={router} />
+      <AppSettingsProvider>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </AppSettingsProvider>
     </ModalProvider>
   );
 }

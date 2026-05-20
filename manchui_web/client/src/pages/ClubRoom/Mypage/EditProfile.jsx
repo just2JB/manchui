@@ -1,14 +1,13 @@
 import React from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useAuth } from "../../../context/AuthContext";
 
 const EditProfile = () => {
-  const { user } = useOutletContext();
+  const { user, logout } = useAuth();
   const manchuiModal = useManchuiModal();
   const nav = useNavigate();
 
@@ -16,12 +15,12 @@ const EditProfile = () => {
     const ok = await manchuiModal("정말로 삭제하시겠습니까", "confirm");
     if (!ok) return;
     try {
-      const response = await axios.post(
-        `${serverUrl}/api/auth/delete/${user._id}`,
+      const response = await apiClient.post(
+        `/api/auth/delete/${user._id}`,
         {},
         { withCredentials: true },
       );
-      localStorage.removeItem("token");
+      logout();
       await manchuiModal(response.data.message);
       nav("/club");
     } catch (error) {

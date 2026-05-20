@@ -1,9 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import apiClient, { serverUrl } from "../../api/apiClient";
 import "./Joincheck.css";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const formatDate = (date) => {
   if (!date) return "-";
@@ -40,8 +38,8 @@ const JoinCheck = () => {
       setLoading(false);
       return;
     }
-    axios
-      .get(`${serverUrl}/api/join/check/${trimmed}`)
+    apiClient
+      .get(`/api/join/check/${trimmed}`)
       .then((res) => {
         setList(res.data.list || []);
         setLoading(false);
@@ -147,8 +145,7 @@ const JoinCheck = () => {
         </div>
 
         <Link
-          to="/login"
-          state={{ redirectTo: "/admin" }}
+          to="/club/login?from=%2Fadmin"
           className="joinCheckAdminLink"
         >
           관리자

@@ -11,6 +11,7 @@ const songRecommendationSchema = new mongoose.Schema(
       default: [],
     },
     likeCount: { type: Number, default: 0 },
+    scrapCount: { type: Number, default: 0 },
     /** og:image 등으로 가져온 미리보기 (릴스·벅스 등, 실패 시 비움) */
     thumbnailUrl: { type: String, default: null },
     authorId: {

@@ -1,12 +1,14 @@
 import React from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../../api/apiClient";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
+import { useAuth } from "../../context/AuthContext";
 import {
   IoAlbumsOutline,
   IoCalendarOutline,
   IoChatbubbleEllipsesOutline,
   IoClipboardOutline,
+  IoGiftOutline,
   IoHomeOutline,
   IoMusicalNotesOutline,
   IoPeopleOutline,
@@ -14,13 +16,12 @@ import {
 } from "react-icons/io5";
 import "./AdminNavbar.css";
 
-const serverUrl = import.meta.env.VITE_SERVER_URL;
-
 const NAV_ITEMS = [
   { to: "/admin", label: "홈", end: true, Icon: IoHomeOutline },
   { to: "/admin/join", label: "가입 신청", Icon: IoClipboardOutline },
   { to: "/admin/reservation", label: "예약 관리", Icon: IoCalendarOutline },
   { to: "/admin/recommendation", label: "곡 추천", Icon: IoMusicalNotesOutline },
+  { to: "/admin/lottery", label: "상품 추첨", Icon: IoGiftOutline },
   { to: "/admin/setting", label: "웹 설정", Icon: IoSettingsOutline },
   { to: "/admin/contact", label: "문의", Icon: IoChatbubbleEllipsesOutline },
   { to: "/admin/member", label: "부원", Icon: IoPeopleOutline },
@@ -29,13 +30,14 @@ const NAV_ITEMS = [
 const AdminNavbar = ({ user }) => {
   const nav = useNavigate();
   const manchuiModal = useManchuiModal();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     if (!(await manchuiModal("로그아웃 하시겠습니까?", "confirm"))) return;
     let message = "로그아웃 되었습니다.";
     try {
-      const res = await axios.post(
-        `${serverUrl}/api/auth/logout`,
+      const res = await apiClient.post(
+        "/api/auth/logout",
         {},
         { withCredentials: true },
       );
@@ -44,7 +46,7 @@ const AdminNavbar = ({ user }) => {
       console.log(e);
     } finally {
       await manchuiModal(message);
-      localStorage.removeItem("token");
+      logout();
       nav("/");
     }
   };

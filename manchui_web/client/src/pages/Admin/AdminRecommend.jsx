@@ -1,11 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import axios from "axios";
+import apiClient, { serverUrl } from "../../api/apiClient";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { tagsToTagLine } from "../ClubRoom/Recommend/hashtagUtils";
 import "./AdminRecommend.css";
 
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const authConfig = () => {
   const token = localStorage.getItem("token");
@@ -39,8 +38,8 @@ const AdminRecommend = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${serverUrl}/api/recommendations`,
+      const res = await apiClient.get(
+        "/api/recommendations",
         authConfig(),
       );
       setItems(Array.isArray(res.data?.items) ? res.data.items : []);
@@ -95,8 +94,8 @@ const AdminRecommend = () => {
     }
     setSaving(true);
     try {
-      await axios.patch(
-        `${serverUrl}/api/recommendations/${editingId}`,
+      await apiClient.patch(
+        `/api/recommendations/${editingId}`,
         form,
         authConfig(),
       );
@@ -113,8 +112,8 @@ const AdminRecommend = () => {
   const handleDelete = async (it) => {
     if (!(await modal("이 추천을 삭제할까요?", "confirm"))) return;
     try {
-      await axios.delete(
-        `${serverUrl}/api/recommendations/${it._id}`,
+      await apiClient.delete(
+        `/api/recommendations/${it._id}`,
         authConfig(),
       );
       await modal("삭제되었습니다.");

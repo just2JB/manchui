@@ -4,6 +4,7 @@ import {
   IoCalendarOutline,
   IoChatbubbleEllipsesOutline,
   IoClipboardOutline,
+  IoGiftOutline,
   IoMusicalNotesOutline,
   IoPeopleOutline,
   IoSettingsOutline,
@@ -25,6 +26,11 @@ const HOME_LINKS = [
     to: "/admin/recommendation",
     label: "곡 추천 관리",
     Icon: IoMusicalNotesOutline,
+  },
+  {
+    to: "/admin/lottery",
+    label: "상품 추첨",
+    Icon: IoGiftOutline,
   },
   {
     to: "/admin/contact",

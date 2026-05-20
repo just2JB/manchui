@@ -1,15 +1,14 @@
 import React from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { DEVELOPER_CONTACT_MODAL_MESSAGE } from "../../../constants/developerContact";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useAuth } from "../../../context/AuthContext";
 
 const Mypage = () => {
-  const { user } = useOutletContext();
+  const { user, logout } = useAuth();
   const manchuiModal = useManchuiModal();
   const nav = useNavigate();
   const isExecutive = user?.position === "임원진";
@@ -18,8 +17,8 @@ const Mypage = () => {
     if (!(await manchuiModal("로그아웃 하시겠습니까?", "confirm"))) return;
     let message = "로그아웃 되었습니다.";
     try {
-      const res = await axios.post(
-        `${serverUrl}/api/auth/logout`,
+      const res = await apiClient.post(
+        "/api/auth/logout",
         {},
         { withCredentials: true },
       );
@@ -28,7 +27,7 @@ const Mypage = () => {
       console.log(e);
     } finally {
       await manchuiModal(message);
-      localStorage.removeItem("token");
+      logout();
       nav("/club");
     }
   };

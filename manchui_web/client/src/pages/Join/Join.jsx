@@ -1,38 +1,15 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import "./Join.css";
-import { useNavigate, useOutletContext } from "react-router-dom";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useNavigate } from "react-router-dom";
+import { useAppSettings } from "../../context/AppSettingsContext";
 
 const Join = () => {
   const nav = useNavigate();
-  const { joinConfig, joinConfigLoading } = useOutletContext() ?? {};
-  const [president, setPresident] = useState({
-    name: "",
-    contact: "",
-    major: "",
-  });
-
-  useEffect(() => {
-    if (!serverUrl) return;
-    axios
-      .get(`${serverUrl}/api/join/config`)
-      .then((res) => {
-        if (res.data.president) {
-          setPresident({
-            name: res.data.president.name ?? "",
-            contact: res.data.president.contact ?? "",
-            major: res.data.president.major ?? "",
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const { joinConfig, joinConfigLoading } = useAppSettings();
 
   const formOpen = joinConfig?.formOpen !== false;
   const generation = joinConfig?.currentGeneration ?? null;
-  const displayPresident = president.name || president.contact ? president : joinConfig?.president;
+  const displayPresident = joinConfig?.president;
 
   return (
     <div className="join">

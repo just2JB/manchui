@@ -1,17 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Navigate,
-  useNavigate,
-  useOutletContext,
-  useParams,
-} from "react-router-dom";
-import axios from "axios";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import apiClient, { serverUrl } from "../../../api/apiClient";
 import RecommendationCard from "../Recommend/RecommendationCard";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { useAuth } from "../../../context/AuthContext";
 import "../Recommend/Recommend.css";
 import "./Mypage.css";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const TITLES = {
   likes: "좋아요한 추천",
@@ -21,15 +15,15 @@ const TITLES = {
 const MypageSavedRecommendations = () => {
   const { kind } = useParams();
   const nav = useNavigate();
-  const { user } = useOutletContext();
+  const { user } = useAuth();
   const modal = useManchuiModal();
 
   const validKind = kind === "likes" || kind === "scraps";
   const title = validKind ? TITLES[kind] : "";
   const apiPath = useMemo(() => {
-    if (!validKind || !serverUrl) return null;
-    if (kind === "likes") return `${serverUrl}/api/recommendations/mine/likes`;
-    return `${serverUrl}/api/recommendations/mine/scraps`;
+    if (!validKind) return null;
+    if (kind === "likes") return "/api/recommendations/mine/likes";
+    return "/api/recommendations/mine/scraps";
   }, [kind, validKind]);
 
   const [items, setItems] = useState([]);
@@ -43,7 +37,7 @@ const MypageSavedRecommendations = () => {
     }
     setLoading(true);
     try {
-      const res = await axios.get(apiPath, { withCredentials: true });
+      const res = await apiClient.get(apiPath, { withCredentials: true });
       setItems(Array.isArray(res.data?.items) ? res.data.items : []);
     } catch (e) {
       console.error(e);
@@ -76,8 +70,8 @@ const MypageSavedRecommendations = () => {
     setBusyId(id);
     setBusyAction("like");
     try {
-      const res = await axios.post(
-        `${serverUrl}/api/recommendations/${id}/like`,
+      const res = await apiClient.post(
+        `/api/recommendations/${id}/like`,
         {},
         { withCredentials: true },
       );
@@ -108,34 +102,26 @@ const MypageSavedRecommendations = () => {
     setBusyId(id);
     setBusyAction("scrap");
     try {
-      const res = await axios.post(
-        `${serverUrl}/api/recommendations/${id}/scrap`,
+      const res = await apiClient.post(
+        `/api/recommendations/${id}/scrap`,
         {},
         { withCredentials: true },
       );
       const scraped = res.data?.scraped;
+      const scrapCount = res.data?.scrapCount;
       if (kind === "scraps" && !scraped) {
         patchOrRemove(id, { remove: true });
       } else {
-        patchOrRemove(id, { scrapedByMe: scraped });
+        patchOrRemove(id, {
+          scrapedByMe: scraped,
+          ...(scrapCount != null ? { scrapCount } : {}),
+        });
       }
     } catch (e) {
       await modal(e?.response?.data?.message || "스크랩 처리에 실패했습니다.");
     } finally {
       setBusyId(null);
       setBusyAction(null);
-    }
-  };
-
-  const handleDeleteItem = async (item) => {
-    if (!(await modal("이 추천을 삭제할까요?", "confirm"))) return;
-    try {
-      await axios.delete(`${serverUrl}/api/recommendations/${item._id}`, {
-        withCredentials: true,
-      });
-      await load();
-    } catch (e) {
-      await modal(e?.response?.data?.message || "삭제에 실패했습니다.");
     }
   };
 
@@ -169,8 +155,6 @@ const MypageSavedRecommendations = () => {
               busyScrap={busyId === item._id && busyAction === "scrap"}
               onToggleLike={handleToggleLike}
               onToggleScrap={handleToggleScrap}
-              onEdit={(item) => nav(`/club/recommend/${item._id}/edit`)}
-              onDelete={handleDeleteItem}
             />
           ))}
         </div>

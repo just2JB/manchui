@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
-import axios from "axios";
 import "./AdminJoin.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import apiClient, { serverUrl } from "../../api/apiClient";
+import { useAuth } from "../../context/AuthContext";
+import { useAppSettings } from "../../context/AppSettingsContext";
 
 const STATUS_OPTIONS = ["신청", "입금확인", "톡방초대완료"];
 const SORT_OPTIONS = [
@@ -145,7 +144,8 @@ const downloadCsv = (content, filename) => {
 };
 
 const AdminJoin = () => {
-  const { user } = useOutletContext();
+  const { user } = useAuth();
+  const { refreshJoinConfig } = useAppSettings();
   const manchuiModal = useManchuiModal();
   const [joinData, setJoinData] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
@@ -162,7 +162,7 @@ const AdminJoin = () => {
   const fetchConfig = async () => {
     if (!serverUrl) return;
     try {
-      const res = await axios.get(`${serverUrl}/api/join/config`);
+      const res = await apiClient.get("/api/join/config");
       setFormOpen(Boolean(res.data.formOpen));
       setCurrentGeneration(Number(res.data.currentGeneration) || 1);
     } catch {
@@ -173,7 +173,7 @@ const AdminJoin = () => {
   const fetchJoin = async () => {
     if (!user?._id || !serverUrl) return;
     try {
-      const res = await axios.get(`${serverUrl}/api/join/${user._id}`, {
+      const res = await apiClient.get(`/api/join/${user._id}`, {
         withCredentials: true,
       });
       setJoinData(Array.isArray(res.data.joinData) ? res.data.joinData : []);
@@ -198,13 +198,14 @@ const AdminJoin = () => {
     const gen = Number(currentGeneration);
     const roundedGen = gen >= 1 ? Math.round(gen * 2) / 2 : 1;
     try {
-      await axios.put(`${serverUrl}/api/join/config`, {
+      await apiClient.put("/api/join/config", {
         userId: user._id,
         formOpen,
         currentGeneration: roundedGen,
       });
       manchuiModal("설정이 저장되었습니다.");
       fetchConfig();
+      void refreshJoinConfig();
     } catch (err) {
       manchuiModal(err.response?.data?.message || "설정 저장에 실패했습니다.");
     } finally {
@@ -215,7 +216,7 @@ const AdminJoin = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("이 신청을 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(`${serverUrl}/api/join/${id}`);
+      await apiClient.delete(`/api/join/${id}`);
       manchuiModal("삭제되었습니다.");
       setDetailData(null);
       fetchJoin();
@@ -228,8 +229,8 @@ const AdminJoin = () => {
     if (!serverUrl || !user?._id) return;
     setUpdatingId(id);
     try {
-      const res = await axios.patch(
-        `${serverUrl}/api/join/${id}`,
+      const res = await apiClient.patch(
+        `/api/join/${id}`,
         { userId: user._id, status: newStatus },
         { withCredentials: true },
       );

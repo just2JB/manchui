@@ -374,11 +374,13 @@ router.post("/:id/scrap", requireAuth, async (req, res) => {
       user.recommendationScraps = user.recommendationScraps.filter(
         (id) => String(id) !== String(recId),
       );
+      rec.scrapCount = Math.max(0, (rec.scrapCount || 0) - 1);
     } else {
       user.recommendationScraps.push(recId);
+      rec.scrapCount = (rec.scrapCount || 0) + 1;
     }
-    await user.save();
-    res.json({ scraped: !has });
+    await Promise.all([user.save(), rec.save()]);
+    res.json({ scraped: !has, scrapCount: rec.scrapCount });
   } catch (e) {
     res.status(500).json({ message: "처리에 실패했습니다." });
   }

@@ -1,16 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  useNavigate,
-  useOutletContext,
-  useParams,
-} from "react-router-dom";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import apiClient, { serverUrl } from "../../../api/apiClient";
+import { useAuth } from "../../../context/AuthContext";
 import { IoChevronBack } from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { tagsToTagLine } from "./hashtagUtils";
 import "./RecommendEditor.css";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const emptyForm = () => ({
   title: "",
@@ -23,7 +18,7 @@ const RecommendEditor = () => {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const nav = useNavigate();
-  const { user } = useOutletContext();
+  const { user } = useAuth();
   const modal = useManchuiModal();
 
   const [form, setForm] = useState(emptyForm);
@@ -41,7 +36,7 @@ const RecommendEditor = () => {
     setLoadError(null);
     setForbidden(false);
     try {
-      const res = await axios.get(`${serverUrl}/api/recommendations/${id}`, {
+      const res = await apiClient.get(`/api/recommendations/${id}`, {
         withCredentials: true,
       });
       const item = res.data?.item;
@@ -85,14 +80,12 @@ const RecommendEditor = () => {
     setSaving(true);
     try {
       if (isEdit) {
-        await axios.patch(
-          `${serverUrl}/api/recommendations/${id}`,
-          form,
-          { withCredentials: true },
-        );
+        await apiClient.patch(`/api/recommendations/${id}`, form, {
+          withCredentials: true,
+        });
         await modal("수정되었습니다.");
       } else {
-        await axios.post(`${serverUrl}/api/recommendations`, form, {
+        await apiClient.post("/api/recommendations", form, {
           withCredentials: true,
         });
         await modal("등록되었습니다.");

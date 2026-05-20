@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./JoinForm.css";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { MdKeyboardArrowDown, MdLanguage } from "react-icons/md";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import Cup, { CUP_TYPES } from "../../components/Cup/Cup";
-import axios from "axios";
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import apiClient from "../../api/apiClient";
+import { useAppSettings } from "../../context/AppSettingsContext";
 
 // 단과대·학과 계층 데이터 (한국어)
 const COLLEGES_KO = [
@@ -295,7 +295,7 @@ const JoinForm = () => {
   const [contactError, setContactError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { joinConfig, joinConfigLoading } = useOutletContext() ?? {};
+  const { joinConfig, joinConfigLoading } = useAppSettings();
   useEffect(() => {
     if (joinConfigLoading === false && joinConfig?.formOpen === false) {
       nav("/join");
@@ -684,7 +684,7 @@ const JoinForm = () => {
     setIsSubmitting(true);
     let data = { ...formData };
     try {
-      const response = await axios.post(`${serverUrl}/api/join/apply`, data);
+      const response = await apiClient.post("/api/join/apply", data);
       if (response.status === 201) {
         alert("가입신청이 완료되었습니다");
         nav("/join");

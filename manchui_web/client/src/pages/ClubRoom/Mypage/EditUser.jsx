@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { useNavigate, useOutletContext, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Mypage.css";
-import axios from "axios";
+import apiClient from "../../../api/apiClient";
 import Loading from "../../../components/Loading/Loading";
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useAuth } from "../../../context/AuthContext";
 
 const Mypage = () => {
   const manchuiModal = useManchuiModal();
-  const { user, setUser } = useOutletContext();
+  const { user, setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
@@ -43,10 +43,10 @@ const Mypage = () => {
       userId: user._id,
     };
     try {
-      const response = await axios.post(
-        `${serverUrl}/api/auth/edit/${selectedForm}`,
+      const response = await apiClient.post(
+        `/api/auth/edit/${selectedForm}`,
         reqData,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       if (selectedForm === "username") {
         setUser({ ...user, username: formData[selectedForm] });

@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import apiClient, { serverUrl } from "../../../api/apiClient";
 import "./ReservationShare.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ReservationShare = () => {
   const { id } = useParams();
@@ -21,9 +19,7 @@ const ReservationShare = () => {
         return;
       }
       try {
-        const res = await axios.get(
-          `${serverUrl}/api/reservation/public/${id}`,
-        );
+        const res = await apiClient.get(`/api/reservation/public/${id}`);
         if (!cancelled) setData(res.data);
       } catch (e) {
         if (!cancelled) {

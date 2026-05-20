@@ -6,14 +6,14 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
-import axios from "axios";
+import apiClient, { serverUrl } from "../../api/apiClient";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "../ClubRoom/Reservation/Reservation.css";
 import { formatReservationTimeRange } from "../ClubRoom/Reservation/reservationTimeFormat";
+import ClubRoomRulesBar from "../ClubRoom/Reservation/ClubRoomRulesBar";
 import "./AdminReservation.css";
 
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const FIRST_HOUR = 0;
 const LAST_HOUR = 23;
@@ -176,8 +176,8 @@ const AdminReservation = () => {
     if (!serverUrl) return;
     setListError("");
     try {
-      const res = await axios.get(
-        `${serverUrl}/api/reservation/admin/list`,
+      const res = await apiClient.get(
+        "/api/reservation/admin/list",
         authConfig(),
       );
       setAllReservations(Array.isArray(res.data) ? res.data : []);
@@ -222,6 +222,13 @@ const AdminReservation = () => {
     for (let h = FIRST_HOUR; h <= LAST_HOUR; h++) list.push(h);
     return list;
   }, []);
+
+  const headcountStepValue = useMemo(() => {
+    if (headcount === "") return 1;
+    const n = Number(headcount);
+    if (!Number.isFinite(n)) return 1;
+    return Math.min(99, Math.max(1, n));
+  }, [headcount]);
 
   /** 관리자 화면: 계정당 예약 건수 제한 없음 */
   const canCreateReservation = true;
@@ -312,8 +319,8 @@ const AdminReservation = () => {
 
     setSubmitting(true);
     try {
-      await axios.post(
-        `${serverUrl}/api/reservation/admin/make`,
+      await apiClient.post(
+        "/api/reservation/admin/make",
         {
           date: selectedDateKey,
           agentId: phone,
@@ -340,8 +347,8 @@ const AdminReservation = () => {
     if (!ok) return;
     setBusyId(id);
     try {
-      await axios.delete(
-        `${serverUrl}/api/reservation/admin/by-id/${id}`,
+      await apiClient.delete(
+        `/api/reservation/admin/by-id/${id}`,
         authConfig(),
       );
       await modal("삭제되었습니다.", "alert");
@@ -364,8 +371,8 @@ const AdminReservation = () => {
     if (!ok) return;
     setPurging(true);
     try {
-      const res = await axios.post(
-        `${serverUrl}/api/reservation/admin/delete-past`,
+      const res = await apiClient.post(
+        "/api/reservation/admin/delete-past",
         {},
         authConfig(),
       );
@@ -432,14 +439,17 @@ const AdminReservation = () => {
       >
         <div className="admin-reservation__toolbar">
           <h2 className="admin-reservation__listTitle">예약 목록</h2>
-          <button
-            type="button"
-            className="admin-reservation__purgeBtn"
-            disabled={purging || loading}
-            onClick={() => void handlePurgePast()}
-          >
-            {purging ? "처리 중…" : "지난 예약 일괄 삭제"}
-          </button>
+          <div className="admin-reservation__toolbarRight">
+            <ClubRoomRulesBar inline />
+            <button
+              type="button"
+              className="admin-reservation__purgeBtn"
+              disabled={purging || loading}
+              onClick={() => void handlePurgePast()}
+            >
+              {purging ? "처리 중…" : "지난 예약 일괄 삭제"}
+            </button>
+          </div>
         </div>
         {listError ? (
           <p className="reservation__warn" role="alert">
@@ -659,23 +669,48 @@ const AdminReservation = () => {
 
                   <label className="reservation__field reservation__field--stack">
                     <span className="reservation__label">인원</span>
-                    <input
-                      type="number"
-                      min={1}
-                      max={99}
-                      className="reservation__input"
-                      value={headcount}
-                      onChange={(e) => {
-                        const raw = e.target.value;
-                        if (raw === "") {
-                          setHeadcount("");
-                          return;
+                    <div className="reservation__numberWrap">
+                      <button
+                        type="button"
+                        className="reservation__numberBtn"
+                        aria-label="인원 한 명 줄이기"
+                        disabled={headcountStepValue <= 1}
+                        onClick={() =>
+                          setHeadcount(Math.max(1, headcountStepValue - 1))
                         }
-                        const n = Number(raw);
-                        if (!Number.isFinite(n)) return;
-                        setHeadcount(Math.max(1, Math.min(99, n)));
-                      }}
-                    />
+                      >
+                        −
+                      </button>
+                      <input
+                        type="number"
+                        min={1}
+                        max={99}
+                        inputMode="numeric"
+                        className="reservation__input reservation__input--numberCore"
+                        value={headcount}
+                        onChange={(e) => {
+                          const raw = e.target.value;
+                          if (raw === "") {
+                            setHeadcount("");
+                            return;
+                          }
+                          const n = Number(raw);
+                          if (!Number.isFinite(n)) return;
+                          setHeadcount(Math.max(1, Math.min(99, n)));
+                        }}
+                      />
+                      <button
+                        type="button"
+                        className="reservation__numberBtn"
+                        aria-label="인원 한 명 늘리기"
+                        disabled={headcountStepValue >= 99}
+                        onClick={() =>
+                          setHeadcount(Math.min(99, headcountStepValue + 1))
+                        }
+                      >
+                        +
+                      </button>
+                    </div>
                   </label>
 
                   <div className="reservation__formActions">

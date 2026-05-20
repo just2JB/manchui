@@ -17,6 +17,8 @@
 }
 .clubRoombody {
   width: 600px;
+  /* 고정 FAB 등이 뷰포트가 아닌 본문 열(600px) 안쪽에 오도록 계산할 때 사용 */
+  --club-room-column-width: 600px;
   min-height: 100vh;
   min-height: 100dvh;
   background-color: var(--background-dark);
@@ -49,6 +51,17 @@
   align-items: center;
   justify-content: center;
   background-color: #050505;
+}
+
+.club-route-session-pending {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-more);
+  font-size: 0.95rem;
+}
+
+.clubRoombody--noBottomNav {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 }
 @media screen and (max-width: 767px) {
   .clubRoombody {

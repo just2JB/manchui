@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useManchuiModal } from "../hooks/ManchuiModal";
+import { useManchuiModal } from "../../hooks/ManchuiModal";
 import {
   CLUB_RESERVATION_HOME,
   CLUB_UNDER_DEVELOPMENT_MESSAGE,
-} from "../config/clubFeatureFlags";
+} from "../../config/clubFeatureFlags";
 
 /** 모달 확인 후 예약 페이지로 이동 */
 export function ClubUnderDevelopmentRedirect() {

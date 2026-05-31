@@ -12,6 +12,11 @@ import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "../ClubRoom/Reservation/Reservation.css";
 import { formatReservationTimeRange } from "../ClubRoom/Reservation/reservationTimeFormat";
 import ClubRoomRulesBar from "../ClubRoom/Reservation/ClubRoomRulesBar";
+import ReservedSlotDetailModal from "../ClubRoom/Reservation/ReservedSlotDetailModal";
+import {
+  findReservationForHour,
+  getHourSlotState,
+} from "../ClubRoom/Reservation/reservationLookup";
 import "./AdminReservation.css";
 
 
@@ -171,6 +176,7 @@ const AdminReservation = () => {
   const [submitting, setSubmitting] = useState(false);
   const [busyId, setBusyId] = useState(null);
   const [purging, setPurging] = useState(false);
+  const [viewingReservation, setViewingReservation] = useState(null);
 
   const loadList = useCallback(async () => {
     if (!serverUrl) return;
@@ -243,6 +249,7 @@ const AdminReservation = () => {
 
   const closeSheet = () => {
     setSheetOpen(false);
+    setViewingReservation(null);
   };
 
   const isHourBlocked = (h) => {
@@ -620,26 +627,41 @@ const AdminReservation = () => {
                             </span>
                           </span>
                           {hourSlots.map((h) => {
-                            const blocked = isHourBlocked(h);
+                            const { reserved, visuallyBlocked, disabled } =
+                              getHourSlotState(h, {
+                                reservedOnSelected,
+                                selectedDateKey,
+                                todayKey,
+                                canCreateReservation,
+                              });
                             const selected = selectedHours.includes(h);
                             return (
                               <Fragment key={h}>
                                 <button
                                   type="button"
-                                  disabled={blocked || !canCreateReservation}
-                                  className={`reservation__hourCell${selected ? " reservation__hourCell--selected" : ""}${blocked ? " reservation__hourCell--blocked" : ""}`}
+                                  disabled={disabled}
+                                  className={`reservation__hourCell${selected ? " reservation__hourCell--selected" : ""}${visuallyBlocked ? " reservation__hourCell--blocked" : ""}${reserved ? " reservation__hourCell--reserved" : ""}`}
                                   onClick={() => {
-                                    if (!blocked && canCreateReservation) {
-                                      void handleHourClick(h);
+                                    if (reserved) {
+                                      const r = findReservationForHour(
+                                        selectedDateKey,
+                                        h,
+                                        allReservations,
+                                      );
+                                      if (r) setViewingReservation(r);
+                                      return;
                                     }
+                                    if (!disabled) void handleHourClick(h);
                                   }}
                                   aria-pressed={selected}
                                   aria-label={
-                                    blocked
-                                      ? `${h}시~${h + 1}시 구간 예약 불가`
-                                      : selected
-                                        ? `${h}시~${h + 1}시 구간 선택됨`
-                                        : `${h}시~${h + 1}시 구간 선택`
+                                    reserved
+                                      ? `${h}시~${h + 1}시 예약됨, 정보 보기`
+                                      : visuallyBlocked
+                                        ? `${h}시~${h + 1}시 구간 예약 불가`
+                                        : selected
+                                          ? `${h}시~${h + 1}시 구간 선택됨`
+                                          : `${h}시~${h + 1}시 구간 선택`
                                   }
                                 />
                                 <span className="reservation__hourLabelWrap">
@@ -735,6 +757,12 @@ const AdminReservation = () => {
             document.body,
           )
         : null}
+      {viewingReservation ? (
+        <ReservedSlotDetailModal
+          reservation={viewingReservation}
+          onClose={() => setViewingReservation(null)}
+        />
+      ) : null}
     </div>
   );
 };

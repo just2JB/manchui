@@ -17,6 +17,11 @@ import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Reservation.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 import ClubRoomRulesBar from "./ClubRoomRulesBar";
+import ReservedSlotDetailModal from "./ReservedSlotDetailModal";
+import {
+  findReservationForHour,
+  getHourSlotState,
+} from "./reservationLookup";
 
 /** 예약 슬롯: 0시~23시 (24칸, 정시 단위) */
 const FIRST_HOUR = 0;
@@ -90,6 +95,7 @@ const Reservation = () => {
   const [contact, setContact] = useState("");
   const [headcount, setHeadcount] = useState(1);
   const [submitting, setSubmitting] = useState(false);
+  const [viewingReservation, setViewingReservation] = useState(null);
 
   const loadAll = useCallback(async () => {
     if (!serverUrl) return;
@@ -172,6 +178,7 @@ const Reservation = () => {
 
   const closeSheet = () => {
     setSheetOpen(false);
+    setViewingReservation(null);
   };
 
   const isHourBlocked = (h) => {
@@ -505,10 +512,7 @@ const Reservation = () => {
                   </p>
                 ) : null}
                 <form className="reservation__form" onSubmit={handleSubmit}>
-                  <fieldset
-                    className="reservation__field"
-                    disabled={!canCreateReservation}
-                  >
+                  <fieldset className="reservation__field">
                     <legend className="reservation__label">
                       시간 (0~23시)
                     </legend>
@@ -526,26 +530,41 @@ const Reservation = () => {
                             </span>
                           </span>
                           {hourSlots.map((h) => {
-                            const blocked = isHourBlocked(h);
+                            const { reserved, visuallyBlocked, disabled } =
+                              getHourSlotState(h, {
+                                reservedOnSelected,
+                                selectedDateKey,
+                                todayKey,
+                                canCreateReservation,
+                              });
                             const selected = selectedHours.includes(h);
                             return (
                               <Fragment key={h}>
                                 <button
                                   type="button"
-                                  disabled={blocked || !canCreateReservation}
-                                  className={`reservation__hourCell${selected ? " reservation__hourCell--selected" : ""}${blocked ? " reservation__hourCell--blocked" : ""}`}
+                                  disabled={disabled}
+                                  className={`reservation__hourCell${selected ? " reservation__hourCell--selected" : ""}${visuallyBlocked ? " reservation__hourCell--blocked" : ""}${reserved ? " reservation__hourCell--reserved" : ""}`}
                                   onClick={() => {
-                                    if (!blocked && canCreateReservation) {
-                                      void handleHourClick(h);
+                                    if (reserved) {
+                                      const r = findReservationForHour(
+                                        selectedDateKey,
+                                        h,
+                                        allReservations,
+                                      );
+                                      if (r) setViewingReservation(r);
+                                      return;
                                     }
+                                    if (!disabled) void handleHourClick(h);
                                   }}
                                   aria-pressed={selected}
                                   aria-label={
-                                    blocked
-                                      ? `${h}시~${h + 1}시 구간 예약 불가`
-                                      : selected
-                                        ? `${h}시~${h + 1}시 구간 선택됨`
-                                        : `${h}시~${h + 1}시 구간 선택`
+                                    reserved
+                                      ? `${h}시~${h + 1}시 예약됨, 정보 보기`
+                                      : visuallyBlocked
+                                        ? `${h}시~${h + 1}시 구간 예약 불가`
+                                        : selected
+                                          ? `${h}시~${h + 1}시 구간 선택됨`
+                                          : `${h}시~${h + 1}시 구간 선택`
                                   }
                                 />
                                 <span className="reservation__hourLabelWrap">
@@ -651,6 +670,12 @@ const Reservation = () => {
             document.body,
           )
         : null}
+      {viewingReservation ? (
+        <ReservedSlotDetailModal
+          reservation={viewingReservation}
+          onClose={() => setViewingReservation(null)}
+        />
+      ) : null}
     </div>
   );
 };

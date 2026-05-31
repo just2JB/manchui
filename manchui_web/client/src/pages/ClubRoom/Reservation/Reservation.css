@@ -597,6 +597,16 @@
   display: none;
 }
 
+.reservation__hourCell--reserved {
+  cursor: pointer;
+}
+
+.reservation__hourCell--reserved:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.36);
+  opacity: 0.88;
+}
+
 .reservation__hourCell:disabled {
   cursor: not-allowed;
 }
@@ -881,5 +891,94 @@ fieldset.reservation__field:disabled .reservation__hourCell {
 }
 
 .reservation__rulesOkBtn:hover {
+  filter: brightness(1.06);
+}
+
+/* 예약된 시간 칸 — 상세 정보 모달 */
+.reservation__detailRoot {
+  position: fixed;
+  inset: 0;
+  z-index: 9200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(16px, env(safe-area-inset-top, 0px))
+    max(16px, env(safe-area-inset-right, 0px))
+    max(16px, env(safe-area-inset-bottom, 0px))
+    max(16px, env(safe-area-inset-left, 0px));
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.reservation__detailDialog {
+  width: 100%;
+  max-width: min(400px, 100%);
+  padding: 20px 18px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(
+    165deg,
+    var(--box-1) 0%,
+    #181818 50%,
+    var(--background-dark) 100%
+  );
+  color: var(--text-primary);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+}
+
+.reservation__detailTitle {
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.reservation__detailList {
+  margin: 0 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reservation__detailRow {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.reservation__detailRow dt {
+  margin: 0;
+  font-weight: 600;
+  color: var(--text-gray);
+}
+
+.reservation__detailRow dd {
+  margin: 0;
+  word-break: break-word;
+}
+
+.reservation__detailOkBtn {
+  width: 100%;
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    var(--brand-red) 0%,
+    #8a0000 100%
+  );
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.reservation__detailOkBtn:hover {
   filter: brightness(1.06);
 }

@@ -19,6 +19,7 @@ const ClubRoomNavbar = () => {
     return <div className="ClubRoomNavbar ClubRoomNavbar--joinOnly" />;
   }
 
+  const isHome = location.pathname.startsWith("/club");
   const isMypage = location.pathname.startsWith("/club/mypage");
   const isReservation = location.pathname.startsWith("/club/reservation");
   const isRecommend = location.pathname.startsWith("/club/recommend");
@@ -26,18 +27,14 @@ const ClubRoomNavbar = () => {
 
   return (
     <nav className="ClubRoomBottomNav" aria-label="클럽룸 하단 메뉴">
-      {TEMP_TABS.map(({ id, label, Icon }) => (
-        <button
-          key={id}
-          type="button"
-          className="ClubRoomBottomNav__item ClubRoomBottomNav__item--placeholder"
-          disabled
-          title={`${label} (준비 중)`}
-        >
-          <Icon className="ClubRoomBottomNav__icon" aria-hidden />
-          <span className="ClubRoomBottomNav__label">{label}</span>
-        </button>
-      ))}
+      <button
+        type="button"
+        className={`ClubRoomBottomNav__item${isHome ? " ClubRoomBottomNav__item--active" : ""}`}
+        onClick={() => nav("/club")}
+      >
+        <IoHomeOutline className="ClubRoomBottomNav__icon" aria-hidden />
+        <span className="ClubRoomBottomNav__label">홈</span>
+      </button>
       <button
         type="button"
         className={`ClubRoomBottomNav__item${isTeam ? " ClubRoomBottomNav__item--active" : ""}`}

@@ -7,6 +7,7 @@ import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { loginClubRoom, signupClubRoom } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import { safeInternalPath } from "../../utils/safeInternalPath";
+import { resolveClubAllowedPath } from "../../config/clubFeatureFlags";
 
 const LOGIN_STEP_COUNT = 2;
 const SIGNUP_STEP_COUNT = 5;
@@ -37,8 +38,8 @@ const ClubLogin = () => {
 
   const redirectTo = useMemo(() => {
     const p = safeInternalPath(searchParams.get("from"));
-    if (p === "/club/login") return "/club";
-    return p;
+    if (p === "/club/login") return resolveClubAllowedPath("/club");
+    return resolveClubAllowedPath(p);
   }, [searchParams]);
 
   const [isSignUpMode, setIsSignUpMode] = useState(false);

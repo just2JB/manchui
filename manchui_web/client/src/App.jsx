@@ -35,6 +35,7 @@ import NotFound from "./pages/NotFound/NotFound";
 import MainLayout from "./layouts/MainLayout";
 import ClubRoomLayout from "./layouts/ClubRoomLayout";
 import ProtectedRoute from "./layouts/ProtectedRoute";
+import ClubReservationOnlyGuard from "./layouts/ClubReservationOnlyGuard";
 import AdminRoute from "./layouts/AdminRoute";
 
 const router = createBrowserRouter([
@@ -64,16 +65,24 @@ const router = createBrowserRouter([
       {
         element: <ProtectedRoute />,
         children: [
-          { index: true, element: <ClubRoom /> },
-          { path: "reservation", element: <Reservation /> },
-          { path: "recommend/new", element: <RecommendEditor /> },
-          { path: "recommend/:id/edit", element: <RecommendEditor /> },
-          { path: "recommend/:id", element: <RecommendDetail /> },
-          { path: "recommend", element: <Recommend /> },
-          { path: "mypage/recommendations/:kind", element: <MypageSavedRecommendations /> },
-          { path: "mypage/profile", element: <EditProfile /> },
-          { path: "mypage", element: <Mypage /> },
-          { path: "mypage/:data", element: <EditUser /> },
+          {
+            element: <ClubReservationOnlyGuard />,
+            children: [
+              { index: true, element: <ClubRoom /> },
+              { path: "reservation", element: <Reservation /> },
+              { path: "recommend/new", element: <RecommendEditor /> },
+              { path: "recommend/:id/edit", element: <RecommendEditor /> },
+              { path: "recommend/:id", element: <RecommendDetail /> },
+              { path: "recommend", element: <Recommend /> },
+              {
+                path: "mypage/recommendations/:kind",
+                element: <MypageSavedRecommendations />,
+              },
+              { path: "mypage/profile", element: <EditProfile /> },
+              { path: "mypage", element: <Mypage /> },
+              { path: "mypage/:data", element: <EditUser /> },
+            ],
+          },
         ],
       },
     ],

@@ -46,6 +46,10 @@
   opacity: 0.55;
 }
 
+.ClubRoomBottomNav__item--limited {
+  opacity: 0.55;
+}
+
 .ClubRoomBottomNav__item--placeholder:disabled {
   opacity: 0.55;
 }

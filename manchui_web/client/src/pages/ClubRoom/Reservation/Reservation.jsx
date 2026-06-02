@@ -1,10 +1,4 @@
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import apiClient, { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
@@ -18,14 +12,7 @@ import "./Reservation.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 import ClubRoomRulesBar from "./ClubRoomRulesBar";
 import ReservedSlotDetailModal from "./ReservedSlotDetailModal";
-import {
-  findReservationForHour,
-  getHourSlotState,
-} from "./reservationLookup";
-
-/** 예약 슬롯: 0시~23시 (24칸, 정시 단위) */
-const FIRST_HOUR = 0;
-const LAST_HOUR = 23;
+import ReservationHourPicker from "./ReservationHourPicker";
 
 /** 프론트 전용: 계정당 예약 건수 상한 */
 const MAX_RESERVATIONS_PER_ACCOUNT = 3;
@@ -150,12 +137,6 @@ const Reservation = () => {
     if (!selectedDateKey) return new Set();
     return collectReservedHoursForDate(selectedDateKey, allReservations);
   }, [selectedDateKey, allReservations]);
-
-  const hourSlots = useMemo(() => {
-    const list = [];
-    for (let h = FIRST_HOUR; h <= LAST_HOUR; h++) list.push(h);
-    return list;
-  }, []);
 
   /** 인원 스텝 버튼용 (빈 칸은 1로 간주) */
   const headcountStepValue = useMemo(() => {
@@ -513,71 +494,18 @@ const Reservation = () => {
                 ) : null}
                 <form className="reservation__form" onSubmit={handleSubmit}>
                   <fieldset className="reservation__field">
-                    <legend className="reservation__label">
-                      시간 (0~23시)
-                    </legend>
                     <p className="reservation__timeHint">설명 추후 삽입</p>
-                    <div className="reservation__hourTrack">
-                      <div className="reservation__hourScroll">
-                        <div
-                          className="reservation__hourScrollInner"
-                          role="group"
-                          aria-label="0시부터 23시까지 시간대 선택"
-                        >
-                          <span className="reservation__hourLabelWrap">
-                            <span className="reservation__hourLabel">
-                              {FIRST_HOUR}
-                            </span>
-                          </span>
-                          {hourSlots.map((h) => {
-                            const { reserved, visuallyBlocked, disabled } =
-                              getHourSlotState(h, {
-                                reservedOnSelected,
-                                selectedDateKey,
-                                todayKey,
-                                canCreateReservation,
-                              });
-                            const selected = selectedHours.includes(h);
-                            return (
-                              <Fragment key={h}>
-                                <button
-                                  type="button"
-                                  disabled={disabled}
-                                  className={`reservation__hourCell${selected ? " reservation__hourCell--selected" : ""}${visuallyBlocked ? " reservation__hourCell--blocked" : ""}${reserved ? " reservation__hourCell--reserved" : ""}`}
-                                  onClick={() => {
-                                    if (reserved) {
-                                      const r = findReservationForHour(
-                                        selectedDateKey,
-                                        h,
-                                        allReservations,
-                                      );
-                                      if (r) setViewingReservation(r);
-                                      return;
-                                    }
-                                    if (!disabled) void handleHourClick(h);
-                                  }}
-                                  aria-pressed={selected}
-                                  aria-label={
-                                    reserved
-                                      ? `${h}시~${h + 1}시 예약됨, 정보 보기`
-                                      : visuallyBlocked
-                                        ? `${h}시~${h + 1}시 구간 예약 불가`
-                                        : selected
-                                          ? `${h}시~${h + 1}시 구간 선택됨`
-                                          : `${h}시~${h + 1}시 구간 선택`
-                                  }
-                                />
-                                <span className="reservation__hourLabelWrap">
-                                  <span className="reservation__hourLabel">
-                                    {h + 1}
-                                  </span>
-                                </span>
-                              </Fragment>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
+                    <ReservationHourPicker
+                      active={sheetOpen}
+                      selectedDateKey={selectedDateKey}
+                      selectedHours={selectedHours}
+                      reservedOnSelected={reservedOnSelected}
+                      todayKey={todayKey}
+                      canCreateReservation={canCreateReservation}
+                      allReservations={allReservations}
+                      onSelectHour={(h) => void handleHourClick(h)}
+                      onViewReservation={setViewingReservation}
+                    />
                   </fieldset>
 
                   <label className="reservation__field reservation__field--stack">

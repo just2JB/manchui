@@ -433,6 +433,25 @@
   color: var(--text-more);
 }
 
+.reservation__hourPeriodLegend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 14px;
+  margin: 2px 0 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.reservation__hourPeriodLegend__am {
+  color: #e8a24a;
+}
+
+.reservation__hourPeriodLegend__pm {
+  color: var(--text-primary);
+}
+
 /* 0 [□] 1 [□] 2 … — 숫자는 위쪽, 네모만 촘촘히 / 스크롤은 track 안에서만 */
 .reservation__hourTrack {
   margin-top: 4px;
@@ -521,11 +540,18 @@
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: var(--text-primary);
   text-align: center;
   user-select: none;
   white-space: nowrap;
   transform: translateX(-50%);
+}
+
+.reservation__hourLabel--am {
+  color: #e8a24a;
+}
+
+.reservation__hourLabel--pm {
+  color: var(--text-primary);
 }
 
 .reservation__hourScrollInner > .reservation__hourLabelWrap:first-child

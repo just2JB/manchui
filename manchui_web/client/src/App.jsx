@@ -26,6 +26,8 @@ import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import AdminMember from "./pages/Admin/AdminMember";
 import AdminReservation from "./pages/Admin/AdminReservation";
+import AdminReservationLayout from "./pages/Admin/AdminReservationLayout";
+import AdminReservationLimitsPage from "./pages/Admin/AdminReservationLimitsPage";
 import AdminRecommend from "./pages/Admin/AdminRecommend";
 import AdminLottery from "./pages/Admin/AdminLottery";
 import AdminLayout from "./pages/Admin/AdminLayout";
@@ -97,7 +99,14 @@ const router = createBrowserRouter([
           { index: true, element: <AdminHome /> },
           { path: "join", element: <AdminJoin /> },
           { path: "member", element: <AdminMember /> },
-          { path: "reservation", element: <AdminReservation /> },
+          {
+            path: "reservation",
+            element: <AdminReservationLayout />,
+            children: [
+              { index: true, element: <AdminReservation /> },
+              { path: "limits", element: <AdminReservationLimitsPage /> },
+            ],
+          },
           { path: "recommendation", element: <AdminRecommend /> },
           { path: "lottery", element: <AdminLottery /> },
           { path: "setting", element: <AdminSetting /> },

@@ -5,6 +5,15 @@ const router = express.Router();
 const Reservation = require("../models/Reservation");
 const getToken = require("../utils/getToken");
 const requireExecutive = require("../middleware/requireExecutive");
+const {
+  assertCanCreateGeneralReservation,
+  buildAdminLimitsPayload,
+  countGeneralReservations,
+  getQuotaForUser,
+  parseRequiredLimit,
+  setDefaultReservationLimit,
+  setUserReservationLimit,
+} = require("../utils/reservationLimits");
 
 /** 공유 페이지용: 연락처 마스킹 */
 function maskAgentId(raw) {
@@ -76,6 +85,13 @@ async function createReservationHandler(req, res, bookingType) {
     }
 
     await purgePastReservations();
+
+    if (bookingType === "general") {
+      const quotaCheck = await assertCanCreateGeneralReservation(userId);
+      if (!quotaCheck.ok) {
+        return res.status(403).json({ message: quotaCheck.message });
+      }
+    }
 
     if (await hasReservedTimeOverlap(date, time)) {
       return res
@@ -198,7 +214,79 @@ router.get("/mine", async (req, res) => {
       const minB = Math.min(...(b.time || []).map(Number));
       return minA - minB;
     });
-    res.json(list);
+    const quota = await getQuotaForUser(userId);
+    res.json({
+      reservations: list,
+      quota: {
+        limit: quota.limit,
+        count: quota.count,
+        customLimit: quota.customLimit,
+        usesDefault: quota.usesDefault,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** 임원진: 예약 건수 제한(기본·회원별) 조회 */
+router.get("/admin/limits", requireExecutive, async (req, res) => {
+  try {
+    await purgePastReservations();
+    const payload = await buildAdminLimitsPayload();
+    res.json(payload);
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** 임원진: 계정당 기본 예약 건수 제한 */
+router.put("/admin/limits/default", requireExecutive, async (req, res) => {
+  try {
+    const parsed = parseRequiredLimit(req.body?.limit);
+    if (parsed === null) {
+      return res
+        .status(400)
+        .json({ message: "기본 제한은 0~99 사이 정수로 입력해 주세요." });
+    }
+    const result = await setDefaultReservationLimit(parsed);
+    if (!result.ok) {
+      return res.status(400).json({ message: result.message });
+    }
+    res.json({
+      message: "기본 예약 제한이 저장되었습니다.",
+      defaultLimit: result.limit,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** 임원진: 회원별 예약 건수 제한 (null/생략 시 기본값) */
+router.patch("/admin/limits/users/:userId", requireExecutive, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const hasLimit = Object.prototype.hasOwnProperty.call(req.body, "limit");
+    const raw = hasLimit ? req.body.limit : undefined;
+    if (!hasLimit) {
+      return res.status(400).json({ message: "limit 값이 필요합니다." });
+    }
+    const useDefault =
+      raw === null || raw === undefined || raw === "" || raw === "default";
+    const result = await setUserReservationLimit(
+      userId,
+      useDefault ? null : raw,
+    );
+    if (!result.ok) {
+      return res.status(400).json({ message: result.message });
+    }
+    const count = await countGeneralReservations(userId);
+    res.json({
+      message: "회원별 예약 제한이 저장되었습니다.",
+      customLimit: result.customLimit,
+      effectiveLimit: result.effectiveLimit,
+      currentCount: count,
+    });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
   }

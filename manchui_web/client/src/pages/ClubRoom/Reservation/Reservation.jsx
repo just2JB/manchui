@@ -14,8 +14,28 @@ import ClubRoomRulesBar from "./ClubRoomRulesBar";
 import ReservedSlotDetailModal from "./ReservedSlotDetailModal";
 import ReservationHourPicker from "./ReservationHourPicker";
 
-/** 프론트 전용: 계정당 예약 건수 상한 */
-const MAX_RESERVATIONS_PER_ACCOUNT = 3;
+const DEFAULT_RESERVATION_QUOTA = { limit: 3, count: 0 };
+
+function parseMineResponse(data) {
+  if (data && Array.isArray(data.reservations)) {
+    const list = data.reservations;
+    const q = data.quota || {};
+    return {
+      reservations: list,
+      quota: {
+        limit: Number(q.limit) >= 0 ? Number(q.limit) : DEFAULT_RESERVATION_QUOTA.limit,
+        count: Number(q.count) >= 0 ? Number(q.count) : list.length,
+      },
+    };
+  }
+  if (Array.isArray(data)) {
+    return {
+      reservations: data,
+      quota: { limit: DEFAULT_RESERVATION_QUOTA.limit, count: data.length },
+    };
+  }
+  return { reservations: [], quota: { ...DEFAULT_RESERVATION_QUOTA } };
+}
 
 function isConsecutiveHours(hours) {
   if (hours.length <= 1) return true;
@@ -74,6 +94,9 @@ const Reservation = () => {
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
   const [allReservations, setAllReservations] = useState([]);
   const [myReservations, setMyReservations] = useState([]);
+  const [reservationQuota, setReservationQuota] = useState(
+    DEFAULT_RESERVATION_QUOTA,
+  );
   const [loading, setLoading] = useState(true);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedDateKey, setSelectedDateKey] = useState(null);
@@ -100,10 +123,13 @@ const Reservation = () => {
       const res = await apiClient.get("/api/reservation/mine", {
         withCredentials: true,
       });
-      setMyReservations(Array.isArray(res.data) ? res.data : []);
+      const { reservations, quota } = parseMineResponse(res.data);
+      setMyReservations(reservations);
+      setReservationQuota(quota);
     } catch (e) {
       console.error(e);
       setMyReservations([]);
+      setReservationQuota({ ...DEFAULT_RESERVATION_QUOTA });
     }
   }, [user?._id]);
 
@@ -146,8 +172,9 @@ const Reservation = () => {
     return Math.min(99, Math.max(1, n));
   }, [headcount]);
 
-  const canCreateReservation =
-    myReservations.length < MAX_RESERVATIONS_PER_ACCOUNT;
+  const reservationLimit = reservationQuota.limit;
+  const reservationCount = reservationQuota.count;
+  const canCreateReservation = reservationCount < reservationLimit;
 
   const openSheetForDate = (dateKey) => {
     setSelectedDateKey(dateKey);
@@ -223,8 +250,11 @@ const Reservation = () => {
       await modal("연속된 시간만 예약할 수 있습니다.", "alert");
       return;
     }
-    if (myReservations.length >= MAX_RESERVATIONS_PER_ACCOUNT) {
-      await modal("한 계정당 예약은 최대 3건까지 가능합니다.", "alert");
+    if (reservationCount >= reservationLimit) {
+      await modal(
+        `한 계정당 예약은 최대 ${reservationLimit}건까지 가능합니다.`,
+        "alert",
+      );
       return;
     }
     const phone = contact.trim();
@@ -416,8 +446,8 @@ const Reservation = () => {
           <ClubRoomRulesBar inline />
         </div>
         <p className="reservation__quotaNote" aria-live="polite">
-          계정당 예약 최대 {MAX_RESERVATIONS_PER_ACCOUNT}건 (현재{" "}
-          {myReservations.length}/{MAX_RESERVATIONS_PER_ACCOUNT})
+          계정당 예약 최대 {reservationLimit}건 (현재 {reservationCount}/
+          {reservationLimit})
         </p>
         {myReservations.length === 0 ? (
           <p className="reservation__empty">예약 내역이 없습니다.</p>
@@ -488,8 +518,8 @@ const Reservation = () => {
                 </h2>
                 {!canCreateReservation ? (
                   <p className="reservation__limitBanner" role="status">
-                    한 계정당 예약은 최대 {MAX_RESERVATIONS_PER_ACCOUNT}
-                    건입니다. 취소한 뒤 새로 예약할 수 있어요.
+                    한 계정당 예약은 최대 {reservationLimit}건입니다. 취소한 뒤
+                    새로 예약할 수 있어요.
                   </p>
                 ) : null}
                 <form className="reservation__form" onSubmit={handleSubmit}>

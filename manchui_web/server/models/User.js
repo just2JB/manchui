@@ -22,6 +22,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: "댄서",
   },
+  /** null이면 사이트 기본 예약 건수 제한 적용 */
+  reservationLimit: {
+    type: Number,
+    default: null,
+    min: 0,
+    max: 99,
+  },
   recommendationLikes: [
     { type: mongoose.Schema.Types.ObjectId, ref: "SongRecommendation" },
   ],

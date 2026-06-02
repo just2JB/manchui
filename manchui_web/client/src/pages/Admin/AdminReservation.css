@@ -1,6 +1,7 @@
-.admin-reservation {
-  max-width: 1200px;
-  margin: 0 auto;
+.admin-reservation--manage,
+.admin-reservation-layout .admin-reservation {
+  max-width: none;
+  margin: 0;
 }
 
 .admin-reservation__lead {
@@ -153,4 +154,257 @@
   font-size: 0.88rem;
   line-height: 1.45;
   color: rgba(255, 255, 255, 0.88);
+}
+
+.admin-reservation__calendarSection {
+  margin-bottom: 1rem;
+  padding: 14px 14px 18px;
+}
+
+.admin-reservation--manage .reservation__monthNav {
+  margin-bottom: 14px;
+}
+
+.admin-reservation--manage .reservation__monthTitle {
+  font-size: 1.12rem;
+}
+
+.admin-reservation--manage .reservation__weekRow {
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.admin-reservation--manage .reservation__weekCell {
+  font-size: 0.82rem;
+  padding: 6px 0;
+}
+
+.admin-reservation--manage .reservation__dayGrid {
+  gap: 8px;
+}
+
+.admin-reservation--manage .reservation__dayEmpty {
+  min-height: 54px;
+}
+
+.admin-reservation--manage .reservation__day {
+  min-height: 54px;
+  padding-top: 8px;
+  gap: 5px;
+  border-radius: 12px;
+}
+
+.admin-reservation--manage .reservation__dayNum {
+  font-size: 1.05rem;
+}
+
+.admin-reservation--manage .reservation__dayDot {
+  width: 6px;
+  height: 6px;
+}
+
+@media (min-width: 640px) {
+  .admin-reservation--manage .reservation__dayEmpty,
+  .admin-reservation--manage .reservation__day {
+    min-height: 62px;
+  }
+}
+
+@media (min-width: 900px) {
+  .admin-reservation--manage .reservation__dayEmpty,
+  .admin-reservation--manage .reservation__day {
+    min-height: 72px;
+  }
+
+  .admin-reservation--manage .reservation__dayNum {
+    font-size: 1.12rem;
+  }
+}
+
+.admin-reservation__calendarHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.admin-reservation__calendarHeadActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.admin-reservation__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.admin-reservation__toggleInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.admin-reservation__toggleTrack {
+  position: relative;
+  flex-shrink: 0;
+  width: 42px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  transition: background 0.2s ease;
+}
+
+.admin-reservation__toggleTrack::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+
+.admin-reservation__toggleInput:checked + .admin-reservation__toggleTrack {
+  background: rgba(232, 162, 74, 0.55);
+}
+
+.admin-reservation__toggleInput:checked + .admin-reservation__toggleTrack::after {
+  transform: translateX(18px);
+}
+
+.admin-reservation__toggleLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.admin-reservation--manage .reservation__day--selected {
+  border-color: rgba(232, 162, 74, 0.75);
+  background: rgba(232, 162, 74, 0.2);
+  box-shadow: 0 0 0 1px rgba(232, 162, 74, 0.35);
+}
+
+.admin-reservation--manage .reservation__day--past.reservation__day--selected {
+  background: rgba(232, 162, 74, 0.1);
+}
+
+.admin-reservation__daySection,
+.admin-reservation__addSection {
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: var(--box-1, #1e1e1e);
+  padding: 12px 12px 14px;
+}
+
+.admin-reservation__dayTitle {
+  margin: 0 0 0.75rem;
+  font-size: 1.02rem;
+  font-weight: 600;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-reservation__dayTitleTag {
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.admin-reservation__dayList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-reservation__dayCard {
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.admin-reservation__dayCardMain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.admin-reservation__dayCardTime {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.admin-reservation__dayCardMeta {
+  margin: 0 0 8px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.admin-reservation__dayCardActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-reservation__dayCardBtn {
+  padding: 4px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary, #fff);
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+.admin-reservation__dayCardBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.admin-reservation__typeBadge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.admin-reservation__typeBadge--admin {
+  background: rgba(179, 0, 0, 0.22);
+  color: #f0b0b0;
+}
+
+.admin-reservation__addSection .reservation__form,
+.admin-reservation__addSection .reservation__field,
+.admin-reservation__addSection .reservation__hourTrack {
+  width: 100%;
+  max-width: none;
 }

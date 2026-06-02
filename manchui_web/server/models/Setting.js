@@ -25,6 +25,13 @@ const settingSchema = new mongoose.Schema({
     contact: { type: String, default: "" },
     major: { type: String, default: "" },
   },
+  /** 동아리방 일반 예약: 계정당 기본 최대 건수 (개별 설정 없을 때) */
+  defaultReservationLimitPerUser: {
+    type: Number,
+    default: 3,
+    min: 0,
+    max: 99,
+  },
 });
 
 const Setting = mongoose.model("Setting", settingSchema);

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "./AdminReservationLimits.css";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 const authConfig = () => {
   const token = localStorage.getItem("token");
@@ -134,6 +135,12 @@ const AdminReservationLimits = () => {
         따르고, 관리자 화면에서 등록하는 예약은 제한에 포함되지 않습니다.
       </p>
 
+      {loading ? (
+        <p className="admin-res-limits__hint" aria-live="polite">
+          {LOADING_TEXT}
+        </p>
+      ) : (
+        <>
       <div className="admin-res-limits__defaultRow">
         <label className="admin-res-limits__defaultLabel" htmlFor="res-default-limit">
           기본 제한 (계정당)
@@ -152,7 +159,7 @@ const AdminReservationLimits = () => {
           <button
             type="button"
             className="admin-res-limits__btn"
-            disabled={savingDefault || loading}
+            disabled={savingDefault}
             onClick={() => void handleSaveDefault()}
           >
             {savingDefault ? "저장 중…" : "기본값 저장"}
@@ -180,9 +187,7 @@ const AdminReservationLimits = () => {
         />
       </div>
 
-      {loading ? (
-        <p className="admin-res-limits__hint">불러오는 중…</p>
-      ) : filteredUsers.length === 0 ? (
+      {filteredUsers.length === 0 ? (
         <p className="admin-res-limits__hint">표시할 회원이 없습니다.</p>
       ) : (
         <div className="admin-res-limits__tableWrap">
@@ -253,6 +258,8 @@ const AdminReservationLimits = () => {
             </tbody>
           </table>
         </div>
+      )}
+        </>
       )}
     </section>
   );

@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { IoPersonOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { DEVELOPER_CONTACT_MODAL_MESSAGE } from "../../../constants/developerContact";
@@ -43,11 +44,7 @@ const Mypage = () => {
       >
         <div className="mypageHub__infoCardBody">
           <div className="mypageHub__avatar" aria-hidden="true">
-            <img
-              className="mypageHub__avatarImg"
-              src="/logos/longLogo_white.png"
-              alt=""
-            />
+            <IoPersonOutline className="mypageHub__avatarIcon" />
           </div>
           <div className="mypageHub__infoMain">
             <span className="mypageHub__infoName">
@@ -71,6 +68,27 @@ const Mypage = () => {
         </div>
         <MdOutlineKeyboardArrowRight className="mypageHub__infoArrow" />
       </button>
+
+      <section className="mypageHub__section" aria-label="동아리방">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          동아리방
+        </div>
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/reservations")}
+            >
+              <span>내 예약</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+        </ul>
+      </section>
 
       <section className="mypageHub__section" aria-label="추천">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">

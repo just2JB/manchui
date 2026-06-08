@@ -3,6 +3,7 @@ import "./AdminSetting.css";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { useAuth } from "../../context/AuthContext";
 import { useAppSettings } from "../../context/AppSettingsContext";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 const AdminSetting = () => {
   const { user } = useAuth();
@@ -64,7 +65,7 @@ const AdminSetting = () => {
     return (
       <div className="adminSetting">
         <h1 className="admin-page-heading">웹페이지 설정</h1>
-        <p>설정을 불러오는 중…</p>
+        <p>{LOADING_TEXT}</p>
       </div>
     );
   }

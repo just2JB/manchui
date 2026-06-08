@@ -11,7 +11,12 @@ import {
   IoHeartOutline,
   IoOpenOutline,
 } from "react-icons/io5";
-import { getLinkThumbnailUrl } from "./linkThumbnailUrl";
+import InstagramLinkArt from "./InstagramLinkArt";
+import {
+  extractYouTubeId,
+  getLinkThumbnailUrl,
+  isInstagramLink,
+} from "./linkThumbnailUrl";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Recommend.css";
 import "./RecommendDetail.css";
@@ -147,9 +152,12 @@ const RecommendDetail = () => {
     }
   };
 
-  const thumbUrl = item
-    ? getLinkThumbnailUrl(item.videoUrl, item.thumbnailUrl)
-    : null;
+  const youtubeId = item ? extractYouTubeId(item.videoUrl) : null;
+  const isInstagram = item ? isInstagramLink(item.videoUrl) : false;
+  const thumbUrl =
+    item && !youtubeId && !isInstagram
+      ? getLinkThumbnailUrl(item.videoUrl, item.thumbnailUrl)
+      : null;
   const tags = Array.isArray(item?.tags) ? item.tags : [];
   const hasBody = Boolean(item?.body && String(item.body).trim());
   const hasVideoLink = Boolean(item?.videoUrl && String(item.videoUrl).trim());
@@ -255,7 +263,28 @@ const RecommendDetail = () => {
           ) : null}
         </div>
 
-        {thumbUrl ? (
+        {youtubeId ? (
+          <div className="recommendDetail__videoWrap">
+            <iframe
+              className="recommendDetail__youtube"
+              src={`https://www.youtube.com/embed/${youtubeId}`}
+              title={item.title ? `${item.title} 영상` : "YouTube 영상"}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+        ) : isInstagram ? (
+          <a
+            href={item.videoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="recommendDetail__thumbLink recommendDetail__instaLink"
+            aria-label="Instagram 링크 열기"
+          >
+            <InstagramLinkArt variant="detail" />
+          </a>
+        ) : thumbUrl ? (
           <a
             href={item.videoUrl}
             target="_blank"

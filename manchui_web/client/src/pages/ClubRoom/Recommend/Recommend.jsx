@@ -10,12 +10,17 @@ import { IoAdd, IoChevronDown, IoSearch } from "react-icons/io5";
 import apiClient, { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import RecommendationCard from "./RecommendationCard";
+import RecommendationCardSkeleton from "./RecommendationCardSkeleton";
 import {
   joinSearchQuery,
   stripTrailingIncompleteHashtag,
 } from "./hashtagUtils";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Recommend.css";
+
+const PAGE_SIZE = 16;
+const SKELETON_INITIAL = 6;
+const SKELETON_MORE = 3;
 
 const SORT_OPTIONS = [
   { value: "latest", label: "최신순" },
@@ -33,6 +38,8 @@ const Recommend = () => {
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
   const [sort, setSort] = useState("latest");
   const [committedTags, setCommittedTags] = useState([]);
   const [queryRest, setQueryRest] = useState("");
@@ -41,6 +48,12 @@ const Recommend = () => {
   const [busyAction, setBusyAction] = useState(null);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const sortWrapRef = useRef(null);
+  const loadMoreRef = useRef(null);
+  const fetchGenRef = useRef(0);
+  const itemsLengthRef = useRef(0);
+  const loadingMoreRef = useRef(false);
+  const hasMoreRef = useRef(false);
+  const loadingRef = useRef(true);
 
   const sortLabel = useMemo(
     () => SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "정렬",
@@ -57,36 +70,97 @@ const Recommend = () => {
     return () => clearTimeout(t);
   }, [searchInputForApi]);
 
-  const queryString = useMemo(() => {
-    const p = new URLSearchParams();
-    p.set("sort", sort);
-    if (debouncedQ) p.set("q", debouncedQ);
-    return p.toString();
-  }, [sort, debouncedQ]);
-
-  const load = useCallback(async () => {
-    if (!serverUrl) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await apiClient.get(
-        `/api/recommendations${queryString ? `?${queryString}` : ""}`,
-        { withCredentials: true },
-      );
-      setItems(Array.isArray(res.data?.items) ? res.data.items : []);
-    } catch (e) {
-      console.error(e);
-      setItems([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [queryString]);
+  useEffect(() => {
+    itemsLengthRef.current = items.length;
+  }, [items.length]);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    hasMoreRef.current = hasMore;
+  }, [hasMore]);
+
+  useEffect(() => {
+    loadingRef.current = loading;
+  }, [loading]);
+
+  const fetchPage = useCallback(
+    async (skip, append) => {
+      if (!serverUrl) {
+        setLoading(false);
+        setLoadingMore(false);
+        return;
+      }
+
+      const gen = ++fetchGenRef.current;
+      if (append) {
+        if (loadingMoreRef.current) return;
+        loadingMoreRef.current = true;
+        setLoadingMore(true);
+      } else {
+        loadingMoreRef.current = false;
+        setLoading(true);
+        setLoadingMore(false);
+        setHasMore(false);
+      }
+
+      const p = new URLSearchParams();
+      p.set("sort", sort);
+      if (debouncedQ) p.set("q", debouncedQ);
+      p.set("limit", String(PAGE_SIZE));
+      p.set("skip", String(skip));
+
+      try {
+        const res = await apiClient.get(`/api/recommendations?${p}`, {
+          withCredentials: true,
+        });
+        if (gen !== fetchGenRef.current) return;
+
+        const next = Array.isArray(res.data?.items) ? res.data.items : [];
+        setItems((prev) => (append ? [...prev, ...next] : next));
+        setHasMore(Boolean(res.data?.hasMore));
+      } catch (e) {
+        if (gen !== fetchGenRef.current) return;
+        console.error(e);
+        if (!append) setItems([]);
+        setHasMore(false);
+      } finally {
+        if (gen !== fetchGenRef.current) return;
+        if (append) {
+          loadingMoreRef.current = false;
+          setLoadingMore(false);
+        } else {
+          setLoading(false);
+        }
+      }
+    },
+    [sort, debouncedQ],
+  );
+
+  useEffect(() => {
+    fetchPage(0, false);
+  }, [fetchPage]);
+
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el || !hasMore || loading || loadingMore) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        if (
+          loadingMoreRef.current ||
+          !hasMoreRef.current ||
+          loadingRef.current
+        ) {
+          return;
+        }
+        fetchPage(itemsLengthRef.current, true);
+      },
+      { rootMargin: "160px 0px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loading, loadingMore, fetchPage, items.length]);
 
   useEffect(() => {
     if (!sortMenuOpen) return undefined;
@@ -392,7 +466,11 @@ const Recommend = () => {
       </button>
 
       {loading ? (
-        <div className="recommend__loading">불러오는 중…</div>
+        <div className="recommend__list" aria-busy="true" aria-label="불러오는 중">
+          {Array.from({ length: SKELETON_INITIAL }, (_, i) => (
+            <RecommendationCardSkeleton key={`sk-init-${i}`} />
+          ))}
+        </div>
       ) : items.length === 0 ? (
         <div className="recommend__empty">표시할 추천이 없습니다.</div>
       ) : (
@@ -409,6 +487,18 @@ const Recommend = () => {
               onTagClick={appendTagToSearch}
             />
           ))}
+          {loadingMore
+            ? Array.from({ length: SKELETON_MORE }, (_, i) => (
+                <RecommendationCardSkeleton key={`sk-more-${i}`} />
+              ))
+            : null}
+          {hasMore ? (
+            <div
+              ref={loadMoreRef}
+              className="recommend__loadMoreSentinel"
+              aria-hidden
+            />
+          ) : null}
         </div>
       )}
     </div>

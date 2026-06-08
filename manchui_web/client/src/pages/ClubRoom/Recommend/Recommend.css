@@ -11,6 +11,8 @@
 
 .recommend {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
   background-color: var(--background-dark);
   color: var(--text-primary);
@@ -20,6 +22,7 @@
   flex-direction: column;
   gap: 12px;
   position: relative;
+  overflow-x: hidden;
 }
 
 .recommend__top {
@@ -266,7 +269,7 @@
   /* 트리거보다 넓게: 긴 옵션 라벨 한 줄 표시 (오른쪽은 트리거와 정렬) */
   min-width: 100%;
   width: max-content;
-  max-width: min(19.5rem, calc(100vw - 28px));
+  max-width: min(19.5rem, 100%);
 }
 
 .recommend__sortItem {
@@ -336,6 +339,127 @@
   color: var(--text-more);
 }
 
+.recommend__loadMoreSentinel {
+  width: 100%;
+  height: 1px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+@keyframes recommend-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.recommendSkeleton__block {
+  background: linear-gradient(
+    90deg,
+    var(--box-2) 0%,
+    rgba(255, 255, 255, 0.1) 45%,
+    var(--box-2) 90%
+  );
+  background-size: 200% 100%;
+  animation: recommend-shimmer 1.35s ease-in-out infinite;
+}
+
+.recCard--skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+.recCard--skeleton .recommendSkeleton__thumb {
+  background: var(--box-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.recCard--skeleton .recommendSkeleton__thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.12) 45%,
+    transparent 90%
+  );
+  background-size: 200% 100%;
+  animation: recommend-shimmer 1.35s ease-in-out infinite;
+}
+
+.recommendSkeleton__line {
+  height: 0.82rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.recommendSkeleton__line--title {
+  flex: 1;
+  min-width: 0;
+  max-width: 72%;
+}
+
+.recommendSkeleton__line--date {
+  width: 2.4rem;
+  height: 0.68rem;
+  margin-left: auto;
+}
+
+.recommendSkeleton__line.recommendSkeleton__block {
+  display: block;
+}
+
+.recommendSkeleton__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.recommendSkeleton__chip {
+  display: inline-block;
+  width: 2.6rem;
+  height: 1.05rem;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.recommendSkeleton__chip--short {
+  width: 1.9rem;
+}
+
+.recommendSkeleton__chip.recommendSkeleton__block,
+.recommendSkeleton__icon.recommendSkeleton__block,
+.recommendSkeleton__line.recommendSkeleton__block {
+  background: linear-gradient(
+    90deg,
+    var(--box-2) 0%,
+    rgba(255, 255, 255, 0.1) 45%,
+    var(--box-2) 90%
+  );
+  background-size: 200% 100%;
+  animation: recommend-shimmer 1.35s ease-in-out infinite;
+}
+
+.recommendSkeleton__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.recommendSkeleton__icon {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
 /* 목록 행 (플랫 리스트 + 구분선) — 카드 세로 = 썸네일 한 칸 */
 .recCard {
   --rec-card-thumb: 64px;
@@ -401,6 +525,7 @@
 }
 
 .recCard__thumbWrap {
+  position: relative;
   flex-shrink: 0;
   align-self: center;
   width: var(--rec-card-thumb);
@@ -411,9 +536,7 @@
   overflow: hidden;
   background: var(--box-2);
   border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -421,6 +544,10 @@
 
 .recCard__thumbLink:hover .recCard__thumbImg {
   filter: brightness(1.06);
+}
+
+.recCard__thumbLink:hover .recommendInstaArt {
+  filter: brightness(1.08);
 }
 
 .recCard__thumbLink:hover .recCard__thumbIcon {
@@ -433,19 +560,58 @@
   outline-offset: 2px;
 }
 
-.recCard__thumbImg {
+.recCard__thumbImg,
+.recCard__thumbWrap > .recommendInstaArt {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
+}
+
+.recCard__thumbImg {
   object-fit: cover;
   object-position: center center;
   display: block;
 }
 
 .recCard__thumbIcon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 28px;
   height: 28px;
   color: var(--text-more);
   opacity: 0.55;
+}
+
+.recommendInstaArt {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    45deg,
+    #f09433 0%,
+    #e6683c 22%,
+    #dc2743 45%,
+    #cc2366 68%,
+    #bc1888 100%
+  );
+  transition: filter 0.15s ease;
+}
+
+.recommendInstaArt__icon {
+  color: #fff;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.28));
+}
+
+.recommendInstaArt--card .recommendInstaArt__icon {
+  width: 38%;
+  height: 38%;
+  min-width: 18px;
+  min-height: 18px;
 }
 
 .recCard__topRow {

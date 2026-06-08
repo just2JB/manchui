@@ -3,7 +3,24 @@
  * 지원: YouTube, Vimeo(서드파티 썸네일 프록시). 그 외는 null → 플레이스홀더 아이콘.
  */
 
-function extractYouTubeId(raw) {
+export function isInstagramLink(raw) {
+  if (!raw || typeof raw !== "string") return false;
+  const s = raw.trim();
+  try {
+    const u = new URL(s.startsWith("http") ? s : `https://${s}`);
+    const host = u.hostname.replace(/^www\./, "");
+    return (
+      host === "instagram.com" ||
+      host === "instagr.am" ||
+      host === "m.instagram.com" ||
+      host.endsWith(".instagram.com")
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function extractYouTubeId(raw) {
   if (!raw || typeof raw !== "string") return null;
   const s = raw.trim();
   try {
@@ -55,6 +72,7 @@ function extractVimeoId(raw) {
  * @returns {string | null} 이미지 URL 또는 알 수 없으면 null
  */
 export function getLinkThumbnailUrl(url, persistedThumbnail) {
+  if (isInstagramLink(url)) return null;
   if (persistedThumbnail && String(persistedThumbnail).trim()) {
     return String(persistedThumbnail).trim();
   }

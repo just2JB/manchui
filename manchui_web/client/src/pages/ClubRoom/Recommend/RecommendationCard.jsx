@@ -1,13 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   IoBookmark,
   IoBookmarkOutline,
   IoHeart,
   IoHeartOutline,
-  IoMusicalNotesOutline,
 } from "react-icons/io5";
-import { getLinkThumbnailUrl } from "./linkThumbnailUrl";
+import RecommendCardThumb from "./RecommendCardThumb";
 
 const RecommendationCard = ({
   item,
@@ -23,17 +22,6 @@ const RecommendationCard = ({
   const detailTo = `/club/recommend/${item._id}`;
   const canInteract = Boolean(user?._id);
   const tags = Array.isArray(item.tags) ? item.tags : [];
-
-  const thumbUrl = useMemo(
-    () => getLinkThumbnailUrl(item.videoUrl, item.thumbnailUrl),
-    [item.videoUrl, item.thumbnailUrl],
-  );
-  const [thumbFailed, setThumbFailed] = useState(false);
-  useEffect(() => {
-    setThumbFailed(false);
-  }, [item._id, item.videoUrl]);
-
-  const showThumbImg = Boolean(thumbUrl && !thumbFailed);
 
   const listDateLabel =
     showMeta && item.createdAt
@@ -58,18 +46,11 @@ const RecommendationCard = ({
         aria-label="상세 보기"
         onClick={(e) => e.stopPropagation()}
       >
-        {showThumbImg ? (
-          <img
-            className="recCard__thumbImg"
-            src={thumbUrl}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            onError={() => setThumbFailed(true)}
-          />
-        ) : (
-          <IoMusicalNotesOutline className="recCard__thumbIcon" aria-hidden />
-        )}
+        <RecommendCardThumb
+          videoUrl={item.videoUrl}
+          thumbnailUrl={item.thumbnailUrl}
+          itemId={item._id}
+        />
       </Link>
 
       <div className="recCard__main">

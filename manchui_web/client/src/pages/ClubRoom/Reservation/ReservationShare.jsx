@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient, { serverUrl } from "../../../api/apiClient";
+import ClubRoomMapEmbed from "../../../components/ClubRoomMapEmbed/ClubRoomMapEmbed";
 import "./ReservationShare.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 
@@ -71,6 +72,13 @@ const ReservationShare = () => {
           </dl>
         </div>
       ) : null}
+
+      <section className="reservationShare__location" aria-labelledby="reservationShare-location-title">
+        <h2 id="reservationShare-location-title" className="reservationShare__locationTitle">
+          동아리방 위치
+        </h2>
+        <ClubRoomMapEmbed height={300} />
+      </section>
 
       <div className="reservationShare__footer">
         <Link className="reservationShare__link" to="/club/reservation">

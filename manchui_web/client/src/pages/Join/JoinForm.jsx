@@ -8,6 +8,7 @@ import "swiper/swiper-bundle.css";
 import Cup, { CUP_TYPES } from "../../components/Cup/Cup";
 import apiClient from "../../api/apiClient";
 import { useAppSettings } from "../../context/AppSettingsContext";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 // 단과대·학과 계층 데이터 (한국어)
 const COLLEGES_KO = [
@@ -694,6 +695,16 @@ const JoinForm = () => {
       setIsSubmitting(false);
     }
   };
+  if (joinConfigLoading) {
+    return (
+      <div className="joinForm">
+        <p className="joinLoading" aria-live="polite">
+          {LOADING_TEXT}
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="joinForm">
       <div className="stateBar">

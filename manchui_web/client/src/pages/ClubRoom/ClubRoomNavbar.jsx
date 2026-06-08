@@ -10,7 +10,6 @@ import {
 } from "react-icons/io5";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import {
-  CLUB_RESERVATION_ONLY_DEPLOY,
   CLUB_UNDER_DEVELOPMENT_MESSAGE,
   isClubPathBlockedForReservationDeploy,
 } from "../../config/clubFeatureFlags";
@@ -31,11 +30,11 @@ const ClubRoomNavbar = () => {
   const isRecommend = location.pathname.startsWith("/club/recommend");
   const isTeam = location.pathname.startsWith("/club/team");
 
+  const isTabLimited = (targetPath) =>
+    isClubPathBlockedForReservationDeploy(targetPath);
+
   const goTab = async (targetPath) => {
-    if (
-      CLUB_RESERVATION_ONLY_DEPLOY &&
-      isClubPathBlockedForReservationDeploy(targetPath)
-    ) {
+    if (isTabLimited(targetPath)) {
       await modal(CLUB_UNDER_DEVELOPMENT_MESSAGE, "alert");
       return;
     }
@@ -46,18 +45,18 @@ const ClubRoomNavbar = () => {
     <nav className="ClubRoomBottomNav" aria-label="클럽룸 하단 메뉴">
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isHome ? " ClubRoomBottomNav__item--active" : ""}${CLUB_RESERVATION_ONLY_DEPLOY ? " ClubRoomBottomNav__item--limited" : ""}`}
+        className={`ClubRoomBottomNav__item${isHome ? " ClubRoomBottomNav__item--active" : ""}${isTabLimited("/club") ? " ClubRoomBottomNav__item--limited" : ""}`}
         onClick={() => void goTab("/club")}
-        aria-disabled={CLUB_RESERVATION_ONLY_DEPLOY || undefined}
+        aria-disabled={isTabLimited("/club") || undefined}
       >
         <IoHomeOutline className="ClubRoomBottomNav__icon" aria-hidden />
         <span className="ClubRoomBottomNav__label">홈</span>
       </button>
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isTeam ? " ClubRoomBottomNav__item--active" : ""}${CLUB_RESERVATION_ONLY_DEPLOY ? " ClubRoomBottomNav__item--limited" : ""}`}
+        className={`ClubRoomBottomNav__item${isTeam ? " ClubRoomBottomNav__item--active" : ""}${isTabLimited("/club/team") ? " ClubRoomBottomNav__item--limited" : ""}`}
         onClick={() => void goTab("/club/team")}
-        aria-disabled={CLUB_RESERVATION_ONLY_DEPLOY || undefined}
+        aria-disabled={isTabLimited("/club/team") || undefined}
       >
         <IoPeopleOutline className="ClubRoomBottomNav__icon" aria-hidden />
         <span className="ClubRoomBottomNav__label">팀</span>
@@ -72,9 +71,9 @@ const ClubRoomNavbar = () => {
       </button>
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isRecommend ? " ClubRoomBottomNav__item--active" : ""}${CLUB_RESERVATION_ONLY_DEPLOY ? " ClubRoomBottomNav__item--limited" : ""}`}
+        className={`ClubRoomBottomNav__item${isRecommend ? " ClubRoomBottomNav__item--active" : ""}${isTabLimited("/club/recommend") ? " ClubRoomBottomNav__item--limited" : ""}`}
         onClick={() => void goTab("/club/recommend")}
-        aria-disabled={CLUB_RESERVATION_ONLY_DEPLOY || undefined}
+        aria-disabled={isTabLimited("/club/recommend") || undefined}
       >
         <IoMusicalNotesOutline
           className="ClubRoomBottomNav__icon"

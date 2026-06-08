@@ -4,6 +4,7 @@ import { useManchuiModal } from "../../hooks/ManchuiModal";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { useAuth } from "../../context/AuthContext";
 import { useAppSettings } from "../../context/AppSettingsContext";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 const STATUS_OPTIONS = ["신청", "입금확인", "톡방초대완료"];
 const SORT_OPTIONS = [
@@ -150,6 +151,8 @@ const AdminJoin = () => {
   const [joinData, setJoinData] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [currentGeneration, setCurrentGeneration] = useState(1);
+  const [configLoading, setConfigLoading] = useState(true);
+  const [listLoading, setListLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [contactFilter, setContactFilter] = useState("all");
@@ -160,18 +163,28 @@ const AdminJoin = () => {
   const [updatingId, setUpdatingId] = useState(null);
 
   const fetchConfig = async () => {
-    if (!serverUrl) return;
+    if (!serverUrl) {
+      setConfigLoading(false);
+      return;
+    }
+    setConfigLoading(true);
     try {
       const res = await apiClient.get("/api/join/config");
       setFormOpen(Boolean(res.data.formOpen));
       setCurrentGeneration(Number(res.data.currentGeneration) || 1);
     } catch {
       // 설정 로드 실패해도 페이지는 표시
+    } finally {
+      setConfigLoading(false);
     }
   };
 
   const fetchJoin = async () => {
-    if (!user?._id || !serverUrl) return;
+    if (!user?._id || !serverUrl) {
+      setListLoading(false);
+      return;
+    }
+    setListLoading(true);
     try {
       const res = await apiClient.get(`/api/join/${user._id}`, {
         withCredentials: true,
@@ -181,6 +194,8 @@ const AdminJoin = () => {
       manchuiModal(
         err.response?.data?.message || "목록을 불러오지 못했습니다.",
       );
+    } finally {
+      setListLoading(false);
     }
   };
 
@@ -364,6 +379,12 @@ const AdminJoin = () => {
 
       <div className="adminJoinConfig">
         <h3 className="configTitle">가입 폼 설정</h3>
+        {configLoading ? (
+          <p className="adminJoin__loading" aria-live="polite">
+            {LOADING_TEXT}
+          </p>
+        ) : (
+          <>
         <div className="configRow">
           <span className="configLabel">가입 신청 폼</span>
           <button
@@ -397,6 +418,8 @@ const AdminJoin = () => {
         >
           {saving ? "저장 중…" : "설정 저장"}
         </button>
+          </>
+        )}
       </div>
 
       <div className="joinSection">
@@ -477,6 +500,11 @@ const AdminJoin = () => {
           </div>
         </div>
 
+        {listLoading ? (
+          <p className="adminJoin__loading" aria-live="polite">
+            {LOADING_TEXT}
+          </p>
+        ) : (
         <div className="joinDatas">
           {sortedList.map((data) => (
             <div
@@ -527,6 +555,7 @@ const AdminJoin = () => {
             </div>
           ))}
         </div>
+        )}
       </div>
 
       {detailData && (

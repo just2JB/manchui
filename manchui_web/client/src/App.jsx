@@ -21,6 +21,7 @@ import Recommend from "./pages/ClubRoom/Recommend/Recommend";
 import RecommendDetail from "./pages/ClubRoom/Recommend/RecommendDetail";
 import RecommendEditor from "./pages/ClubRoom/Recommend/RecommendEditor";
 import MypageSavedRecommendations from "./pages/ClubRoom/Mypage/MypageSavedRecommendations";
+import MypageReservations from "./pages/ClubRoom/Mypage/MypageReservations";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
@@ -80,9 +81,12 @@ const router = createBrowserRouter([
                 path: "mypage/recommendations/:kind",
                 element: <MypageSavedRecommendations />,
               },
+              { path: "mypage/reservations", element: <MypageReservations /> },
               { path: "mypage/profile", element: <EditProfile /> },
+              { path: "mypage/username", element: <EditUser /> },
+              { path: "mypage/Identification", element: <EditUser /> },
+              { path: "mypage/password", element: <EditUser /> },
               { path: "mypage", element: <Mypage /> },
-              { path: "mypage/:data", element: <EditUser /> },
             ],
           },
         ],

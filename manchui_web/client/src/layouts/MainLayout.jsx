@@ -5,12 +5,13 @@ import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTop
 import PreparingPage from "./PreparingPage";
 import { useAppSettings } from "../context/AppSettingsContext";
 import { useAuth } from "../context/AuthContext";
+import { LOADING_TEXT } from "../constants/loadingText";
 
 const JOIN_PATHS = ["/join", "/join/check", "/join/form"];
 
 const MainLayout = () => {
   const location = useLocation();
-  const { joinConfig } = useAppSettings();
+  const { joinConfig, joinConfigLoading } = useAppSettings();
   const { user } = useAuth();
 
   const isJoinPath = JOIN_PATHS.some(
@@ -26,7 +27,11 @@ const MainLayout = () => {
         assistantEnabled={joinConfig.assistantEnabled}
         user={user}
       />
-      {showPreparing ? (
+      {joinConfigLoading ? (
+        <p className="layout-loading" aria-live="polite">
+          {LOADING_TEXT}
+        </p>
+      ) : showPreparing ? (
         <PreparingPage variant="main" />
       ) : (
         <Outlet />

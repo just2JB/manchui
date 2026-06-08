@@ -2,40 +2,28 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import apiClient, { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
-import {
-  IoChevronBack,
-  IoChevronForward,
-  IoShareSocialOutline,
-} from "react-icons/io5";
+import { IoMapOutline, IoShareSocialOutline } from "react-icons/io5";
+import ClubRoomLocationModal from "../../../components/ClubRoomMapEmbed/ClubRoomLocationModal";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Reservation.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 import ClubRoomRulesBar from "./ClubRoomRulesBar";
 import ReservedSlotDetailModal from "./ReservedSlotDetailModal";
 import ReservationHourPicker from "./ReservationHourPicker";
-
-const DEFAULT_RESERVATION_QUOTA = { limit: 3, count: 0 };
-
-function parseMineResponse(data) {
-  if (data && Array.isArray(data.reservations)) {
-    const list = data.reservations;
-    const q = data.quota || {};
-    return {
-      reservations: list,
-      quota: {
-        limit: Number(q.limit) >= 0 ? Number(q.limit) : DEFAULT_RESERVATION_QUOTA.limit,
-        count: Number(q.count) >= 0 ? Number(q.count) : list.length,
-      },
-    };
-  }
-  if (Array.isArray(data)) {
-    return {
-      reservations: data,
-      quota: { limit: DEFAULT_RESERVATION_QUOTA.limit, count: data.length },
-    };
-  }
-  return { reservations: [], quota: { ...DEFAULT_RESERVATION_QUOTA } };
-}
+import ReservationMyListSkeleton from "./ReservationMyListSkeleton";
+import {
+  calendarDayLoadingClass,
+  calendarGridLoadingClass,
+} from "./reservationCalendarLoading";
+import ReservationCalendarSlide from "./ReservationCalendarSlide";
+import ReservationCalendarFooter from "./ReservationCalendarFooter";
+import ReservationMonthNav from "./ReservationMonthNav";
+import { useCalendarMonthSlide } from "./useCalendarMonthSlide";
+import {
+  DEFAULT_RESERVATION_QUOTA,
+  parseMineResponse,
+} from "./reservationMine";
+import { LOADING_TEXT } from "../../../constants/loadingText";
 
 function isConsecutiveHours(hours) {
   if (hours.length <= 1) return true;
@@ -98,6 +86,7 @@ const Reservation = () => {
     DEFAULT_RESERVATION_QUOTA,
   );
   const [loading, setLoading] = useState(true);
+  const [mineLoading, setMineLoading] = useState(true);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedDateKey, setSelectedDateKey] = useState(null);
 
@@ -106,6 +95,7 @@ const Reservation = () => {
   const [headcount, setHeadcount] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [viewingReservation, setViewingReservation] = useState(null);
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
 
   const loadAll = useCallback(async () => {
     if (!serverUrl) return;
@@ -118,7 +108,11 @@ const Reservation = () => {
   }, []);
 
   const loadMine = useCallback(async () => {
-    if (!serverUrl || !user?._id) return;
+    if (!serverUrl || !user?._id) {
+      setMineLoading(false);
+      return;
+    }
+    setMineLoading(true);
     try {
       const res = await apiClient.get("/api/reservation/mine", {
         withCredentials: true,
@@ -130,6 +124,8 @@ const Reservation = () => {
       console.error(e);
       setMyReservations([]);
       setReservationQuota({ ...DEFAULT_RESERVATION_QUOTA });
+    } finally {
+      setMineLoading(false);
     }
   }, [user?._id]);
 
@@ -342,16 +338,16 @@ const Reservation = () => {
     }
   };
 
-  const monthTitle = `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
   const grid = useMemo(() => buildMonthGrid(viewMonth), [viewMonth]);
-
-  const goPrevMonth = () => {
-    setViewMonth((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
-  };
-
-  const goNextMonth = () => {
-    setViewMonth((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-  };
+  const {
+    slideDir,
+    goPrevMonth,
+    goNextMonth,
+    goToToday,
+    navigateToMonth,
+    swipeHandlers,
+    monthKey,
+  } = useCalendarMonthSlide(viewMonth, setViewMonth);
 
   const hasReservationOnDate = (dateKey) => {
     return collectReservedHoursForDate(dateKey, allReservations).size > 0;
@@ -369,75 +365,82 @@ const Reservation = () => {
 
   return (
     <div className="reservation">
-      <h1 className="reservation__title">동아리방 예약</h1>
+      <div className="reservation__titleRow">
+        <h1 className="reservation__title">동아리방 예약</h1>
+        <button
+          type="button"
+          className="reservation__mapBtn"
+          onClick={() => setLocationModalOpen(true)}
+          aria-label="동아리방 위치 보기"
+        >
+          <IoMapOutline className="reservation__mapBtnIcon" aria-hidden />
+        </button>
+      </div>
 
       <section
-        className="reservation__calendarSection"
+        className={`reservation__calendarSection${loading ? " reservation__calendarSection--loading" : ""}`}
         aria-label="예약 캘린더"
+        aria-busy={loading}
       >
-        <div className="reservation__monthNav">
-          <button
-            type="button"
-            className="reservation__monthBtn"
-            onClick={goPrevMonth}
-            aria-label="이전 달"
-          >
-            <IoChevronBack />
-          </button>
-          <span className="reservation__monthTitle">{monthTitle}</span>
-          <button
-            type="button"
-            className="reservation__monthBtn"
-            onClick={goNextMonth}
-            aria-label="다음 달"
-          >
-            <IoChevronForward />
-          </button>
-        </div>
+        <ReservationMonthNav
+          viewMonth={viewMonth}
+          slideDir={slideDir}
+          goPrevMonth={goPrevMonth}
+          goNextMonth={goNextMonth}
+          navigateToMonth={navigateToMonth}
+        />
 
-        <div className="reservation__weekRow">
-          {WEEK_LABELS.map((w) => (
-            <span key={w} className="reservation__weekCell">
-              {w}
-            </span>
-          ))}
-        </div>
+        <ReservationCalendarSlide
+          monthKey={monthKey}
+          slideDir={slideDir}
+          swipeHandlers={swipeHandlers}
+        >
+          <div className="reservation__weekRow">
+            {WEEK_LABELS.map((w) => (
+              <span key={w} className="reservation__weekCell">
+                {w}
+              </span>
+            ))}
+          </div>
 
-        <div className="reservation__dayGrid">
-          {grid.map((cell) => {
-            if (!cell.date) {
-              return <div key={cell.key} className="reservation__dayEmpty" />;
-            }
-            const key = cell.key;
-            const t = cell.date.getTime();
-            const isPast = t < todayStart;
-            const isToday = key === todayKey;
-            const hasDot = hasReservationOnDate(key);
-            return (
-              <button
-                key={cell.key}
-                type="button"
-                disabled={isPast}
-                className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}`}
-                onClick={() => !isPast && openSheetForDate(key)}
-              >
-                <span className="reservation__dayNum">
-                  {cell.date.getDate()}
-                </span>
-                {hasDot ? (
-                  <span className="reservation__dayDot" aria-hidden />
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-        {loading ? (
-          <p className="reservation__hint">일정을 불러오는 중…</p>
-        ) : (
-          <p className="reservation__hint">
-            날짜를 눌러 예약할 시간(0~23시)과 연락처를 입력하세요.
-          </p>
-        )}
+          <div
+            className={`reservation__dayGrid${calendarGridLoadingClass(loading)}`}
+          >
+            {grid.map((cell) => {
+              if (!cell.date) {
+                return <div key={cell.key} className="reservation__dayEmpty" />;
+              }
+              const key = cell.key;
+              const t = cell.date.getTime();
+              const isPast = t < todayStart;
+              const isToday = key === todayKey;
+              const hasDot = !loading && hasReservationOnDate(key);
+              return (
+                <button
+                  key={cell.key}
+                  type="button"
+                  disabled={isPast || loading}
+                  className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}${calendarDayLoadingClass(loading)}`}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onClick={() => !isPast && !loading && openSheetForDate(key)}
+                >
+                  <span className="reservation__dayNum">
+                    {cell.date.getDate()}
+                  </span>
+                  {hasDot ? (
+                    <span className="reservation__dayDot" aria-hidden />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </ReservationCalendarSlide>
+        <ReservationCalendarFooter
+          loading={loading}
+          hint="날짜를 눌러 예약할 시간(0~23시)과 연락처를 입력하세요."
+          onToday={goToToday}
+        />
       </section>
 
       <section className="reservation__mySection" aria-label="내 예약">
@@ -445,6 +448,10 @@ const Reservation = () => {
           <h2 className="reservation__sectionTitle">내 예약</h2>
           <ClubRoomRulesBar inline />
         </div>
+        {mineLoading ? (
+          <ReservationMyListSkeleton count={2} />
+        ) : (
+          <>
         <p className="reservation__quotaNote" aria-live="polite">
           계정당 예약 최대 {reservationLimit}건 (현재 {reservationCount}/
           {reservationLimit})
@@ -489,6 +496,8 @@ const Reservation = () => {
               </li>
             ))}
           </ul>
+        )}
+          </>
         )}
       </section>
 
@@ -634,6 +643,10 @@ const Reservation = () => {
           onClose={() => setViewingReservation(null)}
         />
       ) : null}
+      <ClubRoomLocationModal
+        open={locationModalOpen}
+        onClose={() => setLocationModalOpen(false)}
+      />
     </div>
   );
 };

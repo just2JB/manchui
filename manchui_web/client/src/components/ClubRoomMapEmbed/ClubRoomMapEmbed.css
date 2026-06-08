@@ -1,0 +1,89 @@
+.clubRoomMapEmbed__addressRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0 0 10px;
+}
+
+.clubRoomMapEmbed__addressText {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--text-gray);
+  word-break: keep-all;
+}
+
+.clubRoomMapEmbed__addressCopyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-more);
+  cursor: pointer;
+}
+
+.clubRoomMapEmbed__addressCopyBtn:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.clubRoomMapEmbed__addressCopyIcon {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.clubRoomMapEmbed__frameWrap {
+  position: relative;
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.clubRoomMapEmbed__kakao {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+}
+
+.clubRoomMapEmbed__links {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.clubRoomMapEmbed__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-decoration: none;
+  color: var(--text-gray);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.clubRoomMapEmbed__link:hover {
+  color: var(--text-primary);
+  border-color: rgba(179, 0, 0, 0.35);
+}
+
+.clubRoomMapEmbed__linkIcon {
+  flex-shrink: 0;
+  display: block;
+}

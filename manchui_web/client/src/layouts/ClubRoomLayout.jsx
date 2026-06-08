@@ -3,6 +3,7 @@ import ClubRoomNavbar from "../pages/ClubRoom/ClubRoomNavbar";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import PreparingPage from "./PreparingPage";
 import { useAppSettings } from "../context/AppSettingsContext";
+import { LOADING_TEXT } from "../constants/loadingText";
 
 /** 공개 예약 공유 링크만 어시스턴트 비활성화 시에도 표시 */
 function isReservationSharePath(pathname) {
@@ -15,6 +16,16 @@ const ClubRoomLayout = () => {
     useAppSettings();
   const shareOnly = isReservationSharePath(location.pathname);
   const hideBottomNav = location.pathname === "/club/login";
+
+  if (joinConfigLoading && !shareOnly) {
+    return (
+      <div className="clubRoomLayout preparingWrapper">
+        <p className="layout-loading" aria-live="polite">
+          {LOADING_TEXT}
+        </p>
+      </div>
+    );
+  }
 
   if (!joinConfigLoading && siteRestricted) {
     return (

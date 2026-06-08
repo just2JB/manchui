@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import apiClient, { serverUrl } from "../../api/apiClient";
-import { IoChevronBack, IoChevronForward } from "react-icons/io5";
+import { IoMapOutline } from "react-icons/io5";
+import ClubRoomLocationModal from "../../components/ClubRoomMapEmbed/ClubRoomLocationModal";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "../ClubRoom/Reservation/Reservation.css";
 import { formatReservationTimeRange } from "../ClubRoom/Reservation/reservationTimeFormat";
@@ -8,6 +9,15 @@ import ClubRoomRulesBar from "../ClubRoom/Reservation/ClubRoomRulesBar";
 import ReservedSlotDetailModal from "../ClubRoom/Reservation/ReservedSlotDetailModal";
 import ReservationHourPicker from "../ClubRoom/Reservation/ReservationHourPicker";
 import "./AdminReservation.css";
+import { LOADING_TEXT } from "../../constants/loadingText";
+import {
+  calendarDayLoadingClass,
+  calendarGridLoadingClass,
+} from "../ClubRoom/Reservation/reservationCalendarLoading";
+import ReservationCalendarSlide from "../ClubRoom/Reservation/ReservationCalendarSlide";
+import ReservationCalendarFooter from "../ClubRoom/Reservation/ReservationCalendarFooter";
+import ReservationMonthNav from "../ClubRoom/Reservation/ReservationMonthNav";
+import { useCalendarMonthSlide } from "../ClubRoom/Reservation/useCalendarMonthSlide";
 
 const authConfig = () => {
   const token = localStorage.getItem("token");
@@ -228,6 +238,7 @@ const AdminReservation = () => {
   const [busyId, setBusyId] = useState(null);
   const [purging, setPurging] = useState(false);
   const [viewingReservation, setViewingReservation] = useState(null);
+  const [locationModalOpen, setLocationModalOpen] = useState(false);
 
   const loadList = useCallback(async () => {
     if (!serverUrl) return;
@@ -297,15 +308,25 @@ const AdminReservation = () => {
     ? isPastDateKey(selectedDateKey)
     : false;
 
+  const {
+    slideDir,
+    goPrevMonth,
+    goNextMonth,
+    goToToday,
+    navigateToMonth,
+    swipeHandlers,
+    monthKey,
+  } = useCalendarMonthSlide(viewMonth, setViewMonth);
+
   const selectDate = (dateKey) => {
     setSelectedDateKey(dateKey);
     setSelectedHours([]);
     setContact("");
     setHeadcount(1);
     setViewingReservation(null);
-    const [y, m, d] = dateKey.split("-").map(Number);
+    const [y, m] = dateKey.split("-").map(Number);
     if (y && m) {
-      setViewMonth(new Date(y, m - 1, 1));
+      navigateToMonth(new Date(y, m - 1, 1));
     }
   };
 
@@ -459,7 +480,6 @@ const AdminReservation = () => {
     }
   };
 
-  const monthTitle = `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
   const grid = useMemo(() => buildMonthGrid(viewMonth), [viewMonth]);
 
   const hasReservationOnDate = (dateKey) => {
@@ -490,7 +510,17 @@ const AdminReservation = () => {
 
   return (
     <div className="reservation admin-reservation admin-reservation--manage">
-      <h1 className="admin-page-heading reservation__title">예약 관리</h1>
+      <div className="reservation__titleRow">
+        <h1 className="admin-page-heading reservation__title">예약 관리</h1>
+        <button
+          type="button"
+          className="reservation__mapBtn"
+          onClick={() => setLocationModalOpen(true)}
+          aria-label="동아리방 위치 보기"
+        >
+          <IoMapOutline className="reservation__mapBtnIcon" aria-hidden />
+        </button>
+      </div>
       <p className="admin-reservation__lead">
         캘린더에서 날짜를 선택해 해당 일 예약을 확인하고, 아래에서 관리자
         예약을 추가할 수 있습니다.
@@ -503,8 +533,9 @@ const AdminReservation = () => {
       ) : null}
 
       <section
-        className="reservation__calendarSection admin-reservation__calendarSection"
+        className={`reservation__calendarSection admin-reservation__calendarSection${loading ? " reservation__calendarSection--loading" : ""}`}
         aria-label="예약 캘린더"
+        aria-busy={loading}
       >
         <div className="admin-reservation__calendarHead">
           <label className="admin-reservation__toggle">
@@ -532,80 +563,68 @@ const AdminReservation = () => {
           </div>
         </div>
 
-        <div className="reservation__monthNav">
-          <button
-            type="button"
-            className="reservation__monthBtn"
-            onClick={() =>
-              setViewMonth(
-                (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
-              )
-            }
-            aria-label="이전 달"
-          >
-            <IoChevronBack />
-          </button>
-          <span className="reservation__monthTitle">{monthTitle}</span>
-          <button
-            type="button"
-            className="reservation__monthBtn"
-            onClick={() =>
-              setViewMonth(
-                (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
-              )
-            }
-            aria-label="다음 달"
-          >
-            <IoChevronForward />
-          </button>
-        </div>
+        <ReservationMonthNav
+          viewMonth={viewMonth}
+          slideDir={slideDir}
+          goPrevMonth={goPrevMonth}
+          goNextMonth={goNextMonth}
+          navigateToMonth={navigateToMonth}
+        />
 
-        <div className="reservation__weekRow">
-          {WEEK_LABELS.map((w) => (
-            <span key={w} className="reservation__weekCell">
-              {w}
-            </span>
-          ))}
-        </div>
+        <ReservationCalendarSlide
+          monthKey={monthKey}
+          slideDir={slideDir}
+          swipeHandlers={swipeHandlers}
+        >
+          <div className="reservation__weekRow">
+            {WEEK_LABELS.map((w) => (
+              <span key={w} className="reservation__weekCell">
+                {w}
+              </span>
+            ))}
+          </div>
 
-        <div className="reservation__dayGrid">
-          {grid.map((cell) => {
-            if (!cell.date) {
-              return <div key={cell.key} className="reservation__dayEmpty" />;
-            }
-            const key = cell.key;
-            const t = cell.date.getTime();
-            const isPast = t < todayStart;
-            const isToday = key === todayKey;
-            const isSelected = key === selectedDateKey;
-            const hasDot = hasReservationOnDate(key);
-            return (
-              <button
-                key={cell.key}
-                type="button"
-                className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}${isSelected ? " reservation__day--selected" : ""}`}
-                onClick={() => selectDate(key)}
-                aria-pressed={isSelected}
-                aria-label={`${key}${hasDot ? ", 예약 있음" : ""}${isSelected ? ", 선택됨" : ""}`}
-              >
-                <span className="reservation__dayNum">
-                  {cell.date.getDate()}
-                </span>
-                {hasDot ? (
-                  <span className="reservation__dayDot" aria-hidden />
-                ) : null}
-              </button>
-            );
-          })}
-        </div>
-        {loading ? (
-          <p className="reservation__hint">일정을 불러오는 중…</p>
-        ) : (
-          <p className="reservation__hint">
-            날짜를 선택하면 해당 일의 예약 내역과 관리자 예약 추가 폼이
-            아래에 표시됩니다.
-          </p>
-        )}
+          <div
+            className={`reservation__dayGrid${calendarGridLoadingClass(loading)}`}
+          >
+            {grid.map((cell) => {
+              if (!cell.date) {
+                return <div key={cell.key} className="reservation__dayEmpty" />;
+              }
+              const key = cell.key;
+              const t = cell.date.getTime();
+              const isPast = t < todayStart;
+              const isToday = key === todayKey;
+              const isSelected = key === selectedDateKey;
+              const hasDot = !loading && hasReservationOnDate(key);
+              return (
+                <button
+                  key={cell.key}
+                  type="button"
+                  disabled={loading}
+                  className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}${isSelected ? " reservation__day--selected" : ""}${calendarDayLoadingClass(loading)}`}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onTouchStart={(e) => e.stopPropagation()}
+                  onClick={() => !loading && selectDate(key)}
+                  aria-pressed={isSelected}
+                  aria-label={`${key}${hasDot ? ", 예약 있음" : ""}${isSelected ? ", 선택됨" : ""}`}
+                >
+                  <span className="reservation__dayNum">
+                    {cell.date.getDate()}
+                  </span>
+                  {hasDot ? (
+                    <span className="reservation__dayDot" aria-hidden />
+                  ) : null}
+                </button>
+              );
+            })}
+          </div>
+        </ReservationCalendarSlide>
+        <ReservationCalendarFooter
+          loading={loading}
+          hint="날짜를 선택하면 해당 일의 예약 내역과 관리자 예약 추가 폼이 아래에 표시됩니다."
+          onToday={() => selectDate(todayKey)}
+        />
       </section>
 
       {showAllReservations ? (
@@ -618,7 +637,7 @@ const AdminReservation = () => {
             모든 일반·관리자 예약을 날짜순으로 표시합니다.
           </p>
           {loading ? (
-            <p className="reservation__hint">목록을 불러오는 중…</p>
+            <p className="reservation__hint">{LOADING_TEXT}</p>
           ) : allReservationRows.length === 0 ? (
             <p className="reservation__empty">등록된 예약이 없습니다.</p>
           ) : (
@@ -645,7 +664,7 @@ const AdminReservation = () => {
               ) : null}
             </h2>
             {loading ? (
-              <p className="reservation__hint">불러오는 중…</p>
+              <p className="reservation__hint">{LOADING_TEXT}</p>
             ) : (
               <AdminDayReservationList
                 rows={dayReservations}
@@ -763,6 +782,10 @@ const AdminReservation = () => {
           onClose={() => setViewingReservation(null)}
         />
       ) : null}
+      <ClubRoomLocationModal
+        open={locationModalOpen}
+        onClose={() => setLocationModalOpen(false)}
+      />
     </div>
   );
 };

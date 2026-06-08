@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+import { IoPersonOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useAuth } from "../../../context/AuthContext";
@@ -24,47 +25,111 @@ const EditProfile = () => {
       await manchuiModal(response.data.message);
       nav("/club");
     } catch (error) {
-      await manchuiModal(error.response?.data?.message ?? "삭제에 실패했습니다.");
+      await manchuiModal(
+        error.response?.data?.message ?? "삭제에 실패했습니다.",
+      );
     }
   };
 
   return (
-    <div className="mypage editProfile">
-      <div className="profil">
-        <div className="userImage" />
-        <div className="username">{user?.username}</div>
-        <div className="userInfo">
-          <div className="userName">{user?.Identification}</div>
-          <div className="infoCircle" />
-          <div className="userPosition">만취 {user?.position}</div>
+    <div className="mypageHub editProfile">
+      <button
+        type="button"
+        className="mypageSaved__back"
+        onClick={() => nav("/club/mypage")}
+      >
+        ← 마이페이지
+      </button>
+
+      <h1 className="mypageHub__pageTitle">내정보 수정</h1>
+
+      <div className="editProfile__hero">
+        <div className="editProfile__avatar" aria-hidden="true">
+          <IoPersonOutline className="editProfile__avatarIcon" />
         </div>
+        <h2 className="editProfile__name">
+          {user?.username ?? "이름 없음"}
+        </h2>
+        <p className="editProfile__meta">
+          <span className="editProfile__metaItem">
+            {user?.Identification ?? "—"}
+          </span>
+          <span className="editProfile__metaDot" aria-hidden="true">
+            ·
+          </span>
+          <span className="editProfile__metaItem">
+            {user?.position ? `만취 ${user.position}` : "—"}
+          </span>
+        </p>
       </div>
-      <div className="list">
-        <div
-          className="changeName"
-          onClick={() => nav("/club/mypage/username")}
-          role="presentation"
-        >
-          이름 <MdOutlineKeyboardArrowRight className="arrowRight" />
+
+      <section className="mypageHub__section" aria-label="계정 정보">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          계정
         </div>
-        <div
-          className="changeIdentification"
-          onClick={() => nav("/club/mypage/Identification")}
-          role="presentation"
-        >
-          아이디 <MdOutlineKeyboardArrowRight className="arrowRight" />
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/username")}
+            >
+              <span>이름</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/Identification")}
+            >
+              <span>아이디</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/password")}
+            >
+              <span>비밀번호</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+        </ul>
+      </section>
+
+      <section className="mypageHub__section" aria-label="계정 삭제">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          위험 구역
         </div>
-        <div
-          className="changePassword"
-          onClick={() => nav("/club/mypage/password")}
-          role="presentation"
-        >
-          비밀번호 <MdOutlineKeyboardArrowRight className="arrowRight" />
-        </div>
-        <div className="deleteAccount" onClick={() => deleteUserHandle()}>
-          계정 삭제 <MdOutlineKeyboardArrowRight className="arrowRight" />
-        </div>
-      </div>
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow mypageHub__menuRow--danger"
+              onClick={() => void deleteUserHandle()}
+            >
+              <span>계정 삭제</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+        </ul>
+      </section>
     </div>
   );
 };

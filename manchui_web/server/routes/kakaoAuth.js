@@ -66,6 +66,18 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+async function findUserByKakaoId(kakaoId) {
+  const normalized = String(kakaoId || "").trim();
+  if (!normalized) return null;
+
+  const candidates = [normalized];
+  if (/^\d+$/.test(normalized)) {
+    candidates.push(Number(normalized));
+  }
+
+  return User.findOne({ kakaoId: { $in: candidates } });
+}
+
 async function findUserByEmail(email) {
   const trimmed = (email || "").trim();
   if (!trimmed) return null;
@@ -176,13 +188,18 @@ function redirectWithLinkResult(res, { fromPath, success, error, emailUpdated })
 }
 
 async function linkKakaoToUser(user, kakaoId, kakaoEmail) {
+  const normalizedKakaoId = String(kakaoId);
+
   if (user.kakaoId) {
+    if (String(user.kakaoId) === normalizedKakaoId) {
+      return { user, emailUpdated: false, alreadyLinked: true };
+    }
     const err = new Error("ALREADY_LINKED");
     err.message = "이미 카카오가 연동되어 있습니다.";
     throw err;
   }
 
-  const existingKakaoUser = await User.findOne({ kakaoId });
+  const existingKakaoUser = await findUserByKakaoId(normalizedKakaoId);
   if (existingKakaoUser && String(existingKakaoUser._id) !== String(user._id)) {
     const err = new Error("KAKAO_IN_USE");
     err.message = "이미 다른 계정에 연결된 카카오입니다.";
@@ -210,11 +227,11 @@ async function linkKakaoToUser(user, kakaoId, kakaoEmail) {
     }
   }
 
-  user.kakaoId = kakaoId;
+  user.kakaoId = normalizedKakaoId;
   user.authProvider =
     !user.authProvider || user.authProvider === "local" ? "both" : user.authProvider;
   await user.save();
-  return { user, emailUpdated };
+  return { user, emailUpdated, alreadyLinked: false };
 }
 
 async function loginExistingUser(res, user, fromPath) {
@@ -329,7 +346,7 @@ router.get("/kakao/callback", async (req, res) => {
       }
     }
 
-    let user = await User.findOne({ kakaoId });
+    let user = await findUserByKakaoId(kakaoId);
     if (user) {
       return loginExistingUser(res, user, fromPath);
     }
@@ -337,6 +354,15 @@ router.get("/kakao/callback", async (req, res) => {
     if (email) {
       user = await findUserByEmail(email);
       if (user) {
+        if (user.kakaoId) {
+          if (String(user.kakaoId) === kakaoId) {
+            return loginExistingUser(res, user, fromPath);
+          }
+          return redirectWithError(
+            res,
+            "이미 다른 카카오 계정과 연동된 이메일입니다.",
+          );
+        }
         try {
           await linkKakaoToUser(user, kakaoId, email);
         } catch (linkErr) {
@@ -397,7 +423,7 @@ router.post("/kakao/complete-signup", async (req, res) => {
       return res.status(400).json({ message: "닉네임을 입력해 주세요." });
     }
 
-    const existingKakao = await User.findOne({ kakaoId });
+    const existingKakao = await findUserByKakaoId(kakaoId);
     if (existingKakao) {
       const { accessToken, refreshToken } = await issueTokenPair(existingKakao);
       setAuthCookies(res, accessToken, refreshToken);

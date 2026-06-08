@@ -8,6 +8,7 @@ import MainPage from "./pages/MainPage/MainPage";
 import Goods from "./pages/Goods/Goods";
 import ClubRoom from "./pages/ClubRoom/ClubRoom";
 import ClubLogin from "./pages/ClubRoom/ClubLogin";
+import KakaoAuthCallback from "./pages/ClubRoom/KakaoAuthCallback";
 import Join from "./pages/Join/Join";
 import Contact from "./pages/Contact/Contact";
 import Privacy from "./pages/Privacy/Privacy";
@@ -61,6 +62,7 @@ const router = createBrowserRouter([
     element: <ClubRoomLayout />,
     children: [
       { path: "login", element: <ClubLogin /> },
+      { path: "auth/kakao/callback", element: <KakaoAuthCallback /> },
       {
         path: "reservation/share/:id",
         element: <ReservationShare />,

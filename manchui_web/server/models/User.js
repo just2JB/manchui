@@ -9,6 +9,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
+    unique: true,
   },
   password: {
     type: String,
@@ -17,6 +18,20 @@ const userSchema = new mongoose.Schema({
   },
   Identification: {
     type: String,
+  },
+  kakaoId: {
+    type: String,
+    sparse: true,
+    unique: true,
+  },
+  authProvider: {
+    type: String,
+    enum: ["local", "kakao", "both"],
+    default: "local",
+  },
+  emailVerified: {
+    type: Boolean,
+    default: true,
   },
   position: {
     type: String,

@@ -1,10 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
-const getToken = require("../utils/getToken");
+const { getAccessToken } = require("../utils/getToken");
+const { verifyAccessToken, sanitizeUser } = require("../utils/tokens");
 const getFomatDate = (localeDateString) => {
   localeDateString = localeDateString.split(". ").join(".");
   const year = localeDateString.split(".")[0];
@@ -20,16 +20,14 @@ const getFomatDate = (localeDateString) => {
 };
 
 router.post("/verify-token", async (req, res) => {
-  const token = getToken(req);
+  const token = getAccessToken(req);
   if (!token) {
     return res.status(401).json({ isVaild: false, message: "토큰이 없습니다" });
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyAccessToken(token);
     const user = await User.findById(decoded.userId);
-    const userWithoutSchedule = user.toObject();
-    delete userWithoutSchedule.schedule;
-    return res.status(201).json({ isValid: true, user: userWithoutSchedule });
+    return res.status(201).json({ isValid: true, user: sanitizeUser(user) });
   } catch (error) {
     return res
       .status(401)

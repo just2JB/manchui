@@ -1,16 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import apiClient, { serverUrl } from "../../api/apiClient";
+import { authRequestConfig } from "../../api/tokenStorage";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "./AdminReservationLimits.css";
 import { LOADING_TEXT } from "../../constants/loadingText";
 
-const authConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    withCredentials: true,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  };
-};
+const authConfig = authRequestConfig;
 
 const memberMatchesQuery = (u, rawQ) => {
   const q = rawQ.trim().toLowerCase();

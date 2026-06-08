@@ -1,9 +1,9 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const router = express.Router();
 const Reservation = require("../models/Reservation");
-const getToken = require("../utils/getToken");
+const { getAccessToken } = require("../utils/getToken");
+const { verifyAccessToken } = require("../utils/tokens");
 const requireExecutive = require("../middleware/requireExecutive");
 const {
   assertCanCreateGeneralReservation,
@@ -28,10 +28,10 @@ function maskAgentId(raw) {
 }
 
 function getUserIdFromReq(req) {
-  const token = getToken(req);
+  const token = getAccessToken(req);
   if (!token) return null;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyAccessToken(token);
     return decoded.userId ? String(decoded.userId) : null;
   } catch {
     return null;

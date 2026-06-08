@@ -86,4 +86,5 @@
 .clubRoomMapEmbed__linkIcon {
   flex-shrink: 0;
   display: block;
+  object-fit: contain;
 }

@@ -7,7 +7,8 @@ import {
   useState,
 } from "react";
 import { fetchSessionUser } from "../api/auth";
-import { serverUrl } from "../api/apiClient";
+import { setAuthFailureHandler, serverUrl } from "../api/apiClient";
+import { clearAccessToken } from "../api/tokenStorage";
 
 const AuthContext = createContext(null);
 
@@ -30,8 +31,15 @@ export function AuthProvider({ children }) {
     void verifySession();
   }, [verifySession]);
 
+  useEffect(() => {
+    setAuthFailureHandler(() => {
+      setUser(null);
+    });
+    return () => setAuthFailureHandler(null);
+  }, []);
+
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
+    clearAccessToken();
     setUser(null);
   }, []);
 

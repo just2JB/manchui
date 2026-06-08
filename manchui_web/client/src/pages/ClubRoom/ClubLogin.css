@@ -303,6 +303,10 @@
   pointer-events: none;
 }
 
+.clubLoginForm__input:read-only {
+  cursor: pointer;
+}
+
 .clubLoginForm__input {
   background-color: #00000000;
   color: var(--text-primary);
@@ -456,4 +460,140 @@
     font-size: 13px;
     padding: 6px 8px;
   }
+}
+
+.clubLoginForm__socialBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 0 10px;
+  box-sizing: border-box;
+}
+
+.clubLoginForm__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-gray);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.clubLoginForm__divider::before,
+.clubLoginForm__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.clubLoginForm__kakaoButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 50px;
+  margin: 0;
+  padding: 0 20px;
+  border: none;
+  border-radius: 80px;
+  background: #fee500;
+  color: #191600;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(254, 229, 0, 0.22);
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.clubLoginForm__kakaoIcon {
+  flex-shrink: 0;
+  color: #191600;
+}
+
+.clubLoginForm__kakaoButton:hover:not(:disabled) {
+  background: #ffe433;
+  box-shadow: 0 6px 18px rgba(254, 229, 0, 0.32);
+  transform: translateY(-1px);
+}
+
+.clubLoginForm__kakaoButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(254, 229, 0, 0.2);
+}
+
+.clubLoginForm__kakaoButton:focus-visible {
+  outline: 2px solid rgba(254, 229, 0, 0.85);
+  outline-offset: 2px;
+}
+
+.clubLoginForm__kakaoButton:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.clubLoginForm__kakaoEmail {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: var(--text-gray);
+}
+
+.clubLoginForm__input--verify {
+  letter-spacing: 0.28em;
+  font-variant-numeric: tabular-nums;
+}
+
+.clubLoginForm__inputbox--verified {
+  pointer-events: none;
+  cursor: default;
+}
+
+.clubLoginForm__verifyDone {
+  display: flex;
+  padding: 4px 0 2px;
+}
+
+.clubLoginForm__verifyDoneBadge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(76, 175, 80, 0.16);
+  color: #8fd694;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.clubLoginForm__resendButton {
+  margin: 10px 0 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.82rem;
+  color: var(--text-gray);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.clubLoginForm__resendButton:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+.clubLoginForm__resendButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  text-decoration: none;
 }

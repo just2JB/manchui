@@ -7,12 +7,22 @@ import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { DEVELOPER_CONTACT_MODAL_MESSAGE } from "../../../constants/developerContact";
 import { useAuth } from "../../../context/AuthContext";
+import kakaoTalkMark from "../../../assets/kakao/kakaotalk_mark.png";
+
+function isKakaoLinkedUser(user) {
+  return (
+    Boolean(user?.kakaoId) ||
+    user?.authProvider === "kakao" ||
+    user?.authProvider === "both"
+  );
+}
 
 const Mypage = () => {
   const { user, logout } = useAuth();
   const manchuiModal = useManchuiModal();
   const nav = useNavigate();
   const isExecutive = user?.position === "임원진";
+  const isKakaoLinked = isKakaoLinkedUser(user);
 
   const handleLogout = async () => {
     if (!(await manchuiModal("로그아웃 하시겠습니까?", "confirm"))) return;
@@ -47,8 +57,25 @@ const Mypage = () => {
             <IoPersonOutline className="mypageHub__avatarIcon" />
           </div>
           <div className="mypageHub__infoMain">
-            <span className="mypageHub__infoName">
-              {user?.username ?? "이름 없음"}
+            <span className="mypageHub__infoNameRow">
+              <span className="mypageHub__infoName">
+                {user?.username ?? "이름 없음"}
+              </span>
+              {isKakaoLinked ? (
+                <span
+                  className="mypageHub__kakaoMark"
+                  title="카카오 연동"
+                  aria-label="카카오 연동"
+                >
+                  <img
+                    src={kakaoTalkMark}
+                    alt=""
+                    className="mypageHub__kakaoMarkImg"
+                    width={22}
+                    height={22}
+                  />
+                </span>
+              ) : null}
             </span>
             <div className="mypageHub__infoMeta">
               <span className="mypageHub__infoMetaItem">

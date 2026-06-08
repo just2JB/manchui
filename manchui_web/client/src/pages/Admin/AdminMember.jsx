@@ -1,19 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import apiClient, { serverUrl } from "../../api/apiClient";
+import { authRequestConfig } from "../../api/tokenStorage";
 import { useAuth } from "../../context/AuthContext";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import "./AdminMember.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 
 
-const authConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    withCredentials: true,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  };
-};
+const authConfig = authRequestConfig;
 
 const positionLabel = (p) => {
   if (p === "임원진") return "임원진";

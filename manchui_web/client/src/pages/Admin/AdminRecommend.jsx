@@ -6,6 +6,7 @@ import React, {
 } from "react";
 import { createPortal } from "react-dom";
 import apiClient, { serverUrl } from "../../api/apiClient";
+import { authRequestConfig } from "../../api/tokenStorage";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { tagsToTagLine } from "../ClubRoom/Recommend/hashtagUtils";
 import AdminRecommendRowSkeleton from "./AdminRecommendRowSkeleton";
@@ -15,13 +16,7 @@ const PAGE_SIZE = 20;
 const SKELETON_INITIAL = 8;
 const SKELETON_MORE = 3;
 
-const authConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    withCredentials: true,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  };
-};
+const authConfig = authRequestConfig;
 
 const emptyForm = () => ({
   title: "",

@@ -86,6 +86,14 @@
   min-width: 0;
 }
 
+.mypageHub__infoNameRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .mypageHub__infoName {
   font-size: 1.05rem;
   font-weight: 700;
@@ -93,6 +101,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+.mypageHub__kakaoMark {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mypageHub__kakaoMarkImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .mypageHub__infoMeta {
@@ -287,6 +314,63 @@
 .editProfile__metaDot {
   color: var(--text-more);
   user-select: none;
+}
+
+.mypageHub__menuItem--kakao {
+  padding: 10px 12px;
+}
+
+.editProfile__kakaoStatus {
+  padding: 4px 0;
+  cursor: default;
+}
+
+.editProfile__kakaoStatus:hover {
+  background: transparent;
+}
+
+.editProfile__kakaoBadge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fee500;
+  letter-spacing: -0.02em;
+}
+
+.editProfile__kakaoLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: #fee500;
+  color: #191600;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.editProfile__kakaoLinkBtn:hover:not(:disabled) {
+  background: #ffe433;
+}
+
+.editProfile__kakaoLinkBtn:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.editProfile__kakaoIcon {
+  flex-shrink: 0;
+  color: #191600;
 }
 
 .mypageHub__footer {

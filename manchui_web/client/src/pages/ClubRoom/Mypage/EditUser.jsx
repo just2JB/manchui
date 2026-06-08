@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import "./Mypage.css";
@@ -48,6 +48,12 @@ const EditUser = () => {
   const location = useLocation();
   const nav = useNavigate();
   const selectedForm = resolveEditField(location.pathname);
+
+  useEffect(() => {
+    if (selectedForm === "password" && user?.authProvider === "kakao") {
+      nav("/club/mypage/profile", { replace: true });
+    }
+  }, [selectedForm, user?.authProvider, nav]);
 
   const meta = FORM_META[selectedForm];
   const isValidForm = Boolean(meta);

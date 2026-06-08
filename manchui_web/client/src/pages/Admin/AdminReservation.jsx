@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import apiClient, { serverUrl } from "../../api/apiClient";
+import { authRequestConfig } from "../../api/tokenStorage";
 import { IoMapOutline } from "react-icons/io5";
 import ClubRoomLocationModal from "../../components/ClubRoomMapEmbed/ClubRoomLocationModal";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
@@ -19,13 +20,7 @@ import ReservationCalendarFooter from "../ClubRoom/Reservation/ReservationCalend
 import ReservationMonthNav from "../ClubRoom/Reservation/ReservationMonthNav";
 import { useCalendarMonthSlide } from "../ClubRoom/Reservation/useCalendarMonthSlide";
 
-const authConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    withCredentials: true,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  };
-};
+const authConfig = authRequestConfig;
 
 function isConsecutiveHours(hours) {
   if (hours.length <= 1) return true;

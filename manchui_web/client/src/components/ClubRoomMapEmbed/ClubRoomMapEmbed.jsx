@@ -6,23 +6,8 @@ import {
   getKakaoMapLinkUrl,
   getNaverMapLinkUrl,
 } from "../../constants/clubRoomLocation";
+import kakaoMapBasic from "../../assets/kakao/kakaomap_basic.png";
 import "./ClubRoomMapEmbed.css";
-
-const KakaoMapIcon = () => (
-  <svg
-    className="clubRoomMapEmbed__linkIcon"
-    viewBox="0 0 20 20"
-    width="18"
-    height="18"
-    aria-hidden="true"
-  >
-    <rect width="20" height="20" rx="4" fill="#FEE500" />
-    <path
-      fill="#3C1E1E"
-      d="M10 4.5a4 4 0 0 0-4 4c0 2.3 4 6.5 4 6.5s4-4.2 4-6.5a4 4 0 0 0-4-4Zm0 5.25a1.25 1.25 0 1 1 0-2.5 1.25 1.25 0 0 1 0 2.5Z"
-    />
-  </svg>
-);
 
 const NaverMapIcon = () => (
   <svg
@@ -176,7 +161,13 @@ const ClubRoomMapEmbed = ({ height = 360, className = "" }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <KakaoMapIcon />
+          <img
+            src={kakaoMapBasic}
+            alt=""
+            className="clubRoomMapEmbed__linkIcon"
+            width={18}
+            height={18}
+          />
           카카오맵에서 보기
         </a>
         <a

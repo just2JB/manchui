@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { fetchSessionUser } from "../api/auth";
+import { fetchSessionUser, isKakaoAuthCallbackPath } from "../api/auth";
 import { setAuthFailureHandler, serverUrl } from "../api/apiClient";
 import { clearAccessToken } from "../api/tokenStorage";
 
@@ -18,6 +18,13 @@ export function AuthProvider({ children }) {
 
   const verifySession = useCallback(async () => {
     if (!serverUrl) {
+      setSessionReady(true);
+      return null;
+    }
+    if (
+      typeof window !== "undefined" &&
+      isKakaoAuthCallbackPath(window.location.pathname)
+    ) {
       setSessionReady(true);
       return null;
     }

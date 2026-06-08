@@ -64,6 +64,7 @@ apiClient.interceptors.response.use(
       url.includes("/api/auth/refresh") ||
       url.includes("/api/auth/login") ||
       url.includes("/api/auth/session") ||
+      url.includes("/api/auth/kakao/exchange") ||
       url.includes("/api/auth/kakao/complete-signup") ||
       url.includes("/api/auth/email/send-code") ||
       url.includes("/api/auth/email/verify-code");

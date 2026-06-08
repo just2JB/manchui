@@ -30,12 +30,20 @@ function verifyAccessToken(token) {
 }
 
 function cookieOptions(maxAge) {
-  return {
+  const sameSite = (process.env.COOKIE_SAME_SITE || "none").toLowerCase();
+  const opts = {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: sameSite === "none" ? true : process.env.NODE_ENV === "production",
+    sameSite,
     maxAge,
   };
+
+  const domain = (process.env.COOKIE_DOMAIN || "").trim();
+  if (domain) {
+    opts.domain = domain;
+  }
+
+  return opts;
 }
 
 function setAuthCookies(res, accessToken, refreshToken) {
@@ -46,7 +54,16 @@ function setAuthCookies(res, accessToken, refreshToken) {
 }
 
 function clearAuthCookies(res) {
-  const opts = { httpOnly: true, secure: true, sameSite: "none" };
+  const sameSite = (process.env.COOKIE_SAME_SITE || "none").toLowerCase();
+  const opts = {
+    httpOnly: true,
+    secure: sameSite === "none" ? true : process.env.NODE_ENV === "production",
+    sameSite,
+  };
+  const domain = (process.env.COOKIE_DOMAIN || "").trim();
+  if (domain) {
+    opts.domain = domain;
+  }
   res.clearCookie("accessToken", opts);
   res.clearCookie("refreshToken", opts);
   res.clearCookie("token", opts);

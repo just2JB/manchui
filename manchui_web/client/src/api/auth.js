@@ -62,6 +62,114 @@ export async function verifySignupEmailCode(email, code) {
   return data;
 }
 
+export function isKakaoAuthCallbackPath(pathname = "") {
+  return pathname === "/club/auth/kakao/callback";
+}
+
+const KAKAO_LOGIN_TICKET_KEY = "manchui.kakaoLoginTicket";
+let kakaoExchangePromise = null;
+
+function peekKakaoTicketFromQuery() {
+  if (typeof window === "undefined") return null;
+  if (!isKakaoAuthCallbackPath(window.location.pathname)) return null;
+  return new URLSearchParams(window.location.search).get("kakaoTicket");
+}
+
+function readKakaoLoginTicket() {
+  const fromQuery = peekKakaoTicketFromQuery();
+  if (fromQuery) {
+    sessionStorage.setItem(KAKAO_LOGIN_TICKET_KEY, fromQuery);
+    return fromQuery;
+  }
+  return sessionStorage.getItem(KAKAO_LOGIN_TICKET_KEY) || null;
+}
+
+function clearKakaoLoginTicket() {
+  sessionStorage.removeItem(KAKAO_LOGIN_TICKET_KEY);
+  if (typeof window === "undefined") return;
+  const params = new URLSearchParams(window.location.search);
+  if (!params.has("kakaoTicket")) return;
+  params.delete("kakaoTicket");
+  const nextSearch = params.toString();
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${nextSearch ? `?${nextSearch}` : ""}`,
+  );
+}
+
+function readKakaoCallbackAccessTokenFromHash() {
+  if (typeof window === "undefined") return null;
+  if (!isKakaoAuthCallbackPath(window.location.pathname)) return null;
+
+  const rawHash = window.location.hash.startsWith("#")
+    ? window.location.hash.slice(1)
+    : window.location.hash;
+  if (!rawHash) return null;
+
+  return new URLSearchParams(rawHash).get("accessToken");
+}
+
+function clearKakaoCallbackAccessTokenFromHash() {
+  if (typeof window === "undefined") return;
+  if (!window.location.hash) return;
+  window.history.replaceState(
+    null,
+    "",
+    `${window.location.pathname}${window.location.search}`,
+  );
+}
+
+async function exchangeKakaoLoginTicket(kakaoTicket) {
+  if (!kakaoExchangePromise) {
+    kakaoExchangePromise = apiClient
+      .post("/api/auth/kakao/exchange", { kakaoTicket })
+      .then((response) => {
+        clearKakaoLoginTicket();
+        kakaoExchangePromise = null;
+        return response.data;
+      })
+      .catch((error) => {
+        kakaoExchangePromise = null;
+        sessionStorage.removeItem(KAKAO_LOGIN_TICKET_KEY);
+        throw error;
+      });
+  }
+  return kakaoExchangePromise;
+}
+
+export async function completeKakaoCallbackAuth() {
+  const kakaoTicket = readKakaoLoginTicket();
+  if (kakaoTicket) {
+    const data = await exchangeKakaoLoginTicket(kakaoTicket);
+    const token = data.accessToken || data.token;
+    if (token) setAccessToken(token);
+    return data;
+  }
+
+  const accessTokenFromHash = readKakaoCallbackAccessTokenFromHash();
+  if (accessTokenFromHash) {
+    setAccessToken(accessTokenFromHash);
+    clearKakaoCallbackAccessTokenFromHash();
+    const { data } = await apiClient.post("/api/auth/verify-token", {});
+    const token = data.accessToken || data.token;
+    if (token) setAccessToken(token);
+    return data;
+  }
+
+  if (getAccessToken()) {
+    const { data } = await apiClient.post("/api/auth/verify-token", {});
+    const token = data.accessToken || data.token;
+    if (token) setAccessToken(token);
+    return data;
+  }
+
+  const { data } = await apiClient.post("/api/auth/session", {});
+  const token = data.accessToken || data.token;
+  if (token) setAccessToken(token);
+  return data;
+}
+
 export async function establishSessionFromCookies() {
   const { data } = await apiClient.post("/api/auth/session", {});
   const token = data.accessToken || data.token;

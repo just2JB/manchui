@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { establishSessionFromCookies } from "../../api/auth";
+import { completeKakaoCallbackAuth } from "../../api/auth";
 import { useAuth } from "../../context/AuthContext";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { safeInternalPath } from "../../utils/safeInternalPath";
@@ -12,19 +12,19 @@ const KakaoAuthCallback = () => {
   const navigate = useNavigate();
   const { setUser } = useAuth();
   const manchuiModal = useManchuiModal();
+  const authStartedRef = useRef(false);
 
   useEffect(() => {
-    let cancelled = false;
+    if (authStartedRef.current) return;
+    authStartedRef.current = true;
 
     const run = async () => {
       try {
-        const data = await establishSessionFromCookies();
-        if (cancelled) return;
+        const data = await completeKakaoCallbackAuth();
         setUser(data.user);
         const from = safeInternalPath(searchParams.get("from"));
         navigate(resolveClubAllowedPath(from || "/club"), { replace: true });
       } catch (error) {
-        if (cancelled) return;
         await manchuiModal(
           error?.response?.data?.message ||
             "카카오 로그인 세션을 확인하지 못했습니다.",
@@ -34,9 +34,6 @@ const KakaoAuthCallback = () => {
     };
 
     void run();
-    return () => {
-      cancelled = true;
-    };
   }, [navigate, searchParams, setUser, manchuiModal]);
 
   return <Loading />;

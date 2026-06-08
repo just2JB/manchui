@@ -66,16 +66,61 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function normalizeKakaoId(kakaoId) {
+  return String(kakaoId ?? "").trim();
+}
+
+function kakaoIdsEqual(left, right) {
+  return normalizeKakaoId(left) === normalizeKakaoId(right);
+}
+
 async function findUserByKakaoId(kakaoId) {
-  const normalized = String(kakaoId || "").trim();
+  const normalized = normalizeKakaoId(kakaoId);
   if (!normalized) return null;
 
-  const candidates = [normalized];
-  if (/^\d+$/.test(normalized)) {
-    candidates.push(Number(normalized));
+  const direct = await User.findOne({ kakaoId: normalized });
+  if (direct) return direct;
+
+  // legacy/타입 불일치(number·string) 대비
+  return User.findOne({
+    $expr: { $eq: [{ $toString: "$kakaoId" }, normalized] },
+  });
+}
+
+async function resolveKakaoOAuthLogin(kakaoId, email) {
+  const normalizedKakaoId = normalizeKakaoId(kakaoId);
+  if (!normalizedKakaoId) return null;
+
+  let user = await findUserByKakaoId(normalizedKakaoId);
+  if (user) return user;
+
+  const trimmedEmail = (email || "").trim();
+  if (!trimmedEmail) return null;
+
+  const emailUser = await findUserByEmail(trimmedEmail);
+  if (!emailUser) return null;
+
+  if (emailUser.kakaoId) {
+    if (kakaoIdsEqual(emailUser.kakaoId, normalizedKakaoId)) {
+      return emailUser;
+    }
+
+    user = await findUserByKakaoId(normalizedKakaoId);
+    if (user) return user;
+
+    // 카카오 OAuth 이메일과 일치하는 기존 연동 계정으로 로그인
+    return emailUser;
   }
 
-  return User.findOne({ kakaoId: { $in: candidates } });
+  user = await findUserByKakaoId(normalizedKakaoId);
+  if (user) return user;
+
+  const { user: linkedUser } = await linkKakaoToUser(
+    emailUser,
+    normalizedKakaoId,
+    trimmedEmail,
+  );
+  return linkedUser;
 }
 
 async function findUserByEmail(email) {
@@ -100,6 +145,26 @@ function verifyKakaoSignupToken(token) {
     throw new Error("Invalid signup token");
   }
   return decoded;
+}
+
+function signKakaoLoginTicket(userId) {
+  return jwt.sign(
+    {
+      purpose: "kakao_login_ticket",
+      userId: String(userId),
+      nonce: crypto.randomBytes(12).toString("hex"),
+    },
+    getSignupSecret(),
+    { expiresIn: "3m" },
+  );
+}
+
+function verifyKakaoLoginTicket(ticket) {
+  const decoded = jwt.verify(ticket, getSignupSecret());
+  if (decoded.purpose !== "kakao_login_ticket" || !decoded.userId) {
+    throw new Error("Invalid login ticket");
+  }
+  return decoded.userId;
 }
 
 async function exchangeKakaoCode(code) {
@@ -188,11 +253,15 @@ function redirectWithLinkResult(res, { fromPath, success, error, emailUpdated })
 }
 
 async function linkKakaoToUser(user, kakaoId, kakaoEmail) {
-  const normalizedKakaoId = String(kakaoId);
+  const normalizedKakaoId = normalizeKakaoId(kakaoId);
 
   if (user.kakaoId) {
-    if (String(user.kakaoId) === normalizedKakaoId) {
+    if (kakaoIdsEqual(user.kakaoId, normalizedKakaoId)) {
       return { user, emailUpdated: false, alreadyLinked: true };
+    }
+    const owner = await findUserByKakaoId(normalizedKakaoId);
+    if (owner) {
+      return { user: owner, emailUpdated: false, alreadyLinked: true };
     }
     const err = new Error("ALREADY_LINKED");
     err.message = "이미 카카오가 연동되어 있습니다.";
@@ -201,9 +270,11 @@ async function linkKakaoToUser(user, kakaoId, kakaoEmail) {
 
   const existingKakaoUser = await findUserByKakaoId(normalizedKakaoId);
   if (existingKakaoUser && String(existingKakaoUser._id) !== String(user._id)) {
-    const err = new Error("KAKAO_IN_USE");
-    err.message = "이미 다른 계정에 연결된 카카오입니다.";
-    throw err;
+    return {
+      user: existingKakaoUser,
+      emailUpdated: false,
+      alreadyLinked: true,
+    };
   }
 
   let emailUpdated = false;
@@ -235,11 +306,18 @@ async function linkKakaoToUser(user, kakaoId, kakaoEmail) {
 }
 
 async function loginExistingUser(res, user, fromPath) {
-  const { accessToken, refreshToken } = await issueTokenPair(user);
-  setAuthCookies(res, accessToken, refreshToken);
   const clientUrl = getClientUrl();
-  const from = encodeURIComponent(fromPath || "/club");
-  return res.redirect(`${clientUrl}/club/auth/kakao/callback?from=${from}`);
+  if (!clientUrl) {
+    throw new Error("CLIENT_URL is not configured");
+  }
+  const ticket = signKakaoLoginTicket(user._id);
+  const params = new URLSearchParams({
+    from: fromPath || "/club",
+    kakaoTicket: ticket,
+  });
+  return res.redirect(
+    `${clientUrl}/club/auth/kakao/callback?${params.toString()}`,
+  );
 }
 
 async function loginKakaoOwnerIfExists(res, kakaoId, fromPath) {
@@ -258,6 +336,36 @@ router.get("/kakao", (req, res) => {
   const state = signOAuthState({ fromPath: from, purpose: "kakao_oauth" });
 
   return res.redirect(buildKakaoAuthorizeUrl(state));
+});
+
+router.post("/kakao/exchange", async (req, res) => {
+  try {
+    const ticket = String(req.body?.kakaoTicket || "").trim();
+    if (!ticket) {
+      return res.status(400).json({ message: "카카오 로그인 정보가 없습니다." });
+    }
+
+    let userId;
+    try {
+      userId = verifyKakaoLoginTicket(ticket);
+    } catch {
+      return res.status(401).json({
+        message: "카카오 로그인이 만료되었습니다. 다시 시도해 주세요.",
+      });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(401).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    const { accessToken, refreshToken } = await issueTokenPair(user);
+    setAuthCookies(res, accessToken, refreshToken);
+    res.json(buildAuthResponse(user, accessToken, refreshToken));
+  } catch (error) {
+    console.error("Kakao exchange error:", error.message);
+    res.status(500).json({ message: "카카오 로그인 처리 중 오류가 발생했습니다." });
+  }
 });
 
 router.post("/kakao/link/start", requireAuth, (req, res) => {
@@ -338,7 +446,14 @@ router.get("/kakao/callback", async (req, res) => {
       }
 
       try {
-        const { emailUpdated } = await linkKakaoToUser(user, kakaoId, email);
+        const { emailUpdated, user: linkedUser } = await linkKakaoToUser(
+          user,
+          kakaoId,
+          email,
+        );
+        if (String(linkedUser._id) !== String(user._id)) {
+          return loginExistingUser(res, linkedUser, fromPath);
+        }
         return redirectWithLinkResult(res, {
           fromPath,
           success: true,
@@ -354,30 +469,16 @@ router.get("/kakao/callback", async (req, res) => {
       }
     }
 
-    const kakaoOwner = await findUserByKakaoId(kakaoId);
-    if (kakaoOwner) {
-      return loginExistingUser(res, kakaoOwner, fromPath);
-    }
-
-    if (email) {
-      const emailUser = await findUserByEmail(email);
-      if (emailUser) {
-        try {
-          const { user: linkedUser } = await linkKakaoToUser(
-            emailUser,
-            kakaoId,
-            email,
-          );
-          return loginExistingUser(res, linkedUser, fromPath);
-        } catch (linkErr) {
-          const loggedIn = await loginKakaoOwnerIfExists(res, kakaoId, fromPath);
-          if (loggedIn) return loggedIn;
-          return redirectWithError(
-            res,
-            linkErr.message || "카카오 연동에 실패했습니다.",
-          );
-        }
+    try {
+      const kakaoOwner = await resolveKakaoOAuthLogin(kakaoId, email);
+      if (kakaoOwner) {
+        return loginExistingUser(res, kakaoOwner, fromPath);
       }
+    } catch (loginErr) {
+      return redirectWithError(
+        res,
+        loginErr.message || "카카오 로그인에 실패했습니다.",
+      );
     }
 
     if (!email) {
@@ -450,7 +551,9 @@ router.post("/kakao/complete-signup", async (req, res) => {
         setAuthCookies(res, accessToken, refreshToken);
         return res.json(buildAuthResponse(linkedUser, accessToken, refreshToken));
       } catch (linkErr) {
-        const owner = await findUserByKakaoId(kakaoId);
+        const owner =
+          (await findUserByKakaoId(kakaoId)) ||
+          (existingEmail.kakaoId ? existingEmail : null);
         if (owner) {
           const { accessToken, refreshToken } = await issueTokenPair(owner);
           setAuthCookies(res, accessToken, refreshToken);

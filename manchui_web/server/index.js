@@ -4,7 +4,33 @@ const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
+
+app.set("trust proxy", 1);
+
+function collectAllowedOrigins() {
+  const origins = new Set();
+  const addOrigin = (raw) => {
+    const value = (raw || "").trim().replace(/\/$/, "");
+    if (value) origins.add(value);
+  };
+
+  addOrigin(process.env.CLIENT_URL);
+  (process.env.CLIENT_URLS || "")
+    .split(",")
+    .forEach(addOrigin);
+
+  const clientUrl = (process.env.CLIENT_URL || "").trim().replace(/\/$/, "");
+  if (clientUrl.startsWith("https://www.")) {
+    origins.add(clientUrl.replace("https://www.", "https://"));
+  } else if (clientUrl.startsWith("https://")) {
+    origins.add(clientUrl.replace("https://", "https://www."));
+  }
+
+  return origins;
+}
+
+const allowedOrigins = collectAllowedOrigins();
 
 const userRouter = require("./routes/user");
 const reservationRouter = require("./routes/reservation");
@@ -14,15 +40,6 @@ const teamRouter = require("./routes/team");
 const practiceRouter = require("./routes/practice");
 const recommendationRouter = require("./routes/recommendation");
 const lotteryRouter = require("./routes/lottery");
-
-// www / 비-www 둘 다 허용 (같은 도메인)
-const clientUrl = process.env.CLIENT_URL || "";
-const allowedOrigins = new Set([clientUrl]);
-if (clientUrl.startsWith("https://www.")) {
-  allowedOrigins.add(clientUrl.replace("https://www.", "https://"));
-} else if (clientUrl.startsWith("https://")) {
-  allowedOrigins.add(clientUrl.replace("https://", "https://www."));
-}
 
 app.use(
   cors({

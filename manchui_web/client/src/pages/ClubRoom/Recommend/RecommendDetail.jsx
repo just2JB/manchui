@@ -18,6 +18,13 @@ import {
   isInstagramLink,
 } from "./linkThumbnailUrl";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import {
+  likePatchFromResponse,
+  optimisticLikePatch,
+  optimisticScrapPatch,
+  reactionSnapshot,
+  scrapPatchFromResponse,
+} from "./recommendationReactions";
 import "./Recommend.css";
 import "./RecommendDetail.css";
 
@@ -97,6 +104,9 @@ const RecommendDetail = () => {
       return;
     }
     if (!item?._id) return;
+    const snapshot = reactionSnapshot(item);
+    const optimistic = optimisticLikePatch(item);
+    patchItem(optimistic);
     setBusyAction("like");
     try {
       const res = await apiClient.post(
@@ -104,11 +114,12 @@ const RecommendDetail = () => {
         {},
         { withCredentials: true },
       );
-      patchItem({
-        likedByMe: res.data?.liked,
-        likeCount: res.data?.likeCount ?? item.likeCount,
-      });
+      patchItem(likePatchFromResponse(res, { ...item, ...optimistic }));
     } catch (e) {
+      patchItem({
+        likedByMe: snapshot.likedByMe,
+        likeCount: snapshot.likeCount,
+      });
       await modal(e?.response?.data?.message || "좋아요 처리에 실패했습니다.");
     } finally {
       setBusyAction(null);
@@ -121,6 +132,9 @@ const RecommendDetail = () => {
       return;
     }
     if (!item?._id) return;
+    const snapshot = reactionSnapshot(item);
+    const optimistic = optimisticScrapPatch(item);
+    patchItem(optimistic);
     setBusyAction("scrap");
     try {
       const res = await apiClient.post(
@@ -128,11 +142,12 @@ const RecommendDetail = () => {
         {},
         { withCredentials: true },
       );
-      patchItem({
-        scrapedByMe: res.data?.scraped,
-        scrapCount: res.data?.scrapCount ?? item.scrapCount,
-      });
+      patchItem(scrapPatchFromResponse(res, { ...item, ...optimistic }));
     } catch (e) {
+      patchItem({
+        scrapedByMe: snapshot.scrapedByMe,
+        scrapCount: snapshot.scrapCount,
+      });
       await modal(e?.response?.data?.message || "스크랩 처리에 실패했습니다.");
     } finally {
       setBusyAction(null);

@@ -2,6 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import apiClient, { serverUrl } from "../../../api/apiClient";
 import RecommendationCard from "../Recommend/RecommendationCard";
+import {
+  likePatchFromResponse,
+  optimisticLikePatch,
+  optimisticScrapPatch,
+  reactionSnapshot,
+  scrapPatchFromResponse,
+} from "../Recommend/recommendationReactions";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useAuth } from "../../../context/AuthContext";
 import "../Recommend/Recommend.css";
@@ -61,12 +68,38 @@ const MypageSavedRecommendations = () => {
     );
   };
 
+  const restoreRemovedItem = (removedItem, removedIndex) => {
+    if (!removedItem) return;
+    setItems((prev) => {
+      if (prev.some((it) => String(it._id) === String(removedItem._id))) {
+        return prev;
+      }
+      const next = [...prev];
+      const idx = Math.min(Math.max(removedIndex, 0), next.length);
+      next.splice(idx, 0, removedItem);
+      return next;
+    });
+  };
+
   const handleToggleLike = async (item) => {
     if (!user?._id) {
       await modal("로그인 후 이용할 수 있습니다.");
       return;
     }
     const id = item._id;
+    const snapshot = reactionSnapshot(item);
+    const optimistic = optimisticLikePatch(item);
+    const willRemove = kind === "likes" && !optimistic.likedByMe;
+    const removedIndex = willRemove
+      ? items.findIndex((it) => String(it._id) === String(id))
+      : -1;
+
+    if (willRemove) {
+      patchOrRemove(id, { remove: true });
+    } else {
+      patchOrRemove(id, optimistic);
+    }
+
     setBusyId(id);
     setBusyAction("like");
     try {
@@ -75,17 +108,22 @@ const MypageSavedRecommendations = () => {
         {},
         { withCredentials: true },
       );
-      const liked = res.data?.liked;
-      const nextLikeCount = res.data?.likeCount ?? item.likeCount;
+      const liked = Boolean(res.data?.liked);
       if (kind === "likes" && !liked) {
-        patchOrRemove(id, { remove: true });
-      } else {
-        patchOrRemove(id, {
-          likedByMe: liked,
-          likeCount: nextLikeCount,
-        });
+        return;
+      }
+      if (!willRemove) {
+        patchOrRemove(id, likePatchFromResponse(res, { ...item, ...optimistic }));
       }
     } catch (e) {
+      if (willRemove) {
+        restoreRemovedItem(item, removedIndex);
+      } else {
+        patchOrRemove(id, {
+          likedByMe: snapshot.likedByMe,
+          likeCount: snapshot.likeCount,
+        });
+      }
       await modal(e?.response?.data?.message || "좋아요 처리에 실패했습니다.");
     } finally {
       setBusyId(null);
@@ -99,6 +137,19 @@ const MypageSavedRecommendations = () => {
       return;
     }
     const id = item._id;
+    const snapshot = reactionSnapshot(item);
+    const optimistic = optimisticScrapPatch(item);
+    const willRemove = kind === "scraps" && !optimistic.scrapedByMe;
+    const removedIndex = willRemove
+      ? items.findIndex((it) => String(it._id) === String(id))
+      : -1;
+
+    if (willRemove) {
+      patchOrRemove(id, { remove: true });
+    } else {
+      patchOrRemove(id, optimistic);
+    }
+
     setBusyId(id);
     setBusyAction("scrap");
     try {
@@ -107,17 +158,22 @@ const MypageSavedRecommendations = () => {
         {},
         { withCredentials: true },
       );
-      const scraped = res.data?.scraped;
-      const scrapCount = res.data?.scrapCount;
+      const scraped = Boolean(res.data?.scraped);
       if (kind === "scraps" && !scraped) {
-        patchOrRemove(id, { remove: true });
-      } else {
-        patchOrRemove(id, {
-          scrapedByMe: scraped,
-          ...(scrapCount != null ? { scrapCount } : {}),
-        });
+        return;
+      }
+      if (!willRemove) {
+        patchOrRemove(id, scrapPatchFromResponse(res, { ...item, ...optimistic }));
       }
     } catch (e) {
+      if (willRemove) {
+        restoreRemovedItem(item, removedIndex);
+      } else {
+        patchOrRemove(id, {
+          scrapedByMe: snapshot.scrapedByMe,
+          scrapCount: snapshot.scrapCount,
+        });
+      }
       await modal(e?.response?.data?.message || "스크랩 처리에 실패했습니다.");
     } finally {
       setBusyId(null);

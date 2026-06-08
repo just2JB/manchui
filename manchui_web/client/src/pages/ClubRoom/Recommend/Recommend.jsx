@@ -16,6 +16,13 @@ import {
   stripTrailingIncompleteHashtag,
 } from "./hashtagUtils";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import {
+  likePatchFromResponse,
+  optimisticLikePatch,
+  optimisticScrapPatch,
+  reactionSnapshot,
+  scrapPatchFromResponse,
+} from "./recommendationReactions";
 import "./Recommend.css";
 
 const PAGE_SIZE = 16;
@@ -194,6 +201,9 @@ const Recommend = () => {
       return;
     }
     const id = item._id;
+    const snapshot = reactionSnapshot(item);
+    const optimistic = optimisticLikePatch(item);
+    patchItem(id, optimistic);
     setBusyId(id);
     setBusyAction("like");
     try {
@@ -202,11 +212,15 @@ const Recommend = () => {
         {},
         { withCredentials: true },
       );
-      patchItem(id, {
-        likedByMe: res.data?.liked,
-        likeCount: res.data?.likeCount ?? item.likeCount,
-      });
+      patchItem(
+        id,
+        likePatchFromResponse(res, { ...item, ...optimistic }),
+      );
     } catch (e) {
+      patchItem(id, {
+        likedByMe: snapshot.likedByMe,
+        likeCount: snapshot.likeCount,
+      });
       await modal(e?.response?.data?.message || "좋아요 처리에 실패했습니다.");
     } finally {
       setBusyId(null);
@@ -220,6 +234,9 @@ const Recommend = () => {
       return;
     }
     const id = item._id;
+    const snapshot = reactionSnapshot(item);
+    const optimistic = optimisticScrapPatch(item);
+    patchItem(id, optimistic);
     setBusyId(id);
     setBusyAction("scrap");
     try {
@@ -228,11 +245,15 @@ const Recommend = () => {
         {},
         { withCredentials: true },
       );
-      patchItem(id, {
-        scrapedByMe: res.data?.scraped,
-        scrapCount: res.data?.scrapCount ?? item.scrapCount,
-      });
+      patchItem(
+        id,
+        scrapPatchFromResponse(res, { ...item, ...optimistic }),
+      );
     } catch (e) {
+      patchItem(id, {
+        scrapedByMe: snapshot.scrapedByMe,
+        scrapCount: snapshot.scrapCount,
+      });
       await modal(e?.response?.data?.message || "스크랩 처리에 실패했습니다.");
     } finally {
       setBusyId(null);

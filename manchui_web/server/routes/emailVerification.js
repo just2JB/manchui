@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const EmailVerification = require("../models/EmailVerification");
-const { sendSignupVerificationEmail } = require("../utils/mail");
+const { sendSignupVerificationEmail, formatMailError } = require("../utils/mail");
 const { buildEmailCodeCopyPage } = require("../utils/emailTemplates/emailCodeCopyPage");
 
 const router = express.Router();
@@ -116,9 +116,18 @@ router.post("/email/send-code", async (req, res) => {
       expiresInMinutes: CODE_TTL_MS / 60000,
       sentTo: email,
       devMode: mailResult.devMode,
+      provider: mailResult.provider,
     });
   } catch (error) {
-    console.error("send-code error:", error.message, error.response || "");
+    console.error("send-code error:", formatMailError(error), error.response || "");
+    if (error.code === "MAIL_NOT_CONFIGURED") {
+      return res.status(503).json({ message: error.message });
+    }
+    if (error.code === "MAIL_DELIVERY_FAILED") {
+      return res.status(502).json({
+        message: error.message || "인증번호 발송에 실패했습니다. 잠시 후 다시 시도해 주세요.",
+      });
+    }
     res.status(500).json({ message: "인증번호 발송에 실패했습니다." });
   }
 });

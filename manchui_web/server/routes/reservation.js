@@ -14,6 +14,13 @@ const {
   setDefaultReservationLimit,
   setUserReservationLimit,
 } = require("../utils/reservationLimits");
+const {
+  isPastReservationEnd,
+  isRetentionExpired,
+  filterActiveForUserDisplay,
+  filterActiveForAdminDisplay,
+  purgeExpiredReservations,
+} = require("../utils/reservationRetention");
 
 /** 공유 페이지용: 연락처 마스킹 */
 function maskAgentId(raw) {
@@ -38,24 +45,15 @@ function getUserIdFromReq(req) {
   }
 }
 
-/** 서버 로컬 기준 오늘 날짜 (YYYY-MM-DD) */
-function getTodayDateKey() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-/** 예약일(캘린더 date)이 오늘보다 이전인 문서 삭제 */
 async function purgePastReservations() {
-  const todayKey = getTodayDateKey();
-  return Reservation.deleteMany({ date: { $lt: todayKey } });
+  return purgeExpiredReservations(Reservation);
 }
 
 async function hasReservedTimeOverlap(date, timeArray) {
+  const now = new Date();
   const existingReservation = await Reservation.find({ date });
   for (const item of existingReservation) {
+    if (isPastReservationEnd(item, now)) continue;
     const reservedTime = item.time;
     for (const reqTime of timeArray) {
       if (reservedTime.includes(Number(reqTime))) return true;
@@ -137,9 +135,11 @@ router.post("/admin/make", requireExecutive, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     await purgePastReservations();
-    const reservation = await Reservation.find()
-      .populate("userId", "username")
-      .lean();
+    const now = new Date();
+    const reservation = filterActiveForUserDisplay(
+      await Reservation.find().populate("userId", "username").lean(),
+      now,
+    );
     const sortDay = reservation.sort((a, b) => {
       if (new Date(a.date) > new Date(b.date)) {
         return 1;
@@ -178,7 +178,7 @@ router.get("/public/:id", async (req, res) => {
     if (!doc) {
       return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
     }
-    if (doc.date && doc.date < getTodayDateKey()) {
+    if (isRetentionExpired(doc)) {
       await Reservation.findByIdAndDelete(id);
       return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
     }
@@ -201,11 +201,15 @@ router.get("/mine", async (req, res) => {
       return res.status(401).json({ message: "로그인이 필요합니다." });
     }
     await purgePastReservations();
-    /** 일반 예약만: 관리자 화면 예약(bookingType: admin)은 내 예약 목록에 포함하지 않음 */
-    const list = await Reservation.find({
-      userId,
-      bookingType: { $ne: "admin" },
-    }).lean();
+    const now = new Date();
+    /** 일반 예약만: 종료 시각이 지난 건은 UI에 노출하지 않음 (DB에는 2일 보관) */
+    const list = filterActiveForUserDisplay(
+      await Reservation.find({
+        userId,
+        bookingType: { $ne: "admin" },
+      }).lean(),
+      now,
+    );
     list.sort((a, b) => {
       const da = new Date(a.date);
       const db = new Date(b.date);
@@ -296,9 +300,13 @@ router.patch("/admin/limits/users/:userId", requireExecutive, async (req, res) =
 router.get("/admin/list", requireExecutive, async (req, res) => {
   try {
     await purgePastReservations();
-    const raw = await Reservation.find()
-      .populate("userId", "username Identification email position")
-      .lean();
+    const now = new Date();
+    const raw = filterActiveForAdminDisplay(
+      await Reservation.find()
+        .populate("userId", "username Identification email position")
+        .lean(),
+      now,
+    );
     raw.sort((a, b) => {
       const da = new Date(a.date);
       const db = new Date(b.date);
@@ -313,7 +321,7 @@ router.get("/admin/list", requireExecutive, async (req, res) => {
   }
 });
 
-/** 임원진: 오늘 날짜 이전(캘린더 기준) 예약 일괄 삭제 */
+/** 임원진: 보관 기간(예약 종료 후 2일)이 지난 예약 일괄 삭제 */
 router.post("/admin/delete-past", requireExecutive, async (req, res) => {
   try {
     const result = await purgePastReservations();

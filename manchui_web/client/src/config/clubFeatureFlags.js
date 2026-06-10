@@ -5,7 +5,10 @@
 export const CLUB_RESERVATION_ONLY_DEPLOY = true;
 
 /** 예약-only 모드에서도 접근 허용할 경로 prefix */
-const CLUB_RESERVATION_ONLY_ALLOWED_PREFIXES = ["/club/recommend"];
+const CLUB_RESERVATION_ONLY_ALLOWED_PREFIXES = [
+  "/club/recommend",
+  "/club/team",
+];
 
 export const CLUB_RESERVATION_HOME = "/club/reservation";
 

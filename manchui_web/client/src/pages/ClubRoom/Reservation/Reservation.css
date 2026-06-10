@@ -1196,28 +1196,42 @@ fieldset.reservation__field:disabled .reservation__hourCell {
 .reservation__rulesOpenBtn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-primary);
-  font-size: 0.85rem;
-  font-weight: 600;
+  gap: 4px;
+  padding: 5px 9px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-gray);
+  font-size: 0.76rem;
+  font-weight: 500;
   cursor: pointer;
+  white-space: nowrap;
   transition:
     background 0.15s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .reservation__rulesOpenBtn:hover {
-  background: rgba(179, 0, 0, 0.18);
-  border-color: rgba(179, 0, 0, 0.4);
+  color: var(--text-primary);
+  background: rgba(179, 0, 0, 0.14);
+  border-color: rgba(179, 0, 0, 0.35);
 }
 
 .reservation__rulesOpenIcon {
   flex-shrink: 0;
-  font-size: 1.15rem;
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+.reservation__rulesBar--inline .reservation__rulesOpenBtn {
+  padding: 4px 7px;
+  font-size: 0.72rem;
+}
+
+.reservation__rulesBar--inline .reservation__rulesOpenIcon {
+  width: 0.88rem;
+  height: 0.88rem;
 }
 
 .reservation__rulesRoot {

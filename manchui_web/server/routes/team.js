@@ -20,7 +20,10 @@ router.post("/create", async (req, res) => {
       teamColor: teamColor,
     });
     await team.save();
-    res.status(201).json({ message: "팀 생성이 완료되었습니다" });
+    res.status(201).json({
+      message: "팀 생성이 완료되었습니다",
+      team,
+    });
   } catch {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
   }
@@ -207,18 +210,15 @@ router.get("/:teamId", async (req, res) => {
     const confirmScheduls = schedules.filter(
       (schedule) => schedule.category !== "temp"
     );
+    const memberIds = team.members.map((m) => String(m));
     const memberSchedules = confirmScheduls.filter((schedule) =>
-      team.members.includes(schedule.userId)
+      memberIds.includes(String(schedule.userId)),
     );
 
     const memberDetails = await User.find({ _id: { $in: team.members } });
-    team.members = memberDetails;
-    res.json({ team: team, memberSchedules: memberSchedules });
-
-    team.members = team.members.map((member) => {
-      return member._id;
-    });
-    await team.save();
+    const teamPayload = team.toObject();
+    teamPayload.members = memberDetails;
+    res.json({ team: teamPayload, memberSchedules });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }

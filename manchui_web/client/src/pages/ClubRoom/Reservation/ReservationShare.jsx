@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import apiClient, { serverUrl } from "../../../api/apiClient";
 import ClubRoomMapEmbed from "../../../components/ClubRoomMapEmbed/ClubRoomMapEmbed";
+import ClubRoomRulesBar from "./ClubRoomRulesBar";
 import "./ReservationShare.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 
@@ -39,7 +40,10 @@ const ReservationShare = () => {
 
   return (
     <div className="reservationShare">
-      <h1 className="reservationShare__title">동아리방 예약</h1>
+      <div className="reservationShare__titleRow">
+        <h1 className="reservationShare__title">동아리방 예약</h1>
+        <ClubRoomRulesBar inline />
+      </div>
       <p className="reservationShare__lead">
         공유 링크로 열람한 예약 정보입니다. 연락처는 일부만 표시됩니다.
       </p>

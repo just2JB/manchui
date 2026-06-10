@@ -1,6 +1,7 @@
 const Setting = require("../models/Setting");
 const User = require("../models/User");
 const Reservation = require("../models/Reservation");
+const { isPastReservationEnd } = require("./reservationRetention");
 
 const DEFAULT_RESERVATION_LIMIT = 3;
 const MIN_LIMIT = 0;
@@ -66,11 +67,17 @@ async function resolveUserReservationLimit(userDocOrId) {
   return clampLimit(custom) ?? defaultLimit;
 }
 
+/** 일반 예약 중 아직 종료되지 않은 건만 (건수 제한에 포함) */
 async function countGeneralReservations(userId) {
-  return Reservation.countDocuments({
+  const list = await Reservation.find({
     userId,
     bookingType: { $ne: "admin" },
-  });
+  })
+    .select("date time")
+    .lean();
+
+  const now = new Date();
+  return list.filter((r) => !isPastReservationEnd(r, now)).length;
 }
 
 async function assertCanCreateGeneralReservation(userId) {
@@ -112,13 +119,19 @@ async function buildAdminLimitsPayload() {
     .sort({ username: 1 })
     .lean();
 
-  const countRows = await Reservation.aggregate([
-    { $match: { bookingType: { $ne: "admin" } } },
-    { $group: { _id: "$userId", count: { $sum: 1 } } },
-  ]);
-  const countByUserId = new Map(
-    countRows.map((r) => [String(r._id), r.count]),
-  );
+  const generalReservations = await Reservation.find({
+    bookingType: { $ne: "admin" },
+  })
+    .select("userId date time")
+    .lean();
+
+  const now = new Date();
+  const countByUserId = new Map();
+  for (const r of generalReservations) {
+    if (isPastReservationEnd(r, now)) continue;
+    const id = String(r.userId);
+    countByUserId.set(id, (countByUserId.get(id) || 0) + 1);
+  }
 
   const users = members.map((m) => {
     const id = String(m._id);

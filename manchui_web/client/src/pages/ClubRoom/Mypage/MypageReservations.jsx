@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoShareSocialOutline } from "react-icons/io5";
 import apiClient, { serverUrl } from "../../../api/apiClient";
@@ -6,6 +6,14 @@ import { useAuth } from "../../../context/AuthContext";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { formatReservationTimeRange } from "../Reservation/reservationTimeFormat";
 import { parseMineResponse } from "../Reservation/reservationMine";
+import {
+  countActiveReservations,
+  filterVisibleReservations,
+} from "../Reservation/reservationRetention";
+import {
+  useReservationNow,
+  useReservationRefreshOnFocus,
+} from "../Reservation/useReservationLiveSync";
 import ClubRoomRulesBar from "../Reservation/ClubRoomRulesBar";
 import ReservationMyListSkeleton from "../Reservation/ReservationMyListSkeleton";
 import "../Reservation/Reservation.css";
@@ -18,7 +26,6 @@ const MypageReservations = () => {
 
   const [myReservations, setMyReservations] = useState([]);
   const [reservationLimit, setReservationLimit] = useState(3);
-  const [reservationCount, setReservationCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const loadMine = useCallback(async () => {
@@ -34,7 +41,6 @@ const MypageReservations = () => {
       const { reservations, quota } = parseMineResponse(res.data);
       setMyReservations(reservations);
       setReservationLimit(quota.limit);
-      setReservationCount(quota.count);
     } catch (e) {
       console.error(e);
       setMyReservations([]);
@@ -46,6 +52,19 @@ const MypageReservations = () => {
   useEffect(() => {
     void loadMine();
   }, [loadMine]);
+
+  const now = useReservationNow();
+  useReservationRefreshOnFocus(loadMine);
+
+  const visibleReservations = useMemo(
+    () => filterVisibleReservations(myReservations, now),
+    [myReservations, now],
+  );
+
+  const activeCount = useMemo(
+    () => countActiveReservations(myReservations, now),
+    [myReservations, now],
+  );
 
   const handleDeleteMine = async (id) => {
     if (!serverUrl) return;
@@ -115,10 +134,10 @@ const MypageReservations = () => {
       ) : (
         <>
       <p className="reservation__quotaNote" aria-live="polite">
-        계정당 예약 최대 {reservationLimit}건 (현재 {reservationCount}/
+        계정당 예약 최대 {reservationLimit}건 (현재 {activeCount}/
         {reservationLimit})
       </p>
-      {myReservations.length === 0 ? (
+      {visibleReservations.length === 0 ? (
         <div className="mypageReservations__empty">
           <p className="reservation__empty">예약 내역이 없습니다.</p>
           <Link className="mypageReservations__reserveLink" to="/club/reservation">
@@ -127,7 +146,7 @@ const MypageReservations = () => {
         </div>
       ) : (
         <ul className="reservation__myList mypageReservations__list">
-          {myReservations.map((r) => (
+          {visibleReservations.map((r) => (
             <li key={r._id} className="reservation__myCard">
               <div className="reservation__myMain">
                 <span className="reservation__myDate">{r.date}</span>
@@ -165,7 +184,7 @@ const MypageReservations = () => {
         </ul>
       )}
 
-      {myReservations.length > 0 ? (
+      {visibleReservations.length > 0 ? (
         <Link
           className="mypageReservations__reserveLink mypageReservations__reserveLink--compact"
           to="/club/reservation"

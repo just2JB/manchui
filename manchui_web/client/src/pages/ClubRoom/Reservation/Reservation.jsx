@@ -24,6 +24,15 @@ import {
   parseMineResponse,
 } from "./reservationMine";
 import { LOADING_TEXT } from "../../../constants/loadingText";
+import {
+  collectReservedHoursForDate,
+  countActiveReservations,
+  filterVisibleReservations,
+} from "./reservationRetention";
+import {
+  useReservationNow,
+  useReservationRefreshOnFocus,
+} from "./useReservationLiveSync";
 
 function isConsecutiveHours(hours) {
   if (hours.length <= 1) return true;
@@ -62,17 +71,6 @@ function buildMonthGrid(viewMonth) {
     cells.push({ key: formatDateKey(date), date });
   }
   return cells;
-}
-
-function collectReservedHoursForDate(dateKey, reservations) {
-  const set = new Set();
-  for (const r of reservations) {
-    if (r.date !== dateKey || !Array.isArray(r.time)) continue;
-    for (const t of r.time) {
-      set.add(Number(t));
-    }
-  }
-  return set;
 }
 
 const Reservation = () => {
@@ -149,6 +147,22 @@ const Reservation = () => {
     loadMine();
   }, [loadMine]);
 
+  const now = useReservationNow();
+  const refreshReservationData = useCallback(async () => {
+    await Promise.all([loadAll(), loadMine()]);
+  }, [loadAll, loadMine]);
+  useReservationRefreshOnFocus(refreshReservationData);
+
+  const visibleAllReservations = useMemo(
+    () => filterVisibleReservations(allReservations, now),
+    [allReservations, now],
+  );
+
+  const visibleMyReservations = useMemo(
+    () => filterVisibleReservations(myReservations, now),
+    [myReservations, now],
+  );
+
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
   const todayStart = useMemo(() => {
     const n = new Date();
@@ -157,8 +171,8 @@ const Reservation = () => {
 
   const reservedOnSelected = useMemo(() => {
     if (!selectedDateKey) return new Set();
-    return collectReservedHoursForDate(selectedDateKey, allReservations);
-  }, [selectedDateKey, allReservations]);
+    return collectReservedHoursForDate(selectedDateKey, allReservations, now);
+  }, [selectedDateKey, allReservations, now]);
 
   /** 인원 스텝 버튼용 (빈 칸은 1로 간주) */
   const headcountStepValue = useMemo(() => {
@@ -169,7 +183,10 @@ const Reservation = () => {
   }, [headcount]);
 
   const reservationLimit = reservationQuota.limit;
-  const reservationCount = reservationQuota.count;
+  const reservationCount = useMemo(
+    () => countActiveReservations(myReservations, now),
+    [myReservations, now],
+  );
   const canCreateReservation = reservationCount < reservationLimit;
 
   const openSheetForDate = (dateKey) => {
@@ -344,14 +361,14 @@ const Reservation = () => {
     goPrevMonth,
     goNextMonth,
     goToToday,
+    isViewingTodayMonth,
     navigateToMonth,
     swipeHandlers,
     monthKey,
   } = useCalendarMonthSlide(viewMonth, setViewMonth);
 
-  const hasReservationOnDate = (dateKey) => {
-    return collectReservedHoursForDate(dateKey, allReservations).size > 0;
-  };
+  const hasReservationOnDate = (dateKey) =>
+    visibleAllReservations.some((r) => r.date === dateKey);
 
   if (!serverUrl) {
     return (
@@ -440,6 +457,7 @@ const Reservation = () => {
           loading={loading}
           hint="날짜를 눌러 예약할 시간(0~23시)과 연락처를 입력하세요."
           onToday={goToToday}
+          isViewingTodayMonth={isViewingTodayMonth}
         />
       </section>
 
@@ -456,11 +474,11 @@ const Reservation = () => {
           계정당 예약 최대 {reservationLimit}건 (현재 {reservationCount}/
           {reservationLimit})
         </p>
-        {myReservations.length === 0 ? (
+        {visibleMyReservations.length === 0 ? (
           <p className="reservation__empty">예약 내역이 없습니다.</p>
         ) : (
           <ul className="reservation__myList">
-            {myReservations.map((r) => (
+            {visibleMyReservations.map((r) => (
               <li key={r._id} className="reservation__myCard">
                 <div className="reservation__myMain">
                   <span className="reservation__myDate">{r.date}</span>

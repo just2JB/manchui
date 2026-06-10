@@ -41,6 +41,9 @@ import ClubRoomLayout from "./layouts/ClubRoomLayout";
 import ProtectedRoute from "./layouts/ProtectedRoute";
 import ClubReservationOnlyGuard from "./layouts/ClubReservationOnlyGuard";
 import AdminRoute from "./layouts/AdminRoute";
+import TeamList from "./pages/ClubRoom/Team/TeamList";
+import TeamCreate from "./pages/ClubRoom/Team/TeamCreate";
+import TeamDetail from "./pages/ClubRoom/Team/TeamDetail";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +92,9 @@ const router = createBrowserRouter([
               { path: "mypage/Identification", element: <EditUser /> },
               { path: "mypage/password", element: <EditUser /> },
               { path: "mypage", element: <Mypage /> },
+              { path: "team/new", element: <TeamCreate /> },
+              { path: "team/:teamId", element: <TeamDetail /> },
+              { path: "team", element: <TeamList /> },
             ],
           },
         ],

@@ -7,8 +7,16 @@
   color: var(--text-primary);
 }
 
-.reservationShare__title {
+.reservationShare__titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin: 10px 0 8px;
+}
+
+.reservationShare__title {
+  margin: 0;
   font-size: clamp(1.55rem, 4.2vw, 1.85rem);
   font-weight: 600;
   letter-spacing: -0.03em;

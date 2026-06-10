@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const SWIPE_MIN_PX = 48;
 
@@ -52,6 +52,14 @@ export function useCalendarMonthSlide(viewMonth, setViewMonth) {
     navigateToMonth(new Date());
   }, [navigateToMonth]);
 
+  const isViewingTodayMonth = useMemo(() => {
+    const now = new Date();
+    return (
+      viewMonth.getFullYear() === now.getFullYear() &&
+      viewMonth.getMonth() === now.getMonth()
+    );
+  }, [viewMonth]);
+
   const onSwipeStart = useCallback((clientX, clientY) => {
     swipeRef.current = { x: clientX, y: clientY };
   }, []);
@@ -101,6 +109,7 @@ export function useCalendarMonthSlide(viewMonth, setViewMonth) {
     goPrevMonth,
     goNextMonth,
     goToToday,
+    isViewingTodayMonth,
     navigateToMonth,
     swipeHandlers,
     monthKey: formatCalendarMonthKey(viewMonth),

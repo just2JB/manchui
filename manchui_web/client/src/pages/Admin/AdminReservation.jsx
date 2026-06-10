@@ -19,6 +19,14 @@ import ReservationCalendarSlide from "../ClubRoom/Reservation/ReservationCalenda
 import ReservationCalendarFooter from "../ClubRoom/Reservation/ReservationCalendarFooter";
 import ReservationMonthNav from "../ClubRoom/Reservation/ReservationMonthNav";
 import { useCalendarMonthSlide } from "../ClubRoom/Reservation/useCalendarMonthSlide";
+import {
+  collectReservedHoursForDate,
+  filterAdminVisibleReservations,
+} from "../ClubRoom/Reservation/reservationRetention";
+import {
+  useReservationNow,
+  useReservationRefreshOnFocus,
+} from "../ClubRoom/Reservation/useReservationLiveSync";
 
 const authConfig = authRequestConfig;
 
@@ -57,17 +65,6 @@ function buildMonthGrid(viewMonth) {
     cells.push({ key: formatDateKey(date), date });
   }
   return cells;
-}
-
-function collectReservedHoursForDate(dateKey, reservations) {
-  const set = new Set();
-  for (const r of reservations) {
-    if (r.date !== dateKey || !Array.isArray(r.time)) continue;
-    for (const t of r.time) {
-      set.add(Number(t));
-    }
-  }
-  return set;
 }
 
 const WEEK_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -269,6 +266,14 @@ const AdminReservation = () => {
     };
   }, [loadList]);
 
+  const now = useReservationNow();
+  useReservationRefreshOnFocus(loadList);
+
+  const visibleAllReservations = useMemo(
+    () => filterAdminVisibleReservations(allReservations, now),
+    [allReservations, now],
+  );
+
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
   const todayStart = useMemo(() => {
     const n = new Date();
@@ -277,8 +282,8 @@ const AdminReservation = () => {
 
   const reservedOnSelected = useMemo(() => {
     if (!selectedDateKey) return new Set();
-    return collectReservedHoursForDate(selectedDateKey, allReservations);
-  }, [selectedDateKey, allReservations]);
+    return collectReservedHoursForDate(selectedDateKey, allReservations, now);
+  }, [selectedDateKey, allReservations, now]);
 
   const headcountStepValue = useMemo(() => {
     if (headcount === "") return 1;
@@ -308,6 +313,7 @@ const AdminReservation = () => {
     goPrevMonth,
     goNextMonth,
     goToToday,
+    isViewingTodayMonth,
     navigateToMonth,
     swipeHandlers,
     monthKey,
@@ -452,7 +458,7 @@ const AdminReservation = () => {
   const handlePurgePast = async () => {
     if (!serverUrl) return;
     const ok = await modal(
-      "오늘 이전 날짜의 예약을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.",
+      "예약 종료 후 보관 기간(2일)이 지난 예약을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.",
       "confirm",
     );
     if (!ok) return;
@@ -464,7 +470,7 @@ const AdminReservation = () => {
         authConfig(),
       );
       const n = res.data?.deletedCount ?? 0;
-      await modal(`지난 예약 ${n}건을 삭제했습니다.`, "alert");
+      await modal(`보관 만료 예약 ${n}건을 삭제했습니다.`, "alert");
       await loadList();
     } catch (err) {
       const msg =
@@ -477,21 +483,20 @@ const AdminReservation = () => {
 
   const grid = useMemo(() => buildMonthGrid(viewMonth), [viewMonth]);
 
-  const hasReservationOnDate = (dateKey) => {
-    return collectReservedHoursForDate(dateKey, allReservations).size > 0;
-  };
+  const hasReservationOnDate = (dateKey) =>
+    visibleAllReservations.some((r) => r.date === dateKey);
 
   const allReservationRows = useMemo(
-    () => sortReservationRowsDesc(allReservations),
-    [allReservations],
+    () => sortReservationRowsDesc(visibleAllReservations),
+    [visibleAllReservations],
   );
 
   const dayReservations = useMemo(() => {
     if (!selectedDateKey) return [];
     return sortByStartTimeAsc(
-      allReservations.filter((r) => r.date === selectedDateKey),
+      visibleAllReservations.filter((r) => r.date === selectedDateKey),
     );
-  }, [selectedDateKey, allReservations]);
+  }, [selectedDateKey, visibleAllReservations]);
 
   if (!serverUrl) {
     return (
@@ -552,7 +557,7 @@ const AdminReservation = () => {
                 disabled={purging || loading}
                 onClick={() => void handlePurgePast()}
               >
-                {purging ? "처리 중…" : "지난 예약 삭제"}
+                {purging ? "처리 중…" : "만료 예약 삭제"}
               </button>
             ) : null}
           </div>
@@ -618,7 +623,11 @@ const AdminReservation = () => {
         <ReservationCalendarFooter
           loading={loading}
           hint="날짜를 선택하면 해당 일의 예약 내역과 관리자 예약 추가 폼이 아래에 표시됩니다."
-          onToday={() => selectDate(todayKey)}
+          onToday={() => {
+            goToToday();
+            selectDate(todayKey);
+          }}
+          isViewingTodayMonth={isViewingTodayMonth}
         />
       </section>
 

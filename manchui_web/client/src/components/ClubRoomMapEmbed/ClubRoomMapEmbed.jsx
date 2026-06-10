@@ -7,23 +7,8 @@ import {
   getNaverMapLinkUrl,
 } from "../../constants/clubRoomLocation";
 import kakaoMapBasic from "../../assets/kakao/kakaomap_basic.png";
+import naverMapIcon from "../../assets/naver/navermap_icon.png";
 import "./ClubRoomMapEmbed.css";
-
-const NaverMapIcon = () => (
-  <svg
-    className="clubRoomMapEmbed__linkIcon"
-    viewBox="0 0 20 20"
-    width="18"
-    height="18"
-    aria-hidden="true"
-  >
-    <rect width="20" height="20" rx="4" fill="#03C75A" />
-    <path
-      fill="#fff"
-      d="M11.2 5.5H9.4v9h1.6c1.8 0 3-1.2 3-3.1 0-1.6-1-2.9-2.8-2.9Zm.1 6.3H11V8.4h.4c1.1 0 1.7.7 1.7 1.7s-.6 2.2-1.8 2.2ZM5.5 5.5h1.9l1.8 4.4L11 5.5h1.9l-2.7 9h-1.8L5.5 5.5Z"
-    />
-  </svg>
-);
 
 function waitForRoughmapLander(timeoutMs = 8000) {
   return new Promise((resolve, reject) => {
@@ -176,7 +161,13 @@ const ClubRoomMapEmbed = ({ height = 360, className = "" }) => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <NaverMapIcon />
+          <img
+            src={naverMapIcon}
+            alt=""
+            className="clubRoomMapEmbed__linkIcon"
+            width={18}
+            height={18}
+          />
           네이버지도에서 보기
         </a>
       </div>

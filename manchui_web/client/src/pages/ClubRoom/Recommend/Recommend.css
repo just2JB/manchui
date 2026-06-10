@@ -1043,45 +1043,36 @@ button.recCard__hashtag--clickable {
   height: 1.15rem;
 }
 
+/* 팀 페이지 teamPage__headerAction 과 동일 스타일 (플로팅 위치만 다름) */
 .recommend__fab {
   position: fixed;
-  right: max(24px, env(safe-area-inset-right, 0px));
+  right: max(20px, env(safe-area-inset-right, 0px));
   bottom: calc(
-    var(--club-room-bottom-nav, 68px) + 12px + env(safe-area-inset-bottom, 0px)
+    var(--club-room-bottom-nav, 68px) + 14px + env(safe-area-inset-bottom, 0px)
   );
   z-index: 50;
-  width: 50px;
-  height: 50px;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
+  flex-shrink: 0;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  background: var(--brand-red);
-  color: var(--text-primary);
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.32),
-    0 6px 18px rgba(0, 0, 0, 0.42),
-    0 12px 28px rgba(0, 0, 0, 0.28),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid rgba(179, 0, 0, 0.35);
+  border-radius: 999px;
+  background: rgba(179, 0, 0, 0.12);
+  color: #ffb1b1;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
   transition:
-    transform 0.15s ease,
-    filter 0.15s ease,
-    box-shadow 0.2s ease;
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .recommend__fab:hover:not(:disabled) {
-  filter: brightness(1.08);
-  box-shadow:
-    0 3px 10px rgba(0, 0, 0, 0.38),
-    0 8px 24px rgba(0, 0, 0, 0.48),
-    0 14px 34px rgba(0, 0, 0, 0.32),
-    0 0 0 1px rgba(255, 255, 255, 0.14);
-}
-
-.recommend__fab:active:not(:disabled) {
-  transform: scale(0.96);
+  background: rgba(179, 0, 0, 0.22);
+  border-color: rgba(179, 0, 0, 0.5);
 }
 
 .recommend__fab:disabled {
@@ -1090,22 +1081,21 @@ button.recCard__hashtag--clickable {
 }
 
 .recommend__fab:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.5);
-  outline-offset: 3px;
+  outline: 2px solid rgba(255, 68, 68, 0.55);
+  outline-offset: 2px;
 }
 
-.recommend__fabIcon {
-  font-size: 1.72rem;
-  display: block;
+.recommend__fab svg {
+  font-size: 1.1rem;
 }
 
-/* 데스크톱: 본문 열(600px)이 가운데일 때 FAB도 화면 끝이 아니라 열 안쪽 오른쪽에 맞춤 */
+/* 데스크톱: 본문 열(600px) 안쪽 오른쪽에 맞춤 */
 @media (min-width: 768px) {
   .recommend__fab {
     right: max(
-      24px,
+      20px,
       env(safe-area-inset-right, 0px),
-      calc(50vw - var(--club-room-column-width, 600px) / 2 + 24px)
+      calc(50vw - var(--club-room-column-width, 600px) / 2 + 20px)
     );
   }
 }

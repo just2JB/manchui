@@ -76,8 +76,8 @@ const AdminSetting = () => {
       <div className="joinSetting joinSetting--assistant">
         <h3 className="configTitle">동아리방 (어시스턴트)</h3>
         <p className="configHint">
-          끄면 메인 사이트 네비게이션의 로그인·어시스턴트·마이페이지를 누를 수
-          없고, 동아리방 진입도 제한됩니다. (예약 공유 링크 열람은 가능)
+          끄면 메인 사이트 네비게이션의 어시스턴트를 누를 수 없고, 동아리방
+          진입도 제한됩니다. (예약 공유 링크 열람은 가능)
         </p>
         <div
           className="assistantToggle"

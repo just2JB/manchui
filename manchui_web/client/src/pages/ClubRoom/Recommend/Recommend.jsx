@@ -473,8 +473,8 @@ const Recommend = () => {
         type="button"
         className="recommend__fab"
         disabled={!user?._id}
-        title={user?._id ? "추천 등록" : "로그인 후 등록할 수 있습니다"}
-        aria-label="추천 등록"
+        title={user?._id ? "새 추천" : "로그인 후 등록할 수 있습니다"}
+        aria-label="새 추천"
         onClick={async () => {
           if (!user?._id) {
             await modal("로그인 후 등록할 수 있습니다.");
@@ -483,7 +483,8 @@ const Recommend = () => {
           nav("/club/recommend/new");
         }}
       >
-        <IoAdd className="recommend__fabIcon" aria-hidden />
+        <IoAdd aria-hidden />
+        새 추천
       </button>
 
       {loading ? (

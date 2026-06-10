@@ -16,8 +16,8 @@ function getSmtpPass() {
 function isSmtpConfigured() {
   return Boolean(
     (process.env.SMTP_HOST || "").trim() &&
-      (process.env.SMTP_USER || "").trim() &&
-      getSmtpPass(),
+    (process.env.SMTP_USER || "").trim() &&
+    getSmtpPass(),
   );
 }
 
@@ -233,7 +233,9 @@ function logMailStartupStatus() {
   if (provider === "resend") {
     const from = formatMailFromAddress();
     console.log(`[mail] provider=resend from=${from}`);
-    if (/@gmail\.com|@googlemail\.com|@yahoo\.|@hotmail\.|@outlook\./i.test(from)) {
+    if (
+      /@gmail\.com|@googlemail\.com|@yahoo\.|@hotmail\.|@outlook\./i.test(from)
+    ) {
       console.warn(
         "[mail] WARNING: RESEND_FROM uses a public mailbox domain. Resend requires a verified custom domain (e.g. noreply@maaaaaaaanchui.com).",
       );

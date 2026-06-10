@@ -8,6 +8,10 @@ const teamSchema = new mongoose.Schema({
   leaderId: {
     type: String,
   },
+  coLeaderIds: {
+    type: [String],
+    default: [],
+  },
   members: {
     type: Array,
   },

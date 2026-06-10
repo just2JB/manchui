@@ -3,17 +3,39 @@ const router = express.Router();
 const Team = require("../models/Team");
 const Practice = require("../models/Practice");
 const User = require("../models/User");
+const { resolvePracticeMembers, ensureLeaderInPractice } = require("../utils/practiceMembers");
+const { getTeamLeaderIds } = require("../utils/teamRoles");
+const {
+  applyScheduleHoldbacks,
+  releaseScheduleHoldbacks,
+} = require("../utils/practiceScheduleHold");
 
 router.post("/create", async (req, res) => {
   try {
-    const { teamId, date, time, members, place } = req.body;
+    const { teamId, date, time, members, memberByHour, place } = req.body;
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ message: "존재하지 않는 팀입니다." });
+    }
+
+    let resolved = resolvePracticeMembers({ members, memberByHour });
+    for (const leaderId of getTeamLeaderIds(team)) {
+      resolved = ensureLeaderInPractice({
+        ...resolved,
+        leaderId,
+      });
+    }
+
     const practice = new Practice({
-      teamId: teamId,
-      date: date,
-      time: time,
-      members: members,
-      place: place,
+      teamId,
+      date,
+      time,
+      members: resolved.members,
+      memberByHour: resolved.memberByHour,
+      place,
     });
+
+    await applyScheduleHoldbacks(practice);
     await practice.save();
     res.status(201).json({ message: "연습 생성이 완료되었습니다" });
   } catch {
@@ -22,10 +44,18 @@ router.post("/create", async (req, res) => {
 });
 router.post("/edit", async (req, res) => {
   try {
-    const { practiceId, time, members, place } = req.body;
+    const { practiceId, time, members, memberByHour, place } = req.body;
     const practice = await Practice.findById(practiceId);
+    if (!practice) {
+      return res.status(404).json({ message: "연습을 찾을 수 없습니다." });
+    }
+
+    const { members: resolvedMembers, memberByHour: resolvedMemberByHour } =
+      resolvePracticeMembers({ members, memberByHour });
+
     practice.time = time;
-    practice.members = members;
+    practice.members = resolvedMembers;
+    practice.memberByHour = resolvedMemberByHour;
     practice.place = place;
     await practice.save();
     res.status(201).json({ message: "연습이 수정되었습니다" });
@@ -145,10 +175,13 @@ router.get("/today/:userId", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   try {
-    const practices = await Practice.findByIdAndDelete(req.params.id);
-    if (!practices) {
+    const practice = await Practice.findById(req.params.id);
+    if (!practice) {
       return res.status(404).json({ message: "없는 연습 입니다." });
     }
+
+    await releaseScheduleHoldbacks(practice);
+    await Practice.findByIdAndDelete(req.params.id);
     res.json({ message: "연습이 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });

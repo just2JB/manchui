@@ -5,12 +5,6 @@ import {
   IoPeopleOutline,
 } from "react-icons/io5";
 
-function teamInitial(name) {
-  const trimmed = String(name ?? "").trim();
-  if (!trimmed) return "?";
-  return trimmed.charAt(0).toUpperCase();
-}
-
 function isDefaultComment(comment) {
   const c = String(comment ?? "").trim();
   return !c || c === "작성해 주세요.";
@@ -36,10 +30,7 @@ const TeamListCard = ({
       onClick={onClick}
       style={{ "--team-accent": color }}
     >
-      <span className="teamListCard__glow" aria-hidden />
-      <span className="teamListCard__avatar" aria-hidden>
-        {teamInitial(team.name)}
-      </span>
+      <span className="teamListCard__logoMark" aria-hidden />
 
       <span className="teamListCard__main">
         <span className="teamListCard__titleRow">

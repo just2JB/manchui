@@ -27,6 +27,7 @@ import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
 import AdminMember from "./pages/Admin/AdminMember";
+import AdminTeam from "./pages/Admin/AdminTeam";
 import AdminReservation from "./pages/Admin/AdminReservation";
 import AdminReservationLayout from "./pages/Admin/AdminReservationLayout";
 import AdminReservationLimitsPage from "./pages/Admin/AdminReservationLimitsPage";
@@ -44,6 +45,9 @@ import AdminRoute from "./layouts/AdminRoute";
 import TeamList from "./pages/ClubRoom/Team/TeamList";
 import TeamCreate from "./pages/ClubRoom/Team/TeamCreate";
 import TeamDetail from "./pages/ClubRoom/Team/TeamDetail";
+import TeamSettings from "./pages/ClubRoom/Team/TeamSettings";
+import TeamJoin from "./pages/ClubRoom/Team/TeamJoin";
+import TeamPracticeCreate from "./pages/ClubRoom/Team/TeamPracticeCreate";
 
 const router = createBrowserRouter([
   {
@@ -92,7 +96,10 @@ const router = createBrowserRouter([
               { path: "mypage/Identification", element: <EditUser /> },
               { path: "mypage/password", element: <EditUser /> },
               { path: "mypage", element: <Mypage /> },
+              { path: "team/join/:teamId", element: <TeamJoin /> },
+              { path: "team/:teamId/practice/new", element: <TeamPracticeCreate /> },
               { path: "team/new", element: <TeamCreate /> },
+              { path: "team/:teamId/settings", element: <TeamSettings /> },
               { path: "team/:teamId", element: <TeamDetail /> },
               { path: "team", element: <TeamList /> },
             ],
@@ -111,6 +118,7 @@ const router = createBrowserRouter([
           { index: true, element: <AdminHome /> },
           { path: "join", element: <AdminJoin /> },
           { path: "member", element: <AdminMember /> },
+          { path: "team", element: <AdminTeam /> },
           {
             path: "reservation",
             element: <AdminReservationLayout />,

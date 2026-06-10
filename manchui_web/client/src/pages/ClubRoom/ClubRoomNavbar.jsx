@@ -2,10 +2,15 @@ import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./ClubRoomNavbar.css";
 import {
+  IoHome,
   IoHomeOutline,
+  IoCalendar,
   IoCalendarOutline,
+  IoPerson,
   IoPersonOutline,
+  IoMusicalNotes,
   IoMusicalNotesOutline,
+  IoPeople,
   IoPeopleOutline,
 } from "react-icons/io5";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
@@ -41,52 +46,93 @@ const ClubRoomNavbar = () => {
     nav(targetPath);
   };
 
+  const navItemClass = (active, limited = false) =>
+    [
+      "ClubRoomBottomNav__item",
+      active && "ClubRoomBottomNav__item--active",
+      limited && "ClubRoomBottomNav__item--limited",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
   return (
     <nav className="ClubRoomBottomNav" aria-label="클럽룸 하단 메뉴">
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isHome ? " ClubRoomBottomNav__item--active" : ""}${isTabLimited("/club") ? " ClubRoomBottomNav__item--limited" : ""}`}
+        className={navItemClass(isHome, isTabLimited("/club"))}
         onClick={() => void goTab("/club")}
+        aria-current={isHome ? "page" : undefined}
         aria-disabled={isTabLimited("/club") || undefined}
       >
-        <IoHomeOutline className="ClubRoomBottomNav__icon" aria-hidden />
+        <span className="ClubRoomBottomNav__iconWrap" aria-hidden="true">
+          {isHome ? (
+            <IoHome className="ClubRoomBottomNav__icon" />
+          ) : (
+            <IoHomeOutline className="ClubRoomBottomNav__icon" />
+          )}
+        </span>
         <span className="ClubRoomBottomNav__label">홈</span>
       </button>
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isTeam ? " ClubRoomBottomNav__item--active" : ""}${isTabLimited("/club/team") ? " ClubRoomBottomNav__item--limited" : ""}`}
+        className={navItemClass(isTeam, isTabLimited("/club/team"))}
         onClick={() => void goTab("/club/team")}
+        aria-current={isTeam ? "page" : undefined}
         aria-disabled={isTabLimited("/club/team") || undefined}
       >
-        <IoPeopleOutline className="ClubRoomBottomNav__icon" aria-hidden />
+        <span className="ClubRoomBottomNav__iconWrap" aria-hidden="true">
+          {isTeam ? (
+            <IoPeople className="ClubRoomBottomNav__icon" />
+          ) : (
+            <IoPeopleOutline className="ClubRoomBottomNav__icon" />
+          )}
+        </span>
         <span className="ClubRoomBottomNav__label">팀</span>
       </button>
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isReservation ? " ClubRoomBottomNav__item--active" : ""}`}
+        className={navItemClass(isReservation)}
         onClick={() => void goTab("/club/reservation")}
+        aria-current={isReservation ? "page" : undefined}
       >
-        <IoCalendarOutline className="ClubRoomBottomNav__icon" aria-hidden />
+        <span className="ClubRoomBottomNav__iconWrap" aria-hidden="true">
+          {isReservation ? (
+            <IoCalendar className="ClubRoomBottomNav__icon" />
+          ) : (
+            <IoCalendarOutline className="ClubRoomBottomNav__icon" />
+          )}
+        </span>
         <span className="ClubRoomBottomNav__label">예약</span>
       </button>
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isRecommend ? " ClubRoomBottomNav__item--active" : ""}${isTabLimited("/club/recommend") ? " ClubRoomBottomNav__item--limited" : ""}`}
+        className={navItemClass(isRecommend, isTabLimited("/club/recommend"))}
         onClick={() => void goTab("/club/recommend")}
+        aria-current={isRecommend ? "page" : undefined}
         aria-disabled={isTabLimited("/club/recommend") || undefined}
       >
-        <IoMusicalNotesOutline
-          className="ClubRoomBottomNav__icon"
-          aria-hidden
-        />
+        <span className="ClubRoomBottomNav__iconWrap" aria-hidden="true">
+          {isRecommend ? (
+            <IoMusicalNotes className="ClubRoomBottomNav__icon" />
+          ) : (
+            <IoMusicalNotesOutline className="ClubRoomBottomNav__icon" />
+          )}
+        </span>
         <span className="ClubRoomBottomNav__label">추천</span>
       </button>
       <button
         type="button"
-        className={`ClubRoomBottomNav__item${isMypage ? " ClubRoomBottomNav__item--active" : ""}`}
+        className={navItemClass(isMypage)}
         onClick={() => void goTab("/club/mypage")}
+        aria-current={isMypage ? "page" : undefined}
       >
-        <IoPersonOutline className="ClubRoomBottomNav__icon" aria-hidden />
+        <span className="ClubRoomBottomNav__iconWrap" aria-hidden="true">
+          {isMypage ? (
+            <IoPerson className="ClubRoomBottomNav__icon" />
+          ) : (
+            <IoPersonOutline className="ClubRoomBottomNav__icon" />
+          )}
+        </span>
         <span className="ClubRoomBottomNav__label">마이페이지</span>
       </button>
     </nav>

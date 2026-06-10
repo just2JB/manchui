@@ -45,6 +45,8 @@
 }
 
 .reservationShare__card {
+  position: relative;
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: var(--box-1);
@@ -52,7 +54,22 @@
   padding: 14px 14px 16px;
 }
 
+.reservationShare__cardWatermark {
+  position: absolute;
+  right: 20px;
+  bottom: 16px;
+  z-index: 0;
+  width: min(48%, 132px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.12;
+  filter: brightness(0) invert(1);
+}
+
 .reservationShare__dl {
+  position: relative;
+  z-index: 1;
   margin: 0;
 }
 

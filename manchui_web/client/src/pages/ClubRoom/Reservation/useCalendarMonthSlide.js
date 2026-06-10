@@ -28,7 +28,11 @@ export function useCalendarMonthSlide(viewMonth, setViewMonth) {
   const navigateToMonth = useCallback(
     (nextMonth) => {
       const target = new Date(nextMonth.getFullYear(), nextMonth.getMonth(), 1);
-      const current = new Date(viewMonth.getFullYear(), viewMonth.getMonth(), 1);
+      const current = new Date(
+        viewMonth.getFullYear(),
+        viewMonth.getMonth(),
+        1,
+      );
       if (target.getTime() === current.getTime()) return;
       setSlideDir(target < current ? "prev" : "next");
       setViewMonth(target);

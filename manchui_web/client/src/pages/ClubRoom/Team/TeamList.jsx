@@ -5,6 +5,7 @@ import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import TeamListCard from "./TeamListCard";
 import TeamListSkeleton from "./TeamListSkeleton";
+import { isTeamLeader } from "./teamUtils";
 import "./Team.css";
 
 const TeamList = () => {
@@ -55,20 +56,17 @@ const TeamList = () => {
       <header className="teamPage__header">
         <div className="teamPage__headerText">
           <h1 className="teamPage__title">팀</h1>
-          <p className="teamPage__intro">
-            연습 일정을 맞출 팀을 만들거나, 가입한 팀을 확인할 수 있습니다.
-          </p>
         </div>
-        {!loading ? (
-          <button
-            type="button"
-            className="teamPage__headerAction"
-            onClick={() => nav("/club/team/new")}
-          >
-            <IoAdd aria-hidden />
-            만들기
-          </button>
-        ) : null}
+        <button
+          type="button"
+          className="teamPage__headerAction"
+          onClick={() => nav("/club/team/new")}
+          disabled={loading}
+          aria-busy={loading || undefined}
+        >
+          <IoAdd aria-hidden />
+          만들기
+        </button>
       </header>
 
       {loading ? (
@@ -89,8 +87,7 @@ const TeamList = () => {
             className="teamPage__emptyBtn"
             onClick={() => nav("/club/team/new")}
           >
-            <IoAdd aria-hidden />
-            팀 만들기
+            <IoAdd aria-hidden />팀 만들기
           </button>
         </div>
       ) : (
@@ -105,10 +102,7 @@ const TeamList = () => {
                 <TeamListCard
                   key={id}
                   team={team}
-                  isLeader={
-                    user?._id != null &&
-                    String(team.leaderId) === String(user._id)
-                  }
+                  isLeader={isTeamLeader(team, user?._id)}
                   isActive={activeTeamIds.includes(id)}
                   onClick={() => nav(`/club/team/${team._id}`)}
                 />
@@ -117,7 +111,6 @@ const TeamList = () => {
           </div>
         </>
       )}
-
     </div>
   );
 };

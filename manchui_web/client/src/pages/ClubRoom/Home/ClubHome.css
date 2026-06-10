@@ -1,0 +1,1201 @@
+.clubHome {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+  background-color: var(--background-dark);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  padding: 8px 14px calc(24px + 72px + env(safe-area-inset-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.clubHome__hero {
+  padding: 18px 16px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(179, 0, 0, 0.14) 0%,
+    rgba(255, 255, 255, 0.02) 55%
+  );
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.clubHome__greeting {
+  margin: 0;
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+}
+
+.clubHome__sub {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--text-more);
+}
+
+.clubHome__block {
+  border: 1px solid var(--primary-200);
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--box-1);
+}
+
+.clubHome__blockTitle {
+  margin: 0 0 12px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--text-more);
+}
+
+.clubHome__empty {
+  margin: 0;
+  padding: 14px 10px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 0.88rem;
+  color: var(--text-more);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.clubHome__trackWrap {
+  margin: 0 -14px 0 0;
+}
+
+.clubHome__track {
+  margin: 0;
+  padding: 2px 14px 6px 8px;
+  list-style: none;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.clubHome__track::-webkit-scrollbar {
+  display: none;
+}
+
+.clubHome__practiceCard {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: min(52vw, 152px);
+  min-height: 100px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-sizing: border-box;
+  --item-accent: #e87070;
+}
+
+.clubHome__practiceCard--next {
+  border-color: color-mix(in srgb, var(--item-accent) 38%, transparent);
+  background: color-mix(in srgb, var(--item-accent) 10%, rgba(0, 0, 0, 0.18));
+  box-shadow: inset 0 1px 0 var(--item-accent);
+}
+
+.clubHome__practiceTeam {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: color-mix(in srgb, #fff 70%, var(--item-accent));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubHome__practiceDate {
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.clubHome__practiceTime {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: color-mix(in srgb, #fff 80%, var(--item-accent));
+}
+
+.clubHome__practicePlace {
+  margin-top: auto;
+  font-size: 0.78rem;
+  color: var(--text-more);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clubHome__requestList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clubHome__requestRow {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.clubHome__requestTeam {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clubHome__requestDates {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.clubHome__requestChip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(255, 183, 77, 0.14);
+  border: 1px solid rgba(255, 183, 77, 0.35);
+  color: #ffd89a;
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clubHome__reservationList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clubHome__reservationItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(72, 187, 120, 0.08);
+  border: 1px solid rgba(72, 187, 120, 0.22);
+}
+
+.clubHome__reservationDate {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clubHome__reservationTime {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #9ae6b4;
+}
+
+.clubHome__reservationMeta {
+  font-size: 0.76rem;
+  color: var(--text-more);
+}
+
+.clubHome__linkBtn {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #ffb1b1;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* 홈 캘린더 */
+.clubHomeCal {
+  --club-cal-radius: 10px;
+  color: var(--text-primary);
+}
+
+.clubHomeCal__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.clubHomeCal__navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--text-more);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.clubHomeCal__navBtn:hover {
+  color: var(--text-primary);
+}
+
+.clubHomeCal__month {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clubHomeCal__weekHead {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.clubHomeCal__weekLabel {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-more);
+  padding: 4px 0;
+}
+
+.clubHomeCal__weekLabel:first-child {
+  color: #e87070;
+}
+
+.clubHomeCal__weekLabel:last-child {
+  color: #6ba3e8;
+}
+
+.clubHomeCal__monthSwipe {
+  touch-action: pan-y;
+}
+
+.clubHomeCal__monthPanel--prev {
+  animation: club-home-cal-prev 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.clubHomeCal__monthPanel--next {
+  animation: club-home-cal-next 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes club-home-cal-next {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes club-home-cal-prev {
+  from {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.clubHomeCal__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.clubHomeCal__week {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  align-items: stretch;
+}
+
+.clubHomeCal__cell {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  min-height: clamp(2.6rem, 12vw, 3.6rem);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5px 3px 4px;
+  border-radius: var(--club-cal-radius);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-gray);
+  background: rgba(255, 255, 255, 0.02);
+  box-sizing: border-box;
+}
+
+.clubHomeCal__cell--empty {
+  pointer-events: none;
+  background: transparent;
+}
+
+.clubHomeCal__cell--interactive {
+  z-index: 3;
+  border: 1px solid transparent;
+  font: inherit;
+  color: var(--text-gray);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.clubHomeCal__cell--interactive:hover {
+  border-color: rgba(179, 0, 0, 0.28);
+}
+
+.clubHomeCal__cell--today .clubHomeCal__day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.5rem;
+  min-height: 1.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+}
+
+.clubHomeCal__cell--hasPractice .clubHomeCal__day {
+  position: relative;
+  z-index: 1;
+}
+
+.clubHomeCal__practiceBars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  margin-top: auto;
+  padding-top: 2px;
+  min-width: 0;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.clubHomeCal__practiceTimeBar {
+  display: block;
+  width: 100%;
+  padding: 2px;
+  border-radius: calc(var(--club-cal-radius) * 0.35);
+  background: color-mix(
+    in srgb,
+    var(--item-accent, #e87070) 42%,
+    rgba(20, 20, 20, 0.72)
+  );
+  color: color-mix(in srgb, #fff 82%, var(--item-accent, #e87070));
+  border: 1px solid
+    color-mix(in srgb, var(--item-accent, #e87070) 32%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font-size: clamp(0.46rem, 2vw, 0.54rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  box-sizing: border-box;
+}
+
+.clubHomeCal__cell--practiceMulti .clubHomeCal__practiceTimeBar {
+  font-size: clamp(0.42rem, 1.8vw, 0.5rem);
+  padding: 1px 2px;
+}
+
+.clubHomeCal__cell--practiceMulti .clubHomeCal__practiceBars {
+  gap: 1px;
+}
+
+.clubHomeCal__cell--request {
+  background: rgba(255, 183, 77, 0.22);
+}
+
+.clubHomeCal__cell--schedule {
+  box-shadow: inset 0 0 0 1.5px rgba(107, 163, 232, 0.68);
+}
+
+.clubHomeCal__day {
+  line-height: 1;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.clubHomeCal__dots {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-top: auto;
+  padding-top: 3px;
+}
+
+.clubHomeCal__dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.clubHomeCal__dot--practice {
+  background: #e87070;
+}
+
+.clubHomeCal__dot--reservation {
+  background: #48bb78;
+}
+
+.clubHomeCal__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: 12px;
+  font-size: 0.72rem;
+  color: var(--text-more);
+}
+
+.clubHomeCal__legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.clubHomeCal__legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.clubHomeCal__legendDot--practice {
+  background: #e87070;
+}
+
+.clubHomeCal__legendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: calc(var(--club-cal-radius) * 0.4);
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.clubHomeCal__legendSwatch--request {
+  background: rgba(255, 183, 77, 0.22);
+  border: none;
+}
+
+.clubHomeCal__legendSwatch--schedule {
+  background: rgba(255, 255, 255, 0.02);
+  border: none;
+  box-shadow: inset 0 0 0 1.5px rgba(107, 163, 232, 0.68);
+}
+
+.clubHomeCal__legendDot--reservation {
+  background: #48bb78;
+}
+
+.clubHomeCal__legendBar {
+  width: 14px;
+  height: 5px;
+  border-radius: calc(var(--club-cal-radius) * 0.35);
+  background: rgba(255, 183, 77, 0.65);
+}
+
+.clubHomeCal__legendBar--practiceTime {
+  width: 18px;
+  height: 8px;
+  border-radius: calc(var(--club-cal-radius) * 0.35);
+  background: color-mix(in srgb, #e87070 42%, rgba(20, 20, 20, 0.72));
+  border: 1px solid color-mix(in srgb, #e87070 32%, transparent);
+  box-sizing: border-box;
+}
+
+/* 일정 시트 */
+.clubHomeSheet__root {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.clubHomeSheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+.clubHomeSheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 520px;
+  max-height: min(88dvh, 720px);
+  overflow-y: auto;
+  padding: 8px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: 18px 18px 0 0;
+  background: var(--background-dark);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+  color: var(--text-primary);
+}
+
+.clubHomeSheet__handleWrap {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 10px;
+}
+
+.clubHomeSheet__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.clubHomeSheet__title {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clubHomeSheet__section + .clubHomeSheet__section {
+  margin-top: 16px;
+}
+
+.clubHomeSheet__sectionLabel {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-more);
+  letter-spacing: 0.03em;
+}
+
+.clubHomeSheet__hint {
+  margin: 0 0 10px;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-more);
+}
+
+.clubHomeSheet__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clubHomeSheet__item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: color-mix(
+    in srgb,
+    var(--item-accent, #e87070) 10%,
+    rgba(0, 0, 0, 0.2)
+  );
+  border: 1px solid
+    color-mix(in srgb, var(--item-accent, #e87070) 28%, transparent);
+}
+
+.clubHomeSheet__item--reservation {
+  --item-accent: #48bb78;
+}
+
+.clubHomeSheet__itemTeam {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: color-mix(in srgb, #fff 75%, var(--item-accent, #e87070));
+}
+
+.clubHomeSheet__itemMain {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.clubHomeSheet__itemSub {
+  font-size: 0.78rem;
+  color: var(--text-more);
+}
+
+.clubHomeSheet__requestBlock {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(255, 183, 77, 0.06);
+  border: 1px solid rgba(255, 183, 77, 0.22);
+}
+
+.clubHomeSheet__requestInfoList {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.clubHomeSheet__requestInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.clubHomeSheet__requestInfoTeam {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #ffd89a;
+}
+
+.clubHomeSheet__requestInfoDesc {
+  font-size: 0.8rem;
+  line-height: 1.45;
+  color: var(--text-more);
+}
+
+.clubHomeSheet__writeBtn {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: var(--brand-red);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.28);
+}
+
+.clubHomeSheet__writeBtn--solo {
+  margin-top: 0;
+}
+
+.clubHomeSheet__writeBtn:hover {
+  filter: brightness(1.06);
+}
+
+.clubHomeSheet__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.clubHomeSheet__hourTrack {
+  margin: 0 -4px;
+}
+
+.clubHomeSheet__hourScroll {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 4px 2px 8px;
+  scrollbar-width: none;
+}
+
+.clubHomeSheet__hourScroll::-webkit-scrollbar {
+  display: none;
+}
+
+.clubHomeSheet__hourBtn {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 48px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-primary);
+}
+
+.clubHomeSheet__hourBtn--selected {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.22);
+}
+
+.clubHomeSheet__hourLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.clubHomeSheet__hourBtn--am .clubHomeSheet__hourLabel {
+  color: #ffb74d;
+}
+
+.clubHomeSheet__hourBtn--pm .clubHomeSheet__hourLabel {
+  color: var(--text-primary);
+}
+
+.clubHomeSheet__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.clubHomeSheet__action {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clubHomeSheet__action--ghost {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: transparent;
+  color: var(--text-more);
+}
+
+.clubHomeSheet__action--primary {
+  border: none;
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.clubHomeSheet__action:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* 일정 작성 전체 화면 */
+.clubScheduleEditor {
+  position: fixed;
+  inset: 0;
+  z-index: 1300;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  height: 100dvh;
+  margin: 0 auto;
+  background: var(--background-dark);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.clubScheduleEditor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 10px;
+  padding-top: max(14px, env(safe-area-inset-top, 0px));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.clubScheduleEditor__headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.clubScheduleEditor__month {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.clubScheduleEditor__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.clubScheduleEditor__navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--text-more);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.clubScheduleEditor__navBtn:hover {
+  color: var(--text-primary);
+}
+
+.clubScheduleEditor__close {
+  flex-shrink: 0;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clubScheduleEditor__close:hover {
+  color: var(--text-primary);
+}
+
+.clubScheduleEditor__hint {
+  margin: 0;
+  padding: 8px 16px 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-more);
+  flex-shrink: 0;
+}
+
+.clubScheduleEditor__gridWrap {
+  --sched-head-h: 56px;
+  --sched-float-head-h: 32px;
+  --sched-row-h: 32px;
+  --sched-row-gap: 4px;
+  --sched-time-col-w: 44px;
+  --sched-col-gap: 8px;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0 0 12px;
+  overflow: hidden;
+}
+
+.clubScheduleEditor__scrollArea {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 12px;
+}
+
+.clubScheduleEditor__swiperWrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.clubScheduleEditor__floatDateRow {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: var(--sched-float-head-h);
+  z-index: 6;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+}
+
+.clubScheduleEditor__floatDateRow--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.clubScheduleEditor__floatDateCell {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  height: var(--sched-float-head-h);
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.clubScheduleEditor__floatDateCell .clubScheduleEditor__dateDay {
+  font-size: 0.72rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.clubScheduleEditor__floatDateCell .clubScheduleEditor__dateWeek {
+  font-size: 0.58rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.clubScheduleEditor__scrollInner {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sched-col-gap);
+  min-height: min-content;
+}
+
+.clubScheduleEditor__timeCol {
+  flex: 0 0 var(--sched-time-col-w);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sched-row-gap);
+  flex-shrink: 0;
+  position: sticky;
+  left: 0;
+}
+
+.clubScheduleEditor__timeHeadSpacer {
+  height: var(--sched-head-h);
+  min-height: var(--sched-head-h);
+  flex-shrink: 0;
+}
+
+.clubScheduleEditor__timeLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: var(--sched-row-h);
+  min-height: var(--sched-row-h);
+  box-sizing: border-box;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-more);
+  padding-right: 4px;
+}
+
+.clubScheduleEditor__daySwiper {
+  width: 100%;
+}
+
+.clubScheduleEditor__daySwiper .swiper-wrapper {
+  align-items: stretch;
+}
+
+.clubScheduleEditor__daySlide {
+  height: auto;
+  box-sizing: border-box;
+}
+
+.clubScheduleEditor__dayPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 1px 12px;
+  opacity: 0.42;
+  transition: opacity 0.25s ease;
+}
+
+/* 양끝 peek (5일 중 1·5번째) */
+.clubScheduleEditor__daySwiper
+  .swiper-slide-visible:not(.swiper-slide-active):not(.swiper-slide-prev):not(
+    .swiper-slide-next
+  )
+  .clubScheduleEditor__dayPanel {
+  opacity: 0.48;
+}
+
+.clubScheduleEditor__daySwiper
+  .swiper-slide-visible:not(.swiper-slide-active):not(.swiper-slide-prev):not(
+    .swiper-slide-next
+  )
+  .clubScheduleEditor__slot {
+  pointer-events: none;
+}
+
+/* 가운데 인접 (5일 중 2·4번째) */
+.clubScheduleEditor__daySwiper .swiper-slide-prev .clubScheduleEditor__dayPanel,
+.clubScheduleEditor__daySwiper
+  .swiper-slide-next
+  .clubScheduleEditor__dayPanel {
+  opacity: 0.78;
+}
+
+/* 가운데 (5일 중 3번째) */
+.clubScheduleEditor__daySwiper
+  .swiper-slide-active
+  .clubScheduleEditor__dayPanel {
+  opacity: 1;
+}
+
+.clubScheduleEditor__dateHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: var(--sched-head-h);
+  min-height: var(--sched-head-h);
+  padding: 0 4px;
+  border-radius: 8px;
+  background: rgba(18, 18, 18, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.clubScheduleEditor__dateDay {
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+.clubScheduleEditor__dateWeek {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-more);
+  line-height: 1;
+}
+
+.clubScheduleEditor__slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sched-row-gap);
+  padding-right: 2px;
+}
+
+.clubScheduleEditor__slot {
+  width: 100%;
+  height: var(--sched-row-h);
+  min-height: var(--sched-row-h);
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.03);
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.clubScheduleEditor__slot--am {
+  background: rgba(255, 183, 77, 0.04);
+}
+
+.clubScheduleEditor__slot--selected {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.35);
+}
+
+.clubScheduleEditor__slot--selected.clubScheduleEditor__slot--am {
+  background: color-mix(
+    in srgb,
+    rgba(179, 0, 0, 0.28) 70%,
+    rgba(255, 183, 77, 0.12)
+  );
+}
+
+.clubScheduleEditor__footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--background-dark);
+  flex-shrink: 0;
+}
+
+.clubScheduleEditor__revertBtn {
+  padding: 12px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.clubScheduleEditor__revertBtn--active {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.clubScheduleEditor__revertBtn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.36);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.clubScheduleEditor__revertBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.clubScheduleEditor__saveBtn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 12px;
+  background: var(--brand-red);
+  color: #fff;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(179, 0, 0, 0.32);
+}
+
+.clubScheduleEditor__saveBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

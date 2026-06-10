@@ -2,11 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   IoCalendarOutline,
-  IoChatbubbleEllipsesOutline,
   IoClipboardOutline,
   IoGiftOutline,
   IoMusicalNotesOutline,
   IoPeopleOutline,
+  IoPeopleCircleOutline,
   IoSettingsOutline,
 } from "react-icons/io5";
 import "./AdminHome.css";
@@ -33,14 +33,14 @@ const HOME_LINKS = [
     Icon: IoGiftOutline,
   },
   {
-    to: "/admin/contact",
-    label: "문의 관리",
-    Icon: IoChatbubbleEllipsesOutline,
-  },
-  {
     to: "/admin/member",
     label: "부원 관리",
     Icon: IoPeopleOutline,
+  },
+  {
+    to: "/admin/team",
+    label: "팀 관리",
+    Icon: IoPeopleCircleOutline,
   },
   {
     to: "/admin/setting",

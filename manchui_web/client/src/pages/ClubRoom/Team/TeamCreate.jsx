@@ -5,6 +5,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import {
   DEFAULT_TEAM_COLOR,
+  isTeamColorPreset,
   TEAM_COLOR_PRESETS,
 } from "./teamColorPresets";
 import "./Team.css";
@@ -106,7 +107,7 @@ const TeamCreate = () => {
 
           <div className="teamForm__field">
             <span className="teamForm__label">팀 색상</span>
-            <div className="teamForm__colors" role="group" aria-label="팀 색상">
+            <div className="teamForm__colors" role="group" aria-label="추천 색상">
               {TEAM_COLOR_PRESETS.map((color) => (
                 <button
                   key={color}
@@ -118,6 +119,24 @@ const TeamCreate = () => {
                   onClick={() => setTeamColor(color)}
                 />
               ))}
+            </div>
+            <div className="teamForm__customColor">
+              <label className="teamForm__customColorLabel" htmlFor="team-color-custom">
+                <span
+                  className={`teamForm__colorBtn teamForm__colorBtn--custom${!isTeamColorPreset(teamColor) ? " teamForm__colorBtn--selected" : ""}`}
+                  style={{ backgroundColor: teamColor }}
+                  aria-hidden
+                />
+                <span className="teamForm__customColorText">직접 선택</span>
+              </label>
+              <input
+                id="team-color-custom"
+                className="teamForm__colorInput"
+                type="color"
+                value={teamColor}
+                onChange={(e) => setTeamColor(e.target.value.toUpperCase())}
+                aria-label="팀 색상 직접 선택"
+              />
             </div>
           </div>
         </div>

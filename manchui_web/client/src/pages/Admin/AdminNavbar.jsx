@@ -6,12 +6,12 @@ import { useAuth } from "../../context/AuthContext";
 import {
   IoAlbumsOutline,
   IoCalendarOutline,
-  IoChatbubbleEllipsesOutline,
   IoClipboardOutline,
   IoGiftOutline,
   IoHomeOutline,
   IoMusicalNotesOutline,
   IoPeopleOutline,
+  IoPeopleCircleOutline,
   IoSettingsOutline,
 } from "react-icons/io5";
 import "./AdminNavbar.css";
@@ -23,8 +23,8 @@ const NAV_ITEMS = [
   { to: "/admin/recommendation", label: "곡 추천", Icon: IoMusicalNotesOutline },
   { to: "/admin/lottery", label: "상품 추첨", Icon: IoGiftOutline },
   { to: "/admin/setting", label: "웹 설정", Icon: IoSettingsOutline },
-  { to: "/admin/contact", label: "문의", Icon: IoChatbubbleEllipsesOutline },
   { to: "/admin/member", label: "부원", Icon: IoPeopleOutline },
+  { to: "/admin/team", label: "팀 관리", Icon: IoPeopleCircleOutline },
 ];
 
 const AdminNavbar = ({ user }) => {

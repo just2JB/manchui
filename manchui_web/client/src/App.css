@@ -16,8 +16,8 @@
 }
 
 .clubRoomLayout {
-  /* ClubRoomBottomNav: min-height 56 + 세로 padding 12 + 보더 1 + safe-area */
-  --club-room-bottom-nav: calc(68px + env(safe-area-inset-bottom, 0px));
+  /* ClubRoomBottomNav: min-height 62 + 세로 padding 16 + 보더 1 + safe-area */
+  --club-room-bottom-nav: calc(79px + env(safe-area-inset-bottom, 0px));
   width: 100%;
   min-height: 100dvh;
   height: 100dvh;

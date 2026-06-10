@@ -52,6 +52,7 @@ const Mypage = () => {
         className="mypageHub__infoCard"
         onClick={() => nav("/club/mypage/profile")}
       >
+        <span className="mypageHub__infoCardWatermark" aria-hidden="true" />
         <div className="mypageHub__infoCardBody">
           <div className="mypageHub__avatar" aria-hidden="true">
             <IoPersonOutline className="mypageHub__avatarIcon" />

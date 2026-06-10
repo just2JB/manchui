@@ -162,10 +162,28 @@ const Navbar = ({ siteRestricted = false, assistantEnabled = true }) => {
           <div className="logo_long" onClick={() => toMainPage()}>
             <span className="shortLogo mobileShortLogo">MANCHUI</span>
           </div>
-          <div>
-            <div className="menu_btn" onClick={() => setMobileMenu(true)}>
-              <IoMdMenu />
-            </div>
+          <div className="mobile-actions">
+            {showPreparingOnly ? (
+              <button
+                type="button"
+                className="mobile-assistant-btn mobile-assistant-btn--prep"
+                onClick={showPreparingFeatureModal}
+              >
+                어시스턴트
+              </button>
+            ) : (
+              <Link className="mobile-assistant-btn" to="/club">
+                어시스턴트
+              </Link>
+            )}
+            <button
+              type="button"
+              className="menu_btn"
+              onClick={() => setMobileMenu(true)}
+              aria-label="메뉴 열기"
+            >
+              <IoMdMenu aria-hidden />
+            </button>
           </div>
         </div>
         <div

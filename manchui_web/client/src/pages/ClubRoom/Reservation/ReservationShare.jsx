@@ -56,6 +56,12 @@ const ReservationShare = () => {
         </p>
       ) : data ? (
         <div className="reservationShare__card">
+          <img
+            src="/logos/shortLogo.png"
+            alt=""
+            className="reservationShare__cardWatermark"
+            aria-hidden="true"
+          />
           <dl className="reservationShare__dl">
             <div className="reservationShare__row">
               <dt>날짜</dt>

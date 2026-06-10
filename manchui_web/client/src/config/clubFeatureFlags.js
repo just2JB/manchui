@@ -2,7 +2,7 @@
  * 예약 기능만 우선 배포할 때 true.
  * 홈·팀 등 미완 기능 진입을 막고 예약 페이지로 보냅니다.
  */
-export const CLUB_RESERVATION_ONLY_DEPLOY = true;
+export const CLUB_RESERVATION_ONLY_DEPLOY = false;
 
 /** 예약-only 모드에서도 접근 허용할 경로 prefix */
 const CLUB_RESERVATION_ONLY_ALLOWED_PREFIXES = [

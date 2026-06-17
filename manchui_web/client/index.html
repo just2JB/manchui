@@ -23,6 +23,14 @@
     />
     <link rel="canonical" href="https://maaaaaaanchui.com/" />
 
+    <!-- 모바일 네비 메뉴 영문 디스플레이 폰트 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Open Graph (카카오/네이버/페이스북 등 공유 시 — og:image 는 반드시 절대 URL) -->
     <meta property="og:title" content="만취 | 한양대학교 ERICA 댄스동아리" />
     <meta
@@ -65,6 +73,12 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- 카카오맵 지도 퍼가기: document.write 사용 → 페이지 로드 시 1회만 삽입 -->
+    <script
+      charset="UTF-8"
+      class="daum_roughmap_loader_script"
+      src="https://ssl.daumcdn.net/dmaps/map_js_init/roughmapLoader.js"
+    ></script>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

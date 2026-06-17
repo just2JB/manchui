@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import axios from "axios";
 import ClubRoomNavbar from "../pages/ClubRoom/ClubRoomNavbar";
-import AuthWindow from "../pages/ClubRoom/AuthWindow/AuthWindow";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import PreparingPage from "./PreparingPage";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useAppSettings } from "../context/AppSettingsContext";
+import { LOADING_TEXT } from "../constants/loadingText";
 
 /** 공개 예약 공유 링크만 어시스턴트 비활성화 시에도 표시 */
 function isReservationSharePath(pathname) {
@@ -15,27 +12,22 @@ function isReservationSharePath(pathname) {
 
 const ClubRoomLayout = () => {
   const location = useLocation();
-  const [siteRestricted, setSiteRestricted] = useState(false);
-  const [assistantEnabled, setAssistantEnabled] = useState(true);
-  const [configLoading, setConfigLoading] = useState(true);
-  const [user, setUser] = useState({});
+  const { joinConfigLoading, siteRestricted, assistantEnabled } =
+    useAppSettings();
+  const shareOnly = isReservationSharePath(location.pathname);
+  const hideBottomNav = location.pathname === "/club/login";
 
-  useEffect(() => {
-    if (!serverUrl) {
-      setConfigLoading(false);
-      return;
-    }
-    axios
-      .get(`${serverUrl}/api/join/config`)
-      .then((res) => {
-        setSiteRestricted(Boolean(res.data.siteRestricted));
-        setAssistantEnabled(res.data.assistantEnabled !== false);
-      })
-      .catch(() => {})
-      .finally(() => setConfigLoading(false));
-  }, []);
+  if (joinConfigLoading && !shareOnly) {
+    return (
+      <div className="clubRoomLayout preparingWrapper">
+        <p className="layout-loading" aria-live="polite">
+          {LOADING_TEXT}
+        </p>
+      </div>
+    );
+  }
 
-  if (!configLoading && siteRestricted) {
+  if (!joinConfigLoading && siteRestricted) {
     return (
       <div className="clubRoomLayout preparingWrapper">
         <PreparingPage variant="club" reason="siteRestricted" />
@@ -44,7 +36,7 @@ const ClubRoomLayout = () => {
   }
 
   if (
-    !configLoading &&
+    !joinConfigLoading &&
     assistantEnabled === false &&
     !isReservationSharePath(location.pathname)
   ) {
@@ -59,11 +51,16 @@ const ClubRoomLayout = () => {
     <>
       <ScrollToTopOnRoute />
       <div className="clubRoomLayout">
-        {assistantEnabled ? <ClubRoomNavbar /> : null}
-        <div className="clubRoombody">
-          <Outlet context={{ user, setUser }} />
+        {assistantEnabled && !hideBottomNav ? <ClubRoomNavbar /> : null}
+        <div
+          className={
+            hideBottomNav
+              ? "clubRoombody clubRoombody--noBottomNav"
+              : "clubRoombody"
+          }
+        >
+          <Outlet />
         </div>
-        {user ? "" : <AuthWindow setUser={setUser} />}
       </div>
     </>
   );

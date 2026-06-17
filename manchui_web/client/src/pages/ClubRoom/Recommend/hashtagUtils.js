@@ -80,3 +80,82 @@ export function tagsToTagLine(tags) {
     .filter(Boolean)
     .join(" ");
 }
+
+/** tagLine에 태그 하나를 추가하거나 제거(토글) */
+export function toggleTagInTagLine(tagLine, rawTag) {
+  const tag = String(rawTag ?? "")
+    .replace(/^#+/, "")
+    .trim();
+  if (!tag) return tagLine;
+  const key = tag.toLowerCase();
+  const existing = parseHashtagString(tagLine);
+  const has = existing.some((t) => t.toLowerCase() === key);
+  const next = has
+    ? existing.filter((t) => t.toLowerCase() !== key)
+    : [...existing, tag];
+  return tagsToTagLine(next);
+}
+
+/** tagLine에 해당 태그가 포함돼 있는지 */
+export function tagLineHasTag(tagLine, rawTag) {
+  const key = String(rawTag ?? "")
+    .replace(/^#+/, "")
+    .trim()
+    .toLowerCase();
+  if (!key) return false;
+  return parseHashtagString(tagLine).some((t) => t.toLowerCase() === key);
+}
+
+/** 확정 태그 배열에 태그가 있는지 */
+export function tagListHasTag(tags, rawTag) {
+  const key = String(rawTag ?? "")
+    .replace(/^#+/, "")
+    .trim()
+    .toLowerCase();
+  if (!key) return false;
+  return (Array.isArray(tags) ? tags : []).some(
+    (t) => t.toLowerCase() === key,
+  );
+}
+
+/** 확정 태그 배열에 태그 추가·제거(토글) */
+export function toggleTagInList(tags, rawTag) {
+  const tag = String(rawTag ?? "")
+    .replace(/^#+/, "")
+    .trim();
+  if (!tag) return Array.isArray(tags) ? tags : [];
+  const key = tag.toLowerCase();
+  const list = Array.isArray(tags) ? tags : [];
+  const has = list.some((t) => t.toLowerCase() === key);
+  if (has) return list.filter((t) => t.toLowerCase() !== key);
+  return [...list, tag];
+}
+
+/** 등록 폼 입력 초안 → 태그 문자열(# 제거) */
+export function normalizeEditorDraftTag(raw) {
+  return String(raw ?? "")
+    .replace(/^#+/, "")
+    .trim();
+}
+
+/** 등록 폼: 확정 태그 + 입력 중 초안 → API용 tagLine */
+export function tagLineFromEditorState(committedTags, tagDraft) {
+  const merged = [...(Array.isArray(committedTags) ? committedTags : [])];
+  const seen = new Set(merged.map((t) => t.toLowerCase()));
+  const add = (raw) => {
+    const t = normalizeEditorDraftTag(raw);
+    if (!t) return;
+    const k = t.toLowerCase();
+    if (!seen.has(k)) {
+      seen.add(k);
+      merged.push(t);
+    }
+  };
+  for (const t of parseHashtagString(tagDraft)) add(t);
+  const leftover = String(tagDraft ?? "")
+    .replace(/#[^\s#]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (leftover) add(leftover);
+  return tagsToTagLine(merged);
+}

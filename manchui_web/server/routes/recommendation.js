@@ -249,10 +249,27 @@ router.get("/", optionalAuth, async (req, res) => {
     }
 
     const sort = sortFromQuery(req.query.sort);
-    const list = await SongRecommendation.find(match)
+    const limitRaw = req.query.limit;
+    const usePagination =
+      limitRaw != null && String(limitRaw).trim() !== "";
+    const skip = Math.max(parseInt(req.query.skip, 10) || 0, 0);
+
+    let query = SongRecommendation.find(match)
       .sort(sort)
-      .populate({ path: "authorId", select: "username Identification" })
-      .lean();
+      .populate({ path: "authorId", select: "username Identification" });
+
+    let list;
+    let hasMore = false;
+    let limit = null;
+
+    if (usePagination) {
+      limit = Math.min(Math.max(parseInt(limitRaw, 10) || 20, 1), 50);
+      list = await query.skip(skip).limit(limit + 1).lean();
+      hasMore = list.length > limit;
+      if (hasMore) list = list.slice(0, limit);
+    } else {
+      list = await query.lean();
+    }
 
     let likedSet = null;
     let scrapedSet = null;
@@ -275,6 +292,9 @@ router.get("/", optionalAuth, async (req, res) => {
     const items = list.map((doc) =>
       serializeRec(doc, req.userId, likedSet, scrapedSet, isExecutive),
     );
+    if (usePagination) {
+      return res.json({ items, hasMore, skip, limit });
+    }
     res.json({ items });
   } catch (e) {
     res.status(500).json({ message: "목록을 불러오지 못했습니다." });
@@ -374,11 +394,13 @@ router.post("/:id/scrap", requireAuth, async (req, res) => {
       user.recommendationScraps = user.recommendationScraps.filter(
         (id) => String(id) !== String(recId),
       );
+      rec.scrapCount = Math.max(0, (rec.scrapCount || 0) - 1);
     } else {
       user.recommendationScraps.push(recId);
+      rec.scrapCount = (rec.scrapCount || 0) + 1;
     }
-    await user.save();
-    res.json({ scraped: !has });
+    await Promise.all([user.save(), rec.save()]);
+    res.json({ scraped: !has, scrapCount: rec.scrapCount });
   } catch (e) {
     res.status(500).json({ message: "처리에 실패했습니다." });
   }

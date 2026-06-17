@@ -1,25 +1,35 @@
 import React from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import axios from "axios";
+import { IoPersonOutline } from "react-icons/io5";
+import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { DEVELOPER_CONTACT_MODAL_MESSAGE } from "../../../constants/developerContact";
+import { useAuth } from "../../../context/AuthContext";
+import kakaoTalkMark from "../../../assets/kakao/kakaotalk_mark.png";
 
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+function isKakaoLinkedUser(user) {
+  return (
+    Boolean(user?.kakaoId) ||
+    user?.authProvider === "kakao" ||
+    user?.authProvider === "both"
+  );
+}
 
 const Mypage = () => {
-  const { user } = useOutletContext();
+  const { user, logout } = useAuth();
   const manchuiModal = useManchuiModal();
   const nav = useNavigate();
   const isExecutive = user?.position === "임원진";
+  const isKakaoLinked = isKakaoLinkedUser(user);
 
   const handleLogout = async () => {
     if (!(await manchuiModal("로그아웃 하시겠습니까?", "confirm"))) return;
     let message = "로그아웃 되었습니다.";
     try {
-      const res = await axios.post(
-        `${serverUrl}/api/auth/logout`,
+      const res = await apiClient.post(
+        "/api/auth/logout",
         {},
         { withCredentials: true },
       );
@@ -28,7 +38,7 @@ const Mypage = () => {
       console.log(e);
     } finally {
       await manchuiModal(message);
-      localStorage.removeItem("token");
+      logout();
       nav("/club");
     }
   };
@@ -42,17 +52,31 @@ const Mypage = () => {
         className="mypageHub__infoCard"
         onClick={() => nav("/club/mypage/profile")}
       >
+        <span className="mypageHub__infoCardWatermark" aria-hidden="true" />
         <div className="mypageHub__infoCardBody">
           <div className="mypageHub__avatar" aria-hidden="true">
-            <img
-              className="mypageHub__avatarImg"
-              src="/logos/longLogo_white.png"
-              alt=""
-            />
+            <IoPersonOutline className="mypageHub__avatarIcon" />
           </div>
           <div className="mypageHub__infoMain">
-            <span className="mypageHub__infoName">
-              {user?.username ?? "이름 없음"}
+            <span className="mypageHub__infoNameRow">
+              <span className="mypageHub__infoName">
+                {user?.username ?? "이름 없음"}
+              </span>
+              {isKakaoLinked ? (
+                <span
+                  className="mypageHub__kakaoMark"
+                  title="카카오 연동"
+                  aria-label="카카오 연동"
+                >
+                  <img
+                    src={kakaoTalkMark}
+                    alt=""
+                    className="mypageHub__kakaoMarkImg"
+                    width={22}
+                    height={22}
+                  />
+                </span>
+              ) : null}
             </span>
             <div className="mypageHub__infoMeta">
               <span className="mypageHub__infoMetaItem">
@@ -72,6 +96,27 @@ const Mypage = () => {
         </div>
         <MdOutlineKeyboardArrowRight className="mypageHub__infoArrow" />
       </button>
+
+      <section className="mypageHub__section" aria-label="동아리방">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          동아리방
+        </div>
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/reservations")}
+            >
+              <span>내 예약</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+        </ul>
+      </section>
 
       <section className="mypageHub__section" aria-label="추천">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">

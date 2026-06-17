@@ -1,20 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { useOutletContext } from "react-router-dom";
-import axios from "axios";
+import apiClient, { serverUrl } from "../../api/apiClient";
+import { authRequestConfig } from "../../api/tokenStorage";
+import { useAuth } from "../../context/AuthContext";
 import { IoInformationCircleOutline } from "react-icons/io5";
 import "./AdminMember.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
-const authConfig = () => {
-  const token = localStorage.getItem("token");
-  return {
-    withCredentials: true,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  };
-};
+const authConfig = authRequestConfig;
 
 const positionLabel = (p) => {
   if (p === "임원진") return "임원진";
@@ -63,7 +57,7 @@ const memberMatchesQuery = (m, rawQ) => {
 };
 
 const AdminMember = () => {
-  const { user: adminUser } = useOutletContext();
+  const { user: adminUser } = useAuth();
   const manchuiModal = useManchuiModal();
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -84,8 +78,8 @@ const AdminMember = () => {
     }
     setError("");
     try {
-      const res = await axios.get(
-        `${serverUrl}/api/auth/admin/members`,
+      const res = await apiClient.get(
+        "/api/auth/admin/members",
         authConfig(),
       );
       setMembers(Array.isArray(res.data.members) ? res.data.members : []);
@@ -121,8 +115,8 @@ const AdminMember = () => {
     }
     setBusyId(memberId);
     try {
-      await axios.patch(
-        `${serverUrl}/api/auth/admin/members/${memberId}/position`,
+      await apiClient.patch(
+        `/api/auth/admin/members/${memberId}/position`,
         { position },
         authConfig(),
       );
@@ -161,8 +155,8 @@ const AdminMember = () => {
     }
     setBusyId(memberId);
     try {
-      await axios.delete(
-        `${serverUrl}/api/auth/admin/members/${memberId}`,
+      await apiClient.delete(
+        `/api/auth/admin/members/${memberId}`,
         authConfig(),
       );
       await manchuiModal("회원이 삭제되었습니다.");

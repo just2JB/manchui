@@ -1,32 +1,34 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  useNavigate,
-  useOutletContext,
-  useParams,
-} from "react-router-dom";
-import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import apiClient, { serverUrl } from "../../../api/apiClient";
+import { useAuth } from "../../../context/AuthContext";
 import { IoChevronBack } from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
-import { tagsToTagLine } from "./hashtagUtils";
+import {
+  normalizeEditorDraftTag,
+  tagLineFromEditorState,
+  tagListHasTag,
+  toggleTagInList,
+} from "./hashtagUtils";
+import { RECOMMEND_SUGGESTED_TAGS } from "./recommendSuggestedTags";
 import "./RecommendEditor.css";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const emptyForm = () => ({
   title: "",
   videoUrl: "",
   body: "",
-  tagLine: "",
 });
 
 const RecommendEditor = () => {
   const { id } = useParams();
   const isEdit = Boolean(id);
   const nav = useNavigate();
-  const { user } = useOutletContext();
+  const { user } = useAuth();
   const modal = useManchuiModal();
 
   const [form, setForm] = useState(emptyForm);
+  const [committedTags, setCommittedTags] = useState([]);
+  const [tagDraft, setTagDraft] = useState("");
   const [loading, setLoading] = useState(isEdit);
   const [loadError, setLoadError] = useState(null);
   const [forbidden, setForbidden] = useState(false);
@@ -41,7 +43,7 @@ const RecommendEditor = () => {
     setLoadError(null);
     setForbidden(false);
     try {
-      const res = await axios.get(`${serverUrl}/api/recommendations/${id}`, {
+      const res = await apiClient.get(`/api/recommendations/${id}`, {
         withCredentials: true,
       });
       const item = res.data?.item;
@@ -57,12 +59,11 @@ const RecommendEditor = () => {
         title: item.title || "",
         videoUrl: item.videoUrl || "",
         body: item.body || "",
-        tagLine: tagsToTagLine(item.tags),
       });
+      setCommittedTags(Array.isArray(item.tags) ? item.tags : []);
+      setTagDraft("");
     } catch (e) {
-      setLoadError(
-        e?.response?.data?.message || "추천을 불러오지 못했습니다.",
-      );
+      setLoadError(e?.response?.data?.message || "추천을 불러오지 못했습니다.");
     } finally {
       setLoading(false);
     }
@@ -83,16 +84,18 @@ const RecommendEditor = () => {
       return;
     }
     setSaving(true);
+    const payload = {
+      ...form,
+      tagLine: tagLineFromEditorState(committedTags, tagDraft),
+    };
     try {
       if (isEdit) {
-        await axios.patch(
-          `${serverUrl}/api/recommendations/${id}`,
-          form,
-          { withCredentials: true },
-        );
+        await apiClient.patch(`/api/recommendations/${id}`, payload, {
+          withCredentials: true,
+        });
         await modal("수정되었습니다.");
       } else {
-        await axios.post(`${serverUrl}/api/recommendations`, form, {
+        await apiClient.post("/api/recommendations", payload, {
           withCredentials: true,
         });
         await modal("등록되었습니다.");
@@ -108,6 +111,103 @@ const RecommendEditor = () => {
   const handleBack = () => {
     nav("/club/recommend");
   };
+
+  const commitTag = useCallback((rawTag) => {
+    const normalized = String(rawTag ?? "")
+      .replace(/^#+/, "")
+      .trim();
+    if (!normalized) return;
+    setCommittedTags((prev) => {
+      if (prev.some((t) => t.toLowerCase() === normalized.toLowerCase())) {
+        return prev;
+      }
+      return [...prev, normalized];
+    });
+  }, []);
+
+  const tryCommitDraft = useCallback(
+    (raw) => {
+      const tag = normalizeEditorDraftTag(raw);
+      if (!tag) return false;
+      commitTag(tag);
+      setTagDraft("");
+      return true;
+    },
+    [commitTag],
+  );
+
+  const handleTagDraftChange = useCallback(
+    (e) => {
+      const next = e.target.value;
+      if (/\s$/.test(next)) {
+        if (tryCommitDraft(next.trimEnd())) return;
+      }
+      setTagDraft(next);
+    },
+    [tryCommitDraft],
+  );
+
+  const handleTagKeyDown = useCallback(
+    (e) => {
+      if (e.key === "Backspace") {
+        if (e.nativeEvent?.isComposing) return;
+        const el = e.currentTarget;
+        const start = el.selectionStart ?? 0;
+        const end = el.selectionEnd ?? 0;
+        if (start === 0 && end === 0 && !tagDraft && committedTags.length > 0) {
+          e.preventDefault();
+          setCommittedTags((prev) => prev.slice(0, -1));
+        }
+        return;
+      }
+
+      if (e.key === "Enter" && e.nativeEvent?.isComposing) return;
+
+      const isSpace =
+        e.code === "Space" ||
+        e.key === " " ||
+        e.key === "Spacebar" ||
+        (e.key === "" && (e.keyCode === 32 || e.which === 32));
+      const isEnter = e.key === "Enter";
+      if (!isSpace && !isEnter) return;
+
+      if (isSpace && e.nativeEvent?.isComposing) return;
+
+      const draft = e.currentTarget.value;
+      if (!normalizeEditorDraftTag(draft)) return;
+      e.preventDefault();
+      tryCommitDraft(draft);
+    },
+    [tryCommitDraft, tagDraft, committedTags.length],
+  );
+
+  const handleTagKeyUp = useCallback(
+    (e) => {
+      if (e.nativeEvent?.isComposing) return;
+      const isSpace =
+        e.code === "Space" ||
+        e.key === " " ||
+        e.key === "Spacebar" ||
+        (e.key === "" && (e.keyCode === 32 || e.which === 32));
+      if (!isSpace) return;
+      const el = e.currentTarget;
+      const v = el.value;
+      const sel = el.selectionStart ?? v.length;
+      const before = v.slice(0, sel);
+      if (!/\s$/.test(before)) return;
+      const tag = normalizeEditorDraftTag(before.trimEnd());
+      if (!tag) return;
+      commitTag(tag);
+      setTagDraft(v.slice(sel));
+    },
+    [commitTag],
+  );
+
+  const removeCommittedTag = useCallback((label) => {
+    setCommittedTags((prev) =>
+      prev.filter((t) => t.toLowerCase() !== label.toLowerCase()),
+    );
+  }, []);
 
   if (forbidden) {
     return (
@@ -169,7 +269,10 @@ const RecommendEditor = () => {
       </header>
 
       <form className="recommendEditor__form" onSubmit={handleSubmit}>
-        <section className="recommendEditor__section" aria-labelledby="sec-basic">
+        <section
+          className="recommendEditor__section"
+          aria-labelledby="sec-basic"
+        >
           <h2 id="sec-basic" className="recommendEditor__sectionTitle">
             기본 정보
           </h2>
@@ -203,29 +306,77 @@ const RecommendEditor = () => {
           </div>
         </section>
 
-        <section className="recommendEditor__section" aria-labelledby="sec-tags">
+        <section
+          className="recommendEditor__section"
+          aria-labelledby="sec-tags"
+        >
           <h2 id="sec-tags" className="recommendEditor__sectionTitle">
             태그
           </h2>
           <div className="recommendEditor__field">
-            <label htmlFor="re-tags">해시태그</label>
+            {committedTags.length > 0 ? (
+              <div
+                className="recommendEditor__tagChips"
+                aria-label="확정된 태그"
+              >
+                {committedTags.map((t) => (
+                  <button
+                    key={t.toLowerCase()}
+                    type="button"
+                    className="recommendEditor__tagCommitChip"
+                    onClick={() => removeCommittedTag(t)}
+                    aria-label={`태그 ${t} 제거`}
+                  >
+                    #{t}
+                  </button>
+                ))}
+              </div>
+            ) : null}
             <input
               id="re-tags"
               type="text"
-              value={form.tagLine}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, tagLine: e.target.value }))
-              }
-              placeholder="#공연 #락킹 #코레오 #힙합"
+              className="recommendEditor__tagInputField"
+              value={tagDraft}
+              onChange={handleTagDraftChange}
+              onKeyDown={handleTagKeyDown}
+              onKeyUp={handleTagKeyUp}
+              placeholder="코레오, k-pop … 입력 후 스페이스·엔터"
               autoComplete="off"
             />
+            <p className="recommendEditor__suggestLabel">추천 태그</p>
+            <div
+              className="recommendEditor__suggestedTags"
+              role="group"
+              aria-label="추천 태그"
+            >
+              {RECOMMEND_SUGGESTED_TAGS.map((tag) => {
+                const active = tagListHasTag(committedTags, tag);
+                return (
+                  <button
+                    key={tag}
+                    type="button"
+                    className={`recommendEditor__tagChip${active ? " recommendEditor__tagChip--active" : ""}`}
+                    aria-pressed={active}
+                    onClick={() =>
+                      setCommittedTags((prev) => toggleTagInList(prev, tag))
+                    }
+                  >
+                    #{tag}
+                  </button>
+                );
+              })}
+            </div>
             <p className="recommendEditor__hint">
-              #으로 구분해 입력하세요. 같은 태그는 한 번만 저장됩니다.
+              태그 입력 후 스페이스·엔터로 확정하거나 추천 태그를 눌러
+              추가하세요. # 없이 입력해도 됩니다.
             </p>
           </div>
         </section>
 
-        <section className="recommendEditor__section" aria-labelledby="sec-body">
+        <section
+          className="recommendEditor__section"
+          aria-labelledby="sec-body"
+        >
           <h2 id="sec-body" className="recommendEditor__sectionTitle">
             추천 설명
           </h2>

@@ -187,3 +187,69 @@
   color: var(--text-more);
   text-align: center;
 }
+
+.adminRecommend__loadMoreSentinel {
+  width: 100%;
+  height: 1px;
+  pointer-events: none;
+}
+
+@keyframes admin-recommend-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.adminRecommend__sk {
+  display: block;
+  height: 0.85rem;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    var(--box-2) 0%,
+    rgba(255, 255, 255, 0.1) 45%,
+    var(--box-2) 90%
+  );
+  background-size: 200% 100%;
+  animation: admin-recommend-shimmer 1.35s ease-in-out infinite;
+}
+
+.adminRecommend__sk--title {
+  width: 72%;
+  max-width: 12rem;
+}
+
+.adminRecommend__sk--short {
+  width: 3.5rem;
+}
+
+.adminRecommend__sk--tags {
+  width: 85%;
+  max-width: 9rem;
+}
+
+.adminRecommend__sk--link {
+  width: 2.2rem;
+}
+
+.adminRecommend__sk--num {
+  width: 1.4rem;
+}
+
+.adminRecommend__sk--btn {
+  width: 2.4rem;
+  height: 1.65rem;
+  border-radius: 6px;
+}
+
+.adminRecommend__skActions {
+  display: flex;
+  gap: 6px;
+}
+
+.adminRecommend__skRow td {
+  vertical-align: middle;
+}

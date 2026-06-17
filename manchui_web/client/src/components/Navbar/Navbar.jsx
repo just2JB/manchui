@@ -35,21 +35,14 @@ function isNavItemActive(page, location) {
 /** siteRestricted일 때는 가입만 표시 */
 const RESTRICTED_PAGES = [{ name: "가입", nameEn: "JOIN", path: "/join" }];
 
-const Navbar = ({
-  siteRestricted = false,
-  assistantEnabled = true,
-  setOpenAuthWindow,
-  user,
-  setUser,
-}) => {
+const Navbar = ({ siteRestricted = false, user }) => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenu, setMobileMenu] = useState(false);
   const manchuiModal = useManchuiModal();
 
   const location = useLocation();
   const nav = useNavigate();
-
-  const showPreparingOnly = !assistantEnabled;
+  const modal = useManchuiModal();
 
   const openPreparingModal = async () => {
     await manchuiModal(PREPARING_FEATURE_MESSAGE, "alert");
@@ -151,54 +144,33 @@ const Navbar = ({
           <div className="loginButtonBox">
             {user ? (
               <div className="navbar-user-actions">
-                {showPreparingOnly ? (
-                  <>
-                    <button
-                      type="button"
-                      className="navbar-user-link navbar-user-link--ghost navbar-user-link--prep"
-                      onClick={openPreparingModal}
-                    >
-                      어시스턴트
-                    </button>
-                    <button
-                      type="button"
-                      className="navbar-user-link navbar-user-link--primary navbar-user-link--prep"
-                      onClick={openPreparingModal}
-                    >
-                      마이페이지
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      className="navbar-user-link navbar-user-link--ghost"
-                      to="/club"
-                    >
-                      어시스턴트
-                    </Link>
-                    <Link
-                      className="navbar-user-link navbar-user-link--primary"
-                      to="/club/mypage"
-                    >
-                      마이페이지
-                    </Link>
-                  </>
-                )}
+                <button
+                  type="button"
+                  className="navbar-user-link navbar-user-link--ghost"
+                  onClick={showPreparingFeatureModal}
+                >
+                  어시스턴트
+                </button>
+                <button
+                  type="button"
+                  className="navbar-user-link navbar-user-link--primary"
+                  onClick={showPreparingFeatureModal}
+                >
+                  마이페이지
+                </button>
               </div>
             ) : (
               <button
                 type="button"
-                className={`loginButton${showPreparingOnly ? " loginButton--prep" : ""}`}
-                onClick={() => {
-                  if (showPreparingOnly) {
-                    openPreparingModal();
-                    return;
-                  }
-                  setOpenAuthWindow(true);
-                }}
+                className="loginButton"
+                onClick={showPreparingFeatureModal}
               >
-                로그인
+                어시스턴트
               </button>
+            ) : (
+              <Link className="loginButton" to="/club">
+                어시스턴트
+              </Link>
             )}
           </div>
         </div>
@@ -206,10 +178,28 @@ const Navbar = ({
           <div className="logo_long" onClick={() => toMainPage()}>
             <span className="shortLogo mobileShortLogo">MANCHUI</span>
           </div>
-          <div>
-            <div className="menu_btn" onClick={() => setMobileMenu(true)}>
-              <IoMdMenu />
-            </div>
+          <div className="mobile-actions">
+            {showPreparingOnly ? (
+              <button
+                type="button"
+                className="mobile-assistant-btn mobile-assistant-btn--prep"
+                onClick={showPreparingFeatureModal}
+              >
+                어시스턴트
+              </button>
+            ) : (
+              <Link className="mobile-assistant-btn" to="/club">
+                어시스턴트
+              </Link>
+            )}
+            <button
+              type="button"
+              className="menu_btn"
+              onClick={() => setMobileMenu(true)}
+              aria-label="메뉴 열기"
+            >
+              <IoMdMenu aria-hidden />
+            </button>
           </div>
         </div>
         <div
@@ -258,52 +248,31 @@ const Navbar = ({
               <div className="mobileMenu-divider" aria-hidden="true" />
               {user ? (
                 <div className="mobileMenu-user-actions">
-                  {showPreparingOnly ? (
-                    <>
-                      <button
-                        type="button"
-                        className="mobileMenu-user-link mobileMenu-user-link--ghost mobileMenu-user-link--prep"
-                        onClick={() => {
-                          closeMobileMenu();
-                          openPreparingModal();
-                        }}
-                      >
-                        어시스턴트
-                      </button>
-                      <button
-                        type="button"
-                        className="mobileMenu-user-link mobileMenu-user-link--primary mobileMenu-user-link--prep"
-                        onClick={() => {
-                          closeMobileMenu();
-                          openPreparingModal();
-                        }}
-                      >
-                        마이페이지
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <Link
-                        className="mobileMenu-user-link mobileMenu-user-link--ghost"
-                        to="/club"
-                        onClick={() => closeMobileMenu()}
-                      >
-                        어시스턴트
-                      </Link>
-                      <Link
-                        className="mobileMenu-user-link mobileMenu-user-link--primary"
-                        to="/club/mypage"
-                        onClick={() => closeMobileMenu()}
-                      >
-                        마이페이지
-                      </Link>
-                    </>
-                  )}
+                  <button
+                    type="button"
+                    className="mobileMenu-user-link mobileMenu-user-link--ghost"
+                    onClick={() => {
+                      closeMobileMenu();
+                      showPreparingFeatureModal();
+                    }}
+                  >
+                    어시스턴트
+                  </button>
+                  <button
+                    type="button"
+                    className="mobileMenu-user-link mobileMenu-user-link--primary"
+                    onClick={() => {
+                      closeMobileMenu();
+                      showPreparingFeatureModal();
+                    }}
+                  >
+                    마이페이지
+                  </button>
                 </div>
               ) : (
                 <button
                   type="button"
-                  className={`mobileMenu-loginCta${showPreparingOnly ? " mobileMenu-loginCta--prep" : ""}`}
+                  className="mobileMenu-loginCta"
                   onClick={() => {
                     closeMobileMenu();
                     if (showPreparingOnly) {
@@ -313,8 +282,16 @@ const Navbar = ({
                     setOpenAuthWindow(true);
                   }}
                 >
-                  로그인
+                  어시스턴트
                 </button>
+              ) : (
+                <Link
+                  className="mobileMenu-loginCta"
+                  to="/club"
+                  onClick={() => closeMobileMenu()}
+                >
+                  어시스턴트
+                </Link>
               )}
             </div>
           </div>

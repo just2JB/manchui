@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
-import axios from "axios";
 import "./AdminJoin.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import apiClient, { serverUrl } from "../../api/apiClient";
+import { useAuth } from "../../context/AuthContext";
+import { useAppSettings } from "../../context/AppSettingsContext";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 const STATUS_OPTIONS = ["신청", "입금확인", "톡방초대완료"];
 const SORT_OPTIONS = [
@@ -145,11 +145,14 @@ const downloadCsv = (content, filename) => {
 };
 
 const AdminJoin = () => {
-  const { user } = useOutletContext();
+  const { user } = useAuth();
+  const { refreshJoinConfig } = useAppSettings();
   const manchuiModal = useManchuiModal();
   const [joinData, setJoinData] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [currentGeneration, setCurrentGeneration] = useState(1);
+  const [configLoading, setConfigLoading] = useState(true);
+  const [listLoading, setListLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [contactFilter, setContactFilter] = useState("all");
@@ -160,20 +163,30 @@ const AdminJoin = () => {
   const [updatingId, setUpdatingId] = useState(null);
 
   const fetchConfig = async () => {
-    if (!serverUrl) return;
+    if (!serverUrl) {
+      setConfigLoading(false);
+      return;
+    }
+    setConfigLoading(true);
     try {
-      const res = await axios.get(`${serverUrl}/api/join/config`);
+      const res = await apiClient.get("/api/join/config");
       setFormOpen(Boolean(res.data.formOpen));
       setCurrentGeneration(Number(res.data.currentGeneration) || 1);
     } catch {
       // 설정 로드 실패해도 페이지는 표시
+    } finally {
+      setConfigLoading(false);
     }
   };
 
   const fetchJoin = async () => {
-    if (!user?._id || !serverUrl) return;
+    if (!user?._id || !serverUrl) {
+      setListLoading(false);
+      return;
+    }
+    setListLoading(true);
     try {
-      const res = await axios.get(`${serverUrl}/api/join/${user._id}`, {
+      const res = await apiClient.get(`/api/join/${user._id}`, {
         withCredentials: true,
       });
       setJoinData(Array.isArray(res.data.joinData) ? res.data.joinData : []);
@@ -181,6 +194,8 @@ const AdminJoin = () => {
       manchuiModal(
         err.response?.data?.message || "목록을 불러오지 못했습니다.",
       );
+    } finally {
+      setListLoading(false);
     }
   };
 
@@ -198,13 +213,14 @@ const AdminJoin = () => {
     const gen = Number(currentGeneration);
     const roundedGen = gen >= 1 ? Math.round(gen * 2) / 2 : 1;
     try {
-      await axios.put(`${serverUrl}/api/join/config`, {
+      await apiClient.put("/api/join/config", {
         userId: user._id,
         formOpen,
         currentGeneration: roundedGen,
       });
       manchuiModal("설정이 저장되었습니다.");
       fetchConfig();
+      void refreshJoinConfig();
     } catch (err) {
       manchuiModal(err.response?.data?.message || "설정 저장에 실패했습니다.");
     } finally {
@@ -215,7 +231,7 @@ const AdminJoin = () => {
   const handleDelete = async (id) => {
     if (!window.confirm("이 신청을 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(`${serverUrl}/api/join/${id}`);
+      await apiClient.delete(`/api/join/${id}`);
       manchuiModal("삭제되었습니다.");
       setDetailData(null);
       fetchJoin();
@@ -228,8 +244,8 @@ const AdminJoin = () => {
     if (!serverUrl || !user?._id) return;
     setUpdatingId(id);
     try {
-      const res = await axios.patch(
-        `${serverUrl}/api/join/${id}`,
+      const res = await apiClient.patch(
+        `/api/join/${id}`,
         { userId: user._id, status: newStatus },
         { withCredentials: true },
       );
@@ -363,6 +379,12 @@ const AdminJoin = () => {
 
       <div className="adminJoinConfig">
         <h3 className="configTitle">가입 폼 설정</h3>
+        {configLoading ? (
+          <p className="adminJoin__loading" aria-live="polite">
+            {LOADING_TEXT}
+          </p>
+        ) : (
+          <>
         <div className="configRow">
           <span className="configLabel">가입 신청 폼</span>
           <button
@@ -396,6 +418,8 @@ const AdminJoin = () => {
         >
           {saving ? "저장 중…" : "설정 저장"}
         </button>
+          </>
+        )}
       </div>
 
       <div className="joinSection">
@@ -476,6 +500,11 @@ const AdminJoin = () => {
           </div>
         </div>
 
+        {listLoading ? (
+          <p className="adminJoin__loading" aria-live="polite">
+            {LOADING_TEXT}
+          </p>
+        ) : (
         <div className="joinDatas">
           {sortedList.map((data) => (
             <div
@@ -526,6 +555,7 @@ const AdminJoin = () => {
             </div>
           ))}
         </div>
+        )}
       </div>
 
       {detailData && (

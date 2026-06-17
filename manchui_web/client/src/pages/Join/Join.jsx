@@ -1,38 +1,16 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import "./Join.css";
-import { useNavigate, useOutletContext } from "react-router-dom";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useNavigate } from "react-router-dom";
+import { useAppSettings } from "../../context/AppSettingsContext";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 const Join = () => {
   const nav = useNavigate();
-  const { joinConfig, joinConfigLoading } = useOutletContext() ?? {};
-  const [president, setPresident] = useState({
-    name: "",
-    contact: "",
-    major: "",
-  });
-
-  useEffect(() => {
-    if (!serverUrl) return;
-    axios
-      .get(`${serverUrl}/api/join/config`)
-      .then((res) => {
-        if (res.data.president) {
-          setPresident({
-            name: res.data.president.name ?? "",
-            contact: res.data.president.contact ?? "",
-            major: res.data.president.major ?? "",
-          });
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const { joinConfig, joinConfigLoading } = useAppSettings();
 
   const formOpen = joinConfig?.formOpen !== false;
   const generation = joinConfig?.currentGeneration ?? null;
-  const displayPresident = president.name || president.contact ? president : joinConfig?.president;
+  const displayPresident = joinConfig?.president;
 
   return (
     <div className="join">
@@ -40,11 +18,15 @@ const Join = () => {
         <h1 className="joinTitle">만취 가입하기</h1>
         <p className="joinDesc">
           {joinConfigLoading
-            ? "설정을 불러오는 중…"
+            ? LOADING_TEXT
             : `${generation != null ? `${generation}기 ` : ""}가입 신청 또는 신청 내역을 확인하세요.`}
         </p>
         <div className="joinActions">
-          {joinConfigLoading ? null : formOpen ? (
+          {joinConfigLoading ? (
+            <p className="joinLoading" aria-live="polite">
+              {LOADING_TEXT}
+            </p>
+          ) : formOpen ? (
             <button
               type="button"
               className="joinBtn joinBtnPrimary"
@@ -72,14 +54,16 @@ const Join = () => {
               </div>
             </div>
           )}
-          <button
-            type="button"
-            className="joinBtn joinBtnSecondary"
-            onClick={() => nav("/join/check")}
-          >
-            <span className="joinBtnLabel">가입 확인</span>
-            <span className="joinBtnSub">학번으로 신청 내역 확인</span>
-          </button>
+          {!joinConfigLoading ? (
+            <button
+              type="button"
+              className="joinBtn joinBtnSecondary"
+              onClick={() => nav("/join/check")}
+            >
+              <span className="joinBtnLabel">가입 확인</span>
+              <span className="joinBtnSub">학번으로 신청 내역 확인</span>
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

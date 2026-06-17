@@ -1,3 +1,13 @@
+.layout-loading,
+.joinLoading,
+.adminJoin__loading {
+  margin: 24px auto;
+  padding: 16px;
+  text-align: center;
+  font-size: 0.92rem;
+  color: var(--text-more, rgba(255, 255, 255, 0.55));
+}
+
 .layout-wrapper {
   width: 100%;
   max-width: 100%;
@@ -6,10 +16,13 @@
 }
 
 .clubRoomLayout {
-  /* ClubRoomBottomNav: min-height 56 + 세로 padding 12 + 보더 1 + safe-area */
-  --club-room-bottom-nav: calc(68px + env(safe-area-inset-bottom, 0px));
+  /* ClubRoomBottomNav: min-height 62 + 세로 padding 16 + 보더 1 + safe-area */
+  --club-room-bottom-nav: calc(79px + env(safe-area-inset-bottom, 0px));
   width: 100%;
-  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
   display: flex;
   justify-content: center;
   background-color: #050505;
@@ -17,8 +30,11 @@
 }
 .clubRoombody {
   width: 600px;
-  min-height: 100vh;
-  min-height: 100dvh;
+  /* 고정 FAB 등이 뷰포트가 아닌 본문 열(600px) 안쪽에 오도록 계산할 때 사용 */
+  --club-room-column-width: 600px;
+  height: 100dvh;
+  max-height: 100dvh;
+  min-height: 0;
   background-color: var(--background-dark);
   margin-top: 0;
   padding-bottom: var(--club-room-bottom-nav);
@@ -27,6 +43,7 @@
   z-index: 100;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-gutter: stable;
   -webkit-overflow-scrolling: touch;
 }
 .loginPage {
@@ -50,7 +67,24 @@
   justify-content: center;
   background-color: #050505;
 }
+
+.club-route-session-pending {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-more);
+  font-size: 0.95rem;
+}
+
+.clubRoombody--noBottomNav {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
 @media screen and (max-width: 767px) {
+  .clubRoomLayout {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
   .clubRoombody {
     width: 100%;
     position: fixed;

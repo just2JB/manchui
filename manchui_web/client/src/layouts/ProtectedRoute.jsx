@@ -1,30 +1,29 @@
-import { useEffect } from "react";
-import { Outlet, useOutletContext } from "react-router-dom";
-import axios from "axios";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 const ProtectedRoute = () => {
-  const { setUser, user } = useOutletContext();
+  const { user, sessionReady } = useAuth();
+  const location = useLocation();
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const responsse = await axios.post(
-          `${serverUrl}/api/auth/verify-token`,
-          {},
-          { withCredentials: true },
-        );
-        setUser(responsse.data.user);
-      } catch (error) {
-        console.log("토큰 인증 실패", error);
-        setUser(null);
-      }
-    };
-    verifyToken();
-  }, [user]);
+  if (!sessionReady) {
+    return (
+      <div className="club-route-session-pending" aria-busy="true">
+        확인 중…
+      </div>
+    );
+  }
 
-  return <Outlet context={{ user }} />;
+  if (!user) {
+    const from = `${location.pathname}${location.search}`;
+    return (
+      <Navigate
+        to={`/club/login?from=${encodeURIComponent(from)}`}
+        replace
+      />
+    );
+  }
+
+  return <Outlet />;
 };
 
 export default ProtectedRoute;

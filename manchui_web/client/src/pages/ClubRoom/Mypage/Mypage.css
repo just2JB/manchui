@@ -1,90 +1,3 @@
-.mypage {
-  color: var(--text-primary);
-  background-color: var(--background-dark);
-  width: 100%;
-  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  padding-top: 5px;
-  box-sizing: border-box;
-}
-.mypage .profil {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.mypage .userImage {
-  margin-top: 10%;
-  border-radius: 100px;
-  width: 100px;
-  height: 90px;
-  overflow: hidden;
-}
-.mypage .profilImage {
-  margin-top: 10px;
-  width: 100%;
-}
-.mypage .username {
-  margin-top: 5px;
-  font-size: 30px;
-}
-.mypage .userInfo {
-  font-size: 14px;
-  width: max-content;
-  position: relative;
-  margin-bottom: 30px;
-  align-content: center;
-  color: var(--text-gray);
-  height: 15px;
-}
-.mypage .userPosition {
-  position: absolute;
-  top: 0px;
-  width: max-content;
-  left: 10px;
-}
-.mypage .userName {
-  position: absolute;
-  top: 0px;
-  width: max-content;
-  right: 10px;
-}
-.mypage .infoCircle {
-  margin-top: 50%;
-  width: 3px;
-  height: 3px;
-  background-color: var(--text-gray);
-  border-radius: 100px;
-}
-.mypage .list {
-  display: flex;
-  margin: 10px;
-  flex-direction: column;
-  justify-content: space-around;
-  border: 1px solid var(--primary-200);
-  border-radius: 10px;
-  flex: 0.6;
-  overflow: hidden;
-}
-.mypage .list > div {
-  color: var(--text-gray);
-  font-size: 15px;
-  padding: 10px;
-  position: relative;
-  cursor: pointer;
-  flex: 1;
-  align-content: center;
-}
-.mypage .list > div:hover {
-  background-color: var(--box-2);
-}
-.mypage .arrowRight {
-  position: absolute;
-  right: 15px;
-  top: calc(50% - 15px);
-}
-
 /* 마이페이지 허브 (내 정보 → 프로필 편집, 하단 약관·로그아웃) */
 .mypageHub {
   color: var(--text-primary);
@@ -108,6 +21,7 @@
 }
 
 .mypageHub__infoCard {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -121,10 +35,38 @@
   font: inherit;
   color: inherit;
   text-align: left;
+  overflow: hidden;
   transition: background-color 0.2s ease;
 }
 
+.mypageHub__infoCardWatermark {
+  position: absolute;
+  right: -10px;
+  bottom: -16px;
+  z-index: 0;
+  width: min(50%, 152px);
+  height: 52px;
+  pointer-events: none;
+  opacity: 0.14;
+  background-color: #ffffff;
+  -webkit-mask-image: url("/logos/longLogo_white.png");
+  mask-image: url("/logos/longLogo_white.png");
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: right bottom;
+  mask-position: right bottom;
+  transition: opacity 0.2s ease;
+}
+
+.mypageHub__infoCard:hover .mypageHub__infoCardWatermark {
+  opacity: 0.2;
+}
+
 .mypageHub__infoCardBody {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -146,24 +88,38 @@
   box-sizing: border-box;
 }
 
-.mypageHub__avatarImg {
-  width: 92%;
-  height: auto;
-  max-height: 48%;
-  object-fit: contain;
-  object-position: center;
-  display: block;
-  opacity: 0.95;
+.mypageHub__avatarIcon {
+  flex-shrink: 0;
+  font-size: 2rem;
+  color: var(--text-gray);
+  opacity: 0.88;
 }
 
 .mypageHub__infoCard:hover {
   background: var(--box-2);
 }
 
+.mypageHub__infoCard--static {
+  cursor: default;
+  margin-bottom: 4px;
+}
+
+.mypageHub__infoCard--static:hover {
+  background: var(--box-1);
+}
+
 .mypageHub__infoMain {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
+}
+
+.mypageHub__infoNameRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
   min-width: 0;
 }
 
@@ -174,6 +130,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
+}
+
+.mypageHub__kakaoMark {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.mypageHub__kakaoMarkImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .mypageHub__infoMeta {
@@ -207,6 +182,8 @@
 }
 
 .mypageHub__infoArrow {
+  position: relative;
+  z-index: 1;
   flex-shrink: 0;
   font-size: 1.5rem;
   color: var(--text-more);
@@ -288,6 +265,145 @@
   color: var(--text-gray);
 }
 
+.mypageHub__menuRow--danger {
+  color: #e87070;
+}
+
+.mypageHub__menuRow--danger .mypageHub__menuRowArrow {
+  color: rgba(232, 112, 112, 0.65);
+}
+
+.mypageHub__menuRow--danger:hover {
+  background: rgba(179, 0, 0, 0.12);
+  color: #ffb1b1;
+}
+
+.mypageHub__menuRow--danger:hover .mypageHub__menuRowArrow {
+  color: #ffb1b1;
+}
+
+.editProfile .mypageHub__section {
+  flex: 0;
+}
+
+.editProfile__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 8px 28px;
+  text-align: center;
+}
+
+.editProfile__avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--box-2) 0%, #151515 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.editProfile__avatarIcon {
+  flex-shrink: 0;
+  font-size: 3rem;
+  color: var(--text-gray);
+  opacity: 0.88;
+}
+
+.editProfile__name {
+  margin: 12px 0 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.editProfile__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 8px;
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+  line-height: 1.35;
+  color: var(--text-gray);
+}
+
+.editProfile__metaItem {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editProfile__metaDot {
+  color: var(--text-more);
+  user-select: none;
+}
+
+.mypageHub__menuItem--kakao {
+  padding: 10px 12px;
+}
+
+.editProfile__kakaoStatus {
+  padding: 4px 0;
+  cursor: default;
+}
+
+.editProfile__kakaoStatus:hover {
+  background: transparent;
+}
+
+.editProfile__kakaoBadge {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #fee500;
+  letter-spacing: -0.02em;
+}
+
+.editProfile__kakaoLinkBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 40px;
+  margin: 0;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: #fee500;
+  color: #191600;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    opacity 0.18s ease;
+}
+
+.editProfile__kakaoLinkBtn:hover:not(:disabled) {
+  background: #ffe433;
+}
+
+.editProfile__kakaoLinkBtn:disabled {
+  opacity: 0.72;
+  cursor: wait;
+}
+
+.editProfile__kakaoIcon {
+  flex-shrink: 0;
+  color: #191600;
+}
+
 .mypageHub__footer {
   margin-top: auto;
   padding-top: 28px;
@@ -356,60 +472,67 @@
   text-align: left;
 }
 
-.mypageSaved__back:hover {
-  color: var(--text-primary);
-}
-
-.editUser .popForm {
-  color: var(--text-primary);
-  background-color: var(--background-dark);
-  width: 100%;
-  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+.mypageReservations__head {
   display: flex;
-  flex-direction: column;
-  position: relative;
-  padding-top: 15px;
+  flex-wrap: wrap;
+  align-items: center;
   justify-content: space-between;
-  box-sizing: border-box;
-}
-.editUser .formHead {
-  font-size: 23px;
-  font-weight: 500;
-  padding: 4px 10px;
-}
-.editUser .formExplanation {
-  font-size: 14px;
-  color: var(--text-gray);
-  padding: 0px 10px 5px 10px;
-}
-.editUser .formInputBox {
-  margin-top: 10px;
-  border: 1px solid var(--primary-200);
-  border-radius: 10px;
-  margin: 5px;
-  padding: 10px;
-  align-content: center;
-  display: flex;
-  flex-direction: column;
-  color: var(--text-gray);
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
-.editUser .formInput {
-  background-color: #00000000;
-  height: 30px;
-  border: none;
-  color: var(--text-gray);
-  font-size: 16px;
+.mypageReservations__head .mypageHub__pageTitle {
+  margin: 8px 0 0;
 }
-.editUser .formInput:focus {
-  border: none;
-  outline: none;
+
+.mypageReservations__content {
+  margin-top: 4px;
 }
-.editUser .submitButton {
-  border: 1px solid #00000000;
-  background-color: var(--brand-red);
+
+.mypageReservations__status {
+  margin: 12px 0;
+  font-size: 0.9rem;
+  color: var(--text-more);
+}
+
+.mypageReservations__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.mypageReservations__list {
+  margin-top: 4px;
+}
+
+.mypageReservations__reserveLink {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 16px;
+  padding: 10px 16px;
   border-radius: 10px;
-  padding: 10px 5px 10px 5px;
-  margin: 10px 10px 40px 10px;
+  border: 1px solid rgba(179, 0, 0, 0.45);
+  background: rgba(179, 0, 0, 0.12);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mypageReservations__reserveLink--compact {
+  margin-top: 14px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.mypageReservations__reserveLink:hover {
+  background: rgba(179, 0, 0, 0.22);
+}
+
+.mypageSaved__back:hover {
   color: var(--text-primary);
 }

@@ -1,10 +1,26 @@
 const express = require("express");
-const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 const router = express.Router();
 const Reservation = require("../models/Reservation");
-const getToken = require("../utils/getToken");
+const { getAccessToken } = require("../utils/getToken");
+const { verifyAccessToken } = require("../utils/tokens");
 const requireExecutive = require("../middleware/requireExecutive");
+const {
+  assertCanCreateGeneralReservation,
+  buildAdminLimitsPayload,
+  countGeneralReservations,
+  getQuotaForUser,
+  parseRequiredLimit,
+  setDefaultReservationLimit,
+  setUserReservationLimit,
+} = require("../utils/reservationLimits");
+const {
+  isPastReservationEnd,
+  isRetentionExpired,
+  filterActiveForUserDisplay,
+  filterActiveForAdminDisplay,
+  purgeExpiredReservations,
+} = require("../utils/reservationRetention");
 
 /** 공유 페이지용: 연락처 마스킹 */
 function maskAgentId(raw) {
@@ -19,19 +35,25 @@ function maskAgentId(raw) {
 }
 
 function getUserIdFromReq(req) {
-  const token = getToken(req);
+  const token = getAccessToken(req);
   if (!token) return null;
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyAccessToken(token);
     return decoded.userId ? String(decoded.userId) : null;
   } catch {
     return null;
   }
 }
 
+async function purgePastReservations() {
+  return purgeExpiredReservations(Reservation);
+}
+
 async function hasReservedTimeOverlap(date, timeArray) {
+  const now = new Date();
   const existingReservation = await Reservation.find({ date });
   for (const item of existingReservation) {
+    if (isPastReservationEnd(item, now)) continue;
     const reservedTime = item.time;
     for (const reqTime of timeArray) {
       if (reservedTime.includes(Number(reqTime))) return true;
@@ -58,6 +80,15 @@ async function createReservationHandler(req, res, bookingType) {
     const { date, agentId, time, headcount } = req.body;
     if (!date || !agentId || !Array.isArray(time) || time.length === 0) {
       return res.status(400).json({ message: "필수 정보가 누락되었습니다." });
+    }
+
+    await purgePastReservations();
+
+    if (bookingType === "general") {
+      const quotaCheck = await assertCanCreateGeneralReservation(userId);
+      if (!quotaCheck.ok) {
+        return res.status(403).json({ message: quotaCheck.message });
+      }
     }
 
     if (await hasReservedTimeOverlap(date, time)) {
@@ -103,7 +134,12 @@ router.post("/admin/make", requireExecutive, async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const reservation = await Reservation.find();
+    await purgePastReservations();
+    const now = new Date();
+    const reservation = filterActiveForUserDisplay(
+      await Reservation.find().populate("userId", "username").lean(),
+      now,
+    );
     const sortDay = reservation.sort((a, b) => {
       if (new Date(a.date) > new Date(b.date)) {
         return 1;
@@ -142,6 +178,10 @@ router.get("/public/:id", async (req, res) => {
     if (!doc) {
       return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
     }
+    if (isRetentionExpired(doc)) {
+      await Reservation.findByIdAndDelete(id);
+      return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
+    }
     res.json({
       _id: doc._id,
       date: doc.date,
@@ -160,11 +200,16 @@ router.get("/mine", async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "로그인이 필요합니다." });
     }
-    /** 일반 예약만: 관리자 화면 예약(bookingType: admin)은 내 예약 목록에 포함하지 않음 */
-    const list = await Reservation.find({
-      userId,
-      bookingType: { $ne: "admin" },
-    }).lean();
+    await purgePastReservations();
+    const now = new Date();
+    /** 일반 예약만: 종료 시각이 지난 건은 UI에 노출하지 않음 (DB에는 2일 보관) */
+    const list = filterActiveForUserDisplay(
+      await Reservation.find({
+        userId,
+        bookingType: { $ne: "admin" },
+      }).lean(),
+      now,
+    );
     list.sort((a, b) => {
       const da = new Date(a.date);
       const db = new Date(b.date);
@@ -173,7 +218,79 @@ router.get("/mine", async (req, res) => {
       const minB = Math.min(...(b.time || []).map(Number));
       return minA - minB;
     });
-    res.json(list);
+    const quota = await getQuotaForUser(userId);
+    res.json({
+      reservations: list,
+      quota: {
+        limit: quota.limit,
+        count: quota.count,
+        customLimit: quota.customLimit,
+        usesDefault: quota.usesDefault,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** 임원진: 예약 건수 제한(기본·회원별) 조회 */
+router.get("/admin/limits", requireExecutive, async (req, res) => {
+  try {
+    await purgePastReservations();
+    const payload = await buildAdminLimitsPayload();
+    res.json(payload);
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** 임원진: 계정당 기본 예약 건수 제한 */
+router.put("/admin/limits/default", requireExecutive, async (req, res) => {
+  try {
+    const parsed = parseRequiredLimit(req.body?.limit);
+    if (parsed === null) {
+      return res
+        .status(400)
+        .json({ message: "기본 제한은 0~99 사이 정수로 입력해 주세요." });
+    }
+    const result = await setDefaultReservationLimit(parsed);
+    if (!result.ok) {
+      return res.status(400).json({ message: result.message });
+    }
+    res.json({
+      message: "기본 예약 제한이 저장되었습니다.",
+      defaultLimit: result.limit,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "서버 에러 발생" });
+  }
+});
+
+/** 임원진: 회원별 예약 건수 제한 (null/생략 시 기본값) */
+router.patch("/admin/limits/users/:userId", requireExecutive, async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const hasLimit = Object.prototype.hasOwnProperty.call(req.body, "limit");
+    const raw = hasLimit ? req.body.limit : undefined;
+    if (!hasLimit) {
+      return res.status(400).json({ message: "limit 값이 필요합니다." });
+    }
+    const useDefault =
+      raw === null || raw === undefined || raw === "" || raw === "default";
+    const result = await setUserReservationLimit(
+      userId,
+      useDefault ? null : raw,
+    );
+    if (!result.ok) {
+      return res.status(400).json({ message: result.message });
+    }
+    const count = await countGeneralReservations(userId);
+    res.json({
+      message: "회원별 예약 제한이 저장되었습니다.",
+      customLimit: result.customLimit,
+      effectiveLimit: result.effectiveLimit,
+      currentCount: count,
+    });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
   }
@@ -182,9 +299,14 @@ router.get("/mine", async (req, res) => {
 /** 임원진: 전체 예약 목록 (예약자 정보 포함) */
 router.get("/admin/list", requireExecutive, async (req, res) => {
   try {
-    const raw = await Reservation.find()
-      .populate("userId", "username Identification email position")
-      .lean();
+    await purgePastReservations();
+    const now = new Date();
+    const raw = filterActiveForAdminDisplay(
+      await Reservation.find()
+        .populate("userId", "username Identification email position")
+        .lean(),
+      now,
+    );
     raw.sort((a, b) => {
       const da = new Date(a.date);
       const db = new Date(b.date);
@@ -199,15 +321,10 @@ router.get("/admin/list", requireExecutive, async (req, res) => {
   }
 });
 
-/** 임원진: 오늘 날짜 이전(캘린더 기준) 예약 일괄 삭제 */
+/** 임원진: 보관 기간(예약 종료 후 2일)이 지난 예약 일괄 삭제 */
 router.post("/admin/delete-past", requireExecutive, async (req, res) => {
   try {
-    const now = new Date();
-    const y = now.getFullYear();
-    const m = String(now.getMonth() + 1).padStart(2, "0");
-    const day = String(now.getDate()).padStart(2, "0");
-    const todayKey = `${y}-${m}-${day}`;
-    const result = await Reservation.deleteMany({ date: { $lt: todayKey } });
+    const result = await purgePastReservations();
     res.json({
       message: "처리되었습니다.",
       deletedCount: result.deletedCount,

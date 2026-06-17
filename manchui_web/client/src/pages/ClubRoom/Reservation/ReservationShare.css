@@ -7,8 +7,16 @@
   color: var(--text-primary);
 }
 
-.reservationShare__title {
+.reservationShare__titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   margin: 10px 0 8px;
+}
+
+.reservationShare__title {
+  margin: 0;
   font-size: clamp(1.55rem, 4.2vw, 1.85rem);
   font-weight: 600;
   letter-spacing: -0.03em;
@@ -37,6 +45,8 @@
 }
 
 .reservationShare__card {
+  position: relative;
+  overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: var(--box-1);
@@ -44,7 +54,22 @@
   padding: 14px 14px 16px;
 }
 
+.reservationShare__cardWatermark {
+  position: absolute;
+  right: 20px;
+  bottom: 16px;
+  z-index: 0;
+  width: min(48%, 132px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0.12;
+  filter: brightness(0) invert(1);
+}
+
 .reservationShare__dl {
+  position: relative;
+  z-index: 1;
   margin: 0;
 }
 
@@ -73,6 +98,23 @@
   margin: 0;
   color: var(--text-gray);
   word-break: break-all;
+}
+
+.reservationShare__location {
+  margin-top: 22px;
+  padding: 14px 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: var(--box-1);
+  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+}
+
+.reservationShare__locationTitle {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
 }
 
 .reservationShare__footer {

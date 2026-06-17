@@ -3,12 +3,12 @@ import "./Footer.css";
 import { IoLogoInstagram, IoLogoYoutube } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import { scrollWindowTopAfterNav } from "../../utils/navScroll";
+import { CLUB_ROOM_ADDRESS } from "../../constants/clubRoomLocation";
 
 const footerData = {
   youtubeLink: "https://www.youtube.com/@manchui10007",
   instagramLink: "https://www.instagram.com/maaaaaaanchui/",
-  location:
-    "경기도 안산시 상록구 한양대학로55 한양대학교 ERICA캠퍼스 학생복지관 422호",
+  location: CLUB_ROOM_ADDRESS,
   tagline: "한양대학교 ERICA 댄스 동아리",
   developerEmail: "jb040222@naver.com",
 };
@@ -37,10 +37,7 @@ const Footer = () => {
         <p className="footer-tagline">{footerData.tagline}</p>
 
         <nav className="footer-quick-links">
-          <Link
-            to="/"
-            onClick={() => scrollWindowTopAfterNav("/", location)}
-          >
+          <Link to="/" onClick={() => scrollWindowTopAfterNav("/", location)}>
             동아리 소개
           </Link>
           <span className="footer-dot" aria-hidden="true" />

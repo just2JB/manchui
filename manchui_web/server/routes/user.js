@@ -1,15 +1,68 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const User = require("../models/User");
-const getToken = require("../utils/getToken");
+const { getAccessToken, getRefreshToken } = require("../utils/getToken");
+const {
+  issueTokenPair,
+  setAuthCookies,
+  clearAuthCookies,
+  rotateRefreshToken,
+  revokeRefreshToken,
+  revokeAllRefreshTokens,
+  verifyAccessToken,
+  sanitizeUser,
+  buildAuthResponse,
+} = require("../utils/tokens");
 const requireExecutive = require("../middleware/requireExecutive");
+const kakaoAuthRouter = require("./kakaoAuth");
+const emailVerificationRouter = require("./emailVerification");
+const {
+  verifyEmailVerificationToken,
+  normalizeEmail,
+} = require("./emailVerification");
+
+router.use(kakaoAuthRouter);
+router.use(emailVerificationRouter);
+
+async function sendAuthSuccess(res, user) {
+  const { accessToken, refreshToken } = await issueTokenPair(user);
+  setAuthCookies(res, accessToken, refreshToken);
+  res.json(buildAuthResponse(user, accessToken, refreshToken));
+}
 
 router.post("/signup", async (req, res) => {
   try {
-    const { username, email, password, Identification } = req.body;
-    const existingUser = await User.findOne({ email });
+    const {
+      username,
+      email,
+      password,
+      Identification,
+      emailVerificationToken,
+    } = req.body;
+
+    if (!emailVerificationToken) {
+      return res.status(400).json({ message: "이메일 인증이 필요합니다." });
+    }
+
+    let verifiedEmail;
+    try {
+      const payload = verifyEmailVerificationToken(emailVerificationToken);
+      verifiedEmail = normalizeEmail(payload.email);
+    } catch (_) {
+      return res.status(401).json({
+        message: "이메일 인증이 만료되었습니다. 인증번호를 다시 요청해 주세요.",
+      });
+    }
+
+    const normalizedInputEmail = normalizeEmail(email);
+    if (!normalizedInputEmail || normalizedInputEmail !== verifiedEmail) {
+      return res.status(400).json({
+        message: "인증한 이메일과 가입 이메일이 일치하지 않습니다.",
+      });
+    }
+
+    const existingUser = await User.findOne({ email: normalizedInputEmail });
     if (existingUser) {
       return res.status(401).json({ message: "이미 가입된 이메일 입니다." });
     }
@@ -21,8 +74,10 @@ router.post("/signup", async (req, res) => {
     const user = new User({
       Identification,
       username,
-      email,
+      email: normalizedInputEmail,
       password: hashedPassword,
+      authProvider: "local",
+      emailVerified: true,
     });
     await user.save();
     res.status(201).json({ message: "계정 생성이 완료되었습니다." });
@@ -30,6 +85,7 @@ router.post("/signup", async (req, res) => {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
   }
 });
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -39,86 +95,131 @@ router.post("/login", async (req, res) => {
         .status(401)
         .json({ message: "이메일 또는 비밀번호가 올바르지 않습니다." });
     }
-    const isValidPassword = await bcrypt.compare(password, user.password);
 
+    if (user.authProvider === "kakao") {
+      return res.status(401).json({
+        message: "카카오 로그인으로 가입한 계정입니다. 카카오로 로그인해 주세요.",
+      });
+    }
+
+    if (user.emailVerified === false) {
+      return res.status(401).json({
+        message: "이메일 인증이 완료되지 않은 계정입니다.",
+      });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       return res.status(401).json({ message: "비밀번호가 틀렸습니다." });
     }
 
-    const sessionMs = 30 * 24 * 60 * 60 * 1000; // JWT·쿠키 동일 (약 30일)
-
-    const token = jwt.sign(
-      { userId: user._id, email: user.email },
-      process.env.JWT_SECRET,
-      { expiresIn: "30d" },
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: sessionMs,
-    });
-
-    const userWithoutPassword = user.toObject();
-    delete userWithoutPassword.password;
-
-    // iOS Safari 등 크로스 사이트 쿠키 미지원 시 클라이언트가 localStorage + Authorization 헤더 사용
-    res.json({ user: userWithoutPassword, token });
+    await sendAuthSuccess(res, user);
   } catch (error) {
     console.log("서버 오류:", error.message);
     res.status(501).json({ message: "서버 오류가 발생했습니다." });
   }
 });
+
+router.post("/refresh", async (req, res) => {
+  try {
+    const refreshToken = getRefreshToken(req);
+    const rotation = await rotateRefreshToken(refreshToken);
+    if (!rotation) {
+      clearAuthCookies(res);
+      return res.status(401).json({ message: "유효하지 않은 refresh 토큰입니다." });
+    }
+
+    const user = await User.findById(rotation.userId);
+    if (!user) {
+      clearAuthCookies(res);
+      return res.status(401).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      await issueTokenPair(user);
+    setAuthCookies(res, accessToken, newRefreshToken);
+    res.json({
+      accessToken,
+      token: accessToken,
+      user: sanitizeUser(user),
+    });
+  } catch (error) {
+    console.log("refresh 오류:", error.message);
+    res.status(500).json({ message: "토큰 갱신에 실패했습니다." });
+  }
+});
+
+router.post("/session", async (req, res) => {
+  try {
+    const refreshToken = getRefreshToken(req);
+    if (!refreshToken) {
+      return res.status(401).json({ message: "세션 쿠키가 없습니다." });
+    }
+
+    const rotation = await rotateRefreshToken(refreshToken);
+    if (!rotation) {
+      clearAuthCookies(res);
+      return res.status(401).json({ message: "유효하지 않은 세션입니다." });
+    }
+
+    const user = await User.findById(rotation.userId);
+    if (!user) {
+      clearAuthCookies(res);
+      return res.status(401).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      await issueTokenPair(user);
+    setAuthCookies(res, accessToken, newRefreshToken);
+    res.json(buildAuthResponse(user, accessToken, newRefreshToken));
+  } catch (error) {
+    console.log("session 오류:", error.message);
+    res.status(500).json({ message: "세션 확인에 실패했습니다." });
+  }
+});
+
 router.post("/logout", async (req, res) => {
   try {
-    const token = getToken(req);
-    if (!token) {
-      return res.status(400).json({ message: "이미 로그아웃된 상태입니다." });
-    }
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.userId);
-    } catch (error) {
-      console.log("토큰 검증 오류:", error.message);
-    }
-
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
+    const refreshToken = getRefreshToken(req);
+    await revokeRefreshToken(refreshToken);
+    clearAuthCookies(res);
     res.json({ message: "로그아웃 되었습니다." });
   } catch (error) {
     console.log("로그아웃 오류:", error.message);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
+
 router.delete("/delete/:userId", async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.userId);
     if (!user) {
       return res.status(404).json({ message: "계정을 찾을 수 없습니다." });
     }
+    await revokeAllRefreshTokens(req.params.userId);
     res.json({ message: "계정을 성공적으로 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
+
 router.post("/verify-token", async (req, res) => {
-  const token = getToken(req);
+  const token = getAccessToken(req);
   if (!token) {
     return res.status(401).json({ isVaild: false, message: "토큰이 없습니다" });
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyAccessToken(token);
     const user = await User.findById(decoded.userId);
-    const userWithoutSchedule = user.toObject();
-    delete userWithoutSchedule.schedule;
-    delete userWithoutSchedule.recommendationLikes;
-    delete userWithoutSchedule.recommendationScraps;
-    return res.status(201).json({ isValid: true, user: userWithoutSchedule });
+    if (!user) {
+      return res
+        .status(401)
+        .json({ isVaild: false, message: "사용자를 찾을 수 없습니다." });
+    }
+    return res.status(201).json({
+      isValid: true,
+      user: sanitizeUser(user),
+    });
   } catch (error) {
     return res
       .status(401)
@@ -135,6 +236,11 @@ router.post("/edit/:data", async (req, res) => {
       return res.status(404).json({ message: "계정을 찾을 수 없습니다." });
     }
     if (dataName === "password") {
+      if (user.authProvider === "kakao") {
+        return res.status(400).json({
+          message: "카카오 전용 계정은 비밀번호를 변경할 수 없습니다.",
+        });
+      }
       const changePassword = formData.changePassword;
       const checkPassword = formData.checkPassword;
       const isValidPassword = await bcrypt.compare(
@@ -154,6 +260,7 @@ router.post("/edit/:data", async (req, res) => {
       user.password = hashedPassword;
       await user.save();
       res.status(201).json({ message: "수정되었습니다" });
+      return;
     }
 
     if (dataName === "Identification") {
@@ -179,11 +286,8 @@ router.post("/delete/:id", async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "계정을 찾을 수 없습니다." });
     }
-    res.clearCookie("token", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
+    await revokeAllRefreshTokens(userId);
+    clearAuthCookies(res);
     res.json({ message: "계정이 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
@@ -285,6 +389,7 @@ router.delete("/admin/members/:id", requireExecutive, async (req, res) => {
     }
 
     await User.findByIdAndDelete(targetId);
+    await revokeAllRefreshTokens(targetId);
     res.json({ message: "회원이 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "삭제에 실패했습니다." });
@@ -292,3 +397,4 @@ router.delete("/admin/members/:id", requireExecutive, async (req, res) => {
 });
 
 module.exports = router;
+module.exports.sendAuthSuccess = sendAuthSuccess;

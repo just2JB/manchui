@@ -134,6 +134,100 @@
   color: var(--text-more);
 }
 
+.recommendEditor__tagChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.recommendEditor__tagCommitChip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--rec-hashtag-border, rgba(232, 112, 112, 0.5));
+  background: var(--rec-hashtag-bg, rgba(232, 112, 112, 0.12));
+  color: var(--rec-hashtag-fg, #e87070);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.recommendEditor__tagCommitChip:hover {
+  background: var(--rec-hashtag-bg-hover, rgba(232, 112, 112, 0.24));
+  border-color: var(--rec-hashtag-focus, rgba(255, 130, 130, 0.75));
+  color: var(--rec-hashtag-fg-hover, #ffb1b1);
+}
+
+.recommendEditor__tagInputField {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--primary-200);
+  background: var(--background-dark);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.recommendEditor__tagInputField:focus {
+  border-color: rgba(179, 0, 0, 0.45);
+}
+
+.recommendEditor__suggestLabel {
+  margin: 8px 0 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-more);
+}
+
+.recommendEditor__suggestedTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.recommendEditor__tagChip {
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-gray);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.recommendEditor__tagChip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.26);
+  color: var(--text-primary);
+}
+
+.recommendEditor__tagChip--active {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: var(--text-primary);
+}
+
+.recommendEditor__tagChip:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline-offset: 2px;
+}
+
 .recommendEditor__actions {
   display: flex;
   flex-direction: row-reverse;

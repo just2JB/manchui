@@ -1,5 +1,5 @@
-const jwt = require("jsonwebtoken");
-const getToken = require("../utils/getToken");
+const { getAccessToken } = require("../utils/getToken");
+const { verifyAccessToken } = require("../utils/tokens");
 const User = require("../models/User");
 
 /**
@@ -7,12 +7,12 @@ const User = require("../models/User");
  * req.adminUserId 에 ObjectId 설정.
  */
 async function requireExecutive(req, res, next) {
-  const token = getToken(req);
+  const token = getAccessToken(req);
   if (!token) {
     return res.status(401).json({ message: "로그인이 필요합니다." });
   }
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = verifyAccessToken(token);
     const user = await User.findById(decoded.userId);
     if (!user) {
       return res.status(401).json({ message: "사용자를 찾을 수 없습니다." });

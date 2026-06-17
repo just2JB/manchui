@@ -1,52 +1,42 @@
 import React, { useState, useEffect } from "react";
-import { useOutletContext } from "react-router-dom";
-import axios from "axios";
 import "./AdminSetting.css";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import apiClient, { serverUrl } from "../../api/apiClient";
+import { useAuth } from "../../context/AuthContext";
+import { useAppSettings } from "../../context/AppSettingsContext";
+import { LOADING_TEXT } from "../../constants/loadingText";
 
 const AdminSetting = () => {
-  const { user } = useOutletContext();
+  const { user } = useAuth();
+  const { joinConfig, joinConfigLoading, refreshJoinConfig } = useAppSettings();
   const [president, setPresident] = useState({
     name: "",
     contact: "",
     major: "",
   });
   const [assistantEnabled, setAssistantEnabled] = useState(true);
-  const [loading, setLoading] = useState(true);
   const [savingAssistant, setSavingAssistant] = useState(false);
   const [savingPresident, setSavingPresident] = useState(false);
 
   useEffect(() => {
-    if (!serverUrl) {
-      setLoading(false);
-      return;
-    }
-    axios
-      .get(`${serverUrl}/api/join/config`)
-      .then((res) => {
-        setAssistantEnabled(res.data.assistantEnabled !== false);
-        if (res.data.president) {
-          setPresident({
-            name: res.data.president.name ?? "",
-            contact: res.data.president.contact ?? "",
-            major: res.data.president.major ?? "",
-          });
-        }
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    if (joinConfigLoading) return;
+    setAssistantEnabled(joinConfig.assistantEnabled !== false);
+    setPresident({
+      name: joinConfig.president?.name ?? "",
+      contact: joinConfig.president?.contact ?? "",
+      major: joinConfig.president?.major ?? "",
+    });
+  }, [joinConfigLoading, joinConfig]);
 
   const saveAssistant = async () => {
     if (!serverUrl || !user?._id) return;
     setSavingAssistant(true);
     try {
-      await axios.put(`${serverUrl}/api/join/config`, {
+      await apiClient.put("/api/join/config", {
         userId: user._id,
         assistantEnabled,
       });
       alert("어시스턴트 설정이 저장되었습니다.");
+      void refreshJoinConfig();
     } catch (err) {
       alert(err.response?.data?.message || "저장에 실패했습니다.");
     } finally {
@@ -58,11 +48,12 @@ const AdminSetting = () => {
     if (!serverUrl || !user?._id) return;
     setSavingPresident(true);
     try {
-      await axios.put(`${serverUrl}/api/join/config`, {
+      await apiClient.put("/api/join/config", {
         userId: user._id,
         president,
       });
       alert("회장 정보가 저장되었습니다.");
+      void refreshJoinConfig();
     } catch (err) {
       alert(err.response?.data?.message || "저장에 실패했습니다.");
     } finally {
@@ -70,11 +61,11 @@ const AdminSetting = () => {
     }
   };
 
-  if (loading) {
+  if (joinConfigLoading) {
     return (
       <div className="adminSetting">
         <h1 className="admin-page-heading">웹페이지 설정</h1>
-        <p>설정을 불러오는 중…</p>
+        <p>{LOADING_TEXT}</p>
       </div>
     );
   }
@@ -85,8 +76,8 @@ const AdminSetting = () => {
       <div className="joinSetting joinSetting--assistant">
         <h3 className="configTitle">동아리방 (어시스턴트)</h3>
         <p className="configHint">
-          끄면 메인 사이트 네비게이션의 로그인·어시스턴트·마이페이지를 누를 수
-          없고, 동아리방 진입도 제한됩니다. (예약 공유 링크 열람은 가능)
+          끄면 메인 사이트 네비게이션의 어시스턴트를 누를 수 없고, 동아리방
+          진입도 제한됩니다. (예약 공유 링크 열람은 가능)
         </p>
         <div
           className="assistantToggle"

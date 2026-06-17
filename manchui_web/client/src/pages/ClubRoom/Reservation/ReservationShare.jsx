@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import apiClient, { serverUrl } from "../../../api/apiClient";
+import ClubRoomMapEmbed from "../../../components/ClubRoomMapEmbed/ClubRoomMapEmbed";
+import ClubRoomRulesBar from "./ClubRoomRulesBar";
 import "./ReservationShare.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
 
 const ReservationShare = () => {
   const { id } = useParams();
@@ -21,9 +21,7 @@ const ReservationShare = () => {
         return;
       }
       try {
-        const res = await axios.get(
-          `${serverUrl}/api/reservation/public/${id}`,
-        );
+        const res = await apiClient.get(`/api/reservation/public/${id}`);
         if (!cancelled) setData(res.data);
       } catch (e) {
         if (!cancelled) {
@@ -42,7 +40,10 @@ const ReservationShare = () => {
 
   return (
     <div className="reservationShare">
-      <h1 className="reservationShare__title">동아리방 예약</h1>
+      <div className="reservationShare__titleRow">
+        <h1 className="reservationShare__title">동아리방 예약</h1>
+        <ClubRoomRulesBar inline />
+      </div>
       <p className="reservationShare__lead">
         공유 링크로 열람한 예약 정보입니다. 연락처는 일부만 표시됩니다.
       </p>
@@ -55,6 +56,12 @@ const ReservationShare = () => {
         </p>
       ) : data ? (
         <div className="reservationShare__card">
+          <img
+            src="/logos/shortLogo.png"
+            alt=""
+            className="reservationShare__cardWatermark"
+            aria-hidden="true"
+          />
           <dl className="reservationShare__dl">
             <div className="reservationShare__row">
               <dt>날짜</dt>
@@ -75,6 +82,13 @@ const ReservationShare = () => {
           </dl>
         </div>
       ) : null}
+
+      <section className="reservationShare__location" aria-labelledby="reservationShare-location-title">
+        <h2 id="reservationShare-location-title" className="reservationShare__locationTitle">
+          동아리방 위치
+        </h2>
+        <ClubRoomMapEmbed height={300} />
+      </section>
 
       <div className="reservationShare__footer">
         <Link className="reservationShare__link" to="/club/reservation">

@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import axios from "axios";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import AuthWindow from "../pages/ClubRoom/AuthWindow/AuthWindow";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import PreparingPage from "./PreparingPage";
-
-const serverUrl = import.meta.env.VITE_SERVER_URL;
+import { useAppSettings } from "../context/AppSettingsContext";
+import { LOADING_TEXT } from "../constants/loadingText";
 
 const JOIN_PATHS = ["/join", "/join/check", "/join/form"];
 
@@ -21,7 +19,6 @@ const MainLayout = () => {
     president: { name: "", contact: "", major: "" },
   });
   const [joinConfigLoading, setJoinConfigLoading] = useState(true);
-  const [openAuthWindow, setOpenAuthWindow] = useState(false);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -73,18 +70,8 @@ const MainLayout = () => {
   return (
     <div className="layout-wrapper">
       <ScrollToTopOnRoute />
-      <Navbar
-        siteRestricted={joinConfig.siteRestricted}
-        assistantEnabled={joinConfig.assistantEnabled}
-        setOpenAuthWindow={setOpenAuthWindow}
-        user={user}
-        setUser={setUser}
-      />
-      {showPreparing ? (
-        <PreparingPage variant="main" />
-      ) : (
-        <Outlet context={{ joinConfig, joinConfigLoading }} />
-      )}
+      <Navbar siteRestricted={joinConfig.siteRestricted} user={user} />
+      {showPreparing ? <PreparingPage variant="main" /> : <Outlet />}
       <Footer />
       {openAuthWindow ? (
         <AuthWindow setUser={setUser} setOpenAuthWindow={setOpenAuthWindow} />

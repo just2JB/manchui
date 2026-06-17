@@ -7,7 +7,8 @@ import { LOADING_TEXT } from "../../constants/loadingText";
 
 const AdminSetting = () => {
   const { user } = useAuth();
-  const { joinConfig, joinConfigLoading, refreshJoinConfig } = useAppSettings();
+  const { joinConfig, joinConfigLoading, refreshJoinConfig, ensureJoinConfigLoaded } =
+    useAppSettings();
   const [president, setPresident] = useState({
     name: "",
     contact: "",
@@ -16,6 +17,10 @@ const AdminSetting = () => {
   const [assistantEnabled, setAssistantEnabled] = useState(true);
   const [savingAssistant, setSavingAssistant] = useState(false);
   const [savingPresident, setSavingPresident] = useState(false);
+
+  useEffect(() => {
+    void ensureJoinConfigLoaded();
+  }, [ensureJoinConfigLoaded]);
 
   useEffect(() => {
     if (joinConfigLoading) return;

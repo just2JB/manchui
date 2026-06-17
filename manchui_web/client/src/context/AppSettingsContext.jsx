@@ -2,8 +2,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { fetchJoinConfig } from "../api/joinConfigApi";
@@ -21,52 +21,66 @@ const AppSettingsContext = createContext(null);
 
 export function AppSettingsProvider({ children }) {
   const [joinConfig, setJoinConfig] = useState(defaultJoinConfig);
-  const [joinConfigLoading, setJoinConfigLoading] = useState(true);
+  const [joinConfigLoading, setJoinConfigLoading] = useState(false);
+  const [joinConfigLoaded, setJoinConfigLoaded] = useState(false);
+  const loadPromiseRef = useRef(null);
 
-  const refreshJoinConfig = useCallback(async () => {
+  const ensureJoinConfigLoaded = useCallback(async ({ force = false } = {}) => {
     if (!serverUrl) {
-      setJoinConfigLoading(false);
-      return null;
+      setJoinConfigLoaded(true);
+      return defaultJoinConfig;
     }
-    setJoinConfigLoading(true);
-    try {
-      const next = await fetchJoinConfig();
-      setJoinConfig(next);
-      return next;
-    } catch {
-      return null;
-    } finally {
-      setJoinConfigLoading(false);
-    }
-  }, []);
 
-  useEffect(() => {
-    void (async () => {
-      if (!serverUrl) {
-        setJoinConfigLoading(false);
-        return;
-      }
-      setJoinConfigLoading(true);
+    if (!force && joinConfigLoaded) {
+      return joinConfig;
+    }
+
+    if (!force && loadPromiseRef.current) {
+      return loadPromiseRef.current;
+    }
+
+    setJoinConfigLoading(true);
+    const promise = (async () => {
       try {
         const next = await fetchJoinConfig();
         setJoinConfig(next);
+        setJoinConfigLoaded(true);
+        return next;
       } catch {
-        /* ignore */
+        return null;
       } finally {
         setJoinConfigLoading(false);
+        loadPromiseRef.current = null;
       }
     })();
-  }, []);
+
+    loadPromiseRef.current = promise;
+    return promise;
+  }, [joinConfig, joinConfigLoaded]);
+
+  const refreshJoinConfig = useCallback(async () => {
+    loadPromiseRef.current = null;
+    setJoinConfigLoaded(false);
+    return ensureJoinConfigLoaded({ force: true });
+  }, [ensureJoinConfigLoaded]);
 
   const value = useMemo(
     () => ({
       joinConfig,
       joinConfigLoading,
+      joinConfigLoaded,
+      ensureJoinConfigLoaded,
       refreshJoinConfig,
       siteRestricted: joinConfig.siteRestricted,
       assistantEnabled: joinConfig.assistantEnabled,
     }),
-    [joinConfig, joinConfigLoading, refreshJoinConfig],
+    [
+      joinConfig,
+      joinConfigLoading,
+      joinConfigLoaded,
+      ensureJoinConfigLoaded,
+      refreshJoinConfig,
+    ],
   );
 
   return (

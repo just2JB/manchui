@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import ClubRoomNavbar from "../pages/ClubRoom/ClubRoomNavbar";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
@@ -12,10 +13,21 @@ function isReservationSharePath(pathname) {
 
 const ClubRoomLayout = () => {
   const location = useLocation();
-  const { joinConfigLoading, siteRestricted, assistantEnabled } =
-    useAppSettings();
+  const {
+    joinConfigLoading,
+    joinConfigLoaded,
+    siteRestricted,
+    assistantEnabled,
+    ensureJoinConfigLoaded,
+  } = useAppSettings();
   const shareOnly = isReservationSharePath(location.pathname);
   const hideBottomNav = location.pathname === "/club/login";
+
+  useEffect(() => {
+    if (!shareOnly) {
+      void ensureJoinConfigLoaded();
+    }
+  }, [shareOnly, ensureJoinConfigLoaded]);
 
   if (joinConfigLoading && !shareOnly) {
     return (
@@ -27,7 +39,7 @@ const ClubRoomLayout = () => {
     );
   }
 
-  if (!joinConfigLoading && siteRestricted) {
+  if (joinConfigLoaded && siteRestricted) {
     return (
       <div className="clubRoomLayout preparingWrapper">
         <PreparingPage variant="club" reason="siteRestricted" />
@@ -36,7 +48,7 @@ const ClubRoomLayout = () => {
   }
 
   if (
-    !joinConfigLoading &&
+    joinConfigLoaded &&
     assistantEnabled === false &&
     !isReservationSharePath(location.pathname)
   ) {

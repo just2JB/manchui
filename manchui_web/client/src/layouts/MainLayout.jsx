@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
@@ -10,20 +11,33 @@ const JOIN_PATHS = ["/join", "/join/check", "/join/form"];
 
 const MainLayout = () => {
   const location = useLocation();
-  const { joinConfig, joinConfigLoading } = useAppSettings();
+  const { joinConfig, joinConfigLoading, joinConfigLoaded, ensureJoinConfigLoaded } =
+    useAppSettings();
   const isJoinPath = JOIN_PATHS.some(
     (p) => location.pathname === p || location.pathname.startsWith(p + "/"),
   );
-  const showPreparing = joinConfig.siteRestricted && !isJoinPath;
+
+  useEffect(() => {
+    if (isJoinPath) {
+      void ensureJoinConfigLoaded();
+    }
+  }, [isJoinPath, ensureJoinConfigLoaded]);
+
+  const showPreparing =
+    joinConfigLoaded && joinConfig.siteRestricted && !isJoinPath;
+  const navbarSiteRestricted = joinConfigLoaded ? joinConfig.siteRestricted : false;
+  const navbarAssistantEnabled = joinConfigLoaded
+    ? joinConfig.assistantEnabled
+    : true;
 
   return (
     <div className="layout-wrapper">
       <ScrollToTopOnRoute />
       <Navbar
-        siteRestricted={joinConfig.siteRestricted}
-        assistantEnabled={joinConfig.assistantEnabled}
+        siteRestricted={navbarSiteRestricted}
+        assistantEnabled={navbarAssistantEnabled}
       />
-      {joinConfigLoading ? (
+      {isJoinPath && joinConfigLoading ? (
         <p className="layout-loading" aria-live="polite">
           {LOADING_TEXT}
         </p>

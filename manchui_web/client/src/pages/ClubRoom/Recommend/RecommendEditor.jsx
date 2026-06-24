@@ -4,6 +4,7 @@ import apiClient, { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import { IoChevronBack } from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { useInvalidateClubRecommendations } from "../../../queries/useClubQueries";
 import {
   normalizeEditorDraftTag,
   tagLineFromEditorState,
@@ -25,6 +26,7 @@ const RecommendEditor = () => {
   const nav = useNavigate();
   const { user } = useAuth();
   const modal = useManchuiModal();
+  const invalidateRecommendations = useInvalidateClubRecommendations();
 
   const [form, setForm] = useState(emptyForm);
   const [committedTags, setCommittedTags] = useState([]);
@@ -100,6 +102,7 @@ const RecommendEditor = () => {
         });
         await modal("등록되었습니다.");
       }
+      invalidateRecommendations();
       nav("/club/recommend");
     } catch (err) {
       await modal(err?.response?.data?.message || "저장에 실패했습니다.");

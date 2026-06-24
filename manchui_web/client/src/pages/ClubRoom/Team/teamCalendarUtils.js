@@ -66,29 +66,30 @@ function groupConsecutiveColumnEntries(entries) {
 }
 
 /**
- * 주(7칸) 안에서 취합 요청 바 세그먼트 — grid-column span 용
+ * 주(7칸) 안에서 연속 날짜 바 세그먼트 — grid-column span 용
  * @returns {{ id, colStart, colSpan, roundLeft, roundRight }[]}
  */
-export function buildWeekRequestBarSegments(
+export function buildWeekRangeBarSegments(
   weekCells,
-  requestRanges,
-  practiceDateSet,
+  ranges,
+  skipDateSet,
+  idPrefix = "range",
 ) {
   const segments = [];
 
-  for (const range of requestRanges) {
+  for (const range of ranges) {
     const cols = [];
     weekCells.forEach((cell, col) => {
       if (!cell?.date) return;
       const key = cell.key;
       if (key < range.start || key > range.end) return;
-      if (practiceDateSet.has(key)) return;
+      if (skipDateSet?.has(key)) return;
       cols.push({ col, key });
     });
 
     for (const group of groupConsecutiveColumnEntries(cols)) {
       segments.push({
-        id: `req-${range.start}-${group.start.key}-${group.end.key}`,
+        id: `${idPrefix}-${range.start}-${group.start.key}-${group.end.key}`,
         colStart: group.start.col + 1,
         colSpan: group.end.col - group.start.col + 1,
         roundLeft: group.start.key === range.start,
@@ -98,6 +99,23 @@ export function buildWeekRequestBarSegments(
   }
 
   return segments;
+}
+
+/**
+ * 주(7칸) 안에서 취합 요청 바 세그먼트 — grid-column span 용
+ * @returns {{ id, colStart, colSpan, roundLeft, roundRight }[]}
+ */
+export function buildWeekRequestBarSegments(
+  weekCells,
+  requestRanges,
+  practiceDateSet,
+) {
+  return buildWeekRangeBarSegments(
+    weekCells,
+    requestRanges,
+    practiceDateSet,
+    "req",
+  );
 }
 
 /** API·레거시 날짜 문자열 → YYYY-MM-DD */

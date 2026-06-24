@@ -1,21 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoShareSocialOutline } from "react-icons/io5";
-import apiClient, { serverUrl } from "../../../api/apiClient";
+import { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { formatReservationTimeRange } from "../Reservation/reservationTimeFormat";
-import { parseMineResponse } from "../Reservation/reservationMine";
 import {
   countActiveReservations,
   filterVisibleReservations,
 } from "../Reservation/reservationRetention";
-import {
-  useReservationNow,
-  useReservationRefreshOnFocus,
-} from "../Reservation/useReservationLiveSync";
+import { useReservationNow } from "../Reservation/useReservationLiveSync";
 import ClubRoomRulesBar from "../Reservation/ClubRoomRulesBar";
 import ReservationMyListSkeleton from "../Reservation/ReservationMyListSkeleton";
+import {
+  emptyReservationsMine,
+  isClubInitialLoading,
+  useClubQueryInvalidationOnFocus,
+  useInvalidateClubReservations,
+  useMyReservationsQuery,
+  useReservationMutations,
+} from "../../../queries/useClubQueries";
 import "../Reservation/Reservation.css";
 import "./Mypage.css";
 
@@ -23,38 +27,19 @@ const MypageReservations = () => {
   const nav = useNavigate();
   const { user } = useAuth();
   const modal = useManchuiModal();
+  const userId = user?._id;
 
-  const [myReservations, setMyReservations] = useState([]);
-  const [reservationLimit, setReservationLimit] = useState(3);
-  const [loading, setLoading] = useState(true);
+  const mineQuery = useMyReservationsQuery(userId);
+  const { deleteReservation } = useReservationMutations(userId);
+  const invalidateReservations = useInvalidateClubReservations(userId);
+  useClubQueryInvalidationOnFocus(invalidateReservations);
 
-  const loadMine = useCallback(async () => {
-    if (!serverUrl || !user?._id) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await apiClient.get("/api/reservation/mine", {
-        withCredentials: true,
-      });
-      const { reservations, quota } = parseMineResponse(res.data);
-      setMyReservations(reservations);
-      setReservationLimit(quota.limit);
-    } catch (e) {
-      console.error(e);
-      setMyReservations([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?._id]);
-
-  useEffect(() => {
-    void loadMine();
-  }, [loadMine]);
+  const mineData = mineQuery.data ?? emptyReservationsMine();
+  const myReservations = mineData.reservations;
+  const reservationLimit = mineData.quota.limit;
+  const loading = isClubInitialLoading(mineQuery);
 
   const now = useReservationNow();
-  useReservationRefreshOnFocus(loadMine);
 
   const visibleReservations = useMemo(
     () => filterVisibleReservations(myReservations, now),
@@ -71,11 +56,8 @@ const MypageReservations = () => {
     const ok = await modal("이 예약을 취소할까요?", "confirm");
     if (!ok) return;
     try {
-      await apiClient.delete(`/api/reservation/${id}`, {
-        withCredentials: true,
-      });
+      await deleteReservation.mutateAsync(id);
       await modal("예약이 취소되었습니다.", "alert");
-      await loadMine();
     } catch (err) {
       const msg =
         err.response?.data?.message || err.message || "취소에 실패했습니다.";

@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import apiClient, { serverUrl } from "../../../api/apiClient";
+import { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import { IoMapOutline, IoShareSocialOutline } from "react-icons/io5";
 import ClubRoomLocationModal from "../../../components/ClubRoomMapEmbed/ClubRoomLocationModal";
@@ -19,20 +19,22 @@ import ReservationCalendarSlide from "./ReservationCalendarSlide";
 import ReservationCalendarFooter from "./ReservationCalendarFooter";
 import ReservationMonthNav from "./ReservationMonthNav";
 import { useCalendarMonthSlide } from "./useCalendarMonthSlide";
-import {
-  DEFAULT_RESERVATION_QUOTA,
-  parseMineResponse,
-} from "./reservationMine";
 import { LOADING_TEXT } from "../../../constants/loadingText";
 import {
   collectReservedHoursForDate,
   countActiveReservations,
   filterVisibleReservations,
 } from "./reservationRetention";
+import { useReservationNow } from "./useReservationLiveSync";
 import {
-  useReservationNow,
-  useReservationRefreshOnFocus,
-} from "./useReservationLiveSync";
+  emptyReservationsMine,
+  isClubInitialLoading,
+  useAllReservationsQuery,
+  useClubQueryInvalidationOnFocus,
+  useInvalidateClubReservations,
+  useMyReservationsQuery,
+  useReservationMutations,
+} from "../../../queries/useClubQueries";
 
 function isConsecutiveHours(hours) {
   if (hours.length <= 1) return true;
@@ -76,15 +78,9 @@ function buildMonthGrid(viewMonth) {
 const Reservation = () => {
   const { user } = useAuth();
   const modal = useManchuiModal();
+  const userId = user?._id;
 
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
-  const [allReservations, setAllReservations] = useState([]);
-  const [myReservations, setMyReservations] = useState([]);
-  const [reservationQuota, setReservationQuota] = useState(
-    DEFAULT_RESERVATION_QUOTA,
-  );
-  const [loading, setLoading] = useState(true);
-  const [mineLoading, setMineLoading] = useState(true);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [selectedDateKey, setSelectedDateKey] = useState(null);
 
@@ -95,63 +91,21 @@ const Reservation = () => {
   const [viewingReservation, setViewingReservation] = useState(null);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
 
-  const loadAll = useCallback(async () => {
-    if (!serverUrl) return;
-    try {
-      const res = await apiClient.get("/api/reservation");
-      setAllReservations(Array.isArray(res.data) ? res.data : []);
-    } catch (e) {
-      console.error(e);
-    }
-  }, []);
+  const allQuery = useAllReservationsQuery();
+  const mineQuery = useMyReservationsQuery(userId);
+  const { createReservation, deleteReservation } = useReservationMutations(userId);
+  const invalidateReservations = useInvalidateClubReservations(userId);
+  useClubQueryInvalidationOnFocus(invalidateReservations);
 
-  const loadMine = useCallback(async () => {
-    if (!serverUrl || !user?._id) {
-      setMineLoading(false);
-      return;
-    }
-    setMineLoading(true);
-    try {
-      const res = await apiClient.get("/api/reservation/mine", {
-        withCredentials: true,
-      });
-      const { reservations, quota } = parseMineResponse(res.data);
-      setMyReservations(reservations);
-      setReservationQuota(quota);
-    } catch (e) {
-      console.error(e);
-      setMyReservations([]);
-      setReservationQuota({ ...DEFAULT_RESERVATION_QUOTA });
-    } finally {
-      setMineLoading(false);
-    }
-  }, [user?._id]);
+  const allReservations = allQuery.data ?? [];
+  const mineData = mineQuery.data ?? emptyReservationsMine();
+  const myReservations = mineData.reservations;
+  const reservationQuota = mineData.quota;
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (!serverUrl) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      await loadAll();
-      if (!cancelled) setLoading(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [loadAll]);
-
-  useEffect(() => {
-    loadMine();
-  }, [loadMine]);
+  const loading = isClubInitialLoading(allQuery);
+  const mineLoading = isClubInitialLoading(mineQuery);
 
   const now = useReservationNow();
-  const refreshReservationData = useCallback(async () => {
-    await Promise.all([loadAll(), loadMine()]);
-  }, [loadAll, loadMine]);
-  useReservationRefreshOnFocus(refreshReservationData);
 
   const visibleAllReservations = useMemo(
     () => filterVisibleReservations(allReservations, now),
@@ -283,20 +237,14 @@ const Reservation = () => {
 
     setSubmitting(true);
     try {
-      await apiClient.post(
-        "/api/reservation/make",
-        {
-          date: selectedDateKey,
-          agentId: phone,
-          time: selectedHours.map(Number),
-          headcount: hc,
-        },
-        { withCredentials: true },
-      );
+      await createReservation.mutateAsync({
+        date: selectedDateKey,
+        agentId: phone,
+        time: selectedHours.map(Number),
+        headcount: hc,
+      });
       await modal("예약이 완료되었습니다.", "alert");
       closeSheet();
-      await loadAll();
-      await loadMine();
     } catch (err) {
       const msg =
         err.response?.data?.message || err.message || "예약에 실패했습니다.";
@@ -311,12 +259,8 @@ const Reservation = () => {
     const ok = await modal("이 예약을 취소할까요?", "confirm");
     if (!ok) return;
     try {
-      await apiClient.delete(`/api/reservation/${id}`, {
-        withCredentials: true,
-      });
+      await deleteReservation.mutateAsync(id);
       await modal("예약이 취소되었습니다.", "alert");
-      await loadAll();
-      await loadMine();
     } catch (err) {
       const msg =
         err.response?.data?.message || err.message || "취소에 실패했습니다.";

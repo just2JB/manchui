@@ -1,18 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import apiClient, { serverUrl } from "../../api/apiClient";
-import {
-  fetchMyScheduleRequests,
-  fetchMySchedules,
-} from "../../api/scheduleApi";
+import { useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../context/AuthContext";
 import Loading from "../../components/Loading/Loading";
-import { parseMineResponse } from "./Reservation/reservationMine";
 import { filterVisibleReservations } from "./Reservation/reservationRetention";
-import {
-  useReservationNow,
-  useReservationRefreshOnFocus,
-} from "./Reservation/useReservationLiveSync";
+import { useReservationNow } from "./Reservation/useReservationLiveSync";
 import { formatReservationTimeRange } from "./Reservation/reservationTimeFormat";
 import {
   formatPracticeTimeDisplay,
@@ -25,11 +17,22 @@ import {
   buildPracticeByDate,
   buildReservationByDate,
   buildUserScheduleMap,
-  enrichPracticesWithTeam,
   flattenRequestDates,
   getHomeUpcomingPractices,
   getUpcomingReservations,
 } from "./Home/clubHomeUtils";
+import { clubKeys } from "../../queries/clubQueryKeys";
+import {
+  emptyReservationsMine,
+  isClubInitialLoading,
+  useClubQueryInvalidationOnFocus,
+  useInvalidateClubHome,
+  useMyReservationsQuery,
+  useMyScheduleRequestsQuery,
+  useMySchedulesQuery,
+  usePracticesQuery,
+  useUserTeamsQuery,
+} from "../../queries/useClubQueries";
 import "./Home/ClubHome.css";
 
 function formatPlace(place) {
@@ -39,91 +42,37 @@ function formatPlace(place) {
 
 const ClubRoom = () => {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
-  const [teams, setTeams] = useState([]);
-  const [practices, setPractices] = useState([]);
-  const [teamRequests, setTeamRequests] = useState([]);
-  const [userSchedules, setUserSchedules] = useState([]);
-  const [reservations, setReservations] = useState([]);
+  const userId = user?._id;
+  const queryClient = useQueryClient();
   const [sheetDateKey, setSheetDateKey] = useState(null);
 
-  const loadHome = useCallback(async () => {
-    if (!user?._id) {
-      setTeams([]);
-      setPractices([]);
-      setTeamRequests([]);
-      setUserSchedules([]);
-      setReservations([]);
-      setLoading(false);
-      return;
-    }
+  const teamsQuery = useUserTeamsQuery(userId);
+  const teams = teamsQuery.data?.teams ?? [];
+  const practicesQuery = usePracticesQuery(userId, teams);
+  const schedulesQuery = useMySchedulesQuery(userId);
+  const scheduleRequestsQuery = useMyScheduleRequestsQuery(userId);
+  const reservationsQuery = useMyReservationsQuery(userId);
 
-    setLoading(true);
-    try {
-      const [teamsRes, schedules, teamRequests, reservationsRes] =
-        await Promise.all([
-          apiClient.get(`/api/team/user/${user._id}`, { withCredentials: true }),
-          fetchMySchedules(),
-          fetchMyScheduleRequests(),
-          serverUrl
-            ? apiClient.get("/api/reservation/mine", { withCredentials: true })
-            : Promise.resolve({ data: { reservations: [] } }),
-        ]);
+  const invalidateHome = useInvalidateClubHome(userId);
+  useClubQueryInvalidationOnFocus(invalidateHome);
 
-      const nextTeams = Array.isArray(teamsRes.data?.myTeam)
-        ? teamsRes.data.myTeam
-        : [];
+  const practices = practicesQuery.data ?? [];
+  const teamRequests = scheduleRequestsQuery.data ?? [];
+  const userSchedules = schedulesQuery.data ?? [];
+  const reservations =
+    reservationsQuery.data?.reservations ??
+    emptyReservationsMine().reservations;
 
-      const practiceResponses = await Promise.all(
-        nextTeams.map((team) =>
-          apiClient
-            .get(`/api/practice/teamPractice/${team._id}`, {
-              withCredentials: true,
-            })
-            .then((res) => ({
-              team,
-              list: Array.isArray(res.data?.teamPractice)
-                ? res.data.teamPractice
-                : [],
-            }))
-            .catch(() => ({ team, list: [] })),
-        ),
-      );
-
-      let nextPractices = practiceResponses.flatMap(({ team, list }) =>
-        list.map((practice) => ({
-          ...practice,
-          teamId: String(team._id),
-          teamName: team.name,
-          teamColor: team.teamColor,
-        })),
-      );
-      nextPractices = enrichPracticesWithTeam(nextPractices, nextTeams);
-
-      setTeams(nextTeams);
-      setPractices(nextPractices);
-      setTeamRequests(teamRequests);
-      setUserSchedules(schedules);
-      const { reservations: mine } = parseMineResponse(reservationsRes.data);
-      setReservations(mine);
-    } catch (error) {
-      console.error(error);
-      setTeams([]);
-      setPractices([]);
-      setTeamRequests([]);
-      setUserSchedules([]);
-      setReservations([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?._id]);
-
-  useEffect(() => {
-    void loadHome();
-  }, [loadHome]);
+  const showLoading =
+    !userId
+      ? false
+      : isClubInitialLoading(teamsQuery) ||
+        isClubInitialLoading(practicesQuery) ||
+        isClubInitialLoading(schedulesQuery) ||
+        isClubInitialLoading(scheduleRequestsQuery) ||
+        isClubInitialLoading(reservationsQuery);
 
   const now = useReservationNow();
-  useReservationRefreshOnFocus(loadHome);
 
   const requestByDate = useMemo(
     () => flattenRequestDates(teamRequests),
@@ -170,23 +119,21 @@ const ClubRoom = () => {
     [visibleReservations, now],
   );
 
-  const refreshSchedules = useCallback(async () => {
-    if (!user?._id) return;
-    try {
-      const [schedules, teamRequests] = await Promise.all([
-        fetchMySchedules(),
-        fetchMyScheduleRequests(),
-      ]);
-      setUserSchedules(schedules);
-      setTeamRequests(teamRequests);
-    } catch (error) {
-      console.error(error);
-    }
-  }, [user?._id]);
+  const refreshSchedules = () => {
+    if (!userId) return;
+    void queryClient.invalidateQueries({
+      queryKey: clubKeys.schedules(userId),
+    });
+    void queryClient.invalidateQueries({
+      queryKey: clubKeys.scheduleRequests(userId),
+    });
+  };
 
   const handleScheduleSaved = (dateKey, schedule) => {
-    setUserSchedules((prev) => {
-      const next = prev.filter(
+    if (!userId) return;
+    queryClient.setQueryData(clubKeys.schedules(userId), (prev) => {
+      const list = Array.isArray(prev) ? prev : [];
+      const next = list.filter(
         (item) => normalizeDateKey(item.date) !== dateKey,
       );
       if (schedule && schedule.category !== "temp") {
@@ -196,10 +143,10 @@ const ClubRoom = () => {
     });
   };
 
-  if (loading) {
+  if (showLoading) {
     return (
-      <div className="clubHome">
-        <Loading />
+      <div className="clubHome clubHome--loading">
+        <Loading overlay={false} />
       </div>
     );
   }
@@ -328,6 +275,7 @@ const ClubRoom = () => {
           sheetDateKey ? (reservationByDate.get(sheetDateKey) ?? []) : []
         }
         requestTeams={sheetDateKey ? (requestByDate.get(sheetDateKey) ?? []) : []}
+        requestDateSet={requestDateSet}
         scheduleMap={scheduleMap}
         initialSchedule={sheetDateKey ? scheduleMap.get(sheetDateKey) : null}
         onClose={() => setSheetDateKey(null)}

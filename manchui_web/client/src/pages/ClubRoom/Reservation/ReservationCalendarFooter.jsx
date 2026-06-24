@@ -1,5 +1,5 @@
 import React from "react";
-import { LOADING_TEXT } from "../../../constants/loadingText";
+import { LoadingHint } from "../../../components/Loading/Loading";
 
 export default function ReservationCalendarFooter({
   loading,
@@ -10,9 +10,7 @@ export default function ReservationCalendarFooter({
   return (
     <div className="reservation__calendarFooter">
       {loading ? (
-        <p className="reservation__calendarLoadingHint" aria-live="polite">
-          {LOADING_TEXT}
-        </p>
+        <LoadingHint className="reservation__calendarLoadingHint" />
       ) : (
         <p className="reservation__hint">{hint}</p>
       )}

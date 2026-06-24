@@ -97,6 +97,40 @@ const Mypage = () => {
         <MdOutlineKeyboardArrowRight className="mypageHub__infoArrow" />
       </button>
 
+      <section className="mypageHub__section" aria-label="일정">
+        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
+          일정
+        </div>
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/schedule")}
+            >
+              <span>내 일정 작성</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+          <li className="mypageHub__menuItem">
+            <button
+              type="button"
+              className="mypageHub__menuRow"
+              onClick={() => nav("/club/mypage/weekly-timetable")}
+            >
+              <span>내 시간표</span>
+              <MdOutlineKeyboardArrowRight
+                className="mypageHub__menuRowArrow"
+                aria-hidden
+              />
+            </button>
+          </li>
+        </ul>
+      </section>
+
       <section className="mypageHub__section" aria-label="동아리방">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
           동아리방

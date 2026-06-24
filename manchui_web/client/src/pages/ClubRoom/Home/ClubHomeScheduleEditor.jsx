@@ -10,26 +10,36 @@ import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper-bundle.css";
 import { saveMySchedule } from "../../../api/scheduleApi";
+import { fetchMyWeeklyTimetables } from "../../../api/weeklyTimetableApi";
 import { useAuth } from "../../../context/AuthContext";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import {
   addDaysToDateKey,
   formatScheduleDateHeader,
   formatScheduleMonthLabel,
+  getScheduleEditorHours,
   hoursToTimes,
   timesToHours,
 } from "./clubHomeUtils";
+import {
+  buildHourLabelsFromEntries,
+  getWeeklyEntriesForDateKey,
+  getWeeklyHoursForDateKey,
+  hasWeeklyTimetableForDateKey,
+  mergeHourLabels,
+  mergeHourLists,
+} from "../weeklyTimetableUtils";
 
 const SLIDE_RANGE = 45;
 /** 화면에 5일 노출, 양끝 2일은 peek */
-const VISIBLE_DATE_COUNT = 5;
 const SLIDES_PER_VIEW = 4.35;
-const HOUR_START = 6;
-const HOUR_END = 23;
-const HOUR_SLOTS = Array.from(
-  { length: HOUR_END - HOUR_START + 1 },
-  (_, i) => HOUR_START + i,
-);
+const DAWN_HOUR_END = 7;
+
+function hasDawnHourSelection(hoursByDate) {
+  return Object.values(hoursByDate ?? {}).some((hours) =>
+    (hours ?? []).some((hour) => hour >= 0 && hour <= DAWN_HOUR_END),
+  );
+}
 
 function buildSlideDateKeys(anchorDateKey) {
   const keys = [];
@@ -51,8 +61,17 @@ function hoursEqual(a, b) {
   const left = a ?? [];
   const right = b ?? [];
   return (
-    left.length === right.length && left.every((hour, index) => hour === right[index])
+    left.length === right.length &&
+    left.every((hour, index) => hour === right[index])
   );
+}
+
+function cloneLabelsMap(map) {
+  const next = {};
+  for (const [key, labels] of Object.entries(map ?? {})) {
+    next[key] = { ...labels };
+  }
+  return next;
 }
 
 function measureFloatDateItems(swiper, keys, originEl) {
@@ -94,8 +113,7 @@ const ClubHomeScheduleEditor = ({
   open,
   dateKey,
   scheduleMap,
-  hasRequest = false,
-  requestTeamNames = [],
+  requestDateSet,
   onClose,
   onSaveComplete,
   onScheduleSaved,
@@ -107,12 +125,27 @@ const ClubHomeScheduleEditor = ({
   const dateHeadSentinelRef = useRef(null);
   const gridWrapRef = useRef(null);
   const initialHoursByDateRef = useRef({});
+  const initialLabelsByDateRef = useRef({});
   const [anchorDateKey, setAnchorDateKey] = useState(dateKey);
   const [centerDateKey, setCenterDateKey] = useState(dateKey);
   const [floatDateItems, setFloatDateItems] = useState([]);
   const [hoursByDate, setHoursByDate] = useState({});
+  const [labelsByDate, setLabelsByDate] = useState({});
+  const [timetableLoadedByDate, setTimetableLoadedByDate] = useState({});
+  const [showDawn, setShowDawn] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showFloatingDate, setShowFloatingDate] = useState(false);
+  const [activeWeeklyTimetable, setActiveWeeklyTimetable] = useState(null);
+
+  const requestedDates = useMemo(() => {
+    if (requestDateSet instanceof Set) return requestDateSet;
+    return new Set(requestDateSet ?? []);
+  }, [requestDateSet]);
+
+  const visibleHours = useMemo(
+    () => getScheduleEditorHours(showDawn),
+    [showDawn],
+  );
 
   const slideDateKeys = useMemo(
     () => (anchorDateKey ? buildSlideDateKeys(anchorDateKey) : []),
@@ -134,10 +167,7 @@ const ClubHomeScheduleEditor = ({
     () =>
       Object.keys(hoursByDate).some(
         (key) =>
-          !hoursEqual(
-            hoursByDate[key],
-            initialHoursByDateRef.current[key],
-          ),
+          !hoursEqual(hoursByDate[key], initialHoursByDateRef.current[key]),
       ),
     [hoursByDate],
   );
@@ -180,8 +210,31 @@ const ClubHomeScheduleEditor = ({
       initial[key] = timesToHours(scheduleMap?.get(key)?.times);
     }
     initialHoursByDateRef.current = cloneHoursMap(initial);
+    initialLabelsByDateRef.current = {};
     setHoursByDate(initial);
+    setLabelsByDate({});
+    setTimetableLoadedByDate({});
+    setShowDawn(hasDawnHourSelection(initial));
   }, [open, dateKey, scheduleMap]);
+
+  useEffect(() => {
+    if (!open) {
+      setActiveWeeklyTimetable(null);
+      return undefined;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const { activeTimetable } = await fetchMyWeeklyTimetables();
+        if (!cancelled) setActiveWeeklyTimetable(activeTimetable);
+      } catch {
+        if (!cancelled) setActiveWeeklyTimetable(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open || !swiperRef.current) return;
@@ -242,14 +295,116 @@ const ClubHomeScheduleEditor = ({
     return () => observer.disconnect();
   }, [open, updateFloatDateLayout]);
 
+  const canLoadTimetableForDate = useCallback(
+    (targetDateKey) =>
+      hasWeeklyTimetableForDateKey(activeWeeklyTimetable, targetDateKey),
+    [activeWeeklyTimetable],
+  );
+
+  const isTimetableLoadedForDate = useCallback(
+    (targetDateKey) => Boolean(timetableLoadedByDate[targetDateKey]),
+    [timetableLoadedByDate],
+  );
+
+  const isTimetableButtonEnabled = useCallback(
+    (targetDateKey) =>
+      canLoadTimetableForDate(targetDateKey) ||
+      isTimetableLoadedForDate(targetDateKey),
+    [canLoadTimetableForDate, isTimetableLoadedForDate],
+  );
+
+  const isRequestedDate = useCallback(
+    (targetDateKey) => requestedDates.has(targetDateKey),
+    [requestedDates],
+  );
+
+  const handleLoadWeeklyTimetable = useCallback(
+    async (targetDateKey) => {
+      if (!targetDateKey) return;
+
+      const loaded = timetableLoadedByDate[targetDateKey];
+      if (loaded) {
+        setHoursByDate((prev) => ({
+          ...prev,
+          [targetDateKey]: (prev[targetDateKey] ?? []).filter(
+            (hour) => !loaded.hours.includes(hour),
+          ),
+        }));
+        setLabelsByDate((prev) => {
+          const dayLabels = { ...(prev[targetDateKey] ?? {}) };
+          for (const hour of loaded.hours) {
+            const loadedLabel = loaded.labels[hour];
+            if (loadedLabel !== undefined && dayLabels[hour] === loadedLabel) {
+              delete dayLabels[hour];
+            }
+          }
+          return { ...prev, [targetDateKey]: dayLabels };
+        });
+        setTimetableLoadedByDate((prev) => {
+          const next = { ...prev };
+          delete next[targetDateKey];
+          return next;
+        });
+        return;
+      }
+
+      if (!activeWeeklyTimetable) {
+        await modal("저장된 시간표가 없습니다.");
+        return;
+      }
+      const entries = getWeeklyEntriesForDateKey(
+        activeWeeklyTimetable,
+        targetDateKey,
+      );
+      if (entries.length === 0) {
+        await modal("이 요일에 등록된 시간이 없습니다.");
+        return;
+      }
+      const weeklyHours = getWeeklyHoursForDateKey(
+        activeWeeklyTimetable,
+        targetDateKey,
+      );
+      const weeklyLabels = buildHourLabelsFromEntries(entries);
+      setHoursByDate((prev) => ({
+        ...prev,
+        [targetDateKey]: mergeHourLists(prev[targetDateKey], weeklyHours),
+      }));
+      setLabelsByDate((prev) => ({
+        ...prev,
+        [targetDateKey]: mergeHourLabels(prev[targetDateKey], weeklyLabels),
+      }));
+      setTimetableLoadedByDate((prev) => ({
+        ...prev,
+        [targetDateKey]: {
+          hours: weeklyHours,
+          labels: weeklyLabels,
+        },
+      }));
+      if (weeklyHours.some((hour) => hour >= 0 && hour <= DAWN_HOUR_END)) {
+        setShowDawn(true);
+      }
+    },
+    [activeWeeklyTimetable, modal, timetableLoadedByDate],
+  );
+
   if (!open || !dateKey) return null;
 
   const toggleHour = (targetDateKey, hour) => {
     setHoursByDate((prev) => {
       const current = prev[targetDateKey] ?? [];
-      const nextHours = current.includes(hour)
+      const isRemoving = current.includes(hour);
+      const nextHours = isRemoving
         ? current.filter((h) => h !== hour)
         : [...current, hour].sort((a, b) => a - b);
+
+      if (isRemoving) {
+        setLabelsByDate((labelPrev) => {
+          const dayLabels = { ...(labelPrev[targetDateKey] ?? {}) };
+          delete dayLabels[hour];
+          return { ...labelPrev, [targetDateKey]: dayLabels };
+        });
+      }
+
       return { ...prev, [targetDateKey]: nextHours };
     });
   };
@@ -280,6 +435,8 @@ const ClubHomeScheduleEditor = ({
     }
     if (!(await modal("편집 내용을 되돌릴까요?", "confirm"))) return;
     setHoursByDate(cloneHoursMap(initialHoursByDateRef.current));
+    setLabelsByDate(cloneLabelsMap(initialLabelsByDateRef.current));
+    setTimetableLoadedByDate({});
   };
 
   const handleSave = async () => {
@@ -336,6 +493,18 @@ const ClubHomeScheduleEditor = ({
               <IoChevronForward aria-hidden />
             </button>
           </div>
+          <label className="clubScheduleEditor__dawnToggle">
+            <input
+              type="checkbox"
+              className="clubScheduleEditor__dawnToggleInput"
+              checked={showDawn}
+              onChange={(event) => setShowDawn(event.target.checked)}
+            />
+            <span className="clubScheduleEditor__dawnToggleTrack" aria-hidden />
+            <span className="clubScheduleEditor__dawnToggleLabel">
+              새벽시간
+            </span>
+          </label>
         </div>
         <button
           type="button"
@@ -346,12 +515,6 @@ const ClubHomeScheduleEditor = ({
         </button>
       </header>
 
-      {hasRequest ? (
-        <p className="clubScheduleEditor__hint">
-          {requestTeamNames.join(", ")} 팀 일정 취합에 반영됩니다.
-        </p>
-      ) : null}
-
       <div className="clubScheduleEditor__gridWrap" ref={gridWrapRef}>
         <div
           className={`clubScheduleEditor__floatDateRow${showFloatingDate ? " clubScheduleEditor__floatDateRow--visible" : ""}`}
@@ -359,14 +522,37 @@ const ClubHomeScheduleEditor = ({
         >
           {floatDateItems.map((item) => {
             const { day, week } = formatScheduleDateHeader(item.key);
+            const isRequested = isRequestedDate(item.key);
             return (
               <div
                 key={item.key}
-                className="clubScheduleEditor__floatDateCell"
+                className={[
+                  "clubScheduleEditor__floatDateCell",
+                  isRequested
+                    ? "clubScheduleEditor__floatDateCell--requested"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 style={{ left: item.left, width: item.width }}
               >
                 <span className="clubScheduleEditor__dateDay">{day}</span>
                 <span className="clubScheduleEditor__dateWeek">{week}</span>
+                <button
+                  type="button"
+                  className={[
+                    "clubScheduleEditor__dateWeeklyBtn",
+                    isTimetableLoadedForDate(item.key)
+                      ? "clubScheduleEditor__dateWeeklyBtn--loaded"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => void handleLoadWeeklyTimetable(item.key)}
+                  disabled={saving || !isTimetableButtonEnabled(item.key)}
+                >
+                  {isTimetableLoadedForDate(item.key) ? "취소" : "시간표"}
+                </button>
               </div>
             );
           })}
@@ -379,7 +565,7 @@ const ClubHomeScheduleEditor = ({
                 className="clubScheduleEditor__timeHeadSpacer"
                 aria-hidden
               />
-              {HOUR_SLOTS.map((hour) => (
+              {visibleHours.map((hour) => (
                 <span key={hour} className="clubScheduleEditor__timeLabel">
                   {hour}시
                 </span>
@@ -407,25 +593,54 @@ const ClubHomeScheduleEditor = ({
               >
                 {slideDateKeys.map((key) => {
                   const { day, week } = formatScheduleDateHeader(key);
+                  const isRequested = isRequestedDate(key);
                   return (
                     <SwiperSlide
                       key={key}
                       className="clubScheduleEditor__daySlide"
                     >
                       <div className="clubScheduleEditor__dayPanel">
-                        <div className="clubScheduleEditor__dateHead">
+                        <div
+                          className={[
+                            "clubScheduleEditor__dateHead",
+                            isRequested
+                              ? "clubScheduleEditor__dateHead--requested"
+                              : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" ")}
+                        >
                           <span className="clubScheduleEditor__dateDay">
                             {day}
                           </span>
                           <span className="clubScheduleEditor__dateWeek">
                             {week}
                           </span>
+                          <button
+                            type="button"
+                            className={[
+                              "clubScheduleEditor__dateWeeklyBtn",
+                              isTimetableLoadedForDate(key)
+                                ? "clubScheduleEditor__dateWeeklyBtn--loaded"
+                                : "",
+                            ]
+                              .filter(Boolean)
+                              .join(" ")}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              void handleLoadWeeklyTimetable(key);
+                            }}
+                            disabled={saving || !isTimetableButtonEnabled(key)}
+                          >
+                            {isTimetableLoadedForDate(key) ? "취소" : "시간표"}
+                          </button>
                         </div>
                         <div className="clubScheduleEditor__slots">
-                          {HOUR_SLOTS.map((hour) => {
+                          {visibleHours.map((hour) => {
                             const selected = (hoursByDate[key] ?? []).includes(
                               hour,
                             );
+                            const slotLabel = labelsByDate[key]?.[hour] ?? "";
                             return (
                               <button
                                 key={`${key}-${hour}`}
@@ -435,6 +650,12 @@ const ClubHomeScheduleEditor = ({
                                   selected
                                     ? "clubScheduleEditor__slot--selected"
                                     : "",
+                                  slotLabel
+                                    ? "clubScheduleEditor__slot--labeled"
+                                    : "",
+                                  hour <= DAWN_HOUR_END
+                                    ? "clubScheduleEditor__slot--dawn"
+                                    : "",
                                   hour < 12
                                     ? "clubScheduleEditor__slot--am"
                                     : "clubScheduleEditor__slot--pm",
@@ -443,8 +664,14 @@ const ClubHomeScheduleEditor = ({
                                   .join(" ")}
                                 onClick={() => toggleHour(key, hour)}
                                 aria-pressed={selected}
-                                aria-label={`${day} ${week} ${hour}시`}
-                              />
+                                aria-label={`${day} ${week} ${hour}시${slotLabel ? ` ${slotLabel}` : ""}`}
+                              >
+                                {slotLabel ? (
+                                  <span className="clubScheduleEditor__slotLabel">
+                                    {slotLabel}
+                                  </span>
+                                ) : null}
+                              </button>
                             );
                           })}
                         </div>
@@ -459,27 +686,29 @@ const ClubHomeScheduleEditor = ({
       </div>
 
       <footer className="clubScheduleEditor__footer">
-        <button
-          type="button"
-          className={[
-            "clubScheduleEditor__revertBtn",
-            hasUnsavedChanges ? "clubScheduleEditor__revertBtn--active" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onClick={() => void handleRevert()}
-          disabled={saving}
-        >
-          되돌리기
-        </button>
-        <button
-          type="button"
-          className="clubScheduleEditor__saveBtn"
-          onClick={() => void handleSave()}
-          disabled={saving}
-        >
-          {saving ? "저장 중…" : "저장"}
-        </button>
+        <div className="clubScheduleEditor__footerActions">
+          <button
+            type="button"
+            className={[
+              "clubScheduleEditor__revertBtn",
+              hasUnsavedChanges ? "clubScheduleEditor__revertBtn--active" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+            onClick={() => void handleRevert()}
+            disabled={saving}
+          >
+            되돌리기
+          </button>
+          <button
+            type="button"
+            className="clubScheduleEditor__saveBtn"
+            onClick={() => void handleSave()}
+            disabled={saving}
+          >
+            {saving ? "저장 중…" : "저장"}
+          </button>
+        </div>
       </footer>
     </div>,
     document.body,

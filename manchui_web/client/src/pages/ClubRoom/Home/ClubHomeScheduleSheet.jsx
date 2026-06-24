@@ -19,6 +19,7 @@ const ClubHomeScheduleSheet = ({
   practices = [],
   reservations = [],
   requestTeams = [],
+  requestDateSet,
   scheduleMap,
   initialSchedule,
   onClose,
@@ -40,11 +41,6 @@ const ClubHomeScheduleSheet = ({
   const dateLabel = useMemo(
     () => (dateKey ? formatUpcomingPracticeDate(dateKey) : ""),
     [dateKey],
-  );
-
-  const requestTeamNames = useMemo(
-    () => requestTeams.map((entry) => entry.teamName),
-    [requestTeams],
   );
 
   if (!open || !dateKey) return null;
@@ -192,8 +188,7 @@ const ClubHomeScheduleSheet = ({
         open={editingSchedule}
         dateKey={dateKey}
         scheduleMap={scheduleMap}
-        hasRequest={hasRequest}
-        requestTeamNames={requestTeamNames}
+        requestDateSet={requestDateSet}
         onClose={() => setEditingSchedule(false)}
         onSaveComplete={async () => {
           setEditingSchedule(false);

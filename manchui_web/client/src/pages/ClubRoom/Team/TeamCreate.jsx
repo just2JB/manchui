@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import {
   DEFAULT_TEAM_COLOR,
   isTeamColorPreset,
@@ -14,6 +15,7 @@ const TeamCreate = () => {
   const { user } = useAuth();
   const nav = useNavigate();
   const modal = useManchuiModal();
+  const invalidateTeams = useInvalidateClubTeams(user?._id);
 
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
@@ -39,6 +41,7 @@ const TeamCreate = () => {
         { withCredentials: true },
       );
       await modal(res.data?.message ?? "팀 생성이 완료되었습니다.");
+      invalidateTeams();
       const teamId = res.data?.team?._id;
       if (teamId) {
         nav(`/club/team/${teamId}`, { replace: true });

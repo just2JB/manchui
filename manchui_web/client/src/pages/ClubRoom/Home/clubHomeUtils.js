@@ -42,6 +42,25 @@ export function buildVisibleDateKeys(startDateKey, count = 3) {
 
 export const SCHEDULE_SLOT_COUNT = 48;
 
+export const SCHEDULE_DAWN_HOUR_END = 7;
+export const SCHEDULE_DEFAULT_HOUR_START = 8;
+export const SCHEDULE_DEFAULT_HOUR_END = 23;
+
+/** 일정 작성 그리드 — 기본 08~23시, 새벽 토글 시 00~07시 추가 */
+export function getScheduleEditorHours(showDawn) {
+  const main = Array.from(
+    { length: SCHEDULE_DEFAULT_HOUR_END - SCHEDULE_DEFAULT_HOUR_START + 1 },
+    (_, index) => SCHEDULE_DEFAULT_HOUR_START + index,
+  );
+  if (!showDawn) return main;
+
+  const dawn = Array.from(
+    { length: SCHEDULE_DAWN_HOUR_END + 1 },
+    (_, index) => index,
+  );
+  return [...dawn, ...main];
+}
+
 export function createEmptyTimes() {
   return new Array(SCHEDULE_SLOT_COUNT).fill(0);
 }
@@ -97,6 +116,10 @@ export function flattenRequestDates(teamRequests) {
     }
   }
   return byDate;
+}
+
+export function buildRequestDateSetFromTeamRequests(teamRequests) {
+  return new Set(flattenRequestDates(teamRequests).keys());
 }
 
 export function filterPracticesForTeams(practices, teamIds) {

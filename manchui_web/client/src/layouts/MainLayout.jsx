@@ -3,9 +3,9 @@ import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
+import Loading from "../components/Loading/Loading";
 import PreparingPage from "./PreparingPage";
 import { useAppSettings } from "../context/AppSettingsContext";
-import { LOADING_TEXT } from "../constants/loadingText";
 
 const JOIN_PATHS = ["/join", "/join/check", "/join/form"];
 
@@ -38,9 +38,7 @@ const MainLayout = () => {
         assistantEnabled={navbarAssistantEnabled}
       />
       {isJoinPath && joinConfigLoading ? (
-        <p className="layout-loading" aria-live="polite">
-          {LOADING_TEXT}
-        </p>
+        <Loading overlay={false} size="sm" />
       ) : showPreparing ? (
         <PreparingPage variant="main" />
       ) : (

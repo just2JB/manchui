@@ -2,9 +2,9 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import ClubRoomNavbar from "../pages/ClubRoom/ClubRoomNavbar";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
+import Loading from "../components/Loading/Loading";
 import PreparingPage from "./PreparingPage";
 import { useAppSettings } from "../context/AppSettingsContext";
-import { LOADING_TEXT } from "../constants/loadingText";
 
 /** 공개 예약 공유 링크만 어시스턴트 비활성화 시에도 표시 */
 function isReservationSharePath(pathname) {
@@ -32,9 +32,7 @@ const ClubRoomLayout = () => {
   if (joinConfigLoading && !shareOnly) {
     return (
       <div className="clubRoomLayout preparingWrapper">
-        <p className="layout-loading" aria-live="polite">
-          {LOADING_TEXT}
-        </p>
+        <Loading overlay={false} size="sm" />
       </div>
     );
   }

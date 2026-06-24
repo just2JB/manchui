@@ -1,0 +1,1021 @@
+.mypageHub.weeklyTimetablePage {
+  --weekly-select-panel-reserve: min(280px, 42dvh);
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+  height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+  max-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+  overflow: hidden;
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+.weeklyTimetablePage {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.mypageHub.weeklyTimetablePage .mypageSaved__back,
+.weeklyTimetablePage__header,
+.weeklyTimetablePage__selectHint,
+.weeklyTimetablePage__saveStatus {
+  flex-shrink: 0;
+}
+
+.weeklyTimetablePage__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 8px;
+  margin-bottom: 20px;
+}
+
+.weeklyTimetablePage__nameBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage__nameBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.weeklyTimetablePage__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.weeklyTimetablePage__nameIcon {
+  flex-shrink: 0;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+.weeklyTimetablePage__addBtn {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 12px;
+  background: var(--brand-red);
+  color: #fff;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(179, 0, 0, 0.28);
+}
+
+.weeklyTimetablePage__addBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.weeklyTimetablePage__cancelBtn {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage--selectMode {
+  padding-bottom: max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+.weeklyTimetablePage--selectMode .weeklyTimetablePage__gridWrap {
+  margin-bottom: var(--weekly-select-panel-reserve);
+}
+
+.weeklyTimetablePage--selectMode .weeklyTimetablePage__scrollArea {
+  max-height: none;
+}
+
+.weeklyTimetablePage--selectMode .weeklyTimetablePage__timeCol {
+  z-index: 1;
+}
+
+.weeklyTimetablePage__selectHint {
+  margin: -8px 0 14px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-more);
+}
+
+.weeklyTimetablePage__saveStatus {
+  margin: -12px 0 16px;
+  font-size: 0.8rem;
+  color: var(--text-more);
+}
+
+.weeklyTimetablePage__loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  color: var(--text-more);
+}
+
+.weeklyTimetablePage__gridWrap {
+  --sched-head-h: 40px;
+  --sched-row-min-h: 26px;
+  --sched-row-gap: 4px;
+  --sched-time-col-w: 40px;
+  --sched-col-gap: 6px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.weeklyTimetablePage__gridWrap--selectMode {
+  border-color: rgba(179, 0, 0, 0.45);
+  box-shadow:
+    0 0 0 1px rgba(179, 0, 0, 0.2),
+    0 8px 28px rgba(179, 0, 0, 0.12);
+  background: rgba(179, 0, 0, 0.04);
+}
+
+.weeklyTimetablePage__scrollArea {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.weeklyTimetablePage__scrollInner {
+  display: flex;
+  align-items: stretch;
+  gap: var(--sched-col-gap);
+  min-width: min-content;
+  min-height: 100%;
+  height: 100%;
+  padding: 10px 8px 14px;
+  box-sizing: border-box;
+}
+
+.weeklyTimetablePage__timeCol {
+  flex: 0 0 var(--sched-time-col-w);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: var(--background-dark);
+}
+
+.weeklyTimetablePage__timeHeadSpacer {
+  flex: 0 0 var(--sched-head-h);
+  height: var(--sched-head-h);
+}
+
+.weeklyTimetablePage__timeRows {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(
+    var(--hour-count, 10),
+    minmax(var(--sched-row-min-h), 1fr)
+  );
+  gap: var(--sched-row-gap);
+}
+
+.weeklyTimetablePage__timeLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-more);
+  padding-right: 2px;
+}
+
+.weeklyTimetablePage__dayCols {
+  display: flex;
+  gap: var(--sched-col-gap);
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+}
+
+.weeklyTimetablePage__dayCol {
+  flex: 1 1 0;
+  min-width: 34px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.weeklyTimetablePage__dayHead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  flex: 0 0 var(--sched-head-h);
+  height: var(--sched-head-h);
+  margin-bottom: 0;
+  padding: 0;
+  border-radius: 8px;
+  background: rgba(18, 18, 18, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: inherit;
+  font: inherit;
+}
+
+.weeklyTimetablePage__dayHead--interactive {
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.weeklyTimetablePage__dayHead--interactive:hover {
+  border-color: rgba(179, 0, 0, 0.35);
+  background: rgba(179, 0, 0, 0.1);
+}
+
+.weeklyTimetablePage__dayHead--selected {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.28);
+}
+
+.weeklyTimetablePage__dayHead--partial {
+  border-color: rgba(179, 0, 0, 0.4);
+  background: rgba(179, 0, 0, 0.14);
+}
+
+.weeklyTimetablePage__dayHead:disabled {
+  cursor: default;
+}
+
+.weeklyTimetablePage__dayLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.weeklyTimetablePage__dayBody {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(
+    var(--hour-count, 10),
+    minmax(var(--sched-row-min-h), 1fr)
+  );
+  gap: var(--sched-row-gap);
+  margin-top: 0;
+}
+
+.weeklyTimetablePage__rowLine {
+  width: 100%;
+  min-height: 0;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.02);
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.weeklyTimetablePage__slot {
+  width: 100%;
+  min-height: 0;
+  z-index: 2;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  box-sizing: border-box;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.weeklyTimetablePage__slot--am {
+  background: rgba(255, 183, 77, 0.05);
+}
+
+.weeklyTimetablePage__slot--dawn {
+  background: rgba(120, 140, 255, 0.08);
+}
+
+.weeklyTimetablePage__slot--selected {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.32);
+  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.35);
+}
+
+.weeklyTimetablePage__slot--selected.weeklyTimetablePage__slot--am {
+  background: color-mix(
+    in srgb,
+    rgba(179, 0, 0, 0.32) 70%,
+    rgba(255, 183, 77, 0.12)
+  );
+}
+
+.weeklyTimetablePage__block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 2px;
+  min-height: 0;
+  margin: 0;
+  padding: 4px 6px;
+  border: 1px solid rgba(179, 0, 0, 0.45);
+  border-radius: 6px;
+  background: rgba(179, 0, 0, 0.24);
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.weeklyTimetablePage__blockName {
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.weeklyTimetablePage__blockTime {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-more);
+  line-height: 1.1;
+}
+
+.weeklyTimetablePage__selectPanel {
+  position: fixed;
+  left: 50%;
+  bottom: var(
+    --club-room-bottom-nav,
+    calc(79px + env(safe-area-inset-bottom, 0px))
+  );
+  z-index: 805;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  max-height: min(52dvh, 360px);
+  border-top: 1px solid rgba(179, 0, 0, 0.35);
+  border-radius: 16px 16px 0 0;
+  background: var(--background-dark);
+  color: var(--text-primary);
+  box-sizing: border-box;
+  transform: translateX(-50%);
+  box-shadow: 0 -10px 36px rgba(0, 0, 0, 0.5);
+  isolation: isolate;
+}
+
+.weeklyTimetablePage__selectPanelScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 14px 10px;
+}
+
+.weeklyTimetablePage__selectField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.weeklyTimetablePage__selectLabel {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.weeklyTimetablePage__selectSubLabel {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-more);
+}
+
+.weeklyTimetablePage__selectInput,
+.weeklyTimetablePage__selectSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.weeklyTimetablePage__selectSelect option {
+  background: var(--box-2);
+  color: var(--text-primary);
+}
+
+.weeklyTimetablePage__selectSlotsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weeklyTimetablePage__selectAddSlotBtn {
+  width: 100%;
+  margin-top: 2px;
+  padding: 10px 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.weeklyTimetablePage__selectAddSlotBtn:hover {
+  opacity: 0.85;
+}
+
+.weeklyTimetablePage__selectAddSlotBtn--active {
+  color: var(--text-primary);
+  opacity: 0.7;
+}
+
+.weeklyTimetablePage__selectAddForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.weeklyTimetablePage__selectWeekdayRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.weeklyTimetablePage__selectWeekdayBtn {
+  min-width: 34px;
+  padding: 7px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage__selectWeekdayBtn--active {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.22);
+}
+
+.weeklyTimetablePage__selectTimeRange {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.weeklyTimetablePage__selectTimeRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.weeklyTimetablePage__selectTimeBlock {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weeklyTimetablePage__selectTimeSep {
+  flex-shrink: 0;
+  padding-bottom: 10px;
+  color: var(--text-more);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.weeklyTimetablePage__selectError {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #ff8f8f;
+}
+
+.weeklyTimetablePage__selectTimeField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.weeklyTimetablePage__selectConfirmAddBtn {
+  flex-shrink: 0;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--brand-red);
+  color: #fff;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage__selectConfirmAddBtn--full {
+  width: 100%;
+}
+
+.weeklyTimetablePage__selectSlotList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.weeklyTimetablePage__selectSlotItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.weeklyTimetablePage__selectSlotText {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.82rem;
+  color: var(--text-gray);
+}
+
+.weeklyTimetablePage__selectSlotRemoveBtn {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage__selectEmpty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-more);
+}
+
+.weeklyTimetablePage__selectActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 14px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(12, 12, 12, 0.98);
+}
+
+.weeklyTimetablePage__selectDeleteBtn {
+  padding: 11px 14px;
+  border: 1px solid rgba(255, 120, 120, 0.35);
+  border-radius: 12px;
+  background: rgba(255, 80, 80, 0.12);
+  color: #ff9f9f;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage__selectSaveBtn {
+  flex: 1;
+  padding: 11px 20px;
+  border: none;
+  border-radius: 12px;
+  background: var(--brand-red);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weeklyTimetablePage__selectSaveBtn:disabled,
+.weeklyTimetablePage__selectDeleteBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.weeklyTimetablePicker {
+  position: fixed;
+  inset: 0;
+  z-index: 1400;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.weeklyTimetablePicker__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+.weeklyTimetablePicker__panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  max-height: min(70dvh, 520px);
+  overflow: auto;
+  border-radius: 18px 18px 0 0;
+  background: var(--background-dark);
+  color: var(--text-primary);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px max(20px, env(safe-area-inset-bottom, 0px));
+}
+
+.weeklyTimetablePicker__handleWrap {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 10px;
+}
+
+.weeklyTimetablePicker__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.weeklyTimetablePicker__title {
+  margin: 0 0 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.weeklyTimetablePicker__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weeklyTimetablePicker__item {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.weeklyTimetablePicker__item--active {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.2);
+}
+
+.weeklyTimetablePicker__row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 14px 14px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.weeklyTimetablePicker__name {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.weeklyTimetablePicker__badge {
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(179, 0, 0, 0.85);
+}
+
+.weeklyTimetablePicker__item--active .weeklyTimetablePicker__actionBtn {
+  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(0, 0, 0, 0.18);
+  color: var(--text-primary);
+}
+
+.weeklyTimetablePicker__item--active
+  .weeklyTimetablePicker__actionBtn--danger {
+  color: #ffc4c4;
+  border-color: rgba(255, 160, 160, 0.35);
+}
+
+.weeklyTimetablePicker__actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 10px 10px;
+}
+
+.weeklyTimetablePicker__actionBtn {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.weeklyTimetablePicker__actionBtn--danger {
+  color: #ff8f8f;
+}
+
+.weeklyTimetablePicker__actionBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.weeklyTimetablePicker__createBtn {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.weeklyEntrySheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.weeklyEntrySheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+}
+
+.weeklyEntrySheet__panel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 18px 18px 0 0;
+  background: var(--background-dark);
+  color: var(--text-primary);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 16px max(20px, env(safe-area-inset-bottom, 0px));
+}
+
+.weeklyEntrySheet__handleWrap {
+  display: flex;
+  justify-content: center;
+  padding: 6px 0 10px;
+}
+
+.weeklyEntrySheet__handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.weeklyEntrySheet__title {
+  margin: 0 0 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.weeklyEntrySheet__body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.weeklyEntrySheet__stepLabel {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-more);
+}
+
+.weeklyEntrySheet__field {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.weeklyEntrySheet__legend {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.weeklyEntrySheet__weekdayRow {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.weeklyEntrySheet__weekdayBtn {
+  min-width: 36px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.weeklyEntrySheet__weekdayBtn--active {
+  border-color: rgba(179, 0, 0, 0.55);
+  background: rgba(179, 0, 0, 0.22);
+}
+
+.weeklyEntrySheet__timeRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.weeklyEntrySheet__timeField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.weeklyEntrySheet__timeLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-more);
+}
+
+.weeklyEntrySheet__select,
+.weeklyEntrySheet__input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.weeklyEntrySheet__select option {
+  background: var(--box-2);
+  color: var(--text-primary);
+}
+
+.weeklyEntrySheet__input::placeholder {
+  color: var(--text-more);
+  opacity: 1;
+}
+
+.weeklyEntrySheet__timeSep {
+  padding-bottom: 10px;
+  color: var(--text-more);
+  font-weight: 600;
+}
+
+.weeklyEntrySheet__preview,
+.weeklyEntrySheet__summary {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.weeklyEntrySheet__error {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #ff8f8f;
+}
+
+.weeklyEntrySheet__nameField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.weeklyEntrySheet__actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.weeklyEntrySheet__primaryBtn,
+.weeklyEntrySheet__secondaryBtn,
+.weeklyEntrySheet__dangerBtn {
+  padding: 12px 16px;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weeklyEntrySheet__primaryBtn {
+  flex: 1;
+  border: none;
+  background: var(--brand-red);
+  color: #fff;
+}
+
+.weeklyEntrySheet__primaryBtn:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.weeklyEntrySheet__secondaryBtn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.weeklyEntrySheet__dangerBtn {
+  border: 1px solid rgba(255, 120, 120, 0.35);
+  background: rgba(255, 80, 80, 0.12);
+  color: #ff9f9f;
+}

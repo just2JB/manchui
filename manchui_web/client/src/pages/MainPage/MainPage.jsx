@@ -147,14 +147,6 @@ const MainPage = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSessionDirection(1);
-      setSessionIndex((prev) => (prev + 1) % SESSION_ITEMS.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="main-page">
       <div className="main-page-bg" aria-hidden="true">

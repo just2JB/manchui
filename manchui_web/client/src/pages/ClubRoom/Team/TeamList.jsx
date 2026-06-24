@@ -1,8 +1,11 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoAdd, IoPeopleOutline } from "react-icons/io5";
-import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
+import {
+  isClubInitialLoading,
+  useUserTeamsQuery,
+} from "../../../queries/useClubQueries";
 import TeamListCard from "./TeamListCard";
 import TeamListSkeleton from "./TeamListSkeleton";
 import { isTeamLeader } from "./teamUtils";
@@ -11,40 +14,12 @@ import "./Team.css";
 const TeamList = () => {
   const { user } = useAuth();
   const nav = useNavigate();
-  const [teams, setTeams] = useState([]);
-  const [activeTeamIds, setActiveTeamIds] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const userId = user?._id;
 
-  const loadTeams = useCallback(async () => {
-    if (!user?._id) {
-      setTeams([]);
-      setActiveTeamIds([]);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    try {
-      const res = await apiClient.get(`/api/team/user/${user._id}`, {
-        withCredentials: true,
-      });
-      setTeams(Array.isArray(res.data?.myTeam) ? res.data.myTeam : []);
-      setActiveTeamIds(
-        Array.isArray(res.data?.activeTeam)
-          ? res.data.activeTeam.map(String)
-          : [],
-      );
-    } catch (e) {
-      console.error(e);
-      setTeams([]);
-      setActiveTeamIds([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user?._id]);
-
-  useEffect(() => {
-    void loadTeams();
-  }, [loadTeams]);
+  const teamsQuery = useUserTeamsQuery(userId);
+  const teams = teamsQuery.data?.teams ?? [];
+  const activeTeamIds = teamsQuery.data?.activeTeamIds ?? [];
+  const loading = isClubInitialLoading(teamsQuery);
 
   const teamCountLabel = useMemo(() => {
     if (teams.length === 0) return null;

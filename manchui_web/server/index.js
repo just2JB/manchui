@@ -16,9 +16,7 @@ function collectAllowedOrigins() {
   };
 
   addOrigin(process.env.CLIENT_URL);
-  (process.env.CLIENT_URLS || "")
-    .split(",")
-    .forEach(addOrigin);
+  (process.env.CLIENT_URLS || "").split(",").forEach(addOrigin);
 
   const clientUrl = (process.env.CLIENT_URL || "").trim().replace(/\/$/, "");
   if (clientUrl.startsWith("https://www.")) {
@@ -40,6 +38,7 @@ const teamRouter = require("./routes/team");
 const practiceRouter = require("./routes/practice");
 const recommendationRouter = require("./routes/recommendation");
 const lotteryRouter = require("./routes/lottery");
+const weeklyTimetableRouter = require("./routes/weeklyTimetable");
 
 app.use(
   cors({
@@ -66,6 +65,7 @@ app.use("/api/team", teamRouter);
 app.use("/api/practice", practiceRouter);
 app.use("/api/recommendations", recommendationRouter);
 app.use("/api/lottery", lotteryRouter);
+app.use("/api/weekly-timetable", weeklyTimetableRouter);
 
 app.get("/", (req, res) => {
   res.send("만취 웹사이트의 백엔드 서버 입니다.");

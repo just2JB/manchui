@@ -42,16 +42,25 @@ const ClubHomeCalendar = ({
   const todayKey = useMemo(() => formatDateKey(new Date()), []);
   const monthLabel = `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
 
-  const { slideDir, goPrevMonth, goNextMonth, swipeHandlers, monthKey } =
-    useCalendarMonthSlide(viewMonth, setViewMonth);
+  const {
+    slideDir,
+    goPrevMonth,
+    goNextMonth,
+    swipeHandlers,
+    consumeClickAfterSwipe,
+    monthKey,
+  } = useCalendarMonthSlide(viewMonth, setViewMonth);
 
   const requestRanges = useMemo(
     () => buildConsecutiveRanges([...requestDateSet]),
     [requestDateSet],
   );
 
-  const scheduleRanges = useMemo(
-    () => buildConsecutiveRanges([...scheduleDateSet]),
+  const scheduleDayRanges = useMemo(
+    () =>
+      [...scheduleDateSet]
+        .sort()
+        .map((key) => ({ start: key, end: key })),
     [scheduleDateSet],
   );
 
@@ -127,7 +136,10 @@ const ClubHomeCalendar = ({
             ? { "--practice-accent": practiceAccent }
             : undefined
         }
-        onClick={() => onDateSelect?.(dateKey)}
+        onClick={() => {
+          if (consumeClickAfterSwipe()) return;
+          onDateSelect?.(dateKey);
+        }}
       >
         <span className="clubHomeCal__day">{cell.date.getDate()}</span>
         {hasPractice ? (
@@ -199,7 +211,7 @@ const ClubHomeCalendar = ({
               );
               const scheduleBarSegments = buildWeekRangeBarSegments(
                 weekCells,
-                scheduleRanges,
+                scheduleDayRanges,
                 scheduleBarSkipDateSet,
                 "sched",
               );
@@ -223,10 +235,6 @@ const ClubHomeCalendar = ({
                           className="clubHomeCal__schedSpan"
                           style={{
                             gridColumn: `${bar.colStart} / span ${bar.colSpan}`,
-                            borderRadius: reqSpanRadius(
-                              bar.roundLeft,
-                              bar.roundRight,
-                            ),
                           }}
                         />
                       ))}

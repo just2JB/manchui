@@ -53,7 +53,9 @@ function hoursToEntries(days) {
         weekday,
         name: "일정",
         startHour: start,
-        endHour: prev,
+        endHour: prev >= 23 ? 23 : prev + 1,
+        startMinute: 0,
+        endMinute: prev >= 23 ? 59 : 0,
       });
       start = hour;
       prev = hour;
@@ -62,18 +64,29 @@ function hoursToEntries(days) {
       weekday,
       name: "일정",
       startHour: start,
-      endHour: prev,
+      endHour: prev >= 23 ? 23 : prev + 1,
+      startMinute: 0,
+      endMinute: prev >= 23 ? 59 : 0,
     });
   }
   return entries;
 }
 
+function slotOverlapsHour(entry, hour) {
+  const start =
+    Number(entry.startHour) * 60 + normalizeMinute(entry.startMinute, 0);
+  const end = Number(entry.endHour) * 60 + normalizeMinute(entry.endMinute, 0);
+  const hourStart = hour * 60;
+  const hourEnd = hour * 60 + 59;
+  return start <= hourEnd && end > hourStart;
+}
+
 function entryToHours(entry) {
-  const start = Math.min(entry.startHour, entry.endHour);
-  const end = Math.max(entry.startHour, entry.endHour);
   const hours = [];
-  for (let hour = start; hour <= end; hour += 1) {
-    hours.push(hour);
+  for (let hour = 0; hour <= 23; hour += 1) {
+    if (slotOverlapsHour(entry, hour)) {
+      hours.push(hour);
+    }
   }
   return hours;
 }

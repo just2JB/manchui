@@ -45,6 +45,27 @@ export function formatEntryTimeRange(entry) {
   const startMinute = entry.startMinute ?? 0;
   const endMinute = entry.endMinute ?? 0;
   const startLabel = formatTimeLabel(entry.startHour, startMinute);
+  const startTotal = timeToMinutes(entry.startHour, startMinute);
+  const endTotal = timeToMinutes(entry.endHour, endMinute);
+
+  if (endTotal <= startTotal) {
+    return startLabel;
+  }
+
+  if (
+    startMinute === 0 &&
+    endMinute === 0 &&
+    (endTotal - startTotal) % 60 === 0
+  ) {
+    const durationHours = (endTotal - startTotal) / 60;
+    if (durationHours === 1) {
+      return `${startLabel}~${formatTimeLabel(entry.endHour, 0)}`;
+    }
+    if (durationHours > 1) {
+      return formatHourRange(entry.startHour, entry.endHour - 1);
+    }
+  }
+
   const endLabel = formatTimeLabel(entry.endHour, endMinute);
   if (startLabel === endLabel) return startLabel;
   return `${startLabel}~${endLabel}`;
@@ -111,8 +132,10 @@ export function normalizeWeeklyEntries(raw) {
 
 export function entryToHours(entry) {
   const hours = [];
-  for (let hour = entry.startHour; hour <= entry.endHour; hour += 1) {
-    hours.push(hour);
+  for (let hour = 0; hour <= 23; hour += 1) {
+    if (slotOverlapsHour(entry, hour)) {
+      hours.push(hour);
+    }
   }
   return hours;
 }
@@ -318,8 +341,7 @@ export function toggleWeekdayDraftSlots(slots, weekday, visibleHours) {
     return slots.filter((slot) => slot.weekday !== weekday);
   }
   const kept = slots.filter((slot) => slot.weekday !== weekday);
-  const added = visibleHours.map((hour) => createHourDraftSlot(weekday, hour));
-  return [...kept, ...added];
+  return [...kept, ...draftSlotsFromHours(weekday, visibleHours)];
 }
 
 export function createDraftSlotId() {
@@ -327,14 +349,65 @@ export function createDraftSlotId() {
 }
 
 export function createHourDraftSlot(weekday, hour) {
+  return createRangeDraftSlot(weekday, hour, hour);
+}
+
+function createRangeDraftSlot(weekday, startHour, endHourInclusive) {
+  if (endHourInclusive >= 23) {
+    return {
+      id: createDraftSlotId(),
+      weekday,
+      startHour,
+      startMinute: 0,
+      endHour: 23,
+      endMinute: 59,
+    };
+  }
+
   return {
     id: createDraftSlotId(),
     weekday,
-    startHour: hour,
+    startHour,
     startMinute: 0,
-    endHour: hour,
+    endHour: endHourInclusive + 1,
     endMinute: 0,
   };
+}
+
+function getDraftSlotHours(slots, weekday) {
+  const hours = new Set();
+  for (const slot of slots) {
+    if (slot.weekday !== weekday) continue;
+    for (let hour = 0; hour <= 23; hour += 1) {
+      if (slotOverlapsHour(slot, hour)) {
+        hours.add(hour);
+      }
+    }
+  }
+  return [...hours].sort((a, b) => a - b);
+}
+
+function draftSlotsFromHours(weekday, hours) {
+  const sorted = [...hours].sort((a, b) => a - b);
+  if (sorted.length === 0) return [];
+
+  const slots = [];
+  let start = sorted[0];
+  let prev = sorted[0];
+
+  for (let index = 1; index < sorted.length; index += 1) {
+    const hour = sorted[index];
+    if (hour === prev + 1) {
+      prev = hour;
+      continue;
+    }
+    slots.push(createRangeDraftSlot(weekday, start, prev));
+    start = hour;
+    prev = hour;
+  }
+
+  slots.push(createRangeDraftSlot(weekday, start, prev));
+  return slots;
 }
 
 export function createTimedDraftSlot(weekday, startHour, startMinute, endHour, endMinute) {
@@ -378,7 +451,7 @@ export function slotOverlapsHour(slot, hour) {
   const end = timeToMinutes(slot.endHour, slot.endMinute ?? 0);
   const hourStart = hour * 60;
   const hourEnd = hour * 60 + 59;
-  return start <= hourEnd && end >= hourStart;
+  return start <= hourEnd && end > hourStart;
 }
 
 export function hourHasEntry(entries, hour) {
@@ -386,13 +459,13 @@ export function hourHasEntry(entries, hour) {
 }
 
 export function toggleHourDraftSlot(slots, weekday, hour) {
-  const index = slots.findIndex(
-    (slot) => slot.weekday === weekday && slotOverlapsHour(slot, hour),
-  );
-  if (index >= 0) {
-    return slots.filter((_, slotIndex) => slotIndex !== index);
-  }
-  return [...slots, createHourDraftSlot(weekday, hour)];
+  const selectedHours = getDraftSlotHours(slots, weekday);
+  const nextHours = selectedHours.includes(hour)
+    ? selectedHours.filter((value) => value !== hour)
+    : [...selectedHours, hour].sort((a, b) => a - b);
+
+  const otherSlots = slots.filter((slot) => slot.weekday !== weekday);
+  return [...otherSlots, ...draftSlotsFromHours(weekday, nextHours)];
 }
 
 export function draftSlotsToEntries(name, slots) {
@@ -470,15 +543,29 @@ export function formatDraftSlotLabel(slot) {
 }
 
 export function getEntryGridRow(entry, visibleHours) {
-  const startIndex = visibleHours.indexOf(entry.startHour);
-  const endIndex = visibleHours.indexOf(entry.endHour);
+  const overlapHours = entryToHours(entry).filter((hour) =>
+    visibleHours.includes(hour),
+  );
+  if (overlapHours.length === 0) return null;
+
+  const startIndex = visibleHours.indexOf(overlapHours[0]);
+  const endIndex = visibleHours.indexOf(
+    overlapHours[overlapHours.length - 1],
+  );
   if (startIndex < 0 || endIndex < 0) return null;
   return `${startIndex + 1} / ${endIndex + 2}`;
 }
 
 export function getEntryBlockLayout(entry, visibleHours, rowHeight, rowGap) {
-  const startIndex = visibleHours.indexOf(entry.startHour);
-  const endIndex = visibleHours.indexOf(entry.endHour);
+  const overlapHours = entryToHours(entry).filter((hour) =>
+    visibleHours.includes(hour),
+  );
+  if (overlapHours.length === 0) return null;
+
+  const startIndex = visibleHours.indexOf(overlapHours[0]);
+  const endIndex = visibleHours.indexOf(
+    overlapHours[overlapHours.length - 1],
+  );
   if (startIndex < 0 || endIndex < 0) return null;
 
   const rowSpan = endIndex - startIndex + 1;

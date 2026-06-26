@@ -308,6 +308,7 @@ const Reservation = () => {
     isViewingTodayMonth,
     navigateToMonth,
     swipeHandlers,
+    consumeClickAfterSwipe,
     monthKey,
   } = useCalendarMonthSlide(viewMonth, setViewMonth);
 
@@ -382,9 +383,10 @@ const Reservation = () => {
                   type="button"
                   disabled={isPast || loading}
                   className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}${calendarDayLoadingClass(loading)}`}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onClick={() => !isPast && !loading && openSheetForDate(key)}
+                  onClick={() => {
+                    if (consumeClickAfterSwipe()) return;
+                    if (!isPast && !loading) openSheetForDate(key);
+                  }}
                 >
                   <span className="reservation__dayNum">
                     {cell.date.getDate()}

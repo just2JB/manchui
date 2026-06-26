@@ -244,7 +244,22 @@
 /* 홈 캘린더 */
 .clubHomeCal {
   --club-cal-radius: 10px;
+  --club-cal-bar-height: 8px;
+  --club-cal-bar-radius: 3px;
+  --club-cal-legend-bar-height: 4px;
+  --club-cal-request-bar-bg: rgba(160, 164, 172, 0.28);
+  --club-cal-request-bar-border: rgba(160, 164, 172, 0.2);
+  --club-cal-schedule-bar-bg: rgba(255, 255, 255, 0.58);
+  --club-cal-schedule-bar-border: rgba(255, 255, 255, 0.28);
   color: var(--text-primary);
+}
+
+@media (min-width: 768px) {
+  .clubHomeCal {
+    --club-cal-bar-height: 11px;
+    --club-cal-bar-radius: 4px;
+    --club-cal-legend-bar-height: 6px;
+  }
 }
 
 .clubHomeCal__nav {
@@ -283,8 +298,8 @@
 .clubHomeCal__weekHead {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
-  margin-bottom: 6px;
+  gap: 5px;
+  margin-bottom: 8px;
 }
 
 .clubHomeCal__weekLabel {
@@ -305,6 +320,11 @@
 
 .clubHomeCal__monthSwipe {
   touch-action: pan-y;
+}
+
+.clubHomeCal__monthSwipe .clubHomeCal__cell--interactive {
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .clubHomeCal__monthPanel--prev {
@@ -340,30 +360,30 @@
 .clubHomeCal__body {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .clubHomeCal__week {
   position: relative;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
+  gap: 5px;
   align-items: stretch;
 }
 
 .clubHomeCal__cell {
   position: relative;
   z-index: 1;
+  aspect-ratio: 1;
   min-width: 0;
-  min-height: clamp(2.6rem, 12vw, 3.6rem);
-  height: 100%;
+  min-height: clamp(3rem, 13vw, 4.5rem);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 5px 3px 4px;
+  padding: 6px 4px 5px;
   border-radius: var(--club-cal-radius);
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: 600;
   color: var(--text-gray);
   background: rgba(255, 255, 255, 0.02);
@@ -481,11 +501,17 @@
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 4px;
+  gap: 5px;
   align-items: end;
-  padding-bottom: 3px;
+  padding-bottom: 4px;
   box-sizing: border-box;
   pointer-events: none;
+}
+
+@media (min-width: 768px) {
+  .clubHomeCal__barLayer {
+    padding-bottom: 5px;
+  }
 }
 
 .clubHomeCal__barLayer--request {
@@ -497,13 +523,13 @@
   grid-template-columns: repeat(var(--req-cols, 1), minmax(0, 1fr));
   gap: 1px;
   align-self: end;
-  height: 8px;
+  height: var(--club-cal-bar-height);
   margin: 0 4px;
   padding: 1px;
   max-width: 100%;
   box-sizing: border-box;
-  background: rgba(255, 183, 77, 0.36);
-  border: 1px solid rgba(255, 183, 77, 0.22);
+  background: var(--club-cal-request-bar-bg);
+  border: 1px solid var(--club-cal-request-bar-border);
 }
 
 .clubHomeCal__reqSpanCell {
@@ -513,18 +539,22 @@
 }
 
 .clubHomeCal__reqSpanCell--schedule {
-  background: rgba(90, 140, 220, 0.82);
-  box-shadow: inset 0 0 0 1px rgba(90, 140, 220, 0.35);
+  width: calc(100% - 6px);
+  margin-inline: auto;
+  border-radius: 2px;
+  background: var(--club-cal-schedule-bar-bg);
+  box-shadow: inset 0 0 0 1px var(--club-cal-schedule-bar-border);
 }
 
 .clubHomeCal__schedSpan {
   align-self: end;
-  height: 8px;
-  margin: 0 4px;
-  max-width: 100%;
+  justify-self: center;
+  width: calc(100% - 14px);
+  height: var(--club-cal-bar-height);
+  border-radius: var(--club-cal-bar-radius);
   box-sizing: border-box;
-  background: rgba(90, 140, 220, 0.42);
-  border: 1px solid rgba(90, 140, 220, 0.28);
+  background: var(--club-cal-schedule-bar-bg);
+  border: 1px solid var(--club-cal-schedule-bar-border);
 }
 
 .clubHomeCal__dots {
@@ -556,7 +586,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
-  margin-top: 12px;
+  margin-top: 14px;
   font-size: 0.72rem;
   color: var(--text-more);
 }
@@ -592,18 +622,20 @@
 
 .clubHomeCal__legendBar {
   width: 22px;
-  height: 4px;
-  border-radius: 2px;
+  height: var(--club-cal-legend-bar-height);
+  border-radius: 3px;
   flex-shrink: 0;
 }
 
 .clubHomeCal__legendBar--request {
-  background: rgba(255, 183, 77, 0.38);
+  background: var(--club-cal-request-bar-bg);
+  border: 1px solid var(--club-cal-request-bar-border);
+  box-sizing: border-box;
 }
 
 .clubHomeCal__legendBar--schedule {
-  background: rgba(90, 140, 220, 0.42);
-  border: 1px solid rgba(90, 140, 220, 0.28);
+  background: var(--club-cal-schedule-bar-bg);
+  border: 1px solid var(--club-cal-schedule-bar-border);
   box-sizing: border-box;
 }
 
@@ -727,8 +759,8 @@
 .clubHomeSheet__requestBlock {
   padding: 12px;
   border-radius: 12px;
-  background: rgba(255, 183, 77, 0.06);
-  border: 1px solid rgba(255, 183, 77, 0.22);
+  background: rgba(160, 164, 172, 0.08);
+  border: 1px solid rgba(160, 164, 172, 0.2);
 }
 
 .clubHomeSheet__requestInfoList {
@@ -749,7 +781,7 @@
 .clubHomeSheet__requestInfoTeam {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #ffd89a;
+  color: rgba(210, 212, 218, 0.95);
 }
 
 .clubHomeSheet__requestInfoDesc {
@@ -830,7 +862,7 @@
 }
 
 .clubHomeSheet__hourBtn--am .clubHomeSheet__hourLabel {
-  color: #ffb74d;
+  color: rgba(180, 184, 192, 0.95);
 }
 
 .clubHomeSheet__hourBtn--pm .clubHomeSheet__hourLabel {
@@ -872,6 +904,11 @@
 
 /* 일정 작성 전체 화면 */
 .clubScheduleEditor {
+  --sched-request-bg: rgba(160, 164, 172, 0.18);
+  --sched-request-border: rgba(160, 164, 172, 0.28);
+  --sched-request-bg-soft: rgba(160, 164, 172, 0.14);
+  --sched-am-tint: rgba(160, 164, 172, 0.06);
+  --sched-am-tint-mix: rgba(160, 164, 172, 0.1);
   position: fixed;
   inset: 0;
   z-index: 1300;
@@ -1223,12 +1260,12 @@
 }
 
 .clubScheduleEditor__dateHead--requested {
-  border-color: rgba(255, 183, 77, 0.45);
-  background: rgba(255, 183, 77, 0.18);
+  border-color: var(--sched-request-border);
+  background: var(--sched-request-bg);
 }
 
 .clubScheduleEditor__floatDateCell--requested {
-  background: rgba(255, 183, 77, 0.14);
+  background: var(--sched-request-bg-soft);
   border-radius: 8px;
 }
 
@@ -1277,6 +1314,12 @@
   flex-direction: column;
   gap: var(--sched-row-gap);
   padding-right: 2px;
+  touch-action: pan-x;
+}
+
+.clubScheduleEditor--rangeDrag .clubScheduleEditor__scrollArea,
+.clubScheduleEditor--rangeDrag .clubScheduleEditor__slots {
+  touch-action: none;
 }
 
 .clubScheduleEditor__slot {
@@ -1293,6 +1336,9 @@
   background: rgba(255, 255, 255, 0.03);
   cursor: pointer;
   overflow: hidden;
+  touch-action: inherit;
+  user-select: none;
+  -webkit-user-select: none;
   transition:
     background-color 0.15s ease,
     border-color 0.15s ease;
@@ -1313,7 +1359,7 @@
 }
 
 .clubScheduleEditor__slot--am {
-  background: rgba(255, 183, 77, 0.04);
+  background: var(--sched-am-tint);
 }
 
 .clubScheduleEditor__slot--dawn {
@@ -1330,7 +1376,7 @@
   background: color-mix(
     in srgb,
     rgba(179, 0, 0, 0.28) 70%,
-    rgba(255, 183, 77, 0.12)
+    var(--sched-am-tint-mix)
   );
 }
 
@@ -1377,30 +1423,28 @@
   cursor: default;
 }
 
-.clubScheduleEditor__revertBtn {
-  padding: 12px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+.clubScheduleEditor__historyBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
-  font: inherit;
-  font-size: 0.92rem;
-  font-weight: 600;
+  font-size: 1.15rem;
   cursor: pointer;
 }
 
-.clubScheduleEditor__revertBtn--active {
-  border-color: rgba(255, 255, 255, 0.32);
-  background: rgba(255, 255, 255, 0.1);
+.clubScheduleEditor__historyBtn:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-.clubScheduleEditor__revertBtn:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.36);
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.clubScheduleEditor__revertBtn:disabled {
-  opacity: 0.55;
+.clubScheduleEditor__historyBtn:disabled {
+  opacity: 0.38;
   cursor: default;
 }
 

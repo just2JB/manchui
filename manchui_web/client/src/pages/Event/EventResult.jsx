@@ -11,7 +11,7 @@ const EventResult = () => {
   const [status, setStatus] = useState({ votes: {}, myVote: window.localStorage.getItem(EVENT_VOTE_KEY) });
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
-  const genreId = status.myVote;
+  const genreId = location.state?.genreId ?? status.myVote;
   const selectedGenre = EVENT_GENRES.find(({ id }) => id === genreId) ?? null;
   const votes = status.votes;
   const totalVotes = Object.values(votes).reduce((sum, count) => sum + count, 0);
@@ -73,6 +73,9 @@ const EventResult = () => {
               </article>
             );
           })}
+        </div>
+        <div className="event-result__join">
+          <button type="button" onClick={() => navigate("/join/form")}>만취 가입하러 가기</button>
         </div>
       </section>
     </main>

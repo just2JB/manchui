@@ -2,7 +2,6 @@ import apiClient from "./apiClient";
 
 const VISITOR_KEY = "manchui-event-visitor-v1";
 export const EVENT_VOTE_KEY = "manchui-event-vote-v1";
-
 export function getEventVisitorId() {
   let visitorId = window.localStorage.getItem(VISITOR_KEY);
   if (!visitorId) {

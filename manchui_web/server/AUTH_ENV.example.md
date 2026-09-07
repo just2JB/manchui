@@ -11,6 +11,9 @@ SERVER_URL=https://api.example.com
 JWT_SECRET=
 JWT_ACCESS_SECRET=
 
+# 이벤트 투표 식별자 HMAC 키 (미설정 시 JWT_SECRET 사용)
+EVENT_VOTER_HASH_SECRET=
+
 # Refresh token rotation + Kakao OAuth state/signup tokens
 JWT_REFRESH_SECRET=
 

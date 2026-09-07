@@ -13,6 +13,7 @@ import {
   IoPeopleOutline,
   IoPeopleCircleOutline,
   IoSettingsOutline,
+  IoStatsChartOutline,
 } from "react-icons/io5";
 import "./AdminNavbar.css";
 
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { to: "/admin/reservation", label: "예약 관리", Icon: IoCalendarOutline },
   { to: "/admin/recommendation", label: "곡 추천", Icon: IoMusicalNotesOutline },
   { to: "/admin/lottery", label: "상품 추첨", Icon: IoGiftOutline },
+  { to: "/admin/event", label: "이벤트", Icon: IoStatsChartOutline },
   { to: "/admin/setting", label: "웹 설정", Icon: IoSettingsOutline },
   { to: "/admin/member", label: "부원", Icon: IoPeopleOutline },
   { to: "/admin/team", label: "팀 관리", Icon: IoPeopleCircleOutline },

@@ -72,6 +72,15 @@ const AWARDS_YEARS = [
       "Monster Korea, Homura Film와 협업",
     ],
   },
+  {
+    year: "2026",
+    items: [
+      "봄 축제 ON:BOARD 3위 장려상",
+      "BUZZ ON:SOPHMORE 개최",
+      "Monster Korea, Homura Film와 협업",
+      "농협은행 유튜브 예능 올랭말랭 출연",
+    ],
+  },
 ];
 
 const QNA_ITEMS = [
@@ -94,10 +103,11 @@ const QNA_ITEMS = [
 ];
 
 const AWARDS_HIGHLIGHT_REGEX =
-  /(에리카 댄스 대표|1위 대상|장려상|우수상|대상|대표|1등)/g;
+  /(에리카 댄스 대표|1위 대상|ON:BOARD|장려상|우수상|대상|대표|1등)/g;
 const AWARDS_HIGHLIGHT_WORDS = new Set([
   "에리카 댄스 대표",
   "1위 대상",
+  "ON:BOARD",
   "장려상",
   "우수상",
   "대상",

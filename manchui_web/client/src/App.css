@@ -15,6 +15,18 @@
   min-width: 0;
 }
 
+.join-route-loading {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  background-color: var(--background-dark);
+}
+
+.join-route-loading > .manchuiLoading {
+  min-height: 100%;
+}
+
 .clubRoomLayout {
   /* ClubRoomBottomNav: min-height 62 + 세로 padding 16 + 보더 1 + safe-area */
   --club-room-bottom-nav: calc(79px + env(safe-area-inset-bottom, 0px));

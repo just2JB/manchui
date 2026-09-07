@@ -38,7 +38,9 @@ const MainLayout = () => {
         assistantEnabled={navbarAssistantEnabled}
       />
       {isJoinPath && joinConfigLoading ? (
-        <Loading overlay={false} size="sm" />
+        <div className="join-route-loading">
+          <Loading overlay={false} size="sm" />
+        </div>
       ) : showPreparing ? (
         <PreparingPage variant="main" />
       ) : (

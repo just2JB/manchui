@@ -19,6 +19,7 @@
   color: var(--text-primary);
   margin: 0 0 1rem;
   letter-spacing: 0.02em;
+  animation: contactEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .contact-message {
@@ -27,6 +28,7 @@
   opacity: 0.9;
   line-height: 1.6;
   margin: 0 0 2rem;
+  animation: contactEnter 0.55s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .contact-instagram-btn {
@@ -44,6 +46,19 @@
   border: none;
   cursor: pointer;
   transition: opacity 0.2s, transform 0.15s;
+  animation: contactEnter 0.6s 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes contactEnter {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .contact-instagram-btn:hover {
@@ -53,4 +68,12 @@
 
 .contact-instagram-btn:active {
   transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-title,
+  .contact-message,
+  .contact-instagram-btn {
+    animation: none;
+  }
 }

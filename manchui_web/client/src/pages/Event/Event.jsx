@@ -17,6 +17,7 @@ const Event = () => {
   const [commentText, setCommentText] = useState("");
   const [pendingVote, setPendingVote] = useState(null);
   const [voterIdentifier, setVoterIdentifier] = useState("");
+  const [privacyConsent, setPrivacyConsent] = useState(false);
   const [infoGenre, setInfoGenre] = useState(null);
   const [showAllComments, setShowAllComments] = useState(false);
   const [myVote, setMyVote] = useState(() => window.localStorage.getItem(EVENT_VOTE_KEY));
@@ -71,6 +72,7 @@ const Event = () => {
       return;
     }
     setVoterIdentifier("");
+    setPrivacyConsent(false);
     setEventError("");
     setPendingVote(genre);
   };
@@ -82,11 +84,15 @@ const Event = () => {
       setEventError("카카오톡 ID 또는 전화번호를 입력해주세요.");
       return;
     }
+    if (!privacyConsent) {
+      setEventError("개인정보 수집·이용에 동의해주세요.");
+      return;
+    }
     const genre = pendingVote;
     setSubmitting(true);
     setEventError("");
     try {
-      await submitEventVote(genre.id, normalizedIdentifier);
+      await submitEventVote(genre.id, normalizedIdentifier, privacyConsent);
       window.localStorage.setItem(EVENT_VOTE_KEY, genre.id);
       setMyVote(genre.id);
       setPendingVote(null);
@@ -256,9 +262,22 @@ const Event = () => {
                   />
                   <small>입력한 원문은 저장되지 않고 중복 확인용 값만 저장돼요.</small>
                 </label>
+                <label className="event-vote-modal__consent">
+                  <input type="checkbox" checked={privacyConsent} onChange={(event) => setPrivacyConsent(event.target.checked)} />
+                  <span><strong>[필수]</strong> 개인정보 수집·이용에 동의합니다.</span>
+                </label>
+                <details className="event-vote-modal__privacy">
+                  <summary>개인정보 수집·이용 안내 보기</summary>
+                  <dl>
+                    <div><dt>수집 항목</dt><dd>카카오톡 ID 또는 전화번호</dd></div>
+                    <div><dt>이용 목적</dt><dd>이벤트 본인 확인 및 중복 투표 방지</dd></div>
+                    <div><dt>보유 기간</dt><dd>2026년 10월 11일까지</dd></div>
+                  </dl>
+                  <p>동의를 거부할 수 있으나, 거부 시 투표 참여가 제한됩니다. 입력 원문은 저장하지 않고 복원이 어려운 해시값으로 변환해 보관합니다.</p>
+                </details>
                 <div className="event-vote-modal__actions">
                   <button type="button" onClick={() => setPendingVote(null)}>취소</button>
-                  <button type="button" onClick={confirmVote} disabled={submitting || !voterIdentifier.trim()}>{submitting ? "투표 중..." : "투표하기"}</button>
+                  <button type="button" onClick={confirmVote} disabled={submitting || !voterIdentifier.trim() || !privacyConsent}>{submitting ? "투표 중..." : "투표하기"}</button>
                 </div>
                 {eventError ? <p className="event-vote-modal__error" role="alert">{eventError}</p> : null}
               </div>
@@ -279,7 +298,7 @@ const Event = () => {
                 <span>STREET DANCE GENRE</span>
                 <h2 id="event-info-title">{infoGenre.name}</h2>
                 <p>{infoGenre.description}</p>
-                <button type="button" onClick={() => { setInfoGenre(null); setVoterIdentifier(""); setEventError(""); setPendingVote(infoGenre); }}>{infoGenre.name} 투표하기</button>
+                <button type="button" onClick={() => { setInfoGenre(null); setVoterIdentifier(""); setPrivacyConsent(false); setEventError(""); setPendingVote(infoGenre); }}>{infoGenre.name} 투표하기</button>
               </div>
             </section>
           </div>

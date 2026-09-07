@@ -6,6 +6,8 @@ const requireExecutive = require("../middleware/requireExecutive");
 
 const router = express.Router();
 const EVENT_KEY = "2026-2-street-recruitment";
+const PRIVACY_POLICY_VERSION = "2026-09-08";
+const VOTE_DATA_EXPIRES_AT = new Date("2026-10-12T00:00:00+09:00");
 const GENRE_IDS = new Set(["voguing", "hiphop", "house", "locking", "popping", "krump"]);
 
 function getVisitorHash(req) {
@@ -72,9 +74,11 @@ router.post("/votes", async (req, res) => {
   const visitorHash = getVisitorHash(req);
   const genreId = String(req.body?.genreId || "").trim();
   const voterIdentifier = normalizeVoterIdentifier(req.body?.voterIdentifier);
+  const privacyConsent = req.body?.privacyConsent === true;
   if (!visitorHash) return res.status(400).json({ message: "브라우저 식별자가 필요합니다." });
   if (!GENRE_IDS.has(genreId)) return res.status(400).json({ message: "올바른 장르를 선택해주세요." });
   if (!voterIdentifier) return res.status(400).json({ message: "올바른 카카오톡 ID 또는 전화번호를 입력해주세요." });
+  if (!privacyConsent) return res.status(400).json({ message: "개인정보 수집·이용 동의가 필요합니다." });
   const voterHash = hashVoterIdentifier(voterIdentifier.normalized);
   if (!voterHash) return res.status(503).json({ message: "투표 보안 설정이 완료되지 않았습니다." });
 
@@ -85,6 +89,9 @@ router.post("/votes", async (req, res) => {
       visitorHash,
       voterHash,
       identifierType: voterIdentifier.identifierType,
+      consentedAt: new Date(),
+      privacyPolicyVersion: PRIVACY_POLICY_VERSION,
+      expiresAt: VOTE_DATA_EXPIRES_AT,
     });
     return res.status(201).json({ genreId: vote.genreId });
   } catch (error) {

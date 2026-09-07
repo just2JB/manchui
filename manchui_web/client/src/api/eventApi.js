@@ -19,8 +19,8 @@ export async function getEventStatus() {
   return data;
 }
 
-export async function submitEventVote(genreId, voterIdentifier) {
-  const { data } = await apiClient.post("/api/event/votes", { genreId, voterIdentifier }, visitorConfig());
+export async function submitEventVote(genreId, voterIdentifier, privacyConsent) {
+  const { data } = await apiClient.post("/api/event/votes", { genreId, voterIdentifier, privacyConsent }, visitorConfig());
   return data;
 }
 

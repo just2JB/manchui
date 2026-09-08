@@ -15,6 +15,9 @@ const EventResult = () => {
   const selectedGenre = EVENT_GENRES.find(({ id }) => id === genreId) ?? null;
   const votes = status.votes;
   const totalVotes = Object.values(votes).reduce((sum, count) => sum + count, 0);
+  const sortedGenres = [...EVENT_GENRES].sort(
+    (a, b) => (votes[b.id] ?? 0) - (votes[a.id] ?? 0),
+  );
 
   useEffect(() => {
     let active = true;
@@ -58,7 +61,7 @@ const EventResult = () => {
         {loading ? <p className="event-result__message">투표 현황을 불러오는 중...</p> : null}
 
         <div className="event-result__list">
-          {EVENT_GENRES.map((genre) => {
+          {sortedGenres.map((genre) => {
             const genreVotes = votes[genre.id] ?? 0;
             const percentage = totalVotes ? Math.round((genreVotes / totalVotes) * 100) : 0;
             const isSelected = genre.id === selectedGenre?.id;

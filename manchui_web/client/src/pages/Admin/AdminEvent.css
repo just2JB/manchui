@@ -6,7 +6,7 @@
 .adminEvent__heading button,.adminEvent__danger { display: inline-flex; align-items: center; gap: .35rem; flex-shrink: 0; padding: .55rem .8rem; border: 1px solid rgba(255,255,255,.14); border-radius: 8px; background: rgba(255,255,255,.06); color: var(--text-primary); font: inherit; font-size: .82rem; cursor: pointer; }
 .adminEvent__heading button:disabled,.adminEvent__danger:disabled,.adminEvent__delete:disabled { opacity: .45; cursor: not-allowed; }
 .adminEvent__error { padding: .8rem 1rem; border: 1px solid rgba(240,128,128,.35); border-radius: 10px; background: rgba(240,80,80,.08); color: #f08080; }
-.adminEvent__summary { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; margin-bottom: 1.25rem; }
+.adminEvent__summary { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 1rem; margin-bottom: 1.25rem; }
 .adminEvent__summary article { display: grid; grid-template-columns: 1fr auto; align-items: end; padding: 1rem 1.1rem; border: 1px solid rgba(255,255,255,.08); border-radius: 13px; background: rgba(255,255,255,.035); }
 .adminEvent__summary span { color: var(--text-more); font-size: .8rem; }
 .adminEvent__summary strong { grid-row: 1 / 3; grid-column: 2; color: #ff6868; font-size: 1.65rem; }
@@ -33,4 +33,46 @@
 .adminEvent__empty { height: 6rem; color: var(--text-more); text-align: center !important; }
 .adminEvent__empty svg { margin-right: .35rem; vertical-align: middle; }
 .adminEvent__state { color: var(--text-more); }
-@media (max-width:700px) { .adminEvent__summary { grid-template-columns: 1fr; } .adminEvent__voteGrid { grid-template-columns: 1fr; } .adminEvent__heading,.adminEvent__panelHead { align-items: stretch; flex-direction: column; } .adminEvent__heading button,.adminEvent__danger { justify-content: center; } }
+.adminEvent__draw { border-color: rgba(232,93,76,.26); background: linear-gradient(135deg,rgba(179,0,0,.08),rgba(255,255,255,.025) 52%); }
+.adminEvent__prizeList { display: flex; flex-direction: column; gap: .65rem; }
+.adminEvent__prizeRow { display: grid; grid-template-columns: 32px minmax(180px,1fr) 110px 58px; gap: .65rem; align-items: end; }
+.adminEvent__prizeIndex { width: 28px; height: 28px; display: grid; place-items: center; align-self: center; border-radius: 50%; background: rgba(232,93,76,.14); color: #ff9b8d; font-size: .75rem; font-weight: 800; }
+.adminEvent__prizeRow label { display: flex; flex-direction: column; gap: .4rem; color: var(--text-more); font-size: .76rem; }
+.adminEvent__prizeRow input { width: 100%; height: 42px; padding: 0 .75rem; border: 1px solid rgba(255,255,255,.13); border-radius: 9px; outline: 0; background: rgba(0,0,0,.28); color: var(--text-primary); font: inherit; box-sizing: border-box; }
+.adminEvent__prizeRow input:focus { border-color: rgba(232,93,76,.7); }
+.adminEvent__removePrize { height: 42px; border: 1px solid rgba(240,80,80,.18); border-radius: 9px; background: rgba(240,80,80,.08); color: #f08080; cursor: pointer; }
+.adminEvent__removePrize:disabled { opacity: .3; cursor: not-allowed; }
+.adminEvent__addPrize { align-self: flex-start; padding: .55rem .8rem; border: 1px dashed rgba(255,255,255,.18); border-radius: 9px; background: rgba(255,255,255,.035); color: var(--text-gray); font: inherit; font-size: .78rem; cursor: pointer; }
+.adminEvent__addPrize:disabled { opacity: .4; cursor: not-allowed; }
+.adminEvent__drawForm { display: flex; justify-content: flex-end; margin-top: .85rem; }
+.adminEvent__drawForm > button { min-width: 140px; height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border: 0; border-radius: 9px; background: linear-gradient(135deg,#e85d4c,#a90000); color: #fff; font: inherit; font-size: .84rem; font-weight: 750; cursor: pointer; }
+.adminEvent__drawForm > button:disabled { opacity: .45; cursor: not-allowed; }
+.adminEvent__drawResult { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.08); }
+.adminEvent__drawResult > header div { display: flex; align-items: baseline; gap: .65rem; }
+.adminEvent__drawResult > header span { color: var(--text-more); font-size: .75rem; }
+.adminEvent__prizeResult { margin-top: 1rem; }
+.adminEvent__prizeResult + .adminEvent__prizeResult { padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.06); }
+.adminEvent__prizeResult h3 { display: flex; align-items: center; gap: .5rem; margin: 0; color: var(--text-primary); font-size: .92rem; }
+.adminEvent__prizeResult h3 span { padding: .15rem .4rem; border-radius: 999px; background: rgba(232,93,76,.14); color: #ff9b8d; font-size: .68rem; }
+.adminEvent__winnerGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .6rem; margin-top: .8rem; }
+.adminEvent__winnerGrid article { display: grid; grid-template-columns: 30px 1fr auto; align-items: center; gap: .65rem; padding: .7rem; border-radius: 9px; background: rgba(0,0,0,.22); }
+.adminEvent__winnerNumber { width: 28px; height: 28px; display: grid; place-items: center; border-radius: 50%; background: rgba(232,93,76,.18); color: #ff9b8d; font-size: .75rem; font-weight: 800; }
+.adminEvent__winnerGrid article div { display: flex; min-width: 0; flex-direction: column; gap: .15rem; }
+.adminEvent__winnerGrid article strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .87rem; }
+.adminEvent__winnerGrid article small { color: var(--text-more); font-size: .7rem; }
+.adminEvent__winnerGrid button,.adminEvent__detail { display: inline-flex; align-items: center; gap: .25rem; padding: .34rem .55rem; border: 1px solid rgba(255,255,255,.12); border-radius: 7px; background: rgba(255,255,255,.05); color: var(--text-gray); font-size: .72rem; cursor: pointer; white-space: nowrap; }
+.adminEvent__winnerGrid button:disabled,.adminEvent__detail:disabled { opacity: .38; cursor: not-allowed; }
+.adminEvent__modal { position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; padding: 20px; }
+.adminEvent__modalBackdrop { position: absolute; inset: 0; width: 100%; border: 0; background: rgba(0,0,0,.76); backdrop-filter: blur(5px); cursor: pointer; }
+.adminEvent__modalCard { position: relative; z-index: 1; width: min(100%,400px); padding: 1.25rem; border: 1px solid rgba(232,93,76,.35); border-radius: 16px; background: var(--box-1,#1e1e1e); box-shadow: 0 24px 70px rgba(0,0,0,.65); }
+.adminEvent__modalCard header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+.adminEvent__modalCard h2 { margin: 0; font-size: 1.05rem; }
+.adminEvent__modalCard header button { width: 32px; height: 32px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: rgba(255,255,255,.07); color: #fff; cursor: pointer; }
+.adminEvent__modalCard dl { margin: 0; }
+.adminEvent__modalCard dl div { display: grid; grid-template-columns: 90px 1fr; gap: .75rem; padding: .65rem 0; border-bottom: 1px solid rgba(255,255,255,.06); font-size: .82rem; }
+.adminEvent__modalCard dt { color: var(--text-more); }
+.adminEvent__modalCard dd { margin: 0; color: var(--text-primary); word-break: break-all; }
+.adminEvent__identifier { color: #ff9b8d !important; font-weight: 750; }
+.adminEvent__modalCard > p { margin: 1rem 0 0; color: #f0a099; font-size: .72rem; text-align: center; }
+@media (max-width:900px) { .adminEvent__summary { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media (max-width:700px) { .adminEvent__summary { grid-template-columns: 1fr; } .adminEvent__voteGrid,.adminEvent__winnerGrid { grid-template-columns: 1fr; } .adminEvent__prizeRow { grid-template-columns: 28px minmax(0,1fr) 76px; } .adminEvent__prizeRow .adminEvent__removePrize { grid-column: 2 / -1; height: 34px; } .adminEvent__drawForm > button { width: 100%; } .adminEvent__heading,.adminEvent__panelHead { align-items: stretch; flex-direction: column; } .adminEvent__heading button,.adminEvent__danger { justify-content: center; } }

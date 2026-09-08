@@ -2,13 +2,31 @@ const crypto = require("crypto");
 const express = require("express");
 const EventVote = require("../models/EventVote");
 const EventComment = require("../models/EventComment");
+const EventDraw = require("../models/EventDraw");
 const requireExecutive = require("../middleware/requireExecutive");
+const {
+  decodeBase64Key,
+  decryptVoterIdentifier,
+  encryptVoterIdentifier,
+  maskVoterIdentifier,
+} = require("../utils/eventVoterIdentity");
 
 const router = express.Router();
 const EVENT_KEY = "2026-2-street-recruitment";
-const PRIVACY_POLICY_VERSION = "2026-09-08";
+const PRIVACY_POLICY_VERSION = "2026-09-08-v2";
 const VOTE_DATA_EXPIRES_AT = new Date("2026-10-12T00:00:00+09:00");
-const GENRE_IDS = new Set(["voguing", "hiphop", "house", "locking", "popping", "krump"]);
+const GENRE_IDS = new Set([
+  "voguing",
+  "hiphop",
+  "house",
+  "locking",
+  "popping",
+  "krump",
+  "tutting",
+  "waacking",
+  "breaking",
+  "girlish",
+]);
 
 function getVisitorHash(req) {
   const visitorId = String(req.get("x-event-visitor-id") || "").trim();
@@ -30,10 +48,28 @@ function normalizeVoterIdentifier(rawValue) {
   return null;
 }
 
+function getVoterHashKeys() {
+  const versions = new Set([
+    process.env.EVENT_VOTER_ACTIVE_KEY_VERSION,
+    ...(process.env.EVENT_VOTER_READ_KEY_VERSIONS || "").split(","),
+  ].map((value) => String(value || "").trim()).filter((value) => /^[a-zA-Z0-9_]{1,20}$/.test(value)));
+  const keys = [...versions]
+    .map((version) => decodeBase64Key(process.env[`EVENT_VOTER_HASH_KEY_${version.toUpperCase()}`]))
+    .filter(Boolean);
+  if (process.env.EVENT_VOTER_HASH_SECRET) keys.push(process.env.EVENT_VOTER_HASH_SECRET);
+  return keys;
+}
+
 function hashVoterIdentifier(normalizedIdentifier) {
-  const secret = process.env.EVENT_VOTER_HASH_SECRET || process.env.JWT_SECRET;
-  if (!secret) return null;
-  return crypto.createHmac("sha256", secret).update(`${EVENT_KEY}:${normalizedIdentifier}`).digest("hex");
+  const [activeKey] = getVoterHashKeys();
+  if (!activeKey) return null;
+  return crypto.createHmac("sha256", activeKey).update(`${EVENT_KEY}:${normalizedIdentifier}`).digest("hex");
+}
+
+function getVoterHashCandidates(normalizedIdentifier) {
+  return getVoterHashKeys().map((key) => (
+    crypto.createHmac("sha256", key).update(`${EVENT_KEY}:${normalizedIdentifier}`).digest("hex")
+  ));
 }
 
 function serializeComment(comment) {
@@ -42,6 +78,23 @@ function serializeComment(comment) {
     genreId: comment.genreId,
     content: comment.content,
     createdAt: comment.createdAt,
+  };
+}
+
+function serializeMaskedVote(vote) {
+  let identifier = null;
+  try {
+    identifier = decryptVoterIdentifier(vote);
+  } catch (error) {
+    console.error("이벤트 투표 식별정보 복호화 실패", error);
+  }
+  return {
+    id: String(vote._id),
+    genreId: vote.genreId,
+    identifierType: vote.identifierType,
+    maskedIdentifier: maskVoterIdentifier(identifier, vote.identifierType),
+    detailAvailable: Boolean(identifier),
+    createdAt: vote.createdAt,
   };
 }
 
@@ -81,14 +134,27 @@ router.post("/votes", async (req, res) => {
   if (!privacyConsent) return res.status(400).json({ message: "개인정보 수집·이용 동의가 필요합니다." });
   const voterHash = hashVoterIdentifier(voterIdentifier.normalized);
   if (!voterHash) return res.status(503).json({ message: "투표 보안 설정이 완료되지 않았습니다." });
+  const encryptedIdentity = encryptVoterIdentifier(voterIdentifier.normalized);
+  if (!encryptedIdentity) return res.status(503).json({ message: "투표 식별정보 암호화 설정이 완료되지 않았습니다." });
 
   try {
+    const existingVote = await EventVote.findOne({
+      eventKey: EVENT_KEY,
+      $or: [
+        { visitorHash },
+        { voterHash: { $in: getVoterHashCandidates(voterIdentifier.normalized) } },
+      ],
+    }).select("genreId").lean();
+    if (existingVote) {
+      return res.status(409).json({ message: "이미 투표에 참여했습니다.", myVote: existingVote.genreId });
+    }
     const vote = await EventVote.create({
       eventKey: EVENT_KEY,
       genreId,
       visitorHash,
       voterHash,
       identifierType: voterIdentifier.identifierType,
+      ...encryptedIdentity,
       consentedAt: new Date(),
       privacyPolicyVersion: PRIVACY_POLICY_VERSION,
       expiresAt: VOTE_DATA_EXPIRES_AT,
@@ -143,7 +209,7 @@ router.post("/comments", async (req, res) => {
 
 router.get("/admin", requireExecutive, async (req, res) => {
   try {
-    const [voteRows, comments, recentVotes] = await Promise.all([
+    const [voteRows, comments, recentVotes, eligibleVoteCount, lastDraw] = await Promise.all([
       EventVote.aggregate([
         { $match: { eventKey: EVENT_KEY } },
         { $group: { _id: "$genreId", count: { $sum: 1 } } },
@@ -152,7 +218,11 @@ router.get("/admin", requireExecutive, async (req, res) => {
       EventVote.find({ eventKey: EVENT_KEY })
         .sort({ createdAt: -1 })
         .limit(300)
-        .select("genreId identifierType createdAt")
+        .lean(),
+      EventVote.countDocuments({ eventKey: EVENT_KEY, encryptedIdentifier: { $ne: null } }),
+      EventDraw.findOne({ eventKey: EVENT_KEY })
+        .sort({ createdAt: -1 })
+        .populate("winners prizes.winners")
         .lean(),
     ]);
     const votes = Object.fromEntries([...GENRE_IDS].map((genreId) => [genreId, 0]));
@@ -164,16 +234,108 @@ router.get("/admin", requireExecutive, async (req, res) => {
       votes,
       totalVotes: Object.values(votes).reduce((sum, count) => sum + count, 0),
       comments: comments.map(serializeComment),
-      recentVotes: recentVotes.map((vote) => ({
-        id: String(vote._id),
-        genreId: vote.genreId,
-        identifierType: vote.identifierType,
-        createdAt: vote.createdAt,
-      })),
+      eligibleVoteCount,
+      recentVotes: recentVotes.map(serializeMaskedVote),
+      lastDraw: lastDraw
+        ? {
+            id: String(lastDraw._id),
+            prizeName: lastDraw.prizeName,
+            createdAt: lastDraw.createdAt,
+            winners: (lastDraw.winners || []).filter(Boolean).map(serializeMaskedVote),
+            prizes: lastDraw.prizes?.length
+              ? lastDraw.prizes.map((prize) => ({
+                  name: prize.name,
+                  winners: (prize.winners || []).filter(Boolean).map(serializeMaskedVote),
+                }))
+              : [{
+                  name: lastDraw.prizeName,
+                  winners: (lastDraw.winners || []).filter(Boolean).map(serializeMaskedVote),
+                }],
+          }
+        : null,
     });
   } catch (error) {
     console.error("이벤트 관리자 현황 조회 실패", error);
     return res.status(500).json({ message: "이벤트 관리 정보를 불러오지 못했습니다." });
+  }
+});
+
+router.get("/admin/votes/:voteId", requireExecutive, async (req, res) => {
+  try {
+    const vote = await EventVote.findOne({ _id: req.params.voteId, eventKey: EVENT_KEY }).lean();
+    if (!vote) return res.status(404).json({ message: "투표 정보를 찾을 수 없습니다." });
+    const identifier = decryptVoterIdentifier(vote);
+    if (!identifier) return res.status(404).json({ message: "기존 투표는 상세 식별정보를 확인할 수 없습니다." });
+    return res.json({
+      id: String(vote._id),
+      genreId: vote.genreId,
+      identifierType: vote.identifierType,
+      identifier,
+      createdAt: vote.createdAt,
+    });
+  } catch (error) {
+    if (error?.name === "CastError") return res.status(400).json({ message: "올바르지 않은 투표 ID입니다." });
+    console.error("이벤트 투표 상세 조회 실패", error);
+    return res.status(500).json({ message: "투표 상세정보를 불러오지 못했습니다." });
+  }
+});
+
+router.post("/admin/draw", requireExecutive, async (req, res) => {
+  const prizes = Array.isArray(req.body?.prizes)
+    ? req.body.prizes.map((prize) => ({
+        name: String(prize?.name || "").trim(),
+        winnerCount: Math.floor(Number(prize?.winnerCount)),
+      }))
+    : [{
+        name: String(req.body?.prizeName || "").trim(),
+        winnerCount: Math.floor(Number(req.body?.winnerCount)),
+      }];
+  if (!prizes.length || prizes.length > 20) return res.status(400).json({ message: "상품은 1개 이상 20개 이하로 추가해주세요." });
+  if (prizes.some(({ name }) => !name || name.length > 50)) return res.status(400).json({ message: "각 상품명을 1자 이상 50자 이하로 입력해주세요." });
+  if (prizes.some(({ winnerCount }) => !Number.isInteger(winnerCount) || winnerCount < 1 || winnerCount > 100)) return res.status(400).json({ message: "상품별 당첨 인원은 1명 이상 100명 이하로 입력해주세요." });
+  const totalWinnerCount = prizes.reduce((sum, prize) => sum + prize.winnerCount, 0);
+  if (totalWinnerCount > 100) return res.status(400).json({ message: "전체 당첨 인원은 100명 이하로 설정해주세요." });
+
+  try {
+    const candidates = await EventVote.find({
+      eventKey: EVENT_KEY,
+      encryptedIdentifier: { $ne: null },
+    }).lean();
+    if (candidates.length < totalWinnerCount) {
+      return res.status(400).json({ message: `추첨 가능한 참여자는 ${candidates.length}명입니다.` });
+    }
+    const pool = [...candidates];
+    const drawnPrizes = prizes.map((prize) => ({
+      name: prize.name,
+      winners: Array.from({ length: prize.winnerCount }, () => {
+        const winnerIndex = crypto.randomInt(pool.length);
+        return pool.splice(winnerIndex, 1)[0];
+      }),
+    }));
+    const winners = drawnPrizes.flatMap((prize) => prize.winners);
+    const draw = await EventDraw.create({
+      eventKey: EVENT_KEY,
+      prizeName: prizes[0].name,
+      winners: winners.map((winner) => winner._id),
+      prizes: drawnPrizes.map((prize) => ({
+        name: prize.name,
+        winners: prize.winners.map((winner) => winner._id),
+      })),
+      drawnBy: req.adminUserId,
+    });
+    return res.status(201).json({
+      id: String(draw._id),
+      prizeName: draw.prizeName,
+      createdAt: draw.createdAt,
+      winners: winners.map(serializeMaskedVote),
+      prizes: drawnPrizes.map((prize) => ({
+        name: prize.name,
+        winners: prize.winners.map(serializeMaskedVote),
+      })),
+    });
+  } catch (error) {
+    console.error("이벤트 당첨자 추첨 실패", error);
+    return res.status(500).json({ message: "당첨자를 추첨하지 못했습니다." });
   }
 });
 
@@ -191,7 +353,10 @@ router.delete("/admin/comments/:commentId", requireExecutive, async (req, res) =
 
 router.delete("/admin/votes", requireExecutive, async (req, res) => {
   try {
-    const result = await EventVote.deleteMany({ eventKey: EVENT_KEY });
+    const [result] = await Promise.all([
+      EventVote.deleteMany({ eventKey: EVENT_KEY }),
+      EventDraw.deleteMany({ eventKey: EVENT_KEY }),
+    ]);
     return res.json({ message: "투표를 초기화했습니다.", deletedCount: result.deletedCount });
   } catch (error) {
     console.error("이벤트 투표 초기화 실패", error);

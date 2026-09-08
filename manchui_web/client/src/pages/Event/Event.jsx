@@ -184,7 +184,6 @@ const Event = () => {
                 </button>
                 {latestComment ? (
                   <button type="button" className="event-genre__comment" aria-label={`${genre.name} 댓글 보기: ${latestComment.content}`} onClick={() => openComments(genre.id)}>
-                    <span className="event-genre__comment-avatar" aria-hidden><IoChatbubble /></span>
                     <span className="event-genre__comment-bubble">{latestComment.content}</span>
                   </button>
                 ) : null}
@@ -260,7 +259,7 @@ const Event = () => {
                     placeholder="예: manchui2026 또는 010-1234-5678"
                     autoComplete="off"
                   />
-                  <small>입력한 원문은 저장되지 않고 중복 확인용 값만 저장돼요.</small>
+                  <small>입력 정보는 암호화되어 중복 확인과 당첨자 연락에만 사용돼요.</small>
                 </label>
                 <label className="event-vote-modal__consent">
                   <input type="checkbox" checked={privacyConsent} onChange={(event) => setPrivacyConsent(event.target.checked)} />
@@ -270,10 +269,10 @@ const Event = () => {
                   <summary>개인정보 수집·이용 안내 보기</summary>
                   <dl>
                     <div><dt>수집 항목</dt><dd>카카오톡 ID 또는 전화번호</dd></div>
-                    <div><dt>이용 목적</dt><dd>이벤트 본인 확인 및 중복 투표 방지</dd></div>
+                    <div><dt>이용 목적</dt><dd>본인 확인, 중복 투표 방지, 당첨자 선정 및 연락</dd></div>
                     <div><dt>보유 기간</dt><dd>2026년 10월 11일까지</dd></div>
                   </dl>
-                  <p>동의를 거부할 수 있으나, 거부 시 투표 참여가 제한됩니다. 입력 원문은 저장하지 않고 복원이 어려운 해시값으로 변환해 보관합니다.</p>
+                  <p>동의를 거부할 수 있으나, 거부 시 투표 참여가 제한됩니다. 식별정보는 암호화해 보관하고 임원진만 당첨자 확인 목적으로 조회할 수 있습니다.</p>
                 </details>
                 <div className="event-vote-modal__actions">
                   <button type="button" onClick={() => setPendingVote(null)}>취소</button>

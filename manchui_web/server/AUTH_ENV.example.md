@@ -11,8 +11,17 @@ SERVER_URL=https://api.example.com
 JWT_SECRET=
 JWT_ACCESS_SECRET=
 
-# 이벤트 투표 식별자 HMAC 키 (미설정 시 JWT_SECRET 사용)
-EVENT_VOTER_HASH_SECRET=
+# 이벤트 투표 식별정보 키 버전 (영문/숫자/밑줄, 예: v1)
+EVENT_VOTER_ACTIVE_KEY_VERSION=v1
+# 키 교체 후 복호화 및 기존 중복 투표 확인에 사용할 버전 목록
+EVENT_VOTER_READ_KEY_VERSIONS=v1
+# 서로 독립적으로 생성한 32바이트 Base64 키를 사용
+EVENT_VOTER_ENCRYPTION_KEY_V1=
+EVENT_VOTER_HASH_KEY_V1=
+
+# 기존 데이터 복호화/중복확인 호환용. 신규 설치에서는 사용하지 않음
+# EVENT_VOTER_ENCRYPTION_SECRET=
+# EVENT_VOTER_HASH_SECRET=
 
 # Refresh token rotation + Kakao OAuth state/signup tokens
 JWT_REFRESH_SECRET=

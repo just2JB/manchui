@@ -339,6 +339,21 @@ router.post("/admin/draw", requireExecutive, async (req, res) => {
   }
 });
 
+router.delete("/admin/draw/:drawId", requireExecutive, async (req, res) => {
+  try {
+    const deleted = await EventDraw.findOneAndDelete({
+      _id: req.params.drawId,
+      eventKey: EVENT_KEY,
+    });
+    if (!deleted) return res.status(404).json({ message: "추첨 결과를 찾을 수 없습니다." });
+    return res.json({ message: "추첨 결과를 삭제했습니다." });
+  } catch (error) {
+    if (error?.name === "CastError") return res.status(400).json({ message: "올바르지 않은 추첨 결과 ID입니다." });
+    console.error("이벤트 추첨 결과 삭제 실패", error);
+    return res.status(500).json({ message: "추첨 결과를 삭제하지 못했습니다." });
+  }
+});
+
 router.delete("/admin/comments/:commentId", requireExecutive, async (req, res) => {
   try {
     const deleted = await EventComment.findOneAndDelete({ _id: req.params.commentId, eventKey: EVENT_KEY });

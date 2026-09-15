@@ -128,6 +128,21 @@ const AdminEvent = () => {
     setPrizes((current) => current.length > 1 ? current.filter((prize) => prize.id !== id) : current);
   };
 
+  const deleteDrawResult = async () => {
+    if (!data.lastDraw) return;
+    if (!(await manchuiModal("이 추첨 결과를 삭제할까요?\n삭제한 결과는 복구할 수 없습니다.", "confirm"))) return;
+    setWorking(true);
+    try {
+      await apiClient.delete(`/api/event/admin/draw/${data.lastDraw.id}`);
+      await fetchEventData();
+      await manchuiModal("추첨 결과를 삭제했습니다.");
+    } catch (requestError) {
+      await manchuiModal(requestError.response?.data?.message ?? "추첨 결과를 삭제하지 못했습니다.");
+    } finally {
+      setWorking(false);
+    }
+  };
+
   const showVoteDetail = async (voteId) => {
     setWorking(true);
     try {
@@ -181,7 +196,7 @@ const AdminEvent = () => {
         </div>
         {data.lastDraw ? (
           <div className="adminEvent__drawResult">
-            <header><div><strong>최근 추첨 결과</strong><span>{formatDateTime(data.lastDraw.createdAt)} · {data.lastDraw.winners.length}명</span></div></header>
+            <header><div><strong>최근 추첨 결과</strong><span>{formatDateTime(data.lastDraw.createdAt)} · {data.lastDraw.winners.length}명</span></div><button type="button" className="adminEvent__deleteDraw" onClick={() => void deleteDrawResult()} disabled={working}><IoTrashOutline /> 결과 삭제</button></header>
             {(data.lastDraw.prizes ?? [{ name: data.lastDraw.prizeName, winners: data.lastDraw.winners }]).map((prize, prizeIndex) => (
               <section className="adminEvent__prizeResult" key={`${prize.name}-${prizeIndex}`}>
                 <h3>{prize.name}<span>{prize.winners.length}명</span></h3>

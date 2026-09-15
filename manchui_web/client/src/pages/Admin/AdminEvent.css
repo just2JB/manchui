@@ -48,8 +48,11 @@
 .adminEvent__drawForm > button { min-width: 140px; height: 42px; display: inline-flex; align-items: center; justify-content: center; gap: .4rem; border: 0; border-radius: 9px; background: linear-gradient(135deg,#e85d4c,#a90000); color: #fff; font: inherit; font-size: .84rem; font-weight: 750; cursor: pointer; }
 .adminEvent__drawForm > button:disabled { opacity: .45; cursor: not-allowed; }
 .adminEvent__drawResult { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.08); }
+.adminEvent__drawResult > header { display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
 .adminEvent__drawResult > header div { display: flex; align-items: baseline; gap: .65rem; }
 .adminEvent__drawResult > header span { color: var(--text-more); font-size: .75rem; }
+.adminEvent__deleteDraw { display: inline-flex; align-items: center; gap: .3rem; flex-shrink: 0; padding: .4rem .6rem; border: 1px solid rgba(240,80,80,.2); border-radius: 7px; background: rgba(240,80,80,.08); color: #f08080; font: inherit; font-size: .72rem; cursor: pointer; }
+.adminEvent__deleteDraw:disabled { opacity: .4; cursor: not-allowed; }
 .adminEvent__prizeResult { margin-top: 1rem; }
 .adminEvent__prizeResult + .adminEvent__prizeResult { padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.06); }
 .adminEvent__prizeResult h3 { display: flex; align-items: center; gap: .5rem; margin: 0; color: var(--text-primary); font-size: .92rem; }
@@ -75,4 +78,4 @@
 .adminEvent__identifier { color: #ff9b8d !important; font-weight: 750; }
 .adminEvent__modalCard > p { margin: 1rem 0 0; color: #f0a099; font-size: .72rem; text-align: center; }
 @media (max-width:900px) { .adminEvent__summary { grid-template-columns: repeat(2,minmax(0,1fr)); } }
-@media (max-width:700px) { .adminEvent__summary { grid-template-columns: 1fr; } .adminEvent__voteGrid,.adminEvent__winnerGrid { grid-template-columns: 1fr; } .adminEvent__prizeRow { grid-template-columns: 28px minmax(0,1fr) 76px; } .adminEvent__prizeRow .adminEvent__removePrize { grid-column: 2 / -1; height: 34px; } .adminEvent__drawForm > button { width: 100%; } .adminEvent__heading,.adminEvent__panelHead { align-items: stretch; flex-direction: column; } .adminEvent__heading button,.adminEvent__danger { justify-content: center; } }
+@media (max-width:700px) { .adminEvent__summary { grid-template-columns: 1fr; } .adminEvent__voteGrid,.adminEvent__winnerGrid { grid-template-columns: 1fr; } .adminEvent__prizeRow { grid-template-columns: 28px minmax(0,1fr) 76px; } .adminEvent__prizeRow .adminEvent__removePrize { grid-column: 2 / -1; height: 34px; } .adminEvent__drawForm > button { width: 100%; } .adminEvent__drawResult > header { align-items: flex-start; flex-direction: column; } .adminEvent__heading,.adminEvent__panelHead { align-items: stretch; flex-direction: column; } .adminEvent__heading button,.adminEvent__danger { justify-content: center; } }

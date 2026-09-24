@@ -4,6 +4,7 @@ import { scrollWindowTopAfterNav } from "../../utils/navScroll";
 import { motion, AnimatePresence } from "motion/react";
 import "./MainPage.css";
 import DarkVeil from "../../components/DarkVeil/DarkVeil";
+import ActivityIllustration from "./ActivityIllustration";
 
 const COPY_LINES = ["by chance,", "however", "you dance,", "forever"];
 const CHUNK_STAGGER = 0.32;
@@ -503,14 +504,7 @@ const MainPage = () => {
               exit={(dir) => ({ x: dir > 0 ? -72 : 72, opacity: 0 })}
               transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="session-image-placeholder">
-                <span className="session-image-placeholder-text">
-                  사진 영역
-                </span>
-                <span className="session-image-placeholder-sub">
-                  (이미지 추후 첨부)
-                </span>
-              </div>
+              <ActivityIllustration type={SESSION_ITEMS[sessionIndex].id} />
               <p className="session-desc">
                 {SESSION_ITEMS[sessionIndex].description}
               </p>

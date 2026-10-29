@@ -11,6 +11,11 @@ function isReservationSharePath(pathname) {
   return /^\/club\/reservation\/share\/[^/]+$/.test(pathname);
 }
 
+/** 예약 페이지는 데스크톱에서 600px 열 대신 전체 폭 사용 */
+function isReservationPagePath(pathname) {
+  return /^\/club\/reservation\/?$/.test(pathname);
+}
+
 const ClubRoomLayout = () => {
   const location = useLocation();
   const {
@@ -21,6 +26,7 @@ const ClubRoomLayout = () => {
     ensureJoinConfigLoaded,
   } = useAppSettings();
   const shareOnly = isReservationSharePath(location.pathname);
+  const wideBody = isReservationPagePath(location.pathname);
   const hideBottomNav = location.pathname === "/club/login";
 
   useEffect(() => {
@@ -45,11 +51,7 @@ const ClubRoomLayout = () => {
     );
   }
 
-  if (
-    joinConfigLoaded &&
-    assistantEnabled === false &&
-    !isReservationSharePath(location.pathname)
-  ) {
+  if (joinConfigLoaded && assistantEnabled === false && !shareOnly) {
     return (
       <div className="clubRoomLayout preparingWrapper">
         <PreparingPage variant="club" reason="assistantDisabled" />
@@ -63,11 +65,13 @@ const ClubRoomLayout = () => {
       <div className="clubRoomLayout">
         {assistantEnabled && !hideBottomNav ? <ClubRoomNavbar /> : null}
         <div
-          className={
-            hideBottomNav
-              ? "clubRoombody clubRoombody--noBottomNav"
-              : "clubRoombody"
-          }
+          className={[
+            "clubRoombody",
+            hideBottomNav && "clubRoombody--noBottomNav",
+            wideBody && "clubRoombody--wide",
+          ]
+            .filter(Boolean)
+            .join(" ")}
         >
           <Outlet />
         </div>

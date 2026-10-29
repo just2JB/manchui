@@ -18,7 +18,6 @@ import {
   fetchUserTeams,
 } from "./clubFetchers";
 import { clubKeys, teamIdsKey } from "./clubQueryKeys";
-
 const RECOMMEND_PAGE_SIZE = 16;
 const REFRESH_INTERVAL_MS = 5 * 60_000;
 
@@ -173,15 +172,11 @@ export function useRecommendationsInfiniteQuery(sort, q) {
 export function useReservationMutations(userId) {
   const queryClient = useQueryClient();
 
+  /** 전체·내 예약 모두 갱신 */
   const invalidate = () => {
     void queryClient.invalidateQueries({
-      queryKey: clubKeys.reservationsAll(),
+      queryKey: [...clubKeys.all, "reservations"],
     });
-    if (userId) {
-      void queryClient.invalidateQueries({
-        queryKey: clubKeys.reservationsMine(userId),
-      });
-    }
   };
 
   const createReservation = useMutation({

@@ -1,14 +1,16 @@
-import React, { Fragment, useEffect, useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import { findReservationForHour, getHourSlotState } from "./reservationLookup";
-import { hourLabelPeriodClass, isAmHourSlot } from "./reservationTimeFormat";
 
-const FIRST_HOUR = 0;
-const LAST_HOUR = 23;
-/** 시트 열릴 때 가로 스크롤 기준(정오) */
-const HOUR_SCROLL_ANCHOR = 12;
+const PERIODS = [
+  { key: "am", label: "오전", from: 0, to: 11 },
+  { key: "pm", label: "오후", from: 12, to: 23 },
+];
 
+/**
+ * 시간 칩 그리드: 시작 시각 → 끝 시각 순서로 두 번 눌러 연속 구간 선택.
+ * 예약된 칸을 누르면 예약 정보를 보여 줍니다.
+ */
 export default function ReservationHourPicker({
-  active,
   selectedDateKey,
   selectedHours,
   reservedOnSelected,
@@ -18,117 +20,99 @@ export default function ReservationHourPicker({
   onSelectHour,
   onViewReservation,
 }) {
-  const hourScrollRef = useRef(null);
+  const selectedSet = useMemo(() => new Set(selectedHours), [selectedHours]);
+  const rangeStart = selectedHours.length ? Math.min(...selectedHours) : null;
+  const rangeEnd = selectedHours.length ? Math.max(...selectedHours) : null;
 
-  const hourSlots = useMemo(() => {
-    const list = [];
-    for (let h = FIRST_HOUR; h <= LAST_HOUR; h++) list.push(h);
-    return list;
-  }, []);
-
-  useEffect(() => {
-    if (!active || !selectedDateKey) return;
-    const scrollEl = hourScrollRef.current;
-    if (!scrollEl) return;
-
-    const run = () => {
-      const anchor = scrollEl.querySelector(
-        `[data-hour-scroll-anchor="${HOUR_SCROLL_ANCHOR}"]`,
-      );
-      if (!anchor) return;
-      const scrollRect = scrollEl.getBoundingClientRect();
-      const anchorRect = anchor.getBoundingClientRect();
-      const delta =
-        anchorRect.left +
-        anchorRect.width / 2 -
-        (scrollRect.left + scrollRect.width / 2);
-      scrollEl.scrollLeft = Math.max(0, scrollEl.scrollLeft + delta);
-    };
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(run);
+  const renderChip = (h) => {
+    const { reserved, visuallyBlocked, disabled } = getHourSlotState(h, {
+      reservedOnSelected,
+      selectedDateKey,
+      todayKey,
+      canCreateReservation,
     });
-  }, [active, selectedDateKey]);
+    const selected = selectedSet.has(h);
+    const past = visuallyBlocked && !reserved;
+    const className = [
+      "reservation__hourChip",
+      selected && "reservation__hourChip--selected",
+      selected && h === rangeStart && "reservation__hourChip--rangeStart",
+      selected && h === rangeEnd && "reservation__hourChip--rangeEnd",
+      reserved && "reservation__hourChip--reserved",
+      past && "reservation__hourChip--past",
+    ]
+      .filter(Boolean)
+      .join(" ");
+
+    return (
+      <button
+        key={h}
+        type="button"
+        className={className}
+        disabled={disabled}
+        aria-pressed={selected}
+        aria-label={
+          reserved
+            ? `${h}시~${h + 1}시 예약됨, 정보 보기`
+            : past
+              ? `${h}시~${h + 1}시 지난 시간`
+              : selected
+                ? `${h}시~${h + 1}시 선택됨`
+                : `${h}시~${h + 1}시 선택`
+        }
+        onClick={() => {
+          if (reserved) {
+            const r = findReservationForHour(selectedDateKey, h, allReservations);
+            if (r) onViewReservation(r);
+            return;
+          }
+          if (!disabled) onSelectHour(h);
+        }}
+      >
+        <span className="reservation__hourChipTime">{h}시</span>
+        {reserved ? (
+          <span className="reservation__hourChipTag">예약</span>
+        ) : null}
+      </button>
+    );
+  };
 
   return (
-    <>
-      <div className="reservation__hourPeriodLegend" aria-hidden="true">
-        <span className="reservation__hourPeriodLegend__am">오전 (0~12시)</span>
-        <span className="reservation__hourPeriodLegend__pm">
-          오후 (12~24시)
-        </span>
-      </div>
-      <div className="reservation__hourTrack">
-        <div ref={hourScrollRef} className="reservation__hourScroll">
-          <div
-            className="reservation__hourScrollInner"
-            role="group"
-            aria-label="0시부터 23시까지 시간대 선택"
-          >
-            <span className="reservation__hourLabelWrap">
-              <span
-                className={`reservation__hourLabel ${hourLabelPeriodClass(FIRST_HOUR)}`}
-              >
-                {FIRST_HOUR}
-              </span>
+    <div className="reservation__hourPicker">
+      <ul className="reservation__hourLegend" aria-hidden="true">
+        <li>
+          <span className="reservation__hourLegendSwatch reservation__hourLegendSwatch--free" />
+          가능
+        </li>
+        <li>
+          <span className="reservation__hourLegendSwatch reservation__hourLegendSwatch--selected" />
+          선택
+        </li>
+        <li>
+          <span className="reservation__hourLegendSwatch reservation__hourLegendSwatch--reserved" />
+          예약됨
+        </li>
+      </ul>
+      {PERIODS.map((p) => {
+        const hours = [];
+        for (let h = p.from; h <= p.to; h++) hours.push(h);
+        return (
+          <div key={p.key} className="reservation__hourGroup">
+            <span
+              className={`reservation__hourGroupLabel reservation__hourGroupLabel--${p.key}`}
+            >
+              {p.label}
             </span>
-            {hourSlots.map((h) => {
-              const { reserved, visuallyBlocked, disabled } = getHourSlotState(
-                h,
-                {
-                  reservedOnSelected,
-                  selectedDateKey,
-                  todayKey,
-                  canCreateReservation,
-                },
-              );
-              const selected = selectedHours.includes(h);
-              const amSlot = isAmHourSlot(h);
-              return (
-                <Fragment key={h}>
-                  <button
-                    type="button"
-                    disabled={disabled}
-                    data-hour-scroll-anchor={
-                      h === HOUR_SCROLL_ANCHOR ? HOUR_SCROLL_ANCHOR : undefined
-                    }
-                    className={`reservation__hourCell${selected ? " reservation__hourCell--selected" : ""}${visuallyBlocked ? " reservation__hourCell--blocked" : ""}${reserved ? " reservation__hourCell--reserved" : ""}${amSlot ? " reservation__hourCell--am" : " reservation__hourCell--pm"}`}
-                    onClick={() => {
-                      if (reserved) {
-                        const r = findReservationForHour(
-                          selectedDateKey,
-                          h,
-                          allReservations,
-                        );
-                        if (r) onViewReservation(r);
-                        return;
-                      }
-                      if (!disabled) onSelectHour(h);
-                    }}
-                    aria-pressed={selected}
-                    aria-label={
-                      reserved
-                        ? `${h}시~${h + 1}시 예약됨, 정보 보기`
-                        : visuallyBlocked
-                          ? `${h}시~${h + 1}시 구간 예약 불가`
-                          : selected
-                            ? `${h}시~${h + 1}시 구간 선택됨`
-                            : `${h}시~${h + 1}시 구간 선택`
-                    }
-                  />
-                  <span className="reservation__hourLabelWrap">
-                    <span
-                      className={`reservation__hourLabel ${hourLabelPeriodClass(h + 1)}`}
-                    >
-                      {h + 1}
-                    </span>
-                  </span>
-                </Fragment>
-              );
-            })}
+            <div
+              className="reservation__hourGrid"
+              role="group"
+              aria-label={`${p.label} 시간대 선택`}
+            >
+              {hours.map(renderChip)}
+            </div>
           </div>
-        </div>
-      </div>
-    </>
+        );
+      })}
+    </div>
   );
 }

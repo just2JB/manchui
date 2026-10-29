@@ -5,10 +5,15 @@ const reservationSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  /** 대표자 연락처(전화 등) */
+  /** 팀 이름 */
+  teamName: {
+    type: String,
+    required: false,
+  },
+  /** (구버전) 대표자 연락처 — 기존 데이터 호환용 */
   agentId: {
     type: String,
-    required: true,
+    required: false,
   },
   time: {
     type: Array,

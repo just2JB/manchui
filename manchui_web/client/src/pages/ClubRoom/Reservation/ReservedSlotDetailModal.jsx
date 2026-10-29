@@ -22,7 +22,6 @@ export default function ReservedSlotDetailModal({ reservation, onClose }) {
 
   const name = getReservationBookerName(reservation);
   const timeStr = formatReservationTimeRange(reservation.time);
-  const contact = reservation.agentId?.trim() || "—";
   const headcount =
     reservation.headcount != null ? `${reservation.headcount}명` : "—";
 
@@ -53,12 +52,8 @@ export default function ReservedSlotDetailModal({ reservation, onClose }) {
             <dd>{timeStr}</dd>
           </div>
           <div className="reservation__detailRow">
-            <dt>예약자</dt>
+            <dt>팀</dt>
             <dd>{name}</dd>
-          </div>
-          <div className="reservation__detailRow">
-            <dt>연락처</dt>
-            <dd>{contact}</dd>
           </div>
           <div className="reservation__detailRow">
             <dt>인원</dt>

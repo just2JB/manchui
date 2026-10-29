@@ -171,7 +171,7 @@ const ClubHomeScheduleSheet = ({
                       {formatReservationTimeRange(reservation.time)}
                     </span>
                     <span className="clubHomeSheet__itemSub">
-                      연락처 {reservation.agentId ?? "—"}
+                      팀 {reservation.teamName ?? "—"}
                       {reservation.headcount != null
                         ? ` · ${reservation.headcount}명`
                         : ""}

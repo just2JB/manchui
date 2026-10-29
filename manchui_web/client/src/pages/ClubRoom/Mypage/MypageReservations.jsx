@@ -136,7 +136,7 @@ const MypageReservations = () => {
                   {formatReservationTimeRange(r.time)}
                 </span>
                 <span className="reservation__myMeta">
-                  연락처 {r.agentId ?? "—"}
+                  팀 {r.teamName ?? "—"}
                   {r.headcount != null ? ` · 인원 ${r.headcount}명` : ""}
                 </span>
               </div>

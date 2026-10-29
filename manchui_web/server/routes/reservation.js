@@ -14,6 +14,7 @@ const {
   setDefaultReservationLimit,
   setUserReservationLimit,
 } = require("../utils/reservationLimits");
+const { validateTeamName } = require("../utils/reservationTeamName");
 const {
   isPastReservationEnd,
   isRetentionExpired,
@@ -22,16 +23,12 @@ const {
   purgeExpiredReservations,
 } = require("../utils/reservationRetention");
 
-/** 공유 페이지용: 연락처 마스킹 */
-function maskAgentId(raw) {
-  if (raw == null || String(raw).trim() === "") return "—";
-  const s = String(raw).trim();
-  const digits = s.replace(/\D/g, "");
-  if (digits.length >= 10) {
-    return `${digits.slice(0, 3)}-****-${digits.slice(-4)}`;
-  }
-  if (s.length <= 3) return "***";
-  return `${s.slice(0, 2)}***${s.slice(-1)}`;
+const DATE_KEY_RE = /^\d{4}-\d{2}-\d{2}$/;
+const KST_OFFSET_MS = 9 * 60 * 60 * 1000;
+
+/** 서버 타임존과 무관하게 한국 날짜 기준 오늘 (YYYY-MM-DD) */
+function todayKeyKst() {
+  return new Date(Date.now() + KST_OFFSET_MS).toISOString().slice(0, 10);
 }
 
 function getUserIdFromReq(req) {
@@ -54,12 +51,47 @@ async function hasReservedTimeOverlap(date, timeArray) {
   const existingReservation = await Reservation.find({ date });
   for (const item of existingReservation) {
     if (isPastReservationEnd(item, now)) continue;
-    const reservedTime = item.time;
+    const reservedTime = item.time.map(Number);
     for (const reqTime of timeArray) {
       if (reservedTime.includes(Number(reqTime))) return true;
     }
   }
   return false;
+}
+
+/**
+ * 날짜·시간 형식 검증 (클라이언트 값을 그대로 믿지 않고 서버에서 한 번 더 확인)
+ * @returns {{ ok: true, hours: number[] } | { ok: false, message: string }}
+ */
+function validateDateAndHours(date, time) {
+  if (typeof date !== "string" || !DATE_KEY_RE.test(date)) {
+    return { ok: false, message: "날짜 형식이 올바르지 않습니다." };
+  }
+  if (date < todayKeyKst()) {
+    return { ok: false, message: "지난 날짜는 예약할 수 없습니다." };
+  }
+  if (!Array.isArray(time) || time.length === 0 || time.length > 24) {
+    return { ok: false, message: "예약할 시간을 선택해 주세요." };
+  }
+  const hours = [...new Set(time.map(Number))].sort((a, b) => a - b);
+  if (hours.some((h) => !Number.isInteger(h) || h < 0 || h > 23)) {
+    return { ok: false, message: "시간 형식이 올바르지 않습니다." };
+  }
+  for (let i = 1; i < hours.length; i++) {
+    if (hours[i] !== hours[i - 1] + 1) {
+      return { ok: false, message: "연속된 시간만 예약할 수 있습니다." };
+    }
+  }
+  return { ok: true, hours };
+}
+
+function parseHeadcount(headcount) {
+  const hc =
+    headcount !== undefined && headcount !== null && headcount !== ""
+      ? Number(headcount)
+      : 1;
+  if (!Number.isInteger(hc) || hc < 1 || hc > 99) return null;
+  return hc;
 }
 
 /**
@@ -77,9 +109,21 @@ async function createReservationHandler(req, res, bookingType) {
       return res.status(401).json({ message: "로그인이 필요합니다." });
     }
 
-    const { date, agentId, time, headcount } = req.body;
-    if (!date || !agentId || !Array.isArray(time) || time.length === 0) {
-      return res.status(400).json({ message: "필수 정보가 누락되었습니다." });
+    const { date, teamName, time, headcount } = req.body || {};
+
+    const team = validateTeamName(teamName);
+    if (!team.ok) {
+      return res.status(400).json({ message: team.message });
+    }
+
+    const slot = validateDateAndHours(date, time);
+    if (!slot.ok) {
+      return res.status(400).json({ message: slot.message });
+    }
+
+    const hc = parseHeadcount(headcount);
+    if (hc === null) {
+      return res.status(400).json({ message: "인원수는 1~99 사이로 입력해 주세요." });
     }
 
     await purgePastReservations();
@@ -91,24 +135,16 @@ async function createReservationHandler(req, res, bookingType) {
       }
     }
 
-    if (await hasReservedTimeOverlap(date, time)) {
+    if (await hasReservedTimeOverlap(date, slot.hours)) {
       return res
-        .status(401)
+        .status(409)
         .json({ message: "해당 시간은 이미 예약 되었습니다." });
     }
 
-    const hc =
-      headcount !== undefined && headcount !== null && headcount !== ""
-        ? Number(headcount)
-        : 1;
-    if (Number.isNaN(hc) || hc < 1) {
-      return res.status(400).json({ message: "인원수를 확인해 주세요." });
-    }
-
     const reservation = new Reservation({
-      date: date,
-      agentId: String(agentId).trim(),
-      time: time,
+      date,
+      teamName: team.name,
+      time: slot.hours,
       userId,
       headcount: hc,
       bookingType,
@@ -117,12 +153,44 @@ async function createReservationHandler(req, res, bookingType) {
     res.status(201).json({
       message: "예약이 완료되었습니다.",
       reservationId: reservation._id,
+      reservation: {
+        _id: reservation._id,
+        date: reservation.date,
+        time: reservation.time,
+        teamName: reservation.teamName,
+        headcount: reservation.headcount,
+        bookingType: reservation.bookingType,
+      },
     });
   } catch (error) {
-    res.status(501).json({ message: "서버 오류가 발생하였습니다." });
+    res.status(500).json({ message: "서버 오류가 발생하였습니다." });
   }
 }
 
+function sortByDateThenStart(list) {
+  return list.sort((a, b) => {
+    if (a.date !== b.date) return a.date < b.date ? -1 : 1;
+    const minA = Math.min(...(a.time || []).map(Number));
+    const minB = Math.min(...(b.time || []).map(Number));
+    return minA - minB;
+  });
+}
+
+/** 공개 목록용: 연락처·계정 정보 제외 */
+function toPublicReservation(doc) {
+  const legacyName =
+    doc.userId && typeof doc.userId === "object" ? doc.userId.username : null;
+  return {
+    _id: doc._id,
+    date: doc.date,
+    time: doc.time,
+    headcount: doc.headcount,
+    teamName: doc.teamName || legacyName || null,
+    bookingType: doc.bookingType,
+  };
+}
+
+/** 일반 예약 (로그인 필요) */
 router.post("/make", async (req, res) => {
   await createReservationHandler(req, res, "general");
 });
@@ -136,45 +204,26 @@ router.get("/", async (req, res) => {
   try {
     await purgePastReservations();
     const now = new Date();
-    const reservation = filterActiveForUserDisplay(
+    const list = filterActiveForUserDisplay(
       await Reservation.find().populate("userId", "username").lean(),
       now,
     );
-    const sortDay = reservation.sort((a, b) => {
-      if (new Date(a.date) > new Date(b.date)) {
-        return 1;
-      } else if (new Date(a.date) < new Date(b.date)) {
-        return -1;
-      } else {
-        return 0;
-      }
-    });
-    const sortTime = sortDay.sort((a, b) => {
-      if (a.date === b.date) {
-        if (Math.min(...a.time) > Math.min(...b.time)) {
-          return 1;
-        } else if (Math.min(...a.time) < Math.min(...b.time)) {
-          return -1;
-        }
-      } else {
-        return 0;
-      }
-    });
-
-    res.json(sortTime);
+    res.json(sortByDateThenStart(list).map(toPublicReservation));
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
   }
 });
 
-/** 공개: 링크로 열람 (로그인 불필요). 연락처는 마스킹 */
+/** 공개: 링크로 열람 (로그인 불필요) */
 router.get("/public/:id", async (req, res) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
     }
-    const doc = await Reservation.findById(id).lean();
+    const doc = await Reservation.findById(id)
+      .populate("userId", "username")
+      .lean();
     if (!doc) {
       return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
     }
@@ -182,18 +231,13 @@ router.get("/public/:id", async (req, res) => {
       await Reservation.findByIdAndDelete(id);
       return res.status(404).json({ message: "예약을 찾을 수 없습니다." });
     }
-    res.json({
-      _id: doc._id,
-      date: doc.date,
-      time: doc.time,
-      headcount: doc.headcount,
-      contactMasked: maskAgentId(doc.agentId),
-    });
+    res.json(toPublicReservation(doc));
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
   }
 });
 
+/** 내 예약 (예약 페이지·마이페이지·홈 표시용) */
 router.get("/mine", async (req, res) => {
   try {
     const userId = getUserIdFromReq(req);
@@ -210,17 +254,9 @@ router.get("/mine", async (req, res) => {
       }).lean(),
       now,
     );
-    list.sort((a, b) => {
-      const da = new Date(a.date);
-      const db = new Date(b.date);
-      if (da.getTime() !== db.getTime()) return da - db;
-      const minA = Math.min(...(a.time || []).map(Number));
-      const minB = Math.min(...(b.time || []).map(Number));
-      return minA - minB;
-    });
     const quota = await getQuotaForUser(userId);
     res.json({
-      reservations: list,
+      reservations: sortByDateThenStart(list),
       quota: {
         limit: quota.limit,
         count: quota.count,
@@ -307,15 +343,7 @@ router.get("/admin/list", requireExecutive, async (req, res) => {
         .lean(),
       now,
     );
-    raw.sort((a, b) => {
-      const da = new Date(a.date);
-      const db = new Date(b.date);
-      if (da.getTime() !== db.getTime()) return da - db;
-      const minA = Math.min(...(a.time || []).map(Number));
-      const minB = Math.min(...(b.time || []).map(Number));
-      return minA - minB;
-    });
-    res.json(raw);
+    res.json(sortByDateThenStart(raw));
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });
   }
@@ -351,30 +379,37 @@ router.delete("/admin/by-id/:id", requireExecutive, async (req, res) => {
   }
 });
 
+/**
+ * 예약 취소: 본인 예약만 허용
+ */
 router.delete("/:id", async (req, res) => {
   try {
-    const userId = getUserIdFromReq(req);
-    if (!userId) {
-      return res.status(401).json({ message: "로그인이 필요합니다." });
-    }
-    const reservation = await Reservation.findById(req.params.id);
-    if (!reservation) {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({ message: "해당 예약을 찾을 수 없습니다." });
     }
-    if (
-      !reservation.userId ||
-      String(reservation.userId) !== String(userId)
-    ) {
-      return res
-        .status(403)
-        .json({ message: "본인의 예약만 삭제할 수 있습니다." });
+    const reservation = await Reservation.findById(id);
+    if (!reservation) {
+      return res.status(404).json({ message: "해당 예약을 찾을 수 없습니다." });
     }
     if (reservation.bookingType === "admin") {
       return res.status(403).json({
         message: "관리자 예약은 관리 화면에서만 취소할 수 있습니다.",
       });
     }
-    await Reservation.findByIdAndDelete(req.params.id);
+
+    const userId = getUserIdFromReq(req);
+    const isOwner =
+      Boolean(userId) &&
+      Boolean(reservation.userId) &&
+      String(reservation.userId) === String(userId);
+
+    if (!isOwner) {
+      return res.status(403).json({
+        message: "본인의 예약만 취소할 수 있습니다.",
+      });
+    }
+    await Reservation.findByIdAndDelete(id);
     res.json({ message: "예약이 삭제되었습니다." });
   } catch (error) {
     res.status(500).json({ message: "서버 에러 발생" });

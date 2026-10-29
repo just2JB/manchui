@@ -79,6 +79,13 @@ function memberLabel(r) {
   return "—";
 }
 
+/** 팀 이름 (구버전 예약은 연락처 표시) */
+function teamLabel(r) {
+  if (r.teamName) return r.teamName;
+  if (r.agentId) return `연락처 ${r.agentId}`;
+  return "—";
+}
+
 function isAdminBooking(r) {
   return r.bookingType === "admin";
 }
@@ -112,7 +119,7 @@ function AdminReservationTable({ rows, busyId, onDeleteOne, isPastDateKey }) {
             <th scope="col">날짜</th>
             <th scope="col">시간</th>
             <th scope="col">구분</th>
-            <th scope="col">연락처</th>
+            <th scope="col">팀</th>
             <th scope="col">인원</th>
             <th scope="col">예약 계정</th>
             <th scope="col">관리</th>
@@ -136,7 +143,7 @@ function AdminReservationTable({ rows, busyId, onDeleteOne, isPastDateKey }) {
                     {isAdminBooking(r) ? "관리자" : "일반"}
                   </span>
                 </td>
-                <td>{r.agentId ?? "—"}</td>
+                <td>{teamLabel(r)}</td>
                 <td>{r.headcount != null ? `${r.headcount}명` : "—"}</td>
                 <td>{memberLabel(r)}</td>
                 <td>
@@ -182,7 +189,7 @@ function AdminDayReservationList({
               </span>
             </div>
             <p className="admin-reservation__dayCardMeta">
-              연락처 {r.agentId ?? "—"}
+              팀 {teamLabel(r)}
               {r.headcount != null ? ` · 인원 ${r.headcount}명` : ""}
               {" · "}
               {memberLabel(r)}
@@ -224,7 +231,7 @@ const AdminReservation = () => {
   );
 
   const [selectedHours, setSelectedHours] = useState([]);
-  const [contact, setContact] = useState("");
+  const [teamName, setTeamName] = useState("");
   const [headcount, setHeadcount] = useState(1);
   const [submitting, setSubmitting] = useState(false);
   const [busyId, setBusyId] = useState(null);
@@ -322,7 +329,7 @@ const AdminReservation = () => {
   const selectDate = (dateKey) => {
     setSelectedDateKey(dateKey);
     setSelectedHours([]);
-    setContact("");
+    setTeamName("");
     setHeadcount(1);
     setViewingReservation(null);
     const [y, m] = dateKey.split("-").map(Number);
@@ -397,9 +404,9 @@ const AdminReservation = () => {
       await modal("연속된 시간만 예약할 수 있습니다.", "alert");
       return;
     }
-    const phone = contact.trim();
-    if (!phone) {
-      await modal("대표자 연락처를 입력해 주세요.", "alert");
+    const name = teamName.trim();
+    if (!name) {
+      await modal("팀 이름을 입력해 주세요.", "alert");
       return;
     }
     const hc = Number(headcount);
@@ -414,7 +421,7 @@ const AdminReservation = () => {
         "/api/reservation/admin/make",
         {
           date: selectedDateKey,
-          agentId: phone,
+          teamName: name,
           time: selectedHours.map(Number),
           headcount: hc,
         },
@@ -422,7 +429,7 @@ const AdminReservation = () => {
       );
       await modal("예약이 완료되었습니다.", "alert");
       setSelectedHours([]);
-      setContact("");
+      setTeamName("");
       setHeadcount(1);
       await loadList();
     } catch (err) {
@@ -708,19 +715,19 @@ const AdminReservation = () => {
                 </fieldset>
 
                 <label className="reservation__field reservation__field--stack">
-                  <span className="reservation__label">대표자 연락처</span>
+                  <span className="reservation__label">팀 이름</span>
                   <input
-                    type="tel"
+                    type="text"
                     className="reservation__input"
-                    value={contact}
-                    onChange={(e) => setContact(e.target.value)}
-                    placeholder="전화번호"
-                    autoComplete="tel"
+                    value={teamName}
+                    onChange={(e) => setTeamName(e.target.value.slice(0, 20))}
+                    placeholder="예: 만취 1팀"
+                    maxLength={20}
                   />
                 </label>
 
                 <label className="reservation__field reservation__field--stack">
-                  <span className="reservation__label">인원</span>
+                  <span className="reservation__label">사용 인원</span>
                   <div className="reservation__numberWrap">
                     <button
                       type="button"

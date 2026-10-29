@@ -249,7 +249,7 @@ const ClubRoom = () => {
                     {formatReservationTimeRange(reservation.time)}
                   </span>
                   <span className="clubHome__reservationMeta">
-                    연락처 {reservation.agentId ?? "—"}
+                    팀 {reservation.teamName ?? "—"}
                     {reservation.headcount != null
                       ? ` · ${reservation.headcount}명`
                       : ""}

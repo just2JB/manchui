@@ -90,6 +90,12 @@
 .clubRoombody--noBottomNav {
   padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
 }
+
+/* 예약 페이지 등: 데스크톱에서도 600px 열 대신 화면 전체 폭 사용 (내용은 페이지에서 가운데 정렬) */
+.clubRoombody--wide {
+  width: 100%;
+  --club-room-column-width: 100%;
+}
 @media screen and (max-width: 767px) {
   .clubRoomLayout {
     height: auto;

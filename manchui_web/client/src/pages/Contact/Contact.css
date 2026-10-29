@@ -1,79 +1,8 @@
-.contact-page {
-  min-height: 100vh;
-  background-color: var(--background-dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  box-sizing: border-box;
-}
-
-.contact-section {
-  text-align: center;
-  max-width: 420px;
-}
-
-.contact-title {
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: 600;
-  color: var(--text-primary);
-  margin: 0 0 1rem;
-  letter-spacing: 0.02em;
-  animation: contactEnter 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.contact-message {
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  color: var(--text-primary);
-  opacity: 0.9;
-  line-height: 1.6;
-  margin: 0 0 2rem;
-  animation: contactEnter 0.55s 0.08s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.contact-instagram-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
-  animation: contactEnter 0.6s 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-@keyframes contactEnter {
-  from {
-    opacity: 0;
-    transform: translateY(18px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.contact-instagram-btn:hover {
-  opacity: 0.95;
-  transform: translateY(-1px);
-}
-
-.contact-instagram-btn:active {
-  transform: translateY(0);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .contact-title,
-  .contact-message,
-  .contact-instagram-btn {
-    animation: none;
-  }
-}
+﻿.contact-help { margin-top: 36px; }
+.contact-help > p { color: #aaa; font-size: 13px; margin-bottom: 12px; }
+.contact-help details { border-bottom: 1px solid var(--public-border); }
+.contact-help summary { padding: 16px 4px; cursor: pointer; font-size: 15px; }
+.contact-help summary:hover, .contact-help details[open] summary { color: #ff7777; }
+.contact-help summary:focus-visible { outline: 2px solid #ff7777; outline-offset: 2px; }
+.contact-help details p { padding: 0 4px 18px; font-size: 14px; color: #bbb; line-height: 1.8; }
+.contact-help > a { display: inline-flex; gap: 18px; padding: 20px 0 4px; color: #ddd; font-size: 14px; text-underline-offset: 5px; }

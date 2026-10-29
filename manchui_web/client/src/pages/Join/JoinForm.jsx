@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./JoinForm.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdKeyboardArrowDown, MdLanguage } from "react-icons/md";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -146,7 +146,7 @@ const TRANSLATIONS = {
     confirm: "확인",
     colleges: COLLEGES_KO,
     collegeMajors: COLLEGE_MAJORS_KO,
-    langLabel: "한국어",
+    langLabel: "English",
     validationName: "이름을 입력해주세요.",
     validationStudentId: "학번을 10자리 숫자로 입력해주세요.",
     validationContact:
@@ -183,7 +183,7 @@ const TRANSLATIONS = {
     confirm: "Confirm",
     colleges: COLLEGES_EN,
     collegeMajors: COLLEGE_MAJORS_EN,
-    langLabel: "English",
+    langLabel: "한국어",
     validationName: "Please enter your name.",
     validationStudentId: "Please enter 10 digit student ID.",
     validationContact: "Please enter phone (e.g. 010-0000-0000) or Kakao ID.",
@@ -264,6 +264,18 @@ function getNextFormStep(current) {
   return next;
 }
 
+const SheetLanguageToggle = ({ lang, onToggle }) => (
+  <button
+    type="button"
+    className="joinSheetLanguage"
+    onClick={onToggle}
+    aria-label={lang === "ko" ? "Switch to English" : "한국어로 전환"}
+  >
+    <MdLanguage aria-hidden="true" />
+    <span>{TRANSLATIONS[lang].langLabel}</span>
+  </button>
+);
+
 const JoinForm = () => {
   const nav = useNavigate();
   const nameRef = useRef();
@@ -295,6 +307,9 @@ const JoinForm = () => {
   const [studentIdError, setStudentIdError] = useState(null);
   const [contactError, setContactError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const stepLabels = lang === "ko"
+    ? ["이름", "학번", "학적 · 학년", "단과대 · 전공", "연락처"]
+    : ["Name", "Student ID", "Status · Year", "College · Major", "Contact"];
 
   const { joinConfig, joinConfigLoading } = useAppSettings();
   useEffect(() => {
@@ -582,6 +597,8 @@ const JoinForm = () => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Links and buttons use their native keyboard activation.
+      if (e.target instanceof Element && e.target.closest("a, button")) return;
       if (e.key === "Enter") {
         if (e.isComposing) return;
         e.preventDefault();
@@ -706,8 +723,28 @@ const JoinForm = () => {
   }
 
   return (
-    <div className="joinForm">
+    <div className="joinForm joinForm--branded">
+      <aside className="joinFormIntro">
+        <Link to="/" className="joinFormBrand" aria-label={lang === "ko" ? "만취 홈으로" : "MANCHUI home"}>
+          <img src="/logos/longLogo_white.png" alt="MANCHUI" />
+        </Link>
+        <p className="joinFormEyebrow">JOIN THE CREW</p>
+        <h2>{lang === "ko" ? <>함께 춤출,<br />당신을 기다려요.</> : <>Your next move<br />starts here.</>}</h2>
+        <p className="joinFormIntroDesc">{lang === "ko"
+          ? "장르 불문, 실력 불문. 만취에서 함께할 당신의 이야기를 들려주세요."
+          : "Every style. Every level. Tell us a little about yourself and join the crew."}</p>
+        <ol className="joinFormSteps" aria-label={lang === "ko" ? "가입 정보 입력 순서" : "Application steps"}>
+          {stepLabels.map((label, index) => (
+            <li key={label} className={progress === index + 1 ? "is-current" : progress > index + 1 ? "is-past" : ""}
+              aria-current={progress === index + 1 ? "step" : undefined}>
+              <span className="joinFormStepNumber">0{index + 1}</span><span>{label}</span>
+            </li>
+          ))}
+        </ol>
+        <p className="joinFormIntroFoot">BY CHANCE, YOU DANCE.</p>
+      </aside>
       <div className="stateBar">
+        <Link className="joinFormBack" to="/join">← {lang === "ko" ? "가입 안내" : "Back to join"}</Link>
         <button
           type="button"
           className="languageToggle"
@@ -718,6 +755,10 @@ const JoinForm = () => {
           <span>{t.langLabel}</span>
         </button>
         <div className="progressSection">
+          <div className="joinFormProgressLabel">
+            <span>{lang === "ko" ? "가입 신청" : "Application"}</span>
+            <span>{Math.max(1, progress)} / 5</span>
+          </div>
           <div className="progressBar">
             <div
               className="progressFill"
@@ -725,19 +766,22 @@ const JoinForm = () => {
             ></div>
             <div className="cups">
               {[1, 2, 5, 9, 11].map((num, index) => (
-                <div
+                <button
+                  type="button"
                   key={num}
                   className={`cup ${progress >= index + 1 ? "cupFilled" : ""}`}
+                  aria-label={stepLabels[index]}
+                  aria-current={progress === index + 1 ? "step" : undefined}
                   onClick={() => setFormNum(num)}
                 >
                   <Cup fill={progress >= index + 1} type={CUP_TYPES[index]} />
-                </div>
+                </button>
               ))}
             </div>
           </div>
         </div>
         <div className="stateBarRow">
-          <div className="text">
+          <h1 className="text">
             {formNum === 0 || formNum === 1
               ? t.promptName
               : formNum === 2
@@ -755,7 +799,8 @@ const JoinForm = () => {
                           : formNum === 13
                             ? t.promptWish
                             : t.promptConfirm}
-          </div>
+          </h1>
+          <p className="joinFormStepHint">{lang === "ko" ? "정보를 입력하고 다음 단계로 이동해주세요." : "Fill in your details, then continue to the next step."}</p>
           {nameError && (formNum === 0 || formNum === 1) && (
             <div className="nameError inputErrorShake">{nameError}</div>
           )}
@@ -849,10 +894,17 @@ const JoinForm = () => {
             </div>
             <div
               className={`optionsBox academicStateOption ${formNum === 4 ? "activeOptions" : ""}`}
+              aria-hidden={formNum !== 4}
+              inert={formNum !== 4}
             >
               <div className="blur" onClick={() => setFormNum(3)}></div>
-              <div className="options">
-                <div className="confirmButton"></div>
+              <div className="options" role="region" aria-labelledby="academic-sheet-title">
+                <div className="joinSheetHeader">
+                  <h2 id="academic-sheet-title">{t.promptAcademicState}</h2>
+                  <p>{lang === "ko" ? "위아래로 넘기거나 항목을 눌러 선택하세요." : "Scroll up or down, or tap an option."}</p>
+                  <button type="button" className="joinSheetClose" aria-label={lang === "ko" ? "선택 창 닫기" : "Close options"} onClick={() => setFormNum(3)}>×</button>
+                </div>
+                <div className="confirmButton"><SheetLanguageToggle lang={lang} onToggle={toggleLang} /></div>
                 <Swiper
                   className="swiper"
                   spaceBetween={10}
@@ -903,10 +955,17 @@ const JoinForm = () => {
             </div>
             <div
               className={`optionsBox gradeOption ${formNum === 6 ? "activeOptions" : ""}`}
+              aria-hidden={formNum !== 6}
+              inert={formNum !== 6}
             >
               <div className="blur" onClick={() => setFormNum(5)}></div>
-              <div className="options">
-                <div className="confirmButton"></div>
+              <div className="options" role="region" aria-labelledby="grade-sheet-title">
+                <div className="joinSheetHeader">
+                  <h2 id="grade-sheet-title">{t.promptGrade}</h2>
+                  <p>{lang === "ko" ? "위아래로 넘기거나 항목을 눌러 선택하세요." : "Scroll up or down, or tap an option."}</p>
+                  <button type="button" className="joinSheetClose" aria-label={lang === "ko" ? "선택 창 닫기" : "Close options"} onClick={() => setFormNum(5)}>×</button>
+                </div>
+                <div className="confirmButton"><SheetLanguageToggle lang={lang} onToggle={toggleLang} /></div>
                 <Swiper
                   className="swiper"
                   spaceBetween={10}
@@ -962,10 +1021,17 @@ const JoinForm = () => {
             </div>
             <div
               className={`optionsBox collegeOption ${formNum === 8 ? "activeOptions" : ""}`}
+              aria-hidden={formNum !== 8}
+              inert={formNum !== 8}
             >
               <div className="blur" onClick={() => setFormNum(7)}></div>
-              <div className="options">
-                <div className="confirmButton"></div>
+              <div className="options" role="region" aria-labelledby="college-sheet-title">
+                <div className="joinSheetHeader">
+                  <h2 id="college-sheet-title">{t.promptCollege}</h2>
+                  <p>{lang === "ko" ? "위아래로 넘기거나 항목을 눌러 선택하세요." : "Scroll up or down, or tap an option."}</p>
+                  <button type="button" className="joinSheetClose" aria-label={lang === "ko" ? "선택 창 닫기" : "Close options"} onClick={() => setFormNum(7)}>×</button>
+                </div>
+                <div className="confirmButton"><SheetLanguageToggle lang={lang} onToggle={toggleLang} /></div>
                 <Swiper
                   className="swiper"
                   spaceBetween={10}
@@ -1016,10 +1082,17 @@ const JoinForm = () => {
             </div>
             <div
               className={`optionsBox majorOption ${formNum === 10 ? "activeOptions" : ""}`}
+              aria-hidden={formNum !== 10}
+              inert={formNum !== 10}
             >
               <div className="blur" onClick={() => setFormNum(9)}></div>
-              <div className="options">
-                <div className="confirmButton"></div>
+              <div className="options" role="region" aria-labelledby="major-sheet-title">
+                <div className="joinSheetHeader">
+                  <h2 id="major-sheet-title">{t.promptMajor}</h2>
+                  <p>{lang === "ko" ? "위아래로 넘기거나 항목을 눌러 선택하세요." : "Scroll up or down, or tap an option."}</p>
+                  <button type="button" className="joinSheetClose" aria-label={lang === "ko" ? "선택 창 닫기" : "Close options"} onClick={() => setFormNum(9)}>×</button>
+                </div>
+                <div className="confirmButton"><SheetLanguageToggle lang={lang} onToggle={toggleLang} /></div>
                 <Swiper
                   className="swiper"
                   spaceBetween={10}

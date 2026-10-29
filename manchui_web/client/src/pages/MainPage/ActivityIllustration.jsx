@@ -9,7 +9,7 @@ const Figure = ({ x, y, pose = "open", scale = 1 }) => {
     <g className="activity-art__figure">
       <circle cx={x} cy={y} r={5 * scale} />
       <path d={`M ${x} ${y + 6 * scale} L ${x} ${y + 28 * scale}`} />
-      <path d={arms} />
+      <path className="activity-art__arms" d={arms} />
       <path d={`M ${x} ${y + 28 * scale} L ${x - 10 * scale} ${y + 43 * scale} M ${x} ${y + 28 * scale} L ${x + 12 * scale} ${y + 41 * scale}`} />
     </g>
   );
@@ -32,7 +32,9 @@ const ActivityIllustration = ({ type }) => (
         <>
           <rect className="activity-art__device" x="92" y="48" width="164" height="224" rx="22" />
           <circle className="activity-art__device-dot" cx="174" cy="61" r="4" />
-          <path className="activity-art__play" d="M 161 126 L 161 166 L 194 146 Z" />
+          <text className="activity-art__label" x="188" y="70">REC</text>
+          <Figure x={174} y={111} pose="step" scale={1.05} />
+          <path className="activity-art__play" d="M 165 218 L 165 238 L 182 228 Z" />
           <Figure x={416} y={90} pose="step" scale={1.45} />
           <path className="activity-art__motion" d="M 360 105 C 333 116, 326 141, 338 162 M 478 104 C 510 120, 516 149, 503 172" />
           <path className="activity-art__accent" d="M 336 211 C 389 232, 457 229, 510 202" />
@@ -45,6 +47,7 @@ const ActivityIllustration = ({ type }) => (
           <Figure x={316} y={92} pose="up" scale={1.35} />
           <Figure x={174} y={170} pose="open" scale={.9} />
           <Figure x={454} y={170} pose="open" scale={.9} />
+          <text className="activity-art__label" x="316" y="70" textAnchor="middle">CLASS</text>
           <path className="activity-art__accent" d="M 126 244 L 502 244" />
         </>
       ) : null}
@@ -67,6 +70,7 @@ const ActivityIllustration = ({ type }) => (
           <Figure x={322} y={118} pose="step" scale={1.55} />
           <path className="activity-art__crowd" d="M 70 266 C 88 226, 110 226, 128 266 C 148 217, 172 218, 192 266 C 452 218, 478 220, 494 266 C 518 224, 546 225, 566 266" />
           <path className="activity-art__accent" d="M 230 265 L 414 265" />
+          <text className="activity-art__label" x="322" y="78" textAnchor="middle">LIVE STAGE</text>
         </>
       ) : null}
 

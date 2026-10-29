@@ -1,13 +1,21 @@
 import React, { useMemo, useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { buildScheduleRequestStatuses } from "./teamDashboardUtils";
 
 const TeamDashboard = ({
+  teamId,
   practiceCount = 0,
   members = [],
   requestSchedules = [],
   memberSchedules = [],
 }) => {
+  const nav = useNavigate();
+  const modal = useManchuiModal();
+  const { user } = useAuth();
+  const currentUserId = user?._id ? String(user._id) : "";
   const [showRequests, setShowRequests] = useState(false);
 
   const requestStatuses = useMemo(
@@ -19,6 +27,23 @@ const TeamDashboard = ({
       ),
     [requestSchedules, members, memberSchedules],
   );
+
+  const handleWriteSchedule = (dateKey) => {
+    const returnTo = teamId ? `/club/team/${teamId}` : "/club/team";
+    nav(`/club/mypage/schedule?date=${encodeURIComponent(dateKey)}`, {
+      state: { returnTo },
+    });
+  };
+
+  const handleRequestItemClick = async (item, hasResponded) => {
+    const actionLabel = hasResponded ? "수정" : "작성";
+    const confirmed = await modal(
+      `${item.dateLabel} 일정을 ${actionLabel}할까요?`,
+      "confirm",
+    );
+    if (!confirmed) return;
+    handleWriteSchedule(item.dateKey);
+  };
 
   return (
     <div className="teamDashboard">
@@ -82,10 +107,28 @@ const TeamDashboard = ({
                     item.total > 0
                       ? Math.round((item.respondedCount / item.total) * 100)
                       : 0;
+                  const hasResponded = item.responded.some(
+                    (member) => member.id === currentUserId,
+                  );
 
                   return (
-                    <li key={item.dateKey} className="teamDashboard__requestItem">
-                      <div className="teamDashboard__requestHead">
+                    <li key={item.dateKey}>
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        className="teamDashboard__requestItem"
+                        onClick={() =>
+                          void handleRequestItemClick(item, hasResponded)
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key !== "Enter" && event.key !== " ") {
+                            return;
+                          }
+                          event.preventDefault();
+                          void handleRequestItemClick(item, hasResponded);
+                        }}
+                      >
+                        <div className="teamDashboard__requestHead">
                         <div>
                           <p className="teamDashboard__requestDate">
                             {item.dateLabel}
@@ -144,6 +187,7 @@ const TeamDashboard = ({
                           </li>
                         ))}
                       </ul>
+                      </div>
                     </li>
                   );
                 })}

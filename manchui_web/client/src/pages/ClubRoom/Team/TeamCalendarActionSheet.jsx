@@ -355,8 +355,7 @@ const TeamCalendarActionSheet = ({
       open={editingSchedule}
       dateKey={selectedDate}
       scheduleMap={scheduleMap}
-      hasRequest={hasScheduleRequest}
-      requestTeamNames={teamName ? [teamName] : []}
+      requestDateSet={requestSet}
       onClose={() => setEditingSchedule(false)}
       onSaveComplete={() => {
         setEditingSchedule(false);

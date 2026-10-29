@@ -4,6 +4,7 @@ import { scrollWindowTopAfterNav } from "../../utils/navScroll";
 import { motion, AnimatePresence } from "motion/react";
 import "./MainPage.css";
 import DarkVeil from "../../components/DarkVeil/DarkVeil";
+import ActivityIllustration from "./ActivityIllustration";
 
 const COPY_LINES = ["by chance,", "however", "you dance,", "forever"];
 const CHUNK_STAGGER = 0.32;
@@ -72,6 +73,15 @@ const AWARDS_YEARS = [
       "Monster Korea, Homura Film와 협업",
     ],
   },
+  {
+    year: "2026",
+    items: [
+      "봄 축제 ON:BOARD 3위 장려상",
+      "BUZZ ON:SOPHMORE 개최",
+      "Monster Korea, Homura Film와 협업",
+      "농협은행 유튜브 예능 올랭말랭 출연",
+    ],
+  },
 ];
 
 const QNA_ITEMS = [
@@ -94,10 +104,11 @@ const QNA_ITEMS = [
 ];
 
 const AWARDS_HIGHLIGHT_REGEX =
-  /(에리카 댄스 대표|1위 대상|장려상|우수상|대상|대표|1등)/g;
+  /(에리카 댄스 대표|1위 대상|ON:BOARD|장려상|우수상|대상|대표|1등)/g;
 const AWARDS_HIGHLIGHT_WORDS = new Set([
   "에리카 댄스 대표",
   "1위 대상",
+  "ON:BOARD",
   "장려상",
   "우수상",
   "대상",
@@ -145,14 +156,6 @@ const MainPage = () => {
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSessionDirection(1);
-      setSessionIndex((prev) => (prev + 1) % SESSION_ITEMS.length);
-    }, 4000);
-    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -501,14 +504,7 @@ const MainPage = () => {
               exit={(dir) => ({ x: dir > 0 ? -72 : 72, opacity: 0 })}
               transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
             >
-              <div className="session-image-placeholder">
-                <span className="session-image-placeholder-text">
-                  사진 영역
-                </span>
-                <span className="session-image-placeholder-sub">
-                  (이미지 추후 첨부)
-                </span>
-              </div>
+              <ActivityIllustration type={SESSION_ITEMS[sessionIndex].id} />
               <p className="session-desc">
                 {SESSION_ITEMS[sessionIndex].description}
               </p>

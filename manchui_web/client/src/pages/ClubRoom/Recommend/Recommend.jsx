@@ -6,9 +6,12 @@ import React, {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { IoAdd, IoChevronDown, IoSearch } from "react-icons/io5";
-import apiClient, { serverUrl } from "../../../api/apiClient";
+import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
+import { clubKeys } from "../../../queries/clubQueryKeys";
+import { useRecommendationsInfiniteQuery } from "../../../queries/useClubQueries";
 import RecommendationCard from "./RecommendationCard";
 import RecommendationCardSkeleton from "./RecommendationCardSkeleton";
 import {
@@ -25,7 +28,6 @@ import {
 } from "./recommendationReactions";
 import "./Recommend.css";
 
-const PAGE_SIZE = 16;
 const SKELETON_INITIAL = 6;
 const SKELETON_MORE = 3;
 
@@ -42,11 +44,8 @@ const Recommend = () => {
   const { user } = useAuth();
   const nav = useNavigate();
   const modal = useManchuiModal();
+  const queryClient = useQueryClient();
 
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [loadingMore, setLoadingMore] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
   const [sort, setSort] = useState("latest");
   const [committedTags, setCommittedTags] = useState([]);
   const [queryRest, setQueryRest] = useState("");
@@ -56,11 +55,23 @@ const Recommend = () => {
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
   const sortWrapRef = useRef(null);
   const loadMoreRef = useRef(null);
-  const fetchGenRef = useRef(0);
-  const itemsLengthRef = useRef(0);
-  const loadingMoreRef = useRef(false);
-  const hasMoreRef = useRef(false);
-  const loadingRef = useRef(true);
+
+  const listQueryKey = clubKeys.recommendations(sort, debouncedQ);
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useRecommendationsInfiniteQuery(sort, debouncedQ);
+
+  const items = useMemo(
+    () => data?.pages.flatMap((page) => page.items) ?? [],
+    [data],
+  );
+  const loading = isLoading;
+  const loadingMore = isFetchingNextPage;
+  const hasMore = Boolean(hasNextPage);
 
   const sortLabel = useMemo(
     () => SORT_OPTIONS.find((o) => o.value === sort)?.label ?? "정렬",
@@ -78,96 +89,21 @@ const Recommend = () => {
   }, [searchInputForApi]);
 
   useEffect(() => {
-    itemsLengthRef.current = items.length;
-  }, [items.length]);
-
-  useEffect(() => {
-    hasMoreRef.current = hasMore;
-  }, [hasMore]);
-
-  useEffect(() => {
-    loadingRef.current = loading;
-  }, [loading]);
-
-  const fetchPage = useCallback(
-    async (skip, append) => {
-      if (!serverUrl) {
-        setLoading(false);
-        setLoadingMore(false);
-        return;
-      }
-
-      const gen = ++fetchGenRef.current;
-      if (append) {
-        if (loadingMoreRef.current) return;
-        loadingMoreRef.current = true;
-        setLoadingMore(true);
-      } else {
-        loadingMoreRef.current = false;
-        setLoading(true);
-        setLoadingMore(false);
-        setHasMore(false);
-      }
-
-      const p = new URLSearchParams();
-      p.set("sort", sort);
-      if (debouncedQ) p.set("q", debouncedQ);
-      p.set("limit", String(PAGE_SIZE));
-      p.set("skip", String(skip));
-
-      try {
-        const res = await apiClient.get(`/api/recommendations?${p}`, {
-          withCredentials: true,
-        });
-        if (gen !== fetchGenRef.current) return;
-
-        const next = Array.isArray(res.data?.items) ? res.data.items : [];
-        setItems((prev) => (append ? [...prev, ...next] : next));
-        setHasMore(Boolean(res.data?.hasMore));
-      } catch (e) {
-        if (gen !== fetchGenRef.current) return;
-        console.error(e);
-        if (!append) setItems([]);
-        setHasMore(false);
-      } finally {
-        if (gen !== fetchGenRef.current) return;
-        if (append) {
-          loadingMoreRef.current = false;
-          setLoadingMore(false);
-        } else {
-          setLoading(false);
-        }
-      }
-    },
-    [sort, debouncedQ],
-  );
-
-  useEffect(() => {
-    fetchPage(0, false);
-  }, [fetchPage]);
-
-  useEffect(() => {
     const el = loadMoreRef.current;
     if (!el || !hasMore || loading || loadingMore) return undefined;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (!entries[0]?.isIntersecting) return;
-        if (
-          loadingMoreRef.current ||
-          !hasMoreRef.current ||
-          loadingRef.current
-        ) {
-          return;
-        }
-        fetchPage(itemsLengthRef.current, true);
+        if (loadingMore) return;
+        void fetchNextPage();
       },
       { rootMargin: "160px 0px" },
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [hasMore, loading, loadingMore, fetchPage, items.length]);
+  }, [hasMore, loading, loadingMore, fetchNextPage, items.length]);
 
   useEffect(() => {
     if (!sortMenuOpen) return undefined;
@@ -188,11 +124,18 @@ const Recommend = () => {
   }, [sortMenuOpen]);
 
   const patchItem = (id, patch) => {
-    setItems((prev) =>
-      prev.map((it) =>
-        String(it._id) === String(id) ? { ...it, ...patch } : it,
-      ),
-    );
+    queryClient.setQueryData(listQueryKey, (old) => {
+      if (!old?.pages) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page) => ({
+          ...page,
+          items: page.items.map((it) =>
+            String(it._id) === String(id) ? { ...it, ...patch } : it,
+          ),
+        })),
+      };
+    });
   };
 
   const handleToggleLike = async (item) => {
@@ -280,10 +223,6 @@ const Recommend = () => {
     });
   }, []);
 
-  /**
-   * 모바일 가상 키보드는 Space에 대해 keydown/keyup이 안 오거나 key가 비는 경우가 많아,
-   * 값이 바뀔 때마다 줄 끝 `#태그␠` 패턴으로 확정한다.
-   */
   const handleSearchTextChange = useCallback((e) => {
     const next = e.target.value;
     const m = next.match(/#([^\s#]+)\s$/);
@@ -304,7 +243,6 @@ const Recommend = () => {
     setQueryRest(next);
   }, []);
 
-  /** 입력 줄 끝의 `#태그` 뒤 스페이스/엔터 → 태그 확정(칩으로) · 맨 앞 백스페이스 → 마지막 칩 제거 */
   const handleSearchKeyDown = useCallback((e) => {
     if (e.key === "Backspace") {
       if (e.nativeEvent?.isComposing) return;
@@ -328,7 +266,6 @@ const Recommend = () => {
     const isEnter = e.key === "Enter";
     if (!isSpace && !isEnter) return;
 
-    /* 한글 IME: 조합 중 스페이스는 여기서 막지 않고 keyup / onChange에서 `#태그 ` 확정 */
     if (isSpace && e.nativeEvent?.isComposing) return;
 
     const draft = e.currentTarget.value;
@@ -347,7 +284,6 @@ const Recommend = () => {
     setQueryRest(before);
   }, [committedTags.length]);
 
-  /** IME 조합 후 삽입된 스페이스로 끝나는 `#태그 ` 확정 (keydown에서 못 잡은 경우) */
   const handleSearchKeyUp = useCallback((e) => {
     if (e.nativeEvent?.isComposing) return;
     const isSpace =

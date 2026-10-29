@@ -536,3 +536,11 @@
 .mypageSaved__back:hover {
   color: var(--text-primary);
 }
+
+.mypageSchedule--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
+  background: var(--background-dark);
+}

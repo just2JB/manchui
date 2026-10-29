@@ -15,6 +15,18 @@
   min-width: 0;
 }
 
+.join-route-loading {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  background-color: var(--background-dark);
+}
+
+.join-route-loading > .manchuiLoading {
+  min-height: 100%;
+}
+
 .clubRoomLayout {
   /* ClubRoomBottomNav: min-height 62 + 세로 padding 16 + 보더 1 + safe-area */
   --club-room-bottom-nav: calc(79px + env(safe-area-inset-bottom, 0px));
@@ -77,6 +89,12 @@
 
 .clubRoombody--noBottomNav {
   padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+/* 예약 페이지 등: 데스크톱에서도 600px 열 대신 화면 전체 폭 사용 (내용은 페이지에서 가운데 정렬) */
+.clubRoombody--wide {
+  width: 100%;
+  --club-room-column-width: 100%;
 }
 @media screen and (max-width: 767px) {
   .clubRoomLayout {

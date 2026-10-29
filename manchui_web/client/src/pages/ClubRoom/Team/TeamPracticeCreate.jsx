@@ -4,6 +4,7 @@ import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import Loading from "../../../components/Loading/Loading";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import TeamPracticeAvailabilityGrid from "./TeamPracticeAvailabilityGrid";
 import {
   formatPracticeDatesSummary,
@@ -18,6 +19,7 @@ const TeamPracticeCreate = () => {
   const nav = useNavigate();
   const { user } = useAuth();
   const modal = useManchuiModal();
+  const invalidateTeams = useInvalidateClubTeams(user?._id);
 
   const dateKeys = useMemo(
     () => parsePracticeDateKeys(searchParams),
@@ -104,6 +106,7 @@ const TeamPracticeCreate = () => {
           ? "연습이 생성되었습니다."
           : `연습 ${selectedEntries.length}개를 생성했습니다.`,
       );
+      invalidateTeams();
       nav(`/club/team/${teamId}`, { replace: true });
     } catch (error) {
       await modal(error.response?.data?.message ?? "연습 생성에 실패했습니다.");

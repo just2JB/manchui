@@ -12,7 +12,9 @@ export function findReservationForHour(dateKey, hour, reservations) {
   );
 }
 
+/** 팀 이름 (구버전 예약은 예약 계정 이름) */
 export function getReservationBookerName(reservation) {
+  if (reservation?.teamName) return reservation.teamName;
   const u = reservation?.userId;
   if (u && typeof u === "object" && u.username) return u.username;
   return "—";

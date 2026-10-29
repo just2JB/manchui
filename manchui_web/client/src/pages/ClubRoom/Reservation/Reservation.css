@@ -253,7 +253,7 @@
 
 .reservation__weekRow {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 4px;
   margin-bottom: 6px;
 }
@@ -267,7 +267,7 @@
 
 .reservation__dayGrid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -287,7 +287,9 @@
   background: linear-gradient(
     90deg,
     var(--box-2) 0%,
-    rgba(255, 255, 255, 0.09) 45%,
+    rgba(179, 0, 0, 0.12) 42%,
+    rgba(255, 255, 255, 0.07) 50%,
+    rgba(179, 0, 0, 0.08) 58%,
     var(--box-2) 90%
   );
   background-size: 200% 100%;
@@ -323,34 +325,6 @@
 
 .reservation__calendarLoadingHint {
   margin-top: 12px;
-  font-size: 0.8rem;
-  color: var(--text-more);
-  line-height: 1.4;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.reservation__calendarLoadingHint::before {
-  content: "";
-  flex-shrink: 0;
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 50%;
-  background: rgba(179, 0, 0, 0.55);
-  animation: reservation-calendar-pulse 1.1s ease-in-out infinite;
-}
-
-@keyframes reservation-calendar-pulse {
-  0%,
-  100% {
-    opacity: 0.35;
-    transform: scale(0.92);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1);
-  }
 }
 
 .reservation__dayEmpty {
@@ -359,7 +333,7 @@
 
 .reservation__day {
   position: relative;
-  min-height: 44px;
+  min-height: 48px;
   border: 1px solid transparent;
   border-radius: 10px;
   background: var(--box-2);
@@ -395,6 +369,11 @@
 .reservation__dayNum {
   font-size: 0.95rem;
   font-weight: 600;
+}
+
+.reservation__dayDots {
+  display: inline-flex;
+  gap: 3px;
 }
 
 .reservation__dayDot {
@@ -688,12 +667,15 @@
   cursor: pointer;
 }
 
+/* 헤더 · 스크롤 본문 · 고정 하단 버튼의 3단 구성 */
 .reservation__sheet {
   position: relative;
   z-index: 1;
-  max-height: min(88vh, 720px);
-  overflow-x: hidden;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  max-height: 92dvh;
+  margin: 0;
+  overflow: hidden;
   background: linear-gradient(
     165deg,
     var(--box-1) 0%,
@@ -701,12 +683,10 @@
     var(--background-dark) 100%
   );
   color: var(--text-primary);
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-bottom: none;
-  padding: 0 16px 20px;
-  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
   box-shadow:
     0 -24px 48px rgba(0, 0, 0, 0.55),
     0 0 0 1px rgba(179, 0, 0, 0.12);
@@ -724,45 +704,194 @@
   }
 }
 
-/* 넓은 화면: 시트 폭·높이 제한 + 하단 중앙 정렬 */
-@media (min-width: 640px) {
-  .reservation__sheetRoot {
-    align-items: center;
-    padding-left: max(16px, env(safe-area-inset-left, 0px));
-    padding-right: max(16px, env(safe-area-inset-right, 0px));
-  }
-
+@media (prefers-reduced-motion: reduce) {
   .reservation__sheet {
-    width: 100%;
-    max-width: min(600px, 100%);
-    max-height: min(75vh, 520px);
-    border-radius: 16px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    margin-bottom: max(12px, env(safe-area-inset-bottom, 0px));
-    box-shadow:
-      0 20px 56px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(179, 0, 0, 0.12);
+    animation: none;
   }
 }
 
-.reservation__sheetHandleWrap {
+.reservation__sheetHeader {
+  position: relative;
+  flex-shrink: 0;
   display: flex;
-  justify-content: center;
-  padding: 10px 0 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 12px 12px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .reservation__sheetHandle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
   width: 40px;
   height: 4px;
   border-radius: 4px;
   background: var(--box-4);
+  transform: translateX(-50%);
 }
 
 .reservation__sheetTitle {
-  font-size: 1.05rem;
+  margin: 0;
+  font-size: 1.15rem;
   font-weight: 700;
-  margin-bottom: 14px;
+  letter-spacing: -0.02em;
   color: var(--text-primary);
+}
+
+.reservation__sheetClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-gray);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.reservation__sheetClose:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+}
+
+.reservation__sheetBody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.reservation__sheetFooter {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(18, 18, 18, 0.96);
+}
+
+.reservation__sheetFooter .reservation__btn {
+  flex: 0 0 auto;
+  min-width: 128px;
+  min-height: 50px;
+}
+
+.reservation__selectionSummary {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.reservation__selectionSummary--empty {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--text-more);
+}
+
+.reservation__step {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.reservation__stepTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.reservation__stepNum {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(179, 0, 0, 0.25);
+  border: 1px solid rgba(179, 0, 0, 0.6);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.reservation__fieldHelp {
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--text-more);
+}
+
+.reservation__fieldHelp--error {
+  color: var(--accent-200);
+}
+
+.reservation__numberUnit {
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+  margin-left: -6px;
+  font-size: 0.9rem;
+  color: var(--text-more);
+}
+
+/* 넓은 화면: 시트를 가운데 카드로 */
+@media (min-width: 640px) {
+  .reservation__sheetRoot {
+    justify-content: center;
+    align-items: center;
+    padding: 24px max(16px, env(safe-area-inset-right, 0px)) 24px
+      max(16px, env(safe-area-inset-left, 0px));
+  }
+
+  .reservation__sheet {
+    width: 100%;
+    max-width: 560px;
+    max-height: min(86dvh, 760px);
+    border-radius: 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow:
+      0 20px 56px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(179, 0, 0, 0.12);
+  }
+
+  .reservation__sheetHandle {
+    display: none;
+  }
+
+  .reservation__sheetFooter {
+    padding-bottom: 14px;
+  }
+}
+
+/* 시트 안 레거시 클래스(관리자 화면 공용) */
+.reservation__sheetHandleWrap {
+  display: flex;
+  justify-content: center;
+  padding: 10px 0 6px;
 }
 
 .reservation__limitBanner {
@@ -813,207 +942,161 @@
   color: var(--text-more);
 }
 
-.reservation__hourPeriodLegend {
+/* 시간 칩 그리드 — 오전/오후 그룹, 모바일 4열 · 넓은 화면 6열 */
+.reservation__hourPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.reservation__hourLegend {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 14px;
-  margin: 2px 0 8px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-}
-
-.reservation__hourPeriodLegend__am {
-  color: #e8a24a;
-}
-
-.reservation__hourPeriodLegend__pm {
-  color: var(--text-primary);
-}
-
-/* 0 [□] 1 [□] 2 … — 숫자는 위쪽, 네모만 촘촘히 / 스크롤은 track 안에서만 */
-.reservation__hourTrack {
-  margin-top: 4px;
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-}
-
-.reservation__hourScroll {
-  width: 100%;
-  max-width: 100%;
-  padding: 4px 0 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-x: contain;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.28) rgba(255, 255, 255, 0.06);
-  box-sizing: border-box;
-}
-
-/* Chrome / Edge / Safari — 가로 스크롤바 슬림·둥글게 */
-.reservation__hourScroll::-webkit-scrollbar {
-  height: 5px;
-}
-
-.reservation__hourScroll::-webkit-scrollbar-track {
-  margin: 0 4px;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 100px;
-}
-
-.reservation__hourScroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.28);
-  border-radius: 100px;
-}
-
-.reservation__hourScroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-/* 넓은 화면: 스크롤바를 더 잘게·덜 튀게 */
-@media (min-width: 640px) {
-  .reservation__hourScroll::-webkit-scrollbar {
-    height: 4px;
-  }
-
-  .reservation__hourScroll {
-    scrollbar-color: rgba(255, 255, 255, 0.22) rgba(255, 255, 255, 0.04);
-    padding-bottom: 8px;
-  }
-}
-
-.reservation__hourScrollInner {
-  display: inline-flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: flex-end;
-  justify-content: flex-start;
-  gap: 0;
-  width: max-content;
-  max-width: none;
-  min-height: 52px;
-  padding-bottom: 2px;
-  box-sizing: border-box;
-}
-
-/* 폭은 0으로 두고 숫자만 absolute로 크게 표시 */
-.reservation__hourLabelWrap {
-  position: relative;
-  flex: 0 0 0;
-  width: 0;
-  height: 34px;
-  align-self: flex-end;
-  overflow: visible;
-  pointer-events: none;
-}
-
-.reservation__hourLabel {
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  margin-bottom: 4px;
-  font-size: 0.78rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  text-align: center;
-  user-select: none;
-  white-space: nowrap;
-  transform: translateX(-50%);
-}
-
-.reservation__hourLabel--am {
-  color: #e8a24a;
-}
-
-.reservation__hourLabel--pm {
-  color: var(--text-primary);
-}
-
-.reservation__hourScrollInner > .reservation__hourLabelWrap:first-child
-  .reservation__hourLabel {
-  left: 0;
-  transform: translateX(0);
-}
-
-.reservation__hourScrollInner > .reservation__hourLabelWrap:last-child
-  .reservation__hourLabel {
-  left: 0;
-  transform: translateX(-100%);
-}
-
-.reservation__hourCell {
-  position: relative;
-  flex: 0 0 auto;
-  flex-shrink: 0;
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-  margin: 0 1px;
+  gap: 6px 14px;
+  margin: 0;
   padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+  color: var(--text-more);
+}
+
+.reservation__hourLegend li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reservation__hourLegendSwatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.reservation__hourLegendSwatch--selected {
+  border-color: var(--brand-red);
+  background: var(--brand-red);
+}
+
+.reservation__hourLegendSwatch--reserved {
+  border-color: rgba(255, 255, 255, 0.08);
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.14) 0 2px,
+    transparent 2px 5px
+  );
+}
+
+.reservation__hourGroup {
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reservation__hourGroupLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.reservation__hourGroupLabel--am {
+  color: #e8a24a;
+}
+
+.reservation__hourGroupLabel--pm {
+  color: var(--text-gray);
+}
+
+.reservation__hourGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+@media (min-width: 420px) {
+  .reservation__hourGrid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
+
+.reservation__hourChip {
+  position: relative;
+  min-height: 48px;
+  padding: 4px 2px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  gap: 1px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   font: inherit;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   transition:
     border-color 0.15s ease,
     background 0.15s ease,
-    box-shadow 0.15s ease;
+    transform 0.1s ease;
 }
 
-.reservation__hourCell--selected::after {
-  content: "";
-  display: block;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--brand-red);
-  box-shadow: 0 0 6px rgba(179, 0, 0, 0.65);
+.reservation__hourChip:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
-.reservation__hourCell:hover:not(:disabled) {
-  border-color: rgba(179, 0, 0, 0.5);
-  background: rgba(179, 0, 0, 0.12);
+@media (hover: hover) {
+  .reservation__hourChip:hover:not(:disabled):not(.reservation__hourChip--selected) {
+    border-color: rgba(179, 0, 0, 0.5);
+    background: rgba(179, 0, 0, 0.12);
+  }
 }
 
-.reservation__hourCell--selected {
+.reservation__hourChipTime {
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.reservation__hourChipTag {
+  font-size: 0.66rem;
+  font-weight: 600;
+  color: var(--text-more);
+  line-height: 1;
+}
+
+.reservation__hourChip--selected {
+  border-color: rgba(179, 0, 0, 0.7);
+  background: rgba(179, 0, 0, 0.32);
+}
+
+.reservation__hourChip--rangeStart,
+.reservation__hourChip--rangeEnd {
   border-color: var(--brand-red);
-  background: rgba(179, 0, 0, 0.24);
-  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.35);
+  background: var(--brand-red);
+  box-shadow: 0 2px 10px rgba(179, 0, 0, 0.45);
 }
 
-.reservation__hourCell--blocked {
-  cursor: not-allowed;
+.reservation__hourChip--reserved {
   border-color: rgba(255, 255, 255, 0.06);
-  background: rgba(0, 0, 0, 0.28);
-  opacity: 0.75;
+  color: var(--text-more);
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.07) 0 3px,
+    rgba(0, 0, 0, 0.2) 3px 8px
+  );
 }
 
-.reservation__hourCell--blocked::after {
-  display: none;
+.reservation__hourChip--past {
+  border-color: transparent;
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.25);
 }
 
-.reservation__hourCell--reserved {
-  cursor: pointer;
-}
-
-.reservation__hourCell--reserved:hover:not(:disabled) {
-  border-color: rgba(255, 255, 255, 0.22);
-  background: rgba(0, 0, 0, 0.36);
-  opacity: 0.88;
-}
-
-.reservation__hourCell:disabled {
+.reservation__hourChip:disabled {
   cursor: not-allowed;
 }
 
@@ -1026,7 +1109,8 @@
   background: var(--box-2);
   color: var(--text-primary);
   -webkit-text-fill-color: var(--text-primary);
-  font-size: 0.95rem;
+  /* 16px 미만이면 iOS Safari가 포커스 시 확대함 */
+  font-size: 1rem;
 }
 
 /* type=number: 브라우저 기본 증감 화살표 제거 (커스텀 스텝퍼와 함께 사용) */
@@ -1129,7 +1213,7 @@
   opacity: 1;
 }
 
-fieldset.reservation__field:disabled .reservation__hourCell {
+fieldset.reservation__field:disabled .reservation__hourChip {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -1401,4 +1485,223 @@ fieldset.reservation__field:disabled .reservation__hourCell {
 
 .reservation__detailOkBtn:hover {
   filter: brightness(1.06);
+}
+
+/* ---------- 페이지 레이아웃 (모바일 우선) ---------- */
+.reservation__titleText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.reservation__subtitle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-more);
+  line-height: 1.4;
+}
+
+.reservation__layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reservation__weekCell--sun {
+  color: #ff7a7a;
+}
+
+.reservation__weekCell--sat {
+  color: #7aa7ff;
+}
+
+.reservation__myCard .reservation__shareBtn,
+.reservation__myCard .reservation__cancelBtn {
+  min-width: 40px;
+  min-height: 40px;
+}
+
+.reservation__myCard .reservation__cancelBtn {
+  padding: 0 14px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 380px) {
+  .reservation {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .reservation__calendarSection {
+    padding: 10px 8px 12px;
+  }
+
+  .reservation__dayGrid {
+    gap: 4px;
+  }
+}
+
+/* 태블릿: 전체 폭 화면에서 한 열을 가운데로 */
+@media (min-width: 768px) {
+  .reservation {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 12px 24px 40px;
+  }
+
+  .reservation__titleRow {
+    margin-top: 20px;
+  }
+}
+
+/* 데스크톱: 캘린더(왼쪽) + 내 예약 패널(오른쪽), 가운데 정렬 */
+@media (min-width: 1024px) {
+  .reservation {
+    max-width: 1200px;
+    padding: 16px 40px 48px;
+    gap: 12px;
+  }
+
+  .reservation__titleRow {
+    margin: 28px 0 16px;
+  }
+
+  .reservation__title {
+    font-size: 2.1rem;
+  }
+
+  .reservation__subtitle {
+    font-size: 0.95rem;
+  }
+
+  .reservation__layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+
+  .reservation__calendarSection {
+    padding: 20px 22px 18px;
+    border-radius: 16px;
+  }
+
+  .reservation__weekCell {
+    font-size: 0.85rem;
+    padding: 6px 0 8px;
+  }
+
+  .reservation__dayGrid {
+    gap: 8px;
+  }
+
+  .reservation__day {
+    min-height: 84px;
+    padding-top: 10px;
+    gap: 8px;
+    border-radius: 12px;
+    transition:
+      border-color 0.15s ease,
+      background 0.15s ease;
+  }
+
+  .reservation__dayEmpty {
+    min-height: 84px;
+  }
+
+  .reservation__dayNum {
+    font-size: 1.05rem;
+  }
+
+  .reservation__dayDot {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* 오른쪽 열(선택일 예약 + 내 예약): 스크롤해도 옆에 붙어 있음 */
+  .reservation__side {
+    position: sticky;
+    top: 16px;
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
+    gap: 16px;
+  }
+
+  .reservation__mySection {
+    padding: 18px 18px 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    background: var(--box-1);
+  }
+
+  .reservation__mySection .reservation__myHead {
+    margin-top: 0;
+  }
+}
+
+/* 아주 넓은 화면: 날짜 칸을 조금 더 크게 */
+@media (min-width: 1440px) {
+  .reservation {
+    max-width: 1320px;
+  }
+
+  .reservation__day,
+  .reservation__dayEmpty {
+    min-height: 96px;
+  }
+}
+
+.reservation__titleActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* 내 예약 카드 본문: 누르면 해당 날짜 현황으로 이동 */
+button.reservation__myMain {
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+button.reservation__myMain:hover .reservation__myDate {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.reservation__mySection {
+  margin-top: 10px;
+}
+
+@media (max-width: 420px) {
+  .reservation__titleRow {
+    align-items: flex-start;
+  }
+
+  .reservation__titleActions .reservation__rulesOpenBtn {
+    font-size: 0;
+    gap: 0;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    justify-content: center;
+  }
+
+  .reservation__titleActions .reservation__rulesOpenIcon {
+    font-size: 1.2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .reservation__mySection {
+    margin-top: 0;
+  }
 }

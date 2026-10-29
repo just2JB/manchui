@@ -1,5 +1,7 @@
 import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "./queries/queryClient";
 import { ModalProvider } from "./hooks/ManchuiModal";
 import { AppSettingsProvider } from "./context/AppSettingsContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -11,6 +13,8 @@ import ClubLogin from "./pages/ClubRoom/ClubLogin";
 import KakaoAuthCallback from "./pages/ClubRoom/KakaoAuthCallback";
 import Join from "./pages/Join/Join";
 import Contact from "./pages/Contact/Contact";
+import Event from "./pages/Event/Event";
+import EventResult from "./pages/Event/EventResult";
 import Privacy from "./pages/Privacy/Privacy";
 import Terms from "./pages/Terms/Terms";
 import Mypage from "./pages/ClubRoom/Mypage/Mypage";
@@ -23,6 +27,8 @@ import RecommendDetail from "./pages/ClubRoom/Recommend/RecommendDetail";
 import RecommendEditor from "./pages/ClubRoom/Recommend/RecommendEditor";
 import MypageSavedRecommendations from "./pages/ClubRoom/Mypage/MypageSavedRecommendations";
 import MypageReservations from "./pages/ClubRoom/Mypage/MypageReservations";
+import MypageWeeklyTimetable from "./pages/ClubRoom/Mypage/MypageWeeklyTimetable";
+import MypageSchedule from "./pages/ClubRoom/Mypage/MypageSchedule";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
@@ -33,6 +39,7 @@ import AdminReservationLayout from "./pages/Admin/AdminReservationLayout";
 import AdminReservationLimitsPage from "./pages/Admin/AdminReservationLimitsPage";
 import AdminRecommend from "./pages/Admin/AdminRecommend";
 import AdminLottery from "./pages/Admin/AdminLottery";
+import AdminEvent from "./pages/Admin/AdminEvent";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
@@ -91,13 +98,21 @@ const router = createBrowserRouter([
                 element: <MypageSavedRecommendations />,
               },
               { path: "mypage/reservations", element: <MypageReservations /> },
+              { path: "mypage/schedule", element: <MypageSchedule /> },
+              {
+                path: "mypage/weekly-timetable",
+                element: <MypageWeeklyTimetable />,
+              },
               { path: "mypage/profile", element: <EditProfile /> },
               { path: "mypage/username", element: <EditUser /> },
               { path: "mypage/Identification", element: <EditUser /> },
               { path: "mypage/password", element: <EditUser /> },
               { path: "mypage", element: <Mypage /> },
               { path: "team/join/:teamId", element: <TeamJoin /> },
-              { path: "team/:teamId/practice/new", element: <TeamPracticeCreate /> },
+              {
+                path: "team/:teamId/practice/new",
+                element: <TeamPracticeCreate />,
+              },
               { path: "team/new", element: <TeamCreate /> },
               { path: "team/:teamId/settings", element: <TeamSettings /> },
               { path: "team/:teamId", element: <TeamDetail /> },
@@ -129,23 +144,28 @@ const router = createBrowserRouter([
           },
           { path: "recommendation", element: <AdminRecommend /> },
           { path: "lottery", element: <AdminLottery /> },
+          { path: "event", element: <AdminEvent /> },
           { path: "setting", element: <AdminSetting /> },
         ],
       },
     ],
   },
+  { path: "/event", element: <Event /> },
+  { path: "/event/result", element: <EventResult /> },
   { path: "*", element: <NotFound /> },
 ]);
 
 function App() {
   return (
-    <ModalProvider>
-      <AppSettingsProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </AppSettingsProvider>
-    </ModalProvider>
+    <QueryClientProvider client={queryClient}>
+      <ModalProvider>
+        <AppSettingsProvider>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </AppSettingsProvider>
+      </ModalProvider>
+    </QueryClientProvider>
   );
 }
 

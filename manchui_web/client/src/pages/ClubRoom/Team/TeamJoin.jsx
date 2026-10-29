@@ -5,6 +5,7 @@ import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import Loading from "../../../components/Loading/Loading";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import { getMemberDisplayName, isDefaultComment, isTeamMember } from "./teamUtils";
 import "./Team.css";
 
@@ -22,6 +23,7 @@ const TeamJoin = () => {
   const nav = useNavigate();
   const { user } = useAuth();
   const modal = useManchuiModal();
+  const invalidateTeams = useInvalidateClubTeams(user?._id);
 
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +68,7 @@ const TeamJoin = () => {
         { withCredentials: true },
       );
       await modal(res.data?.message ?? "가입되었습니다.");
+      invalidateTeams();
       nav(`/club/team/${teamId}`, { replace: true });
     } catch (error) {
       await modal(error.response?.data?.message ?? "가입에 실패했습니다.");

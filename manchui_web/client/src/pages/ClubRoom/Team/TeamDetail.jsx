@@ -287,6 +287,7 @@ const TeamDetail = () => {
           대시보드
         </h2>
         <TeamDashboard
+          teamId={teamId}
           practiceCount={practices.length}
           members={members}
           requestSchedules={calendarRequests}

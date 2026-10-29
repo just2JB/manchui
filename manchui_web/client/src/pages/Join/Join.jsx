@@ -7,6 +7,9 @@ import { LOADING_TEXT } from "../../constants/loadingText";
 const Join = () => {
   const nav = useNavigate();
   const { joinConfig, joinConfigLoading } = useAppSettings();
+  const [showEventPopup, setShowEventPopup] = React.useState(
+    () => Date.now() < new Date("2026-09-12T00:00:00+09:00").getTime(),
+  );
 
   const formOpen = joinConfig?.formOpen !== false;
   const generation = joinConfig?.currentGeneration ?? null;
@@ -66,6 +69,19 @@ const Join = () => {
           ) : null}
         </div>
       </div>
+      {showEventPopup ? (
+        <div className="joinEventPopup" role="region" aria-labelledby="join-event-title">
+          <section className="joinEventPopupCard">
+            <button type="button" className="joinEventPopupClose" aria-label="이벤트 팝업 닫기" onClick={() => setShowEventPopup(false)}>×</button>
+            <span className="joinEventPopupBadge">D-DAY EVENT</span>
+            <img src="/logos/longLogo_red.png" alt="만취" />
+            <p className="joinEventPopupDate">2026. 09. 11까지</p>
+            <h2 id="join-event-title">가두모집 장르 투표</h2>
+            <p className="joinEventPopupDesc">보고 싶은 셋로그 장르를<br />직접 선택해주세요.</p>
+            <button type="button" className="joinEventPopupCta" onClick={() => nav("/event")}>투표하러 가기</button>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 };

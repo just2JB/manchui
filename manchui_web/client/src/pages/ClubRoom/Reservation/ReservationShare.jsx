@@ -45,7 +45,7 @@ const ReservationShare = () => {
         <ClubRoomRulesBar inline />
       </div>
       <p className="reservationShare__lead">
-        공유 링크로 열람한 예약 정보입니다. 연락처는 일부만 표시됩니다.
+        공유 링크로 열람한 예약 정보입니다.
       </p>
 
       {loading ? (
@@ -72,12 +72,12 @@ const ReservationShare = () => {
               <dd>{formatReservationTimeRange(data.time)}</dd>
             </div>
             <div className="reservationShare__row">
-              <dt>인원</dt>
-              <dd>{data.headcount != null ? `${data.headcount}명` : "—"}</dd>
+              <dt>팀</dt>
+              <dd>{data.teamName ?? "—"}</dd>
             </div>
             <div className="reservationShare__row">
-              <dt>연락처</dt>
-              <dd>{data.contactMasked ?? "—"}</dd>
+              <dt>인원</dt>
+              <dd>{data.headcount != null ? `${data.headcount}명` : "—"}</dd>
             </div>
           </dl>
         </div>

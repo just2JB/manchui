@@ -338,7 +338,8 @@
   background: linear-gradient(
     90deg,
     rgba(255, 255, 255, 0.04) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
+    rgba(179, 0, 0, 0.14) 45%,
+    rgba(255, 255, 255, 0.1) 55%,
     rgba(255, 255, 255, 0.04) 100%
   );
   background-size: 200% 100%;
@@ -2327,10 +2328,32 @@
 }
 
 .teamDashboard__requestItem {
+  width: 100%;
   padding: 12px;
   border-radius: 12px;
   background: rgba(0, 0, 0, 0.16);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.teamDashboard__requestItem:hover {
+  background: rgba(0, 0, 0, 0.22);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.teamDashboard__requestItem:active {
+  opacity: 0.92;
+}
+
+.teamDashboard__requestItem:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--team-accent) 60%, #fff);
+  outline-offset: 2px;
 }
 
 .teamDashboard__requestHead {

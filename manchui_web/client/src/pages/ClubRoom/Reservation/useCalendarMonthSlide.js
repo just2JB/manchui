@@ -2,10 +2,21 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 const SWIPE_MIN_PX = 48;
 
-function isSwipeBlockedTarget(target) {
+const CALENDAR_SWIPE_CELL_SELECTOR =
+  ".clubHomeCal__cell--interactive, .reservation__day, .teamCalendar__cell";
+
+function isCalendarSwipeCell(target) {
   return (
     target instanceof Element &&
-    target.closest("button, a, input, select, textarea, label")
+    Boolean(target.closest(CALENDAR_SWIPE_CELL_SELECTOR))
+  );
+}
+
+function isSwipeBlockedTarget(target) {
+  if (!(target instanceof Element)) return false;
+  if (isCalendarSwipeCell(target)) return false;
+  return Boolean(
+    target.closest("button, a, input, select, textarea, label"),
   );
 }
 
@@ -18,6 +29,19 @@ export function formatCalendarMonthKey(d) {
 export function useCalendarMonthSlide(viewMonth, setViewMonth) {
   const [slideDir, setSlideDir] = useState(null);
   const swipeRef = useRef(null);
+  const swipeConsumedRef = useRef(false);
+  const docPointerEndRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      const endDocPointer = docPointerEndRef.current;
+      if (endDocPointer) {
+        document.removeEventListener("pointerup", endDocPointer);
+        document.removeEventListener("pointercancel", endDocPointer);
+        docPointerEndRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (!slideDir) return undefined;
@@ -76,10 +100,40 @@ export function useCalendarMonthSlide(viewMonth, setViewMonth) {
       const dx = clientX - start.x;
       const dy = clientY - start.y;
       if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dy) > Math.abs(dx)) return;
+      swipeConsumedRef.current = true;
       if (dx > 0) goPrevMonth();
       else goNextMonth();
     },
     [goPrevMonth, goNextMonth],
+  );
+
+  const consumeClickAfterSwipe = useCallback(() => {
+    if (!swipeConsumedRef.current) return false;
+    swipeConsumedRef.current = false;
+    return true;
+  }, []);
+
+  const clearDocPointerEnd = useCallback(() => {
+    const endDocPointer = docPointerEndRef.current;
+    if (!endDocPointer) return;
+    document.removeEventListener("pointerup", endDocPointer);
+    document.removeEventListener("pointercancel", endDocPointer);
+    docPointerEndRef.current = null;
+  }, []);
+
+  const attachDocPointerEnd = useCallback(
+    (pointerId) => {
+      clearDocPointerEnd();
+      const endDocPointer = (upEvent) => {
+        if (upEvent.pointerId !== pointerId) return;
+        clearDocPointerEnd();
+        onSwipeEnd(upEvent.clientX, upEvent.clientY);
+      };
+      docPointerEndRef.current = endDocPointer;
+      document.addEventListener("pointerup", endDocPointer);
+      document.addEventListener("pointercancel", endDocPointer);
+    },
+    [clearDocPointerEnd, onSwipeEnd],
   );
 
   const swipeHandlers = {
@@ -95,15 +149,21 @@ export function useCalendarMonthSlide(viewMonth, setViewMonth) {
     onPointerDown: (e) => {
       if (e.pointerType === "touch") return;
       if (isSwipeBlockedTarget(e.target)) return;
-      e.currentTarget.setPointerCapture?.(e.pointerId);
       onSwipeStart(e.clientX, e.clientY);
+      if (isCalendarSwipeCell(e.target)) {
+        attachDocPointerEnd(e.pointerId);
+        return;
+      }
+      e.currentTarget.setPointerCapture?.(e.pointerId);
     },
     onPointerUp: (e) => {
       if (e.pointerType === "touch") return;
       if (!swipeRef.current) return;
+      clearDocPointerEnd();
       onSwipeEnd(e.clientX, e.clientY);
     },
     onPointerCancel: () => {
+      clearDocPointerEnd();
       swipeRef.current = null;
     },
   };
@@ -116,6 +176,7 @@ export function useCalendarMonthSlide(viewMonth, setViewMonth) {
     isViewingTodayMonth,
     navigateToMonth,
     swipeHandlers,
+    consumeClickAfterSwipe,
     monthKey: formatCalendarMonthKey(viewMonth),
   };
 }

@@ -1,0 +1,229 @@
+/*
+ * 어시스턴트(/club) 미니멀/하이엔드 테마 — 모노크롬 + 레드 포인트
+ * 흰색 주요 버튼, 위쪽 얇은 빛이 있는 카드, 빨강은 선택·강조에만.
+ * 페이지별 단일 클래스 규칙보다 우선하도록 `.clubRoomLayout`(본문) 또는
+ * `body`(포털로 body에 붙는 모달·시트) 접두사를 붙인다.
+ */
+
+/* ---------- 공용 색 변수를 어시스턴트 범위에서만 팔레트로 교체 ---------- */
+.clubRoomLayout,
+.reservation__sheetRoot,
+.reservation__detailRoot,
+.reservation__rulesRoot,
+.clubHomeSheet__root,
+.teamCalSheet__root,
+.clubScheduleEditor,
+.weeklyTimetablePicker,
+.weeklyEntrySheet {
+  --background-dark: var(--club-bg);
+  --box-1: var(--club-surface);
+  --box-2: #1e1e1e;
+  --box-3: #2a2a2a;
+  --box-4: #333333;
+  --primary-200: #262626;
+  --text-primary: var(--club-text);
+  --text-more: var(--club-text-muted);
+}
+
+.clubRoomLayout,
+.clubRoomLayout .clubRoombody {
+  background-color: var(--club-bg);
+}
+
+/* ---------- 카드: 위쪽 얇은 빛 + 부드러운 그림자 ---------- */
+.clubRoomLayout :is(
+    .clubHome__hero,
+    .clubHome__block,
+    .reservation__calendarSection,
+    .reservation__daySection,
+    .reservation__mySection,
+    .teamListCard,
+    .teamDetailBlock,
+    .teamDetailHero,
+    .mypageHub__infoCard,
+    .mypageHub__menuList,
+    .recommendEditor__section
+  ) {
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: linear-gradient(
+    180deg,
+    var(--club-surface-hi) 0%,
+    var(--club-surface) 100%
+  );
+  box-shadow: var(--club-card-shadow);
+}
+
+/* 카드 안의 항목 */
+.clubRoomLayout :is(
+    .reservation__myCard,
+    .reservation__dayItem,
+    .clubHome__practiceCard,
+    .clubHome__reservationItem
+  ) {
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: none;
+}
+
+/* 다음 연습·내 예약 등 강조 항목: 빨강은 얇은 테두리로만 */
+.clubRoomLayout .clubHome__practiceCard--next {
+  box-shadow: inset 0 0 0 1px rgba(255, 69, 58, 0.45);
+}
+
+/* ---------- 제목·섹션 라벨 ---------- */
+.clubRoomLayout :is(
+    .reservation__title,
+    .teamPage__title,
+    .recommend__title,
+    .mypageHub__pageTitle,
+    .clubHome__greeting
+  ) {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.clubRoomLayout :is(
+    .clubHome__blockTitle,
+    .teamDetailBlock__title,
+    .mypageHub__sectionTitle
+  ) {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--club-text-muted);
+}
+
+/* ---------- 주요 버튼: 흰색, 살짝 떠오름 ---------- */
+body :is(
+    .reservation__btn--primary,
+    .reservation__rulesOkBtn,
+    .reservation__detailOkBtn,
+    .clubHomeSheet__writeBtn,
+    .clubScheduleEditor__saveBtn,
+    .teamPage__emptyBtn,
+    .weeklyTimetablePage__addBtn,
+    .recommend__fab
+  ) {
+  border: none;
+  border-radius: 14px;
+  background: var(--club-primary);
+  color: var(--club-on-primary);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.1);
+  filter: none;
+  transition:
+    transform 0.15s ease,
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+body :is(
+    .reservation__btn--primary,
+    .reservation__rulesOkBtn,
+    .reservation__detailOkBtn,
+    .clubHomeSheet__writeBtn,
+    .clubScheduleEditor__saveBtn,
+    .teamPage__emptyBtn,
+    .weeklyTimetablePage__addBtn,
+    .recommend__fab
+  ):hover:not(:disabled) {
+  background: var(--club-primary-hover);
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+  filter: none;
+}
+
+body :is(
+    .reservation__btn--primary,
+    .reservation__rulesOkBtn,
+    .reservation__detailOkBtn,
+    .clubHomeSheet__writeBtn,
+    .clubScheduleEditor__saveBtn,
+    .teamPage__emptyBtn,
+    .weeklyTimetablePage__addBtn,
+    .recommend__fab
+  ):active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+body :is(
+    .reservation__btn--primary,
+    .reservation__rulesOkBtn,
+    .reservation__detailOkBtn,
+    .clubHomeSheet__writeBtn,
+    .clubScheduleEditor__saveBtn,
+    .teamPage__emptyBtn,
+    .weeklyTimetablePage__addBtn,
+    .recommend__fab
+  ):disabled {
+  opacity: 0.35;
+  box-shadow: none;
+  transform: none;
+}
+
+/* ---------- 보조 버튼: 은은한 회색 ---------- */
+.clubRoomLayout :is(
+    .teamPage__headerAction,
+    .teamDetailHero__invite,
+    .reservation__todayBtn,
+    .reservation__rulesOpenBtn,
+    .reservation__mapBtn
+  ) {
+  border: 1px solid var(--club-border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--club-text);
+  font-weight: 700;
+}
+
+.clubRoomLayout :is(
+    .teamPage__headerAction,
+    .teamDetailHero__invite,
+    .reservation__todayBtn,
+    .reservation__rulesOpenBtn,
+    .reservation__mapBtn
+  ):hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--club-text);
+}
+
+body .reservation__sheetClose {
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ---------- 모달·시트 ---------- */
+body :is(.reservation__rulesDialog, .reservation__detailDialog) {
+  border: 1px solid var(--club-border);
+  border-radius: 22px;
+  background: var(--club-surface-hi);
+  box-shadow: var(--club-overlay-shadow);
+}
+
+body :is(.reservation__sheet, .clubHomeSheet, .teamCalSheet) {
+  border: 1px solid var(--club-border);
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+  background: var(--club-surface-hi);
+  box-shadow: var(--club-overlay-shadow);
+}
+
+body .reservation__sheetFooter {
+  border-top: 1px solid var(--club-border);
+  background: var(--club-surface-hi);
+}
+
+@media (min-width: 640px) {
+  body .reservation__sheet {
+    border-bottom: 1px solid var(--club-border);
+    border-radius: 22px;
+  }
+}
+
+/* ---------- 내비게이션 ---------- */
+.clubRoomLayout .ClubRoomBottomNav__iconWrap {
+  border-radius: 999px;
+}

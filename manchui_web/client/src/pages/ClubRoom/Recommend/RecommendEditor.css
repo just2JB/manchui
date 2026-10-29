@@ -17,13 +17,8 @@
   position: sticky;
   top: 0;
   z-index: 5;
-  background: linear-gradient(
-    180deg,
-    var(--background-dark) 0%,
-    rgba(18, 18, 18, 0.96) 85%,
-    transparent 100%
-  );
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--background-dark);
+  border-bottom: 1px solid var(--club-border);
 }
 
 .recommendEditor__back {
@@ -35,7 +30,7 @@
   margin: 0;
   padding: 0;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: var(--box-2);
   color: var(--text-gray);
   cursor: pointer;
@@ -68,14 +63,10 @@
 }
 
 .recommendEditor__section {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
   padding: 16px 14px;
-  background: linear-gradient(
-    165deg,
-    var(--box-1) 0%,
-    #181818 100%
-  );
+  background: var(--club-surface);
 }
 
 .recommendEditor__sectionTitle {
@@ -107,7 +98,7 @@
 .recommendEditor__field input,
 .recommendEditor__field textarea {
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--primary-200);
   background: var(--background-dark);
   color: var(--text-primary);
@@ -124,7 +115,7 @@
 .recommendEditor__field input:focus,
 .recommendEditor__field textarea:focus {
   outline: none;
-  border-color: rgba(179, 0, 0, 0.45);
+  border-color: rgba(255, 69, 58, 0.45);
 }
 
 .recommendEditor__hint {
@@ -147,7 +138,7 @@
   align-items: center;
   max-width: 100%;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--rec-hashtag-border, rgba(232, 112, 112, 0.5));
   background: var(--rec-hashtag-bg, rgba(232, 112, 112, 0.12));
   color: var(--rec-hashtag-fg, #e87070);
@@ -168,7 +159,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--primary-200);
   background: var(--background-dark);
   color: var(--text-primary);
@@ -178,7 +169,7 @@
 }
 
 .recommendEditor__tagInputField:focus {
-  border-color: rgba(179, 0, 0, 0.45);
+  border-color: rgba(255, 69, 58, 0.45);
 }
 
 .recommendEditor__suggestLabel {
@@ -196,7 +187,7 @@
 
 .recommendEditor__tagChip {
   padding: 5px 10px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-gray);
@@ -248,14 +239,14 @@
   font: inherit;
   font-size: 0.95rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: none;
   cursor: pointer;
   min-width: 100px;
 }
 
 .recommendEditor__btn--primary {
-  background: var(--brand-red);
+  background: var(--club-accent);
   color: var(--text-primary);
 }
 

@@ -510,3 +510,152 @@
   100% {
   }
 }
+
+/* Public-site branding, with the existing progressive form flow retained. */
+.joinForm--branded {
+  --join-column-left: calc(50% - 20px);
+  --join-column-width: min(560px, calc(50% - 28px));
+  min-height: max(100svh, 1000px);
+  padding-bottom: 120px;
+  background: radial-gradient(ellipse at 8% 15%, rgba(179, 0, 0, .13), transparent 48%), var(--background-dark);
+}
+.joinFormIntro {
+  position: fixed;
+  top: 60px;
+  left: max(32px, calc(50% - 520px));
+  width: 360px;
+}
+.joinFormBrand { display: inline-block; padding-block: 8px; }
+.joinFormBrand img { display: block; width: 160px; height: auto; }
+.joinFormEyebrow { margin: 60px 0 22px; font: 11px "Moderniz", sans-serif; color: #ff6666; letter-spacing: .15em; }
+.joinFormIntro h2 { font-size: 42px; font-weight: 700; letter-spacing: -.04em; line-height: 1.3; }
+.joinFormIntroDesc { max-width: 310px; margin-top: 22px; color: #aaa; font-size: 16px; line-height: 1.85; word-break: keep-all; }
+.joinFormSteps { list-style: none; margin: 36px 0 0; padding: 0; }
+.joinFormSteps li { display: flex; gap: 18px; align-items: center; padding: 12px 0; color: #888; font-size: 14px; }
+.joinFormStepNumber { font: 10px "Moderniz", sans-serif; color: #777; }
+.joinFormSteps .is-current { color: #fff; font-weight: 600; }
+.joinFormSteps .is-current .joinFormStepNumber { color: #ff7777; }
+.joinFormSteps .is-past { color: #ccc; }
+.joinFormIntroFoot { border-top: 1px solid #333; padding-top: 24px; margin-top: 30px; color: #888; font: 9px "Moderniz", sans-serif; letter-spacing: .05em; }
+.joinForm--branded .stateBar {
+  left: var(--join-column-left);
+  width: var(--join-column-width);
+  height: 280px;
+  padding-top: 24px;
+  padding-bottom: 24px;
+  background: linear-gradient(var(--background-dark) 90%, transparent);
+}
+.joinFormBack { position: absolute; top: 24px; left: 32px; display: inline-flex; align-items: center; min-height: 44px; color: #bbb; text-decoration: none; font-size: 14px; }
+.joinFormBack:hover { color: #fff; }
+.joinForm--branded .languageToggle { top: 24px; right: 32px; border-radius: 6px; background: transparent; min-height: 44px; font-size: 13px; }
+.joinForm--branded .progressSection { margin: 72px 32px 28px; }
+.joinFormProgressLabel { display: flex; justify-content: space-between; margin-bottom: 28px; font-size: 12px; color: #aaa; }
+.joinFormProgressLabel span:last-child { font-variant-numeric: tabular-nums; color: #ff8888; }
+.joinForm--branded .progressBar { height: 3px; }
+.joinForm--branded .progressFill { box-shadow: none; transition: width .25s ease; }
+.joinForm--branded .cups .cup { background: var(--background-dark); border: 0; border-radius: 4px; padding: 0; }
+.joinForm--branded .stateBarRow { margin-inline: 32px; }
+.joinForm--branded .text { margin: 0; font-size: clamp(23px, 2.3vw, 29px); letter-spacing: -.025em; line-height: 1.35; }
+.joinFormStepHint { font-size: 13px; color: #999; line-height: 1.6; margin-top: 10px; }
+.joinForm--branded .form { width: var(--join-column-width); margin-top: 0; margin-left: var(--join-column-left); padding: 300px 32px 0; }
+.joinForm--branded .name { margin-top: 24px; }
+.joinForm--branded .label { font-size: 13px; margin-bottom: 10px; color: #aaa; }
+.joinForm--branded .activeLabel { color: #ff7777; }
+.joinForm--branded input, .joinForm--branded .select {
+  height: 52px;
+  padding: 12px 14px;
+  border: 1px solid #3b3b3b;
+  border-radius: 6px;
+  background: #191919;
+  font: inherit;
+  font-size: 17px;
+  transition: border-color .2s, background .2s;
+}
+.joinForm--branded .select { padding-right: 36px; align-content: center; cursor: pointer; }
+.joinForm--branded input:focus, .joinForm--branded .select:focus { border: 1px solid #ff7777; background: #1d1919; outline: 2px solid rgba(255, 119, 119, .16); outline-offset: 2px; }
+.joinForm--branded .academicStateArrow { top: 15px; }
+.joinForm--branded .hidden > * { visibility: hidden; }
+.joinForm--branded .nextButton { min-height: 50px; margin: 24px 0 0; border-radius: 6px; box-shadow: none; font: inherit; font-weight: 600; cursor: pointer; animation: none; }
+.joinForm--branded .nextButton:hover { box-shadow: 0 5px 18px rgba(179,0,0,.2); }
+.joinForm--branded .optionsBox {
+  inset: 0;
+  width: 100%;
+  height: 100dvh;
+  z-index: 150;
+  justify-content: flex-end;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, visibility .2s;
+}
+.joinForm--branded .optionsBox.activeOptions { opacity: 1; visibility: visible; pointer-events: auto; }
+.joinForm--branded .blur { position: absolute; inset: 0; height: 100%; transform: none; background: rgba(0,0,0,.7); backdrop-filter: blur(6px); }
+.joinForm--branded .options {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: min(560px, calc(100% - 48px));
+  height: 470px;
+  max-height: calc(100dvh - 48px);
+  padding: 28px 24px 100px;
+  margin-bottom: 24px;
+  overflow: hidden;
+  border: 1px solid #444;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0,0,0,.6);
+  background: #0d0d0d;
+  transform: translateY(24px);
+  transition: transform .24s ease;
+}
+.joinForm--branded .activeOptions .options { transform: translateY(0); }
+.joinForm--branded .joinSheetHeader { flex-shrink: 0; padding-right: 44px; }
+.joinForm--branded .joinSheetHeader h2 { margin: 0; color: #fff; font-size: 21px; letter-spacing: -.025em; line-height: 1.4; }
+.joinForm--branded .joinSheetHeader p { margin: 8px 0 0; color: #aaa; font-size: 13px; line-height: 1.7; }
+.joinForm--branded .joinSheetClose { position: absolute; right: 16px; top: 20px; width: 44px; height: 44px; border: 1px solid #444; border-radius: 50%; background: transparent; color: #ccc; font: inherit; font-size: 26px; cursor: pointer; }
+.joinForm--branded .joinSheetClose:hover { background: #333; color: #fff; }
+.joinForm--branded .options .swiper { display: block; flex: 1; min-height: 0; height: auto; width: 100%; margin: 20px 0 0; mask-image: linear-gradient(transparent, #000 20%, #000 80%, transparent); }
+.joinForm--branded .options .swiper::before { content: ""; position: absolute; top: 40%; left: 0; right: 0; height: 20%; border-block: 1px solid rgba(255,119,119,.35); border-radius: 6px; background: rgba(179,0,0,.13); pointer-events: none; }
+.joinForm--branded .options .option { display: grid; place-items: center; padding: 0 12px; font-size: 16px; line-height: 1.3; color: #888; cursor: pointer; transition: color .2s, font-size .2s; }
+.joinForm--branded .options .option.selectedOption { color: #ff9999; font-size: 21px; font-weight: 600; }
+.joinForm--branded .confirmButton { left: 24px; right: 24px; top: auto; bottom: 24px; border-top: 1px solid #333; padding-top: 16px; display: flex; gap: 12px; }
+.joinForm--branded .confirmButton > .nextButton { flex: 1; min-width: 0; width: auto; margin: 0; min-height: 50px; padding: 12px 20px; font-size: 16px; }
+.joinForm--branded .joinSheetLanguage { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 12px 16px; flex-shrink: 0; border: 1px solid #444; border-radius: 6px; background: #191919; color: #eee; font: inherit; font-size: 14px; cursor: pointer; transition: background .2s, border-color .2s; }
+.joinForm--branded .joinSheetLanguage:hover { background: #242424; border-color: #888; }
+.joinForm--branded .joinSheetLanguage svg { font-size: 18px; }
+@media (max-width: 600px) {
+  .joinForm--branded .options { width: 100%; max-height: calc(100dvh - 24px); margin-bottom: 0; height: calc(470px + env(safe-area-inset-bottom, 0px)); padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px)); border-bottom: 0; border-radius: 22px 22px 0 0; }
+  .joinForm--branded .confirmButton { bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
+  .joinForm--branded .options .option.selectedOption { font-size: 18px; }
+}
+.joinForm--branded .wishPopup { max-width: 460px; padding: 32px; border: 1px solid #444; border-top: 2px solid var(--brand-red); border-radius: 12px; background: #171717; }
+.joinForm--branded .wishPopupQuestion { font-size: 24px; letter-spacing: -.02em; }
+.joinForm--branded .wishPopupInput { background: #111; border-color: #444; border-radius: 6px; line-height: 1.7; }
+.joinForm--branded .wishPopupCancel, .joinForm--branded .wishPopupConfirm { border-radius: 6px; min-height: 46px; font: inherit; font-size: 15px; box-shadow: none; }
+.joinForm--branded :is(a, button):focus-visible { outline: 2px solid #ff7777; outline-offset: 4px; }
+.joinForm--branded .stateBarRow :is(.nameError, .studentIdError, .contactError) { color: #ff8888; font-size: 13px; }
+@media (max-width: 1023px) {
+  .joinForm--branded { --join-column-width: min(100%, 560px); --join-column-left: max(0px, calc(50% - 280px)); background: var(--background-dark); }
+  .joinFormIntro { display: none; }
+}
+@media (max-width: 480px) {
+  .joinForm--branded .stateBar { height: 280px; }
+  .joinForm--branded .form { padding-inline: 24px; }
+  .joinForm--branded .progressSection, .joinForm--branded .stateBarRow { margin-inline: 24px; }
+  .joinFormBack { left: 24px; }
+  .joinForm--branded .languageToggle { right: 24px; }
+  .joinForm--branded .twoInputBox { gap: 12px; }
+  .joinForm--branded .college .select, .joinForm--branded .major .select { font-size: 14px; }
+  .joinForm--branded .wishPopup { padding: 24px; }
+}
+@media (min-width: 1024px) and (max-height: 760px) {
+  .joinFormIntro { top: 32px; }
+  .joinFormEyebrow { margin-top: 32px; }
+  .joinFormIntro h2 { font-size: 36px; }
+  .joinFormSteps { margin-top: 20px; }
+  .joinFormSteps li { padding-block: 9px; }
+  .joinFormIntroFoot { margin-top: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .joinForm--branded *, .joinForm--branded *::after { animation: none !important; transition: none !important; }
+}

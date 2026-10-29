@@ -38,8 +38,8 @@
 .reservationShare__error {
   padding: 12px 14px;
   border-radius: 10px;
-  border: 1px solid rgba(179, 0, 0, 0.45);
-  background: rgba(179, 0, 0, 0.12);
+  border: 1px solid rgba(255, 69, 58, 0.45);
+  background: rgba(255, 69, 58, 0.12);
   color: #ffb3b3;
   font-size: 0.9rem;
 }
@@ -50,7 +50,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: var(--box-1);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+  box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.1);
   padding: 14px 14px 16px;
 }
 
@@ -106,7 +106,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 12px;
   background: var(--box-1);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+  box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.1);
 }
 
 .reservationShare__locationTitle {
@@ -134,8 +134,8 @@
   font-weight: 600;
   text-decoration: none;
   color: var(--text-primary);
-  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
-  box-shadow: 0 4px 18px rgba(179, 0, 0, 0.35);
+  background: linear-gradient(135deg, var(--club-accent) 0%, var(--club-accent) 100%);
+  box-shadow: 0 4px 18px rgba(255, 69, 58, 0.35);
 }
 
 .reservationShare__link--sub {

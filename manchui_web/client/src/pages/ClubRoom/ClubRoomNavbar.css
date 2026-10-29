@@ -17,8 +17,8 @@
   gap: 0;
   min-height: 62px;
   padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
-  background-color: var(--background-dark);
-  border-top: 1px solid var(--box-3, #2a2a2a);
+  background-color: var(--club-sidebar-bg);
+  border-top: 1px solid var(--club-border);
   user-select: none;
   z-index: 810;
 }
@@ -131,8 +131,8 @@
     width: var(--club-sidenav-width, 248px);
     padding: 28px 16px 20px;
     box-sizing: border-box;
-    background: #0b0b0b;
-    border-right: 1px solid var(--box-3, #2a2a2a);
+    background: var(--club-sidebar-bg);
+    border-right: 1px solid var(--club-border);
     user-select: none;
   }
 
@@ -156,7 +156,7 @@
     font-size: 0.78rem;
     font-weight: 600;
     letter-spacing: 0.04em;
-    color: var(--brand-red, #b30000);
+    color: var(--club-accent);
   }
 
   .ClubRoomSideNav__list {
@@ -176,7 +176,7 @@
     width: 100%;
     padding: 12px 14px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--club-radius-sm);
     background: transparent;
     color: var(--text-more, #888);
     font: inherit;
@@ -190,12 +190,12 @@
   }
 
   .ClubRoomSideNav__item:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--club-hover);
     color: var(--text-gray, #e0e0e0);
   }
 
   .ClubRoomSideNav__item--active {
-    background: rgba(179, 0, 0, 0.16);
+    background: var(--club-active-bg);
     color: var(--text-primary, #fff);
     font-weight: 700;
   }
@@ -208,11 +208,11 @@
     bottom: 10px;
     width: 3px;
     border-radius: 0 3px 3px 0;
-    background: var(--brand-red, #b30000);
+    background: var(--club-accent);
   }
 
   .ClubRoomSideNav__item--active:hover {
-    background: rgba(179, 0, 0, 0.22);
+    background: var(--club-active-bg-strong);
     color: var(--text-primary, #fff);
   }
 
@@ -238,7 +238,7 @@
     gap: 8px;
     margin-top: auto;
     padding-top: 16px;
-    border-top: 1px solid var(--box-3, #2a2a2a);
+    border-top: 1px solid var(--club-border);
   }
 
   .ClubRoomSideNav__user {
@@ -248,7 +248,7 @@
     width: 100%;
     padding: 10px 12px;
     border: none;
-    border-radius: 10px;
+    border-radius: var(--club-radius-sm);
     background: transparent;
     color: var(--text-primary, #fff);
     font: inherit;
@@ -257,7 +257,7 @@
   }
 
   .ClubRoomSideNav__user:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--club-hover);
   }
 
   .ClubRoomSideNav__avatar {
@@ -298,14 +298,30 @@
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: var(--club-radius-sm);
     color: var(--text-more, #888);
     font-size: 0.82rem;
     text-decoration: none;
   }
 
   .ClubRoomSideNav__exit:hover {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--club-hover);
     color: var(--text-gray, #e0e0e0);
   }
+}
+
+/* —— 모바일 하단 탭: 사이드바와 같은 활성 표시 (아이콘 뒤 빨간 알약) —— */
+.ClubRoomBottomNav__iconWrap {
+  width: 52px;
+  height: 30px;
+  border-radius: var(--club-radius-sm);
+  transition: background 0.15s ease;
+}
+
+.ClubRoomBottomNav__item--active .ClubRoomBottomNav__iconWrap {
+  background: var(--club-active-bg);
+}
+
+.ClubRoomBottomNav__item--active .ClubRoomBottomNav__icon {
+  transform: none;
 }

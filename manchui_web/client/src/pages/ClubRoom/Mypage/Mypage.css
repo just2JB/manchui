@@ -13,7 +13,7 @@
 .mypageHub__pageTitle {
   margin: 14px 0 14px;
   padding: 0 2px;
-  font-size: 1.35rem;
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -28,9 +28,9 @@
   gap: 10px;
   width: 100%;
   padding: 14px 12px 14px 14px;
-  border: 1px solid var(--primary-200);
-  border-radius: 12px;
-  background: var(--box-1);
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
   cursor: pointer;
   font: inherit;
   color: inherit;
@@ -140,7 +140,7 @@
   justify-content: center;
   width: 22px;
   height: 22px;
-  border-radius: 6px;
+  border-radius: var(--club-radius-sm);
   overflow: hidden;
 }
 
@@ -213,9 +213,10 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid var(--primary-200);
-  border-radius: 10px;
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius-sm);
   overflow: hidden;
+  background: var(--club-surface);
 }
 
 .mypageHub__menuItem {
@@ -274,7 +275,7 @@
 }
 
 .mypageHub__menuRow--danger:hover {
-  background: rgba(179, 0, 0, 0.12);
+  background: rgba(255, 69, 58, 0.12);
   color: #ffb1b1;
 }
 
@@ -377,7 +378,7 @@
   margin: 0;
   padding: 0 12px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: #fee500;
   color: #191600;
   font: inherit;
@@ -447,7 +448,7 @@
   color: var(--text-primary);
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -512,9 +513,9 @@
   align-items: center;
   margin-top: 16px;
   padding: 10px 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(179, 0, 0, 0.45);
-  background: rgba(179, 0, 0, 0.12);
+  border-radius: var(--club-radius-sm);
+  border: 1px solid rgba(255, 69, 58, 0.45);
+  background: rgba(255, 69, 58, 0.12);
   color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 600;
@@ -524,13 +525,13 @@
 .mypageReservations__reserveLink--compact {
   margin-top: 14px;
   padding: 6px 12px;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   font-size: 0.8rem;
   font-weight: 600;
 }
 
 .mypageReservations__reserveLink:hover {
-  background: rgba(179, 0, 0, 0.22);
+  background: rgba(255, 69, 58, 0.22);
 }
 
 .mypageSaved__back:hover {

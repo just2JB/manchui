@@ -22,7 +22,7 @@
 .reservation__title {
   margin: 0;
   font-size: clamp(1.55rem, 4.2vw, 1.85rem);
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.2;
 }
@@ -35,7 +35,7 @@
   width: 40px;
   height: 40px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-gray);
   cursor: pointer;
@@ -47,8 +47,8 @@
 
 .reservation__mapBtn:hover {
   color: var(--text-primary);
-  border-color: rgba(179, 0, 0, 0.35);
-  background: rgba(179, 0, 0, 0.12);
+  border-color: rgba(255, 69, 58, 0.35);
+  background: rgba(255, 69, 58, 0.12);
 }
 
 .reservation__mapBtnIcon {
@@ -63,15 +63,9 @@
 }
 
 .reservation__calendarSection {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: linear-gradient(
-    165deg,
-    var(--box-1) 0%,
-    #1a1a1a 50%,
-    var(--background-dark) 100%
-  );
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.12);
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
   padding: 12px 12px 14px;
 }
 
@@ -89,14 +83,14 @@
   width: 40px;
   height: 40px;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: var(--box-2);
   color: var(--text-primary);
   cursor: pointer;
 }
 
 .reservation__monthBtn:hover {
-  background: rgba(179, 0, 0, 0.18);
+  background: rgba(255, 69, 58, 0.18);
   color: var(--text-primary);
 }
 
@@ -118,7 +112,7 @@
   margin: 0;
   padding: 6px 4px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: transparent;
   color: var(--text-primary);
   font: inherit;
@@ -133,7 +127,7 @@
 
 .reservation__monthPickBtn:hover,
 .reservation__monthPickBtn--active {
-  background: rgba(179, 0, 0, 0.14);
+  background: rgba(255, 69, 58, 0.14);
   color: var(--text-primary);
 }
 
@@ -148,15 +142,10 @@
   max-height: min(220px, 42vh);
   overflow-y: auto;
   padding: 8px;
-  border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: linear-gradient(
-    165deg,
-    var(--box-1) 0%,
-    #1a1a1a 55%,
-    var(--background-dark) 100%
-  );
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
+  border-radius: var(--club-radius-sm);
+  border: 1px solid var(--club-border);
+  background: var(--club-surface-2);
+  box-shadow: var(--club-overlay-shadow);
 }
 
 .reservation__monthPicker--year {
@@ -173,7 +162,7 @@
   margin: 0;
   padding: 8px 6px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: transparent;
   color: var(--text-gray);
   font-size: 0.86rem;
@@ -190,7 +179,7 @@
 }
 
 .reservation__monthPickerItem--selected {
-  background: rgba(179, 0, 0, 0.22);
+  background: rgba(255, 69, 58, 0.22);
   color: var(--text-primary);
   font-weight: 600;
 }
@@ -287,9 +276,9 @@
   background: linear-gradient(
     90deg,
     var(--box-2) 0%,
-    rgba(179, 0, 0, 0.12) 42%,
+    rgba(255, 69, 58, 0.12) 42%,
     rgba(255, 255, 255, 0.07) 50%,
-    rgba(179, 0, 0, 0.08) 58%,
+    rgba(255, 69, 58, 0.08) 58%,
     var(--box-2) 90%
   );
   background-size: 200% 100%;
@@ -297,8 +286,8 @@
 }
 
 .reservation__day--loading.reservation__day--today {
-  border-color: rgba(179, 0, 0, 0.35);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.2);
+  border-color: rgba(255, 69, 58, 0.35);
+  box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.2);
 }
 
 .reservation__day--loading.reservation__day--past {
@@ -335,7 +324,7 @@
   position: relative;
   min-height: 48px;
   border: 1px solid transparent;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: var(--box-2);
   color: var(--text-primary);
   cursor: pointer;
@@ -348,13 +337,12 @@
 }
 
 .reservation__day:hover:not(:disabled) {
-  border-color: rgba(179, 0, 0, 0.45);
-  background: rgba(179, 0, 0, 0.12);
+  border-color: rgba(255, 69, 58, 0.45);
+  background: rgba(255, 69, 58, 0.12);
 }
 
 .reservation__day--today {
-  border-color: var(--brand-red);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.35);
+  border-color: var(--club-accent);
 }
 
 .reservation__day--past {
@@ -380,8 +368,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--brand-red);
-  box-shadow: 0 0 6px rgba(179, 0, 0, 0.65);
+  background: var(--club-accent);
 }
 
 .reservation__calendarFooter {
@@ -404,7 +391,7 @@
   margin: 0;
   padding: 6px 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-gray);
   font-size: 0.78rem;
@@ -419,8 +406,8 @@
 
 .reservation__todayBtn:hover:not(:disabled) {
   color: var(--text-primary);
-  border-color: rgba(179, 0, 0, 0.35);
-  background: rgba(179, 0, 0, 0.1);
+  border-color: rgba(255, 69, 58, 0.35);
+  background: rgba(255, 69, 58, 0.1);
 }
 
 .reservation__todayBtn:disabled {
@@ -465,6 +452,10 @@
 
 .reservation__mySection {
   flex: 1;
+  border: 1px solid var(--club-border);
+  background: var(--club-surface);
+  border-radius: var(--club-radius);
+  padding: 16px;
 }
 
 .reservation__empty {
@@ -486,10 +477,9 @@
   justify-content: space-between;
   gap: 12px;
   padding: 12px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  background: var(--box-1);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface-2);
 }
 
 .reservation__myActions {
@@ -508,7 +498,7 @@
   width: 30px;
   height: 30px;
   padding: 0;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(0, 255, 200, 0.38);
   background: rgba(0, 255, 200, 0.1);
   color: var(--complete-green);
@@ -557,9 +547,9 @@
   padding: 0 10px;
   min-height: 30px;
   font-size: 0.75rem;
-  border-radius: 8px;
-  border: 1px solid rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.1);
+  border-radius: var(--club-radius-sm);
+  border: 1px solid rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.1);
   color: #ffb3b3;
   cursor: pointer;
   line-height: 1;
@@ -598,7 +588,7 @@
 }
 
 .reservationSkeleton__line {
-  border-radius: 6px;
+  border-radius: var(--club-radius-sm);
   flex-shrink: 0;
 }
 
@@ -628,7 +618,7 @@
 .reservationSkeleton__btn {
   width: 30px;
   height: 30px;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   flex-shrink: 0;
 }
 
@@ -637,8 +627,8 @@
 }
 
 .reservation__cancelBtn:hover {
-  background: rgba(179, 0, 0, 0.22);
-  border-color: rgba(179, 0, 0, 0.75);
+  background: rgba(255, 69, 58, 0.22);
+  border-color: rgba(255, 69, 58, 0.75);
   color: var(--text-primary);
 }
 
@@ -676,20 +666,13 @@
   max-height: 92dvh;
   margin: 0;
   overflow: hidden;
-  background: linear-gradient(
-    165deg,
-    var(--box-1) 0%,
-    #181818 45%,
-    var(--background-dark) 100%
-  );
+  background: var(--club-surface);
   color: var(--text-primary);
   border-top-left-radius: 18px;
   border-top-right-radius: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--club-border);
   border-bottom: none;
-  box-shadow:
-    0 -24px 48px rgba(0, 0, 0, 0.55),
-    0 0 0 1px rgba(179, 0, 0, 0.12);
+  box-shadow: var(--club-overlay-shadow);
   animation: reservationSheetIn 0.28s ease-out;
 }
 
@@ -707,6 +690,9 @@
 @media (prefers-reduced-motion: reduce) {
   .reservation__sheet {
     animation: none;
+    background: var(--club-surface);
+    border: 1px solid var(--club-border);
+    box-shadow: var(--club-overlay-shadow);
   }
 }
 
@@ -779,8 +765,8 @@
   gap: 12px;
   padding: 12px 18px;
   padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(18, 18, 18, 0.96);
+  border-top: 1px solid var(--club-border);
+  background: var(--club-surface);
 }
 
 .reservation__sheetFooter .reservation__btn {
@@ -833,8 +819,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(179, 0, 0, 0.25);
-  border: 1px solid rgba(179, 0, 0, 0.6);
+  background: rgba(255, 69, 58, 0.25);
+  border: 1px solid rgba(255, 69, 58, 0.6);
   font-size: 0.75rem;
   font-weight: 700;
 }
@@ -871,11 +857,11 @@
     width: 100%;
     max-width: 560px;
     max-height: min(86dvh, 760px);
-    border-radius: 18px;
+    border-radius: var(--club-radius);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow:
-      0 20px 56px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(179, 0, 0, 0.12);
+    box-shadow: var(--club-overlay-shadow);
+    background: var(--club-surface);
+    border: 1px solid var(--club-border);
   }
 
   .reservation__sheetHandle {
@@ -900,9 +886,9 @@
   font-size: 0.82rem;
   line-height: 1.45;
   color: var(--text-gray);
-  background: rgba(179, 0, 0, 0.14);
-  border: 1px solid rgba(179, 0, 0, 0.35);
-  border-radius: 10px;
+  background: rgba(255, 69, 58, 0.14);
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  border-radius: var(--club-radius-sm);
 }
 
 .reservation__sheet .reservation__field legend {
@@ -975,8 +961,8 @@
 }
 
 .reservation__hourLegendSwatch--selected {
-  border-color: var(--brand-red);
-  background: var(--brand-red);
+  border-color: var(--club-accent);
+  background: var(--club-accent);
 }
 
 .reservation__hourLegendSwatch--reserved {
@@ -1029,7 +1015,7 @@
   align-items: center;
   justify-content: center;
   gap: 1px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
@@ -1049,8 +1035,8 @@
 
 @media (hover: hover) {
   .reservation__hourChip:hover:not(:disabled):not(.reservation__hourChip--selected) {
-    border-color: rgba(179, 0, 0, 0.5);
-    background: rgba(179, 0, 0, 0.12);
+    border-color: rgba(255, 69, 58, 0.5);
+    background: rgba(255, 69, 58, 0.12);
   }
 }
 
@@ -1069,15 +1055,14 @@
 }
 
 .reservation__hourChip--selected {
-  border-color: rgba(179, 0, 0, 0.7);
-  background: rgba(179, 0, 0, 0.32);
+  border-color: rgba(255, 69, 58, 0.7);
+  background: rgba(255, 69, 58, 0.32);
 }
 
 .reservation__hourChip--rangeStart,
 .reservation__hourChip--rangeEnd {
-  border-color: var(--brand-red);
-  background: var(--brand-red);
-  box-shadow: 0 2px 10px rgba(179, 0, 0, 0.45);
+  border-color: var(--club-accent);
+  background: var(--club-accent);
 }
 
 .reservation__hourChip--reserved {
@@ -1104,7 +1089,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 12px 12px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--primary-200);
   background: var(--box-2);
   color: var(--text-primary);
@@ -1132,7 +1117,7 @@
   width: 100%;
   min-height: 46px;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--primary-200);
   background: var(--box-2);
   overflow: hidden;
@@ -1142,8 +1127,8 @@
 }
 
 .reservation__numberWrap:focus-within {
-  border-color: var(--brand-red);
-  box-shadow: 0 0 0 3px rgba(179, 0, 0, 0.25);
+  border-color: var(--club-accent);
+  box-shadow: 0 0 0 3px rgba(255, 69, 58, 0.25);
   background: var(--box-1);
 }
 
@@ -1163,7 +1148,7 @@
 }
 
 .reservation__numberBtn:hover:not(:disabled) {
-  background: rgba(179, 0, 0, 0.22);
+  background: rgba(255, 69, 58, 0.22);
 }
 
 .reservation__numberBtn:disabled {
@@ -1193,8 +1178,8 @@
 
 .reservation__input:focus {
   outline: none;
-  border-color: var(--brand-red);
-  box-shadow: 0 0 0 3px rgba(179, 0, 0, 0.25);
+  border-color: var(--club-accent);
+  box-shadow: 0 0 0 3px rgba(255, 69, 58, 0.25);
   background: var(--box-1);
 }
 
@@ -1227,7 +1212,7 @@ fieldset.reservation__field:disabled .reservation__hourChip {
 .reservation__btn {
   flex: 1;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   font-size: 0.95rem;
   font-weight: 600;
   cursor: pointer;
@@ -1242,17 +1227,12 @@ fieldset.reservation__field:disabled .reservation__hourChip {
 .reservation__btn--primary {
   color: var(--text-primary);
   border: none;
-  background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
-  box-shadow: 0 4px 18px rgba(179, 0, 0, 0.4);
-  transition:
-    filter 0.2s ease,
-    box-shadow 0.2s ease,
-    transform 0.15s ease;
+  background: var(--club-accent);
+  transition: background 0.15s ease, transform 0.15s ease;
 }
 
 .reservation__btn--primary:hover:not(:disabled) {
-  filter: brightness(1.06);
-  box-shadow: 0 6px 22px rgba(179, 0, 0, 0.48);
+  background: var(--club-accent-hover);
 }
 
 .reservation__btn--primary:active:not(:disabled) {
@@ -1282,7 +1262,7 @@ fieldset.reservation__field:disabled .reservation__hourChip {
   align-items: center;
   gap: 4px;
   padding: 5px 9px;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-gray);
@@ -1298,8 +1278,8 @@ fieldset.reservation__field:disabled .reservation__hourChip {
 
 .reservation__rulesOpenBtn:hover {
   color: var(--text-primary);
-  background: rgba(179, 0, 0, 0.14);
-  border-color: rgba(179, 0, 0, 0.35);
+  background: rgba(255, 69, 58, 0.14);
+  border-color: rgba(255, 69, 58, 0.35);
 }
 
 .reservation__rulesOpenIcon {
@@ -1342,16 +1322,11 @@ fieldset.reservation__field:disabled .reservation__hourChip {
   overflow-x: hidden;
   overflow-y: auto;
   padding: 20px 18px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(
-    165deg,
-    var(--box-1) 0%,
-    #181818 50%,
-    var(--background-dark) 100%
-  );
+  border-radius: var(--club-radius);
+  border: 1px solid var(--club-border);
+  background: var(--club-surface);
   color: var(--text-primary);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--club-overlay-shadow);
 }
 
 .reservation__rulesTitle {
@@ -1381,12 +1356,8 @@ fieldset.reservation__field:disabled .reservation__hourChip {
   width: 100%;
   padding: 12px 14px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(
-    135deg,
-    var(--brand-red) 0%,
-    #8a0000 100%
-  );
+  border-radius: var(--club-radius-sm);
+  background: var(--club-accent);
   color: #fff;
   font-size: 0.95rem;
   font-weight: 600;
@@ -1420,16 +1391,11 @@ fieldset.reservation__field:disabled .reservation__hourChip {
   width: 100%;
   max-width: min(400px, 100%);
   padding: 20px 18px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(
-    165deg,
-    var(--box-1) 0%,
-    #181818 50%,
-    var(--background-dark) 100%
-  );
+  border-radius: var(--club-radius);
+  border: 1px solid var(--club-border);
+  background: var(--club-surface);
   color: var(--text-primary);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.55);
+  box-shadow: var(--club-overlay-shadow);
 }
 
 .reservation__detailTitle {
@@ -1470,12 +1436,8 @@ fieldset.reservation__field:disabled .reservation__hourChip {
   width: 100%;
   padding: 12px 14px;
   border: none;
-  border-radius: 10px;
-  background: linear-gradient(
-    135deg,
-    var(--brand-red) 0%,
-    #8a0000 100%
-  );
+  border-radius: var(--club-radius-sm);
+  background: var(--club-accent);
   color: #fff;
   font-size: 0.95rem;
   font-weight: 600;
@@ -1584,7 +1546,7 @@ fieldset.reservation__field:disabled .reservation__hourChip {
 
   .reservation__calendarSection {
     padding: 20px 22px 18px;
-    border-radius: 16px;
+    border-radius: var(--club-radius);
   }
 
   .reservation__weekCell {
@@ -1600,7 +1562,7 @@ fieldset.reservation__field:disabled .reservation__hourChip {
     min-height: 84px;
     padding-top: 10px;
     gap: 8px;
-    border-radius: 12px;
+    border-radius: var(--club-radius);
     transition:
       border-color 0.15s ease,
       background 0.15s ease;
@@ -1629,10 +1591,10 @@ fieldset.reservation__field:disabled .reservation__hourChip {
   }
 
   .reservation__mySection {
-    padding: 18px 18px 20px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 16px;
-    background: var(--box-1);
+    padding: 16px;
+    border: 1px solid var(--club-border);
+    border-radius: var(--club-radius);
+    background: var(--club-surface);
   }
 
   .reservation__mySection .reservation__myHead {
@@ -1679,6 +1641,10 @@ button.reservation__myMain:hover .reservation__myDate {
 
 .reservation__mySection {
   margin-top: 10px;
+  border: 1px solid var(--club-border);
+  background: var(--club-surface);
+  border-radius: var(--club-radius);
+  padding: 16px;
 }
 
 @media (max-width: 420px) {
@@ -1703,18 +1669,22 @@ button.reservation__myMain:hover .reservation__myDate {
 @media (min-width: 1200px) {
   .reservation__mySection {
     margin-top: 0;
+    border: 1px solid var(--club-border);
+    background: var(--club-surface);
+    border-radius: var(--club-radius);
+    padding: 16px;
   }
 }
 
 /* ---------- 선택한 날짜 예약 현황 ---------- */
 .reservation__day--selected {
   border-color: rgba(255, 255, 255, 0.85);
-  background: rgba(179, 0, 0, 0.28);
+  background: rgba(255, 69, 58, 0.28);
 }
 
 .reservation__day--selected.reservation__day--today {
-  border-color: var(--brand-red);
-  background: rgba(179, 0, 0, 0.32);
+  border-color: var(--club-accent);
+  background: rgba(255, 69, 58, 0.32);
 }
 
 .reservation__side {
@@ -1730,10 +1700,9 @@ button.reservation__myMain:hover .reservation__myDate {
   gap: 12px;
   margin-top: 10px;
   padding: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  background: var(--box-1);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
 }
 
 .reservation__dayHead {
@@ -1752,9 +1721,9 @@ button.reservation__myMain:hover .reservation__myDate {
 
 .reservation__todayBadge {
   padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(179, 0, 0, 0.25);
-  border: 1px solid rgba(179, 0, 0, 0.55);
+  border-radius: var(--club-radius-sm);
+  background: rgba(255, 69, 58, 0.25);
+  border: 1px solid rgba(255, 69, 58, 0.55);
   font-size: 0.72rem;
   font-weight: 700;
   color: #ffb3b3;
@@ -1781,9 +1750,9 @@ button.reservation__myMain:hover .reservation__myDate {
   align-items: center;
   gap: 12px;
   padding: 12px 14px;
-  border-radius: 10px;
-  background: var(--box-2);
-  border-left: 3px solid var(--brand-red);
+  border-radius: var(--club-radius-sm);
+  background: var(--club-surface-2);
+  border-left: 3px solid var(--club-accent);
 }
 
 .reservation__dayItemTime {
@@ -1814,7 +1783,7 @@ button.reservation__myMain:hover .reservation__myDate {
 .reservation__mineBadge {
   flex-shrink: 0;
   padding: 1px 6px;
-  border-radius: 6px;
+  border-radius: var(--club-radius-sm);
   background: rgba(0, 255, 200, 0.12);
   color: var(--complete-green);
   font-size: 0.68rem;
@@ -1834,6 +1803,6 @@ button.reservation__myMain:hover .reservation__myDate {
   .reservation__daySection {
     margin-top: 0;
     padding: 18px;
-    border-radius: 16px;
+    border-radius: var(--club-radius);
   }
 }

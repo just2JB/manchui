@@ -38,7 +38,7 @@
   flex: 1;
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   font: inherit;
@@ -68,14 +68,13 @@
   flex-shrink: 0;
   padding: 10px 14px;
   border: none;
-  border-radius: 12px;
-  background: var(--brand-red);
+  border-radius: var(--club-radius);
+  background: var(--club-accent);
   color: #fff;
   font: inherit;
   font-size: 0.88rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(179, 0, 0, 0.28);
 }
 
 .weeklyTimetablePage__addBtn:disabled {
@@ -87,7 +86,7 @@
   flex-shrink: 0;
   padding: 10px 14px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-primary);
   font: inherit;
@@ -145,7 +144,7 @@
   flex: 1 1 auto;
   min-height: 0;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.02);
   overflow: hidden;
   transition:
@@ -154,11 +153,9 @@
 }
 
 .weeklyTimetablePage__gridWrap--selectMode {
-  border-color: rgba(179, 0, 0, 0.45);
-  box-shadow:
-    0 0 0 1px rgba(179, 0, 0, 0.2),
-    0 8px 28px rgba(179, 0, 0, 0.12);
-  background: rgba(179, 0, 0, 0.04);
+  border-color: rgba(255, 69, 58, 0.45);
+  box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.2);
+  background: rgba(255, 69, 58, 0.04);
 }
 
 .weeklyTimetablePage__scrollArea {
@@ -242,7 +239,7 @@
   height: var(--sched-head-h);
   margin-bottom: 0;
   padding: 0;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: rgba(18, 18, 18, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: inherit;
@@ -257,18 +254,18 @@
 }
 
 .weeklyTimetablePage__dayHead--interactive:hover {
-  border-color: rgba(179, 0, 0, 0.35);
-  background: rgba(179, 0, 0, 0.1);
+  border-color: rgba(255, 69, 58, 0.35);
+  background: rgba(255, 69, 58, 0.1);
 }
 
 .weeklyTimetablePage__dayHead--selected {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.28);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.28);
 }
 
 .weeklyTimetablePage__dayHead--partial {
-  border-color: rgba(179, 0, 0, 0.4);
-  background: rgba(179, 0, 0, 0.14);
+  border-color: rgba(255, 69, 58, 0.4);
+  background: rgba(255, 69, 58, 0.14);
 }
 
 .weeklyTimetablePage__dayHead:disabled {
@@ -327,15 +324,15 @@
 }
 
 .weeklyTimetablePage__slot--selected {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.32);
-  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.35);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.32);
+  box-shadow: inset 0 0 0 1px rgba(255, 69, 58, 0.35);
 }
 
 .weeklyTimetablePage__slot--selected.weeklyTimetablePage__slot--am {
   background: color-mix(
     in srgb,
-    rgba(179, 0, 0, 0.32) 70%,
+    rgba(255, 69, 58, 0.32) 70%,
     rgba(255, 183, 77, 0.12)
   );
 }
@@ -349,9 +346,9 @@
   min-height: 0;
   margin: 0;
   padding: 4px 6px;
-  border: 1px solid rgba(179, 0, 0, 0.45);
-  border-radius: 6px;
-  background: rgba(179, 0, 0, 0.24);
+  border: 1px solid rgba(255, 69, 58, 0.45);
+  border-radius: var(--club-radius-sm);
+  background: rgba(255, 69, 58, 0.24);
   color: var(--text-primary);
   font: inherit;
   text-align: left;
@@ -391,8 +388,8 @@
   width: 100%;
   max-width: 600px;
   max-height: min(52dvh, 360px);
-  border-top: 1px solid rgba(179, 0, 0, 0.35);
-  border-radius: 16px 16px 0 0;
+  border-top: 1px solid rgba(255, 69, 58, 0.35);
+  border-radius: var(--club-radius) var(--club-radius) 0 0;
   background: var(--background-dark);
   color: var(--text-primary);
   box-sizing: border-box;
@@ -432,7 +429,7 @@
   width: 100%;
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font: inherit;
@@ -482,7 +479,7 @@
   gap: 10px;
   padding: 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -496,7 +493,7 @@
   min-width: 34px;
   padding: 7px 9px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 9px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font: inherit;
@@ -506,8 +503,8 @@
 }
 
 .weeklyTimetablePage__selectWeekdayBtn--active {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.22);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.22);
 }
 
 .weeklyTimetablePage__selectTimeRange {
@@ -555,8 +552,8 @@
   flex-shrink: 0;
   padding: 10px 14px;
   border: none;
-  border-radius: 10px;
-  background: var(--brand-red);
+  border-radius: var(--club-radius-sm);
+  background: var(--club-accent);
   color: #fff;
   font: inherit;
   font-size: 0.84rem;
@@ -585,7 +582,7 @@
   gap: 8px;
   padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -601,7 +598,7 @@
   width: 24px;
   height: 24px;
   border: none;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   font-size: 1rem;
@@ -628,7 +625,7 @@
 .weeklyTimetablePage__selectDeleteBtn {
   padding: 11px 14px;
   border: 1px solid rgba(255, 120, 120, 0.35);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 80, 80, 0.12);
   color: #ff9f9f;
   font: inherit;
@@ -641,8 +638,8 @@
   flex: 1;
   padding: 11px 20px;
   border: none;
-  border-radius: 12px;
-  background: var(--brand-red);
+  border-radius: var(--club-radius);
+  background: var(--club-accent);
   color: #fff;
   font: inherit;
   font-size: 0.9rem;
@@ -679,7 +676,7 @@
   max-width: 600px;
   max-height: min(70dvh, 520px);
   overflow: auto;
-  border-radius: 18px 18px 0 0;
+  border-radius: var(--club-radius) var(--club-radius) 0 0;
   background: var(--background-dark);
   color: var(--text-primary);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -717,15 +714,15 @@
 
 .weeklyTimetablePicker__item {
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   overflow: hidden;
   background: rgba(255, 255, 255, 0.03);
 }
 
 .weeklyTimetablePicker__item--active {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.28);
-  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.2);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 69, 58, 0.2);
 }
 
 .weeklyTimetablePicker__row {
@@ -751,11 +748,11 @@
 .weeklyTimetablePicker__badge {
   flex-shrink: 0;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   font-size: 0.72rem;
   font-weight: 700;
   color: #fff;
-  background: rgba(179, 0, 0, 0.85);
+  background: rgba(255, 69, 58, 0.85);
 }
 
 .weeklyTimetablePicker__item--active .weeklyTimetablePicker__actionBtn {
@@ -780,7 +777,7 @@
   flex: 1;
   padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font: inherit;
@@ -803,7 +800,7 @@
   margin-top: 12px;
   padding: 12px 14px;
   border: 1px dashed rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: transparent;
   color: var(--text-primary);
   font: inherit;
@@ -833,7 +830,7 @@
   position: relative;
   width: 100%;
   max-width: 600px;
-  border-radius: 18px 18px 0 0;
+  border-radius: var(--club-radius) var(--club-radius) 0 0;
   background: var(--background-dark);
   color: var(--text-primary);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -897,7 +894,7 @@
   min-width: 36px;
   padding: 8px 10px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font: inherit;
@@ -907,8 +904,8 @@
 }
 
 .weeklyEntrySheet__weekdayBtn--active {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.22);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.22);
 }
 
 .weeklyEntrySheet__timeRow {
@@ -935,7 +932,7 @@
   width: 100%;
   padding: 10px 12px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font: inherit;
@@ -989,7 +986,7 @@
 .weeklyEntrySheet__secondaryBtn,
 .weeklyEntrySheet__dangerBtn {
   padding: 12px 16px;
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -999,7 +996,7 @@
 .weeklyEntrySheet__primaryBtn {
   flex: 1;
   border: none;
-  background: var(--brand-red);
+  background: var(--club-accent);
   color: #fff;
 }
 

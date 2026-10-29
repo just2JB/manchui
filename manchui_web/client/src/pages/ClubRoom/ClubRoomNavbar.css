@@ -109,3 +109,203 @@
     width: 100%;
   }
 }
+
+/* —— PC 전용 사이드바 (1024px 이상) —— */
+.ClubRoomSideNav {
+  display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .ClubRoomBottomNav {
+    display: none;
+  }
+
+  .ClubRoomSideNav {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 810;
+    display: flex;
+    flex-direction: column;
+    width: var(--club-sidenav-width, 248px);
+    padding: 28px 16px 20px;
+    box-sizing: border-box;
+    background: #0b0b0b;
+    border-right: 1px solid var(--box-3, #2a2a2a);
+    user-select: none;
+  }
+
+  .ClubRoomSideNav__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0 12px 28px;
+    text-decoration: none;
+  }
+
+  .ClubRoomSideNav__logo {
+    font-family: "Moderniz", sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    color: #e0e0e0;
+  }
+
+  .ClubRoomSideNav__brandSub {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--brand-red, #b30000);
+  }
+
+  .ClubRoomSideNav__list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ClubRoomSideNav__item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 12px 14px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-more, #888);
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      color 0.15s ease;
+  }
+
+  .ClubRoomSideNav__item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-gray, #e0e0e0);
+  }
+
+  .ClubRoomSideNav__item--active {
+    background: rgba(179, 0, 0, 0.16);
+    color: var(--text-primary, #fff);
+    font-weight: 700;
+  }
+
+  .ClubRoomSideNav__item--active::before {
+    content: "";
+    position: absolute;
+    left: -16px;
+    top: 10px;
+    bottom: 10px;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: var(--brand-red, #b30000);
+  }
+
+  .ClubRoomSideNav__item--active:hover {
+    background: rgba(179, 0, 0, 0.22);
+    color: var(--text-primary, #fff);
+  }
+
+  .ClubRoomSideNav__item--limited {
+    opacity: 0.5;
+  }
+
+  .ClubRoomSideNav__item:focus-visible,
+  .ClubRoomSideNav__user:focus-visible,
+  .ClubRoomSideNav__exit:focus-visible {
+    outline: 2px solid rgba(255, 68, 68, 0.6);
+    outline-offset: 2px;
+  }
+
+  .ClubRoomSideNav__icon {
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+
+  .ClubRoomSideNav__footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--box-3, #2a2a2a);
+  }
+
+  .ClubRoomSideNav__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-primary, #fff);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .ClubRoomSideNav__user:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .ClubRoomSideNav__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: linear-gradient(145deg, var(--box-2, #2c2c2c) 0%, #151515 100%);
+    color: var(--text-gray, #e0e0e0);
+    font-size: 18px;
+  }
+
+  .ClubRoomSideNav__userText {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .ClubRoomSideNav__userName {
+    overflow: hidden;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ClubRoomSideNav__userSub {
+    font-size: 0.75rem;
+    color: var(--text-more, #888);
+  }
+
+  .ClubRoomSideNav__exit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: var(--text-more, #888);
+    font-size: 0.82rem;
+    text-decoration: none;
+  }
+
+  .ClubRoomSideNav__exit:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-gray, #e0e0e0);
+  }
+}

@@ -114,3 +114,22 @@
     overscroll-behavior-y: contain;
   }
 }
+
+/* PC(1024px+): 하단 탭 대신 왼쪽 사이드바, 본문은 나머지 폭 전체 사용 */
+@media screen and (min-width: 1024px) {
+  .clubRoomLayout {
+    --club-sidenav-width: 248px;
+  }
+
+  .clubRoomLayout--withNav {
+    --club-room-bottom-nav: 0px;
+    justify-content: flex-start;
+  }
+
+  .clubRoomLayout--withNav .clubRoombody {
+    width: calc(100% - var(--club-sidenav-width));
+    margin-left: var(--club-sidenav-width);
+    --club-room-column-width: calc(100vw - var(--club-sidenav-width));
+    padding-bottom: 0;
+  }
+}

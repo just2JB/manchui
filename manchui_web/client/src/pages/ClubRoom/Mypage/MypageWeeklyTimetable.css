@@ -1019,3 +1019,18 @@
   background: rgba(255, 80, 80, 0.12);
   color: #ff9f9f;
 }
+
+/* —— PC(1024px+): 표를 넓게, 하단 선택 패널은 본문(사이드바 오른쪽) 가운데에 —— */
+@media (min-width: 1024px) {
+  .mypageHub.weeklyTimetablePage {
+    max-width: 1100px;
+  }
+
+  .weeklyTimetablePage__selectPanel {
+    left: calc(
+      var(--club-sidenav-width, 248px) +
+        (100vw - var(--club-sidenav-width, 248px)) / 2
+    );
+    max-width: 760px;
+  }
+}

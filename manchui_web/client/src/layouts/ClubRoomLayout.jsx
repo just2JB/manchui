@@ -35,6 +35,9 @@ const ClubRoomLayout = () => {
     }
   }, [shareOnly, ensureJoinConfigLoaded]);
 
+  /** 모바일: 하단 탭 / PC(1024px+): 왼쪽 사이드바 */
+  const showNav = assistantEnabled && !hideBottomNav;
+
   if (joinConfigLoading && !shareOnly) {
     return (
       <div className="clubRoomLayout preparingWrapper">
@@ -62,8 +65,12 @@ const ClubRoomLayout = () => {
   return (
     <>
       <ScrollToTopOnRoute />
-      <div className="clubRoomLayout">
-        {assistantEnabled && !hideBottomNav ? <ClubRoomNavbar /> : null}
+      <div
+        className={
+          showNav ? "clubRoomLayout clubRoomLayout--withNav" : "clubRoomLayout"
+        }
+      >
+        {showNav ? <ClubRoomNavbar /> : null}
         <div
           className={[
             "clubRoombody",

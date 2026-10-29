@@ -1465,3 +1465,61 @@
   opacity: 0.55;
   cursor: default;
 }
+
+/* —— PC(1024px+): 인사 카드 아래 캘린더(왼쪽) + 다가오는 연습·내 예약(오른쪽) —— */
+@media (min-width: 1024px) {
+  .clubHome:not(.clubHome--loading) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(300px, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "hero hero"
+      "calendar upcoming"
+      "calendar reservations";
+    gap: 20px 24px;
+    align-items: start;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 40px 48px;
+  }
+
+  .clubHome__hero {
+    grid-area: hero;
+    padding: 28px 28px 24px;
+  }
+
+  .clubHome > .clubHome__block:nth-of-type(1) {
+    grid-area: upcoming;
+  }
+
+  .clubHome > .clubHome__block:nth-of-type(2) {
+    grid-area: calendar;
+  }
+
+  .clubHome > .clubHome__block:nth-of-type(3) {
+    grid-area: reservations;
+  }
+
+  .clubHome__block {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  /* 좁은 오른쪽 열에서는 가로 스크롤 대신 세로 목록 */
+  .clubHome__trackWrap {
+    margin: 0;
+  }
+
+  .clubHome__track {
+    flex-direction: column;
+    gap: 8px;
+    padding: 0;
+    overflow: visible;
+    scroll-snap-type: none;
+  }
+
+  .clubHome__practiceCard {
+    width: 100%;
+    min-height: 0;
+  }
+}

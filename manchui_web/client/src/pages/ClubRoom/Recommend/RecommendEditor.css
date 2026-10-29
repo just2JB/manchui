@@ -297,3 +297,12 @@
 .recommendEditor__errorLink:hover {
   text-decoration: underline;
 }
+
+/* —— PC(1024px+): 작성 폼 가운데 정렬 —— */
+@media (min-width: 1024px) {
+  .recommendEditor {
+    max-width: 760px;
+    margin: 0 auto;
+    padding-top: 16px;
+  }
+}

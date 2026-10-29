@@ -544,3 +544,16 @@
   min-height: calc(100dvh - var(--club-room-bottom-nav, 68px));
   background: var(--background-dark);
 }
+
+/* —— PC(1024px+): 가운데 정렬 —— */
+@media (min-width: 1024px) {
+  .mypageHub {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 40px 48px;
+  }
+
+  .mypageHub.mypageReservations {
+    max-width: 960px;
+  }
+}

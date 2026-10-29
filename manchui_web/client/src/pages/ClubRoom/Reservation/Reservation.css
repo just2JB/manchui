@@ -1556,7 +1556,7 @@ fieldset.reservation__field:disabled .reservation__hourChip {
 }
 
 /* 데스크톱: 캘린더(왼쪽) + 내 예약 패널(오른쪽), 가운데 정렬 */
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .reservation {
     max-width: 1200px;
     padding: 16px 40px 48px;
@@ -1700,8 +1700,140 @@ button.reservation__myMain:hover .reservation__myDate {
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .reservation__mySection {
     margin-top: 0;
+  }
+}
+
+/* ---------- 선택한 날짜 예약 현황 ---------- */
+.reservation__day--selected {
+  border-color: rgba(255, 255, 255, 0.85);
+  background: rgba(179, 0, 0, 0.28);
+}
+
+.reservation__day--selected.reservation__day--today {
+  border-color: var(--brand-red);
+  background: rgba(179, 0, 0, 0.32);
+}
+
+.reservation__side {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.reservation__daySection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: var(--box-1);
+  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.1);
+}
+
+.reservation__dayHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reservation__dayHead .reservation__sectionTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.reservation__todayBadge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(179, 0, 0, 0.25);
+  border: 1px solid rgba(179, 0, 0, 0.55);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffb3b3;
+}
+
+.reservation__dayCount {
+  flex-shrink: 0;
+  font-size: 0.82rem;
+  color: var(--text-more);
+}
+
+.reservation__dayList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reservation__dayItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--box-2);
+  border-left: 3px solid var(--brand-red);
+}
+
+.reservation__dayItemTime {
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.reservation__dayItemTeam {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.92rem;
+  color: var(--text-gray);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reservation__dayItemMeta {
+  font-size: 0.8rem;
+  color: var(--text-more);
+  white-space: nowrap;
+}
+
+.reservation__mineBadge {
+  flex-shrink: 0;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: rgba(0, 255, 200, 0.12);
+  color: var(--complete-green);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.reservation__reserveBtn {
+  width: 100%;
+  min-height: 50px;
+}
+
+@media (min-width: 1200px) {
+  .reservation__side {
+    gap: 16px;
+  }
+
+  .reservation__daySection {
+    margin-top: 0;
+    padding: 18px;
+    border-radius: 16px;
   }
 }

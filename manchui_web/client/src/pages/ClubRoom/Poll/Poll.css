@@ -1,0 +1,1646 @@
+/*
+ * 웬투밋식 일정 투표 — 어시스턴트 모노크롬 + 레드 포인트 테마를 따른다.
+ * 빨강(--club-accent)은 "가능" 칸과 강조에만 쓴다.
+ */
+
+/* ---------- 페이지 ---------- */
+.pollPage {
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 20px 16px 48px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  color: var(--club-text);
+}
+
+.pollCard,
+.pollPanel,
+.pollHero,
+.pollRec,
+.teamPollCard {
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: linear-gradient(180deg, var(--club-surface-hi) 0%, var(--club-surface) 100%);
+  box-shadow: var(--club-card-shadow);
+  box-sizing: border-box;
+}
+
+.pollCard {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  text-align: center;
+}
+
+.pollCard__title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.pollCard__muted {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--club-text-muted);
+}
+
+/* ---------- 상단 ---------- */
+.pollHero {
+  position: relative;
+  padding: 18px 18px 16px;
+}
+
+.pollHero__team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--club-text-muted);
+}
+
+.pollHero__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--team-accent, var(--club-accent));
+}
+
+.pollHero__title {
+  margin: 8px 0 4px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  padding-right: 96px;
+}
+
+.pollHero__meta {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--club-text-muted);
+}
+
+.pollHero__share {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+}
+
+.pollTag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--club-text-muted);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.07);
+  vertical-align: middle;
+}
+
+/* ---------- 버튼 ---------- */
+.pollBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+  box-sizing: border-box;
+}
+
+.pollBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.pollBtn--block {
+  width: 100%;
+  min-height: 48px;
+}
+
+.pollBtn--primary {
+  background: var(--club-primary);
+  color: var(--club-on-primary);
+}
+
+.pollBtn--primary:hover:not(:disabled) {
+  background: var(--club-primary-hover);
+}
+
+.pollBtn--secondary {
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  color: var(--club-text);
+}
+
+.pollBtn--ghost {
+  min-height: 34px;
+  padding: 0 12px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+  border: 1px solid var(--club-border);
+  color: var(--club-text);
+  font-size: 0.8rem;
+}
+
+.pollBtn--text {
+  min-height: 32px;
+  padding: 0 4px;
+  background: none;
+  color: var(--club-text-muted);
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.pollBtn--text:hover:not(:disabled) {
+  color: var(--club-text);
+}
+
+.pollBtn--danger:hover:not(:disabled) {
+  color: var(--club-accent);
+}
+
+.pollBtn svg {
+  font-size: 1.1em;
+}
+
+/* ---------- 탭 / 열 ---------- */
+.pollTabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 14px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  border: 1px solid var(--club-border);
+}
+
+.pollTabs__tab {
+  min-height: 38px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--club-text-muted);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pollTabs__tab--on {
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
+  color: var(--club-text);
+}
+
+.pollColumns {
+  display: grid;
+  gap: 14px;
+}
+
+.pollColumns--mine .pollColumns__group,
+.pollColumns--group .pollColumns__mine {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .pollTabs {
+    display: none;
+  }
+
+  .pollColumns {
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .pollColumns--mine .pollColumns__group,
+  .pollColumns--group .pollColumns__mine {
+    display: block;
+  }
+}
+
+/* ---------- 패널 ---------- */
+.pollPanel {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.pollPanel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pollPanel__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.pollPanel__meta {
+  font-size: 0.8rem;
+  color: var(--club-text-muted);
+}
+
+.pollPanel__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--club-text-muted);
+}
+
+.pollPanel__hint strong {
+  color: var(--club-text);
+}
+
+.pollPanel__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pollSave {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--club-text-muted);
+}
+
+.pollSave--saved {
+  color: var(--club-ok);
+}
+
+.pollSave--error {
+  color: var(--club-accent);
+}
+
+/* ---------- 입장 ---------- */
+.pollIdentity {
+  align-items: stretch;
+}
+
+.pollGuestForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pollField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pollField__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--club-text-muted);
+}
+
+.pollField__input {
+  min-height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--club-border);
+  border-radius: 12px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  color: var(--club-text);
+  font: inherit;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.pollField__input:focus {
+  outline: none;
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.28);
+}
+
+.pollDivider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+  font-size: 0.75rem;
+  color: var(--club-text-muted);
+}
+
+.pollDivider::before,
+.pollDivider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--club-border);
+}
+
+.pollError {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--club-accent);
+}
+
+/* ---------- 그리드 ---------- */
+.pollGridScroll {
+  overflow-x: auto;
+  margin: 0 -4px;
+  padding: 10px 4px 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.pollGrid {
+  --poll-row: 26px;
+  display: grid;
+  grid-template-columns: 44px repeat(var(--poll-cols), minmax(40px, 1fr));
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.pollGrid__corner {
+  position: sticky;
+  left: 0;
+  z-index: 0;
+  background: var(--club-surface);
+}
+
+.pollGrid__dateHead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding-bottom: 6px;
+  font-size: 0.72rem;
+  color: var(--club-text-muted);
+}
+
+.pollGrid__dateWeek {
+  font-weight: 600;
+}
+
+.pollGrid__dateDay {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--club-text);
+}
+
+.pollGrid__dateHead--weekend .pollGrid__dateWeek {
+  color: var(--club-accent);
+}
+
+.pollGrid__hourLabel {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  height: var(--poll-row);
+  padding-right: 6px;
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  color: var(--club-text-muted);
+  line-height: 1;
+  transform: translateY(-0.45em);
+  background: var(--club-surface);
+}
+
+.pollGrid__hourLabel--end {
+  height: 0;
+}
+
+.pollGrid__cell {
+  height: var(--poll-row);
+  box-sizing: border-box;
+  border-top: 1px dashed rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+  border-left: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.07);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.025);
+  outline: none;
+}
+
+.pollGrid__cell--evenHour {
+  border-top-style: solid;
+  border-top-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.09);
+}
+
+.pollGrid__cell:focus-visible {
+  box-shadow: inset 0 0 0 2px rgba(var(--club-ink-rgb, 255, 255, 255), 0.7);
+}
+
+/* 편집: 누른 채 끌어서 칠하기 */
+.pollGrid--edit .pollGrid__cell {
+  cursor: pointer;
+  touch-action: none;
+}
+
+.pollGrid--edit .pollGrid__cell--on {
+  background: var(--club-accent);
+  border-top-color: rgba(0, 0, 0, 0.18);
+  border-left-color: rgba(0, 0, 0, 0.18);
+}
+
+.pollGrid--edit .pollGrid__cell--dragging {
+  opacity: 0.75;
+}
+
+.pollGrid--disabled .pollGrid__cell {
+  cursor: default;
+}
+
+/* 보기: 많이 가능할수록 진하게 */
+.pollGrid--view .pollGrid__cell {
+  cursor: pointer;
+}
+
+.pollGrid--view .pollGrid__cell--heat {
+  background: rgba(255, 69, 58, calc(0.1 + var(--heat, 0) * 0.8));
+}
+
+.pollGrid--view .pollGrid__cell--all {
+  background: var(--club-accent);
+  box-shadow: inset 0 0 0 1px rgba(var(--club-ink-rgb, 255, 255, 255), 0.35);
+}
+
+.pollGrid--view .pollGrid__cell--active {
+  box-shadow: inset 0 0 0 2px #fff;
+}
+
+.pollLegend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--club-text-muted);
+}
+
+.pollLegend__bar {
+  flex: 1;
+  max-width: 160px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, rgba(var(--club-accent-rgb, 255, 69, 58), 0.1), var(--club-accent));
+}
+
+/* ---------- 누가 가능한지 ---------- */
+.pollWho {
+  min-height: 64px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
+}
+
+.pollWho__slot {
+  margin: 0 0 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.pollWho__cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pollWho__label {
+  margin: 0 0 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--club-text-muted);
+}
+
+.pollWho__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pollChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.07);
+  color: var(--club-text);
+}
+
+.pollChip--ok {
+  background: var(--club-active-bg-strong);
+}
+
+.pollChip--no {
+  color: var(--club-text-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.25);
+}
+
+.pollChip--guest {
+  border: 1px dashed rgba(var(--club-ink-rgb, 255, 255, 255), 0.18);
+  background: none;
+}
+
+.pollChip--more {
+  color: var(--club-text-muted);
+}
+
+/* ---------- 추천 연습시간 ---------- */
+.pollRec {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.teamPollCard .pollRec {
+  border: none;
+  box-shadow: none;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
+  padding: 12px;
+}
+
+.pollRec__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pollRec__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.pollRec__title svg {
+  color: var(--club-accent);
+}
+
+.pollRec__meta {
+  font-size: 0.72rem;
+  color: var(--club-text-muted);
+}
+
+.pollRec__empty {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--club-text-muted);
+}
+
+.pollRec__list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pollRec__item {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 12px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+}
+
+.pollRec__item--best {
+  background: var(--club-active-bg);
+  box-shadow: inset 0 0 0 1px rgba(var(--club-accent-rgb, 255, 69, 58), 0.4);
+}
+
+.pollRec__rank {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+}
+
+.pollRec__item--best .pollRec__rank {
+  background: var(--club-action, var(--club-accent));
+  color: var(--club-on-action, #fff);
+}
+
+.pollRec__body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.pollRec__when {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+  margin: 0;
+}
+
+.pollRec__date {
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.pollRec__time {
+  font-size: 0.86rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pollRec__dur {
+  font-size: 0.72rem;
+  color: var(--club-text-muted);
+}
+
+.pollRec__countRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pollRec__bar {
+  position: relative;
+  flex: 1;
+  max-width: 140px;
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+}
+
+.pollRec__barFill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 3px;
+  background: var(--club-accent);
+}
+
+.pollRec__count {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--club-text-muted);
+  white-space: nowrap;
+}
+
+.pollRec__item--all .pollRec__count {
+  color: var(--club-ok);
+}
+
+.pollRec__missing {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--club-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pollRec__cta {
+  min-height: 34px;
+  padding: 0 10px;
+  border: none;
+  border-radius: 10px;
+  background: var(--club-primary);
+  color: var(--club-on-primary);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.pollRec__pending {
+  margin: 0;
+  font-size: 0.74rem;
+  line-height: 1.5;
+  color: var(--club-text-muted);
+}
+
+.pollRec--compact .pollRec__item:not(.pollRec__item--best) {
+  padding: 8px 10px;
+}
+
+/* ---------- 팀 상세: 투표 섹션 ---------- */
+.teamPolls__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.teamPolls__new {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 999px;
+  background: var(--club-primary);
+  color: var(--club-on-primary);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.teamPolls__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.teamPolls__emptyBox {
+  margin-top: 8px;
+}
+
+.teamPolls__empty {
+  margin: 8px 0 0;
+  font-size: 0.86rem;
+  color: var(--club-text-muted);
+}
+
+.teamPolls__emptyHint {
+  margin: 4px 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--club-text-muted);
+  opacity: 0.8;
+}
+
+.teamPolls__past {
+  margin-top: 10px;
+}
+
+.teamPolls__pastToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+  border: none;
+  background: none;
+  color: var(--club-text-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.teamPolls__chev {
+  transition: transform 0.2s ease;
+}
+
+.teamPolls__chev--open {
+  transform: rotate(180deg);
+}
+
+.teamPollCard {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.025);
+  box-shadow: none;
+}
+
+.teamPollCard--done {
+  opacity: 0.75;
+}
+
+.teamPollCard__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.teamPollCard__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.teamPollCard__meta {
+  margin: 3px 0 0;
+  font-size: 0.78rem;
+  color: var(--club-text-muted);
+}
+
+.teamPollCard__count {
+  flex-shrink: 0;
+  font-size: 0.76rem;
+  color: var(--club-text-muted);
+}
+
+.teamPollCard__count strong {
+  font-size: 1.05rem;
+  color: var(--club-text);
+}
+
+.teamPollCard__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teamPollCard__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.teamPollCard__actions .pollBtn--primary {
+  flex: 1;
+}
+
+.teamPollCard__actions .pollBtn--ghost {
+  min-height: 40px;
+}
+
+.teamPollCard__admin {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: -4px;
+}
+
+/* ---------- 투표 만들기 ---------- */
+.pollOptional {
+  margin-left: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--club-text-muted);
+}
+
+.pollCreate__labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.pollCreate__count {
+  font-size: 0.78rem;
+  color: var(--club-text-muted);
+}
+
+.pollCreate__quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pollChipBtn {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--club-border);
+  border-radius: 999px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  color: var(--club-text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pollChipBtn--on {
+  background: var(--club-active-bg-strong);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.5);
+}
+
+.pollChipBtn--muted {
+  color: var(--club-text-muted);
+}
+
+.pollCal {
+  margin-top: 4px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
+}
+
+.pollCal__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.pollCal__navBtn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+  color: var(--club-text);
+  cursor: pointer;
+}
+
+.pollCal__month {
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.pollCal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.pollCal__week {
+  padding: 4px 0;
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--club-text-muted);
+}
+
+.pollCal__day {
+  aspect-ratio: 1;
+  min-height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  color: var(--club-text);
+  font: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+
+.pollCal__day:disabled {
+  background: none;
+  color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.18);
+  cursor: default;
+}
+
+.pollCal__day--today {
+  box-shadow: inset 0 0 0 1px rgba(var(--club-ink-rgb, 255, 255, 255), 0.35);
+}
+
+.pollCal__day--on {
+  background: var(--club-action, var(--club-accent));
+  color: var(--club-on-action, #fff);
+  font-weight: 800;
+}
+
+.pollCreate__range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.86rem;
+  color: var(--club-text-muted);
+}
+
+.pollCreate__select select {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--club-border);
+  border-radius: 12px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  color: var(--club-text);
+  font: inherit;
+  font-size: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pollCreate__select option {
+  background: var(--club-surface-2, #141414);
+}
+
+.pollDone {
+  margin-top: 12px;
+  padding: 32px 20px 20px;
+}
+
+.pollDone__icon {
+  align-self: center;
+  font-size: 44px;
+  color: var(--club-ok);
+}
+
+.pollDone__url {
+  margin: 4px 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  font-size: 0.78rem;
+  color: var(--club-text-muted);
+  word-break: break-all;
+}
+
+/* ---------- 홈 ---------- */
+.clubHomePolls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.clubHomePolls__item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "team badge"
+    "title badge"
+    "meta badge";
+  column-gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  box-shadow: inset 3px 0 0 var(--item-accent, var(--club-accent));
+  color: var(--club-text);
+  text-decoration: none;
+}
+
+.clubHomePolls__team {
+  grid-area: team;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--club-text-muted);
+}
+
+.clubHomePolls__title {
+  grid-area: title;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+
+.clubHomePolls__meta {
+  grid-area: meta;
+  font-size: 0.75rem;
+  color: var(--club-text-muted);
+}
+
+.clubHomePolls__badge {
+  grid-area: badge;
+  align-self: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--club-primary);
+  color: var(--club-on-primary);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.clubHomePolls__badge--done {
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  color: var(--club-text-muted);
+}
+
+.clubHomeSheet__requestInfo a.clubHomeSheet__writeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  text-decoration: none;
+}
+
+.clubHomeSheet__empty {
+  margin: 8px 0 4px;
+  font-size: 0.86rem;
+  color: var(--club-text-muted);
+}
+
+/* ---------- 팀 메인: 일정 종합 (바깥 박스 없이 가로 스크롤) ---------- */
+.teamPolls--rail {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.teamPolls--rail .teamPolls__head {
+  margin: 0;
+  padding: 0 2px;
+}
+.teamPolls__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--club-text);
+}
+.teamPolls__countBadge {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--club-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 카드 한 장 = 화면 폭의 약 88% → 다음 카드가 살짝 보여 옆으로 넘길 수 있음을 알림 */
+.teamPolls__rail {
+  display: flex;
+  gap: 10px;
+  margin-inline: -16px;
+  padding: 2px 16px 6px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.teamPolls__rail::-webkit-scrollbar {
+  display: none;
+}
+.teamPolls__slide {
+  flex: 0 0 min(88%, 420px);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.teamPolls__rail > .teamPolls__slide:only-child {
+  flex-basis: 100%;
+}
+.teamPolls__slide .teamPollCard {
+  height: 100%;
+}
+
+.teamPolls__emptyCard {
+  padding: 18px 16px;
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+
+/* ---------- 팀 메인 일정 종합 카드: 안쪽 박스 없이 ---------- */
+.teamPolls--rail .teamPollCard {
+  border: 0;
+  background: var(--club-surface);
+  box-shadow: none;
+}
+.teamPolls--rail .pollWho {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.teamPolls--rail .teamPolls__emptyCard {
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+}
+
+/* 'n명 응답' 누르면 펼쳐지는 명단 */
+button.teamPollCard__count {
+  padding: 4px 8px;
+  margin: -4px -8px 0 0;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+button.teamPollCard__count:hover,
+button.teamPollCard__count[aria-expanded="true"] {
+  background: var(--club-surface-2);
+}
+.teamPollCard__who {
+  display: grid;
+  gap: 6px;
+  margin: 2px 0 12px;
+}
+.teamPollCard__whoLabel {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--club-text-muted);
+}
+.teamPollCard__whoList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 4px;
+  padding: 0;
+  list-style: none;
+}
+.teamPollCard__whoNone {
+  font-size: 0.8125rem;
+  color: var(--club-text-muted);
+}
+.teamPollCard__addPractice {
+  margin-right: auto;
+  color: var(--club-text);
+  font-weight: 600;
+}
+
+/* ---------- '연습 추가' 바텀시트 ---------- */
+.pollSheet {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.pollSheet__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+.pollSheet__panel {
+  position: relative;
+  width: min(600px, 100%);
+  max-height: 85dvh;
+  overflow-y: auto;
+  padding: 0 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-radius: 18px 18px 0 0;
+  background: var(--club-surface);
+  color: var(--club-text);
+}
+.pollSheet__head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 12px;
+  background: var(--club-surface);
+}
+.pollSheet__handle {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  width: 36px;
+  height: 4px;
+  margin-left: -18px;
+  border-radius: 4px;
+  background: var(--club-border);
+}
+.pollSheet__title {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+.pollSheet__close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: transparent;
+  color: var(--club-text-muted);
+  font-size: 22px;
+  cursor: pointer;
+}
+.pollSheet__body {
+  display: grid;
+  gap: 12px;
+}
+.pollSheet__manual {
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: var(--club-surface-2);
+  color: var(--club-text);
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.pollSheet__manual:hover {
+  background: var(--club-hover);
+}
+/* 시트 안 추천 목록: 바깥 테두리 상자 없이 */
+.pollSheet .pollRec {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* ---------- 팀 메인 일정 종합: 카드·제목·설명 없이 표만 (표는 가로 스크롤) ---------- */
+.teamPolls--flat {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+.teamPolls--flat .teamPolls__head {
+  margin: 0;
+  padding: 0 2px;
+}
+.teamPolls--flat .teamPollCard {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+/* 날짜 칸 폭 고정 → 날짜가 많으면 표만 옆으로 스크롤 */
+.teamPolls--flat .pollGrid {
+  grid-template-columns: 44px repeat(var(--poll-cols), 64px);
+}
+.teamPolls--flat .pollGridScroll {
+  margin: 0;
+  padding: 0 0 4px;
+  scrollbar-width: thin;
+}
+.teamPolls--flat .pollWho {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.teamPolls--flat .teamPollCard__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+.teamPolls--flat .teamPollCard__actions .teamPollCard__count {
+  margin: 0 auto 0 -8px;
+}
+.teamPolls--flat .teamPollCard__actions .pollBtn--primary {
+  flex: 0 0 auto;
+}
+.teamPolls--flat .teamPolls__emptyCard {
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+}
+
+/* 여러 개일 때: 날짜 범위 칩으로 고르기 */
+.teamPolls__switch {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.teamPolls__switch::-webkit-scrollbar {
+  display: none;
+}
+.teamPolls__switchBtn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--club-surface);
+  color: var(--club-text-muted);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+}
+.teamPolls__switchBtn[aria-selected="true"] {
+  background: var(--club-text);
+  color: var(--club-bg);
+}
+.teamPolls__switchTag {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+/* 표만 스크롤되도록: 감싸는 요소들이 표 폭만큼 늘어나지 않게 화면 폭에 고정 */
+.teamPolls--flat,
+.teamPolls--flat > *,
+.teamPolls--flat .teamPollCard,
+.teamPolls--flat .pollAggregate {
+  min-width: 0;
+  max-width: 100%;
+}
+.teamPolls--flat .pollGridScroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* ---------- 팀 메인 일정 종합 표: 둥근 타일 + 팀 색 농도 ---------- */
+:is(.teamPolls--flat, .pollPage) .pollGrid {
+  --poll-row: 24px;
+  column-gap: 3px;
+  row-gap: 3px;
+}
+:is(.teamPolls--flat, .pollPage) .pollGrid__cell,
+:is(.teamPolls--flat, .pollPage) .pollGrid__cell--evenHour {
+  position: relative;
+  border: 0;
+  border-radius: 5px;
+  background: var(--club-surface-2);
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+/* 가능한 사람이 많을수록 팀 색이 진해짐 (15% → 100%) */
+:is(.teamPolls--flat, .pollPage) .pollGrid--view .pollGrid__cell--heat {
+  background: color-mix(
+    in srgb,
+    var(--team-accent, #8ab4ff) calc(15% + var(--heat, 0) * 85%),
+    var(--club-surface-2)
+  );
+}
+/* 전원 가능: 팀 색 꽉 */
+:is(.teamPolls--flat, .pollPage) .pollGrid--view .pollGrid__cell--all {
+  background: var(--team-accent, #8ab4ff);
+  box-shadow: none;
+}
+/* 고른 칸: 흰 테두리 */
+:is(.teamPolls--flat, .pollPage) .pollGrid--view .pollGrid__cell--active {
+  box-shadow: 0 0 0 2px var(--club-text);
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.teamPolls--flat, .pollPage) .pollGrid__cell {
+    transition: none;
+  }
+}
+/* 고정된 시간 열·모서리 배경을 페이지 바탕과 같게 (라이트에서 흰 띠가 보이지 않게) */
+:is(.teamPolls--flat, .pollPage) :is(.pollGrid__corner, .pollGrid__hourLabel, .pollGrid__dateHead) {
+  background: var(--club-bg, var(--background-dark));
+}
+/* 타일형 표: 시간 라벨을 줄 가운데에 두고, 라벨 칸이 줄 높이 + 아래 틈까지 덮어
+   옆으로 밀 때 뒤의 칸이 비치지 않게 */
+:is(.teamPolls--flat, .pollPage) .pollGrid__hourLabel {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  transform: none;
+  z-index: 2;
+  box-shadow: 0 3px 0 var(--club-bg, var(--background-dark)), -4px 0 0 var(--club-bg, var(--background-dark));
+}
+:is(.teamPolls--flat, .pollPage) .pollGrid__hourLabel--end {
+  display: none;
+}
+:is(.teamPolls--flat, .pollPage) .pollGrid__corner {
+  z-index: 2;
+}
+
+/* 응답 현황 · 내 시간 · 링크 공유 박스 */
+:is(.teamPolls--flat, .pollPage) .teamPollCard__panel {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+:is(.teamPolls--flat, .pollPage) .teamPollCard__panel .teamPollCard__actions {
+  margin-top: 0;
+}
+:is(.teamPolls--flat, .pollPage) .teamPollCard__panel .teamPollCard__who {
+  margin: 12px 0 0;
+}
+
+/* 날짜 머리글: 덜 두껍게 */
+:is(.teamPolls--flat, .pollPage) .pollGrid__dateHead,
+:is(.teamPolls--flat, .pollPage) .pollGrid__dateHead * {
+  font-weight: 500;
+}
+
+/* ---------- 일정 종합 응답 화면: 박스 없이 ---------- */
+.pollPage :is(.pollHero, .pollPanel, .pollIdentity) {
+  padding-left: 2px;
+  padding-right: 2px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+/* 머리: 팀 이름만 크게 + 오른쪽 링크 공유 */
+.pollHero--nameOnly {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.pollHero--nameOnly .pollHero__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.pollHero--nameOnly .pollHero__share {
+  position: static;
+  flex: none;
+}
+/* 탭: 바깥 상자 없이 글자 버튼, 고른 탭만 바탕 */
+.pollPage .pollTabs {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  gap: 4px;
+}
+.pollPage .pollTabs__tab {
+  border-radius: 999px;
+  color: var(--club-text-muted);
+}
+.pollPage .pollTabs__tab--on {
+  background: var(--club-surface-2);
+  color: var(--club-text);
+}
+.pollPage .pollWho {
+  padding: 4px 2px 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+/* 모바일(탭이 보이는 폭)에서만: 탭이 제목 역할이라 패널 제목 숨김. 내 시간 입력은 저장 상태만 오른쪽에 */
+@media (max-width: 1023px) {
+  .pollPanel__head--tabbed,
+  .pollPanel__title--tabbed {
+    display: none;
+  }
+  .pollPanel__head--mine {
+    justify-content: flex-end;
+  }
+}
+
+/* 일정 종합 화면 '내 시간 입력' 표도 같은 타일: 칠한 칸은 팀 색 꽉 */
+.pollPage .pollGrid--edit .pollGrid__cell--on {
+  background: var(--team-accent, #8ab4ff);
+}
+.pollPage .pollGrid--edit .pollGrid__cell--dragging {
+  opacity: 0.7;
+}
+
+/* 일정 종합이 없을 때: 흐린 빈 표 + 가운데 시작 버튼 */
+.teamPolls__placeholder {
+  position: relative;
+  min-width: 0;
+}
+.teamPolls__placeholderGrid {
+  opacity: 0.45;
+  pointer-events: none;
+  filter: saturate(0);
+}
+.teamPolls__placeholderGrid .pollGrid {
+  grid-template-columns: 44px repeat(var(--poll-cols), minmax(0, 1fr));
+}
+.teamPolls__placeholderDim {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border-radius: var(--club-radius);
+  background: color-mix(in srgb, var(--club-bg, #050505) 55%, transparent);
+}
+.teamPolls__startBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 44px;
+  padding: 0 20px 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--club-text);
+  color: var(--club-bg);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 24px -12px rgba(0, 0, 0, 0.8);
+}
+.teamPolls__startBtn:hover {
+  opacity: 0.9;
+}
+.teamPolls__startHint {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--club-radius-sm);
+  background: var(--club-surface);
+  color: var(--club-text-muted);
+  font-size: 0.8125rem;
+  text-align: center;
+}

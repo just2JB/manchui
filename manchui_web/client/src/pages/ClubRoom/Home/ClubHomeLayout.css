@@ -1,0 +1,156 @@
+﻿/* Home is an open page, not a stack of nested cards. Named areas keep optional polls from shifting the calendar. */
+.clubRoomLayout .clubHome:not(.clubHome--loading) {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 20px 20px 32px;
+  min-height: 0;
+}
+.clubRoomLayout .clubHome :is(.clubHome__hero, .clubHome__block) {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.clubRoomLayout .clubHome__greeting { font-size: clamp(1.4rem, 5vw, 1.9rem); font-weight: 700; }
+.clubRoomLayout .clubHome__sub { max-width: 38ch; line-height: 1.6; }
+.clubRoomLayout .clubHome__hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+.clubRoomLayout .clubHome__intro { min-width: 0; flex: 1 1 250px; }
+.clubRoomLayout .clubHome__reserveAction {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 44px; padding: 0 16px; border-radius: var(--club-radius-sm);
+  background: var(--club-action); color: var(--club-on-action);
+  text-decoration: none; font-size: .84rem; font-weight: 600;
+}
+.clubRoomLayout .clubHome__reserveAction:hover { background: var(--club-action-hover); }
+.clubRoomLayout .clubHome .clubHome__blockTitle {
+  color: var(--club-text);
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.clubRoomLayout .clubHome__sectionCount { color: var(--club-accent); font-size: .85rem; font-weight: 600; }
+.clubRoomLayout .clubHome__empty { padding: 4px 0; background: none; text-align: left; line-height: 1.7; }
+.clubRoomLayout .clubHome__trackWrap { margin: 0; }
+.clubRoomLayout .clubHome__morePractices {
+  min-height: 44px; padding: 8px 0; border: 0; background: none;
+  color: var(--club-secondary); font: inherit; font-size: .8rem; cursor: pointer;
+}
+.clubRoomLayout .clubHome__track {
+  display: flex; flex-direction: column; gap: 0; padding: 0;
+  overflow: visible; scroll-snap-type: none;
+}
+.clubRoomLayout .clubHome .clubHome__practiceCard {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "team date" "time place";
+  gap: 6px 12px; width: 100%; min-height: 0;
+  padding: 14px 0; border: 0; border-bottom: 1px solid var(--club-border);
+  border-radius: 0; background: transparent; box-shadow: none;
+}
+.clubRoomLayout .clubHome__practiceTeam { grid-area: team; color: var(--club-text); font-size: .88rem; }
+.clubRoomLayout .clubHome__practiceDate { grid-area: date; font-size: .8rem; color: var(--club-text-muted); }
+.clubRoomLayout .clubHome__practiceTime { grid-area: time; color: var(--club-text); font-size: 1rem; font-variant-numeric: tabular-nums; }
+.clubRoomLayout .clubHome__practicePlace { grid-area: place; text-align: right; max-width: 32vw; margin: 0; }
+.clubRoomLayout .clubHome .clubHome__practiceCard--next {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas: "team" "date" "time" "place" "action";
+  padding: 20px; gap: 8px;
+  border: 1px solid var(--club-border); border-top: 3px solid var(--club-action);
+  border-radius: var(--club-radius); background: var(--club-surface);
+}
+.clubRoomLayout .clubHome__practiceCard--next .clubHome__practiceTeam { font-size: .9rem; white-space: normal; overflow-wrap: anywhere; }
+.clubRoomLayout .clubHome__practiceCard--next .clubHome__practiceDate { margin-top: 8px; }
+.clubRoomLayout .clubHome__practiceCard--next .clubHome__practiceTime { font-size: clamp(1.4rem, 6vw, 1.8rem); line-height: 1.2; letter-spacing: -.025em; }
+.clubRoomLayout .clubHome__practiceCard--next .clubHome__practicePlace { text-align: left; max-width: none; white-space: normal; overflow-wrap: anywhere; }
+.clubRoomLayout .clubHome__practiceDetail {
+  grid-area: action; display: flex; justify-content: flex-start; align-items: center;
+  margin-top: 8px; min-height: 44px; padding: 0; border: 0; border-top: 1px solid var(--club-border);
+  background: none; color: var(--club-secondary); font: inherit; font-size: .82rem; cursor: pointer;
+}
+.clubRoomLayout .clubHome :is(.clubHome__block--polls, .clubHome__block--reservations) {
+  padding: 18px; border: 1px solid var(--club-border);
+  border-radius: var(--club-radius); background: var(--club-surface);
+}
+.clubRoomLayout .clubHome .clubHome__block--polls { border-left: 3px solid var(--club-secondary); }
+.clubRoomLayout .clubHome .clubHome__block--calendar { padding-top: 4px; }
+.clubRoomLayout .clubHome__reservationList { gap: 0; }
+.clubRoomLayout .clubHome .clubHome__reservationItem {
+  padding: 14px 0; background: transparent; border-radius: 0;
+  border: 0; border-bottom: 1px solid var(--club-border); box-shadow: none;
+}
+.clubRoomLayout .clubHome__reservationTime { color: var(--club-text); }
+.clubRoomLayout .clubHome .clubHomePolls__item {
+  padding: 14px 0; border-radius: 0; background: none; box-shadow: none;
+  border-bottom: 1px solid var(--club-border); row-gap: 5px;
+}
+.clubRoomLayout .clubHomePolls__title { overflow-wrap: anywhere; font-weight: 600; }
+.clubRoomLayout .clubHomePolls__badge { border-radius: var(--club-radius-sm); font-weight: 600; }
+.clubRoomLayout .clubHomePolls > li:last-child .clubHomePolls__item { border-bottom: 0; }
+.clubRoomLayout .clubHome .clubHome__reservationItem:last-child { border-bottom: 0; }
+.clubRoomLayout .clubHomeCal { min-width: 0; }
+.clubRoomLayout .clubHomeCal__nav { margin-bottom: 14px; }
+.clubRoomLayout .clubHomeCal__month { margin: 0; font-size: 1.12rem; }
+.clubRoomLayout .clubHomeCal__controls { display: flex; align-items: center; gap: 2px; }
+.clubRoomLayout :is(.clubHomeCal__navBtn, .clubHomeCal__todayBtn) {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 44px; height: 44px; padding: 0 8px; border: none;
+  background: transparent; color: var(--club-text); border-radius: var(--club-radius-sm);
+  font: inherit; cursor: pointer;
+}
+.clubRoomLayout .clubHomeCal__todayBtn { font-size: .8rem; }
+.clubRoomLayout .clubHomeCal__todayBtn:disabled { color: var(--club-text-muted); cursor: default; }
+.clubRoomLayout :is(.clubHomeCal__navBtn, .clubHomeCal__todayBtn):hover:not(:disabled) { background: var(--club-hover); }
+.clubRoomLayout :is(.clubHomeCal__weekHead, .clubHomeCal__week) {
+  display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0;
+}
+.clubRoomLayout .clubHomeCal__body { gap: 2px; }
+.clubRoomLayout .clubHomeCal__weekHead { margin-bottom: 6px; }
+.clubRoomLayout .clubHomeCal__weekLabel { padding: 8px 0; font-size: .75rem; }
+.clubRoomLayout .clubHomeCal__cell {
+  display: flex; position: relative; flex-direction: column; align-items: center; justify-content: flex-start;
+  width: 100%; min-width: 0; height: 64px; min-height: 64px; aspect-ratio: auto;
+  margin: 0; padding: 6px 0 3px; border: 0; border-radius: var(--club-radius-sm);
+  background: transparent; color: var(--club-text); overflow: hidden; box-shadow: none;
+  font: inherit; font-variant-numeric: tabular-nums;
+}
+.clubRoomLayout .clubHomeCal__cell--interactive:hover { background: var(--club-hover); }
+.clubRoomLayout .clubHomeCal__day {
+  display: flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; min-height: 30px; flex: 0 0 30px;
+  font-size: .9rem; line-height: 1; border-radius: 50%;
+}
+.clubRoomLayout .clubHomeCal__cell--today .clubHomeCal__day { background: var(--club-action); color: var(--club-on-action); }
+.clubRoomLayout .clubHomeCal__indicators { display: flex; justify-content: center; align-items: center; gap: 4px; min-height: 10px; margin-top: 3px; }
+.clubRoomLayout .clubHomeCal__indicator { display: inline-block; flex: 0 0 5px; width: 5px; height: 5px; border-radius: 50%; }
+.clubRoomLayout .clubHomeCal__indicator--practice { background: var(--club-accent); }
+.clubRoomLayout .clubHomeCal__indicator--poll { background: var(--club-secondary); }
+.clubRoomLayout .clubHomeCal__indicator--schedule { background: var(--club-text-muted); }
+.clubRoomLayout .clubHomeCal__count { font-size: .65rem; line-height: 16px; color: var(--club-text-muted); white-space: nowrap; }
+.clubRoomLayout .clubHomeCal__legend { margin-top: 8px; gap: 16px; }
+.clubRoomLayout .clubHomeCal__hint { margin: 10px 0 0; font-size: .75rem; line-height: 1.6; color: var(--club-text-muted); }
+@media (min-width: 768px) {
+  .clubRoomLayout .clubHome:not(.clubHome--loading) { padding: 28px 32px 40px; gap: 36px; }
+}
+@media (min-width: 1200px) {
+  .clubRoomLayout .clubHome:not(.clubHome--loading) {
+    display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(260px, 1fr);
+    grid-template-rows: auto auto auto auto;
+    grid-template-areas: "hero hero" "calendar upcoming" "calendar polls" "calendar reservations";
+    gap: 32px 48px; align-items: start;
+  }
+  .clubRoomLayout .clubHome__hero { grid-area: hero; }
+  .clubRoomLayout .clubHome__block--calendar { grid-area: calendar; }
+  .clubRoomLayout .clubHome__block--upcoming { grid-area: upcoming; }
+  .clubRoomLayout .clubHome__block--polls { grid-area: polls; }
+  .clubRoomLayout .clubHome__block--reservations { grid-area: reservations; }
+  .clubRoomLayout .clubHomeCal__cell { height: 88px; min-height: 88px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .clubRoomLayout .clubHomeCal__monthPanel { animation: none; }
+}

@@ -34,6 +34,15 @@ const practiceSchema = new mongoose.Schema({
     type: String,
     default: "미확정",
   },
+  /** 일정 투표에서 만든 연습: 계정 없이 응답한 게스트 참여자 이름 */
+  guestNames: {
+    type: [String],
+    default: [],
+  },
+  pollId: {
+    type: String,
+    default: null,
+  },
   scheduleHoldbacks: {
     type: [
       {

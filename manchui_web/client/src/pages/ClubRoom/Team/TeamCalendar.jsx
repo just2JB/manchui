@@ -30,15 +30,11 @@ function reqSpanRadius(roundLeft, roundRight) {
 
 const TeamCalendar = ({
   teamId,
-  teamName = "",
   isLeader = false,
   isMember = false,
   requestSchedules = [],
   practices = [],
-  scheduleMap,
   accentColor = "#E87070",
-  onScheduleSaved,
-  onRequestSchedulesUpdated,
   onPracticeClick,
 }) => {
   const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
@@ -306,7 +302,7 @@ const TeamCalendar = ({
 
     const ariaParts = [dateKey];
     if (requestSet.has(dateKey) && !hasPractice) {
-      ariaParts.push("일정 취합 요청");
+      ariaParts.push("일정 종합 중");
     }
     if (hasPractice) {
       const times = dayPractices
@@ -475,7 +471,7 @@ const TeamCalendar = ({
       <div className="teamCalendar__legend">
         <span className="teamCalendar__legendItem">
           <span className="teamCalendar__legendBar teamCalendar__legendBar--request" />
-          일정 취합 요청
+          일정 종합 중
         </span>
         <span className="teamCalendar__legendItem">
           <span className="teamCalendar__legendSwatch teamCalendar__legendSwatch--practice" />
@@ -488,16 +484,11 @@ const TeamCalendar = ({
         mode={actionSheet?.mode}
         dates={actionSheet?.dates ?? []}
         teamId={teamId}
-        teamName={teamName}
         isLeader={isLeader}
-        isMember={isMember}
         practices={practices}
-        scheduleMap={scheduleMap}
         accentColor={accentColor}
         requestSet={requestSet}
         onClose={() => setActionSheet(null)}
-        onScheduleSaved={onScheduleSaved}
-        onRequestSchedulesUpdated={onRequestSchedulesUpdated}
         onPracticeClick={onPracticeClick}
       />
     </div>

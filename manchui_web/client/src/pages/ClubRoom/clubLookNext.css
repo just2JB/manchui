@@ -1,0 +1,408 @@
+/* 홈(ClubHomeDark.css)과 같은 룩을 마이페이지·추천·예약에 적용한다.
+   ClubRoomLayout 이 해당 경로에서 body[data-club-look="next"] 를 붙인다 (모달·시트 portal 까지 포함).
+
+   원칙 (홈과 동일)
+   - 층은 밝기 단계로만: 바탕 → 카드 → 카드 안 블록. 그림자·그라데이션 없음.
+   - 선택 상태와 주 버튼은 빨강이 아니라 반전(다크: 흰 바탕 + 검은 글자 / 라이트: 반대).
+     기존 페이지 CSS 가 선택·강조에 --club-accent / --club-action 을 쓰므로 이 두 토큰을 반전색으로 바꾼다.
+   - 빨강(로고 레드)은 경고·위험(--club-danger)과 데이터 표시에만 남긴다.
+   - 모서리: 카드 10px, 컨트롤 6px. */
+
+body[data-club-theme][data-club-look="next"] {
+  --club-bg: #050505;
+  --club-sidebar-bg: #050505;
+  --club-surface: #121212;
+  --club-surface-hi: #121212;
+  --club-surface-2: #222222;
+  --club-ink-rgb: 255, 255, 255;
+  --club-border: #2a2a2a;
+  --club-hover: #2c2c2c;
+  --club-text: #ffffff;
+  --club-text-muted: #b4b4b4;
+  --club-primary: #ffffff;
+  --club-primary-hover: #e6e6e6;
+  --club-on-primary: #000000;
+  --club-accent: #ffffff;
+  --club-accent-hover: #e6e6e6;
+  --club-on-accent: #000000;
+  --club-accent-rgb: 255, 255, 255;
+  --club-action: #ffffff;
+  --club-action-hover: #e6e6e6;
+  --club-on-action: #000000;
+  --club-active-bg: #222222;
+  --club-active-bg-strong: #2c2c2c;
+  --club-secondary: #ffffff;
+  --club-danger: #ff5c5c;
+  --club-danger-rgb: 255, 92, 92;
+  --club-radius: 10px;
+  --club-radius-sm: 6px;
+  --club-data: #ff3b3b;          /* 로고 레드: 데이터 표시(좋아요 등)에만 */
+  background: var(--club-bg);
+}
+
+body[data-club-theme="light"][data-club-look="next"] {
+  --club-bg: #f4f4f5;
+  --club-sidebar-bg: #ffffff;
+  --club-surface: #ffffff;
+  --club-surface-hi: #ffffff;
+  --club-surface-2: #f1f1f3;
+  --club-ink-rgb: 17, 17, 17;
+  --club-border: #e4e4e7;
+  --club-hover: #e7e7ea;
+  --club-text: #111111;
+  --club-text-muted: #55555c;
+  --club-primary: #111111;
+  --club-primary-hover: #2a2a2a;
+  --club-on-primary: #ffffff;
+  --club-accent: #111111;
+  --club-accent-hover: #2a2a2a;
+  --club-on-accent: #ffffff;
+  --club-accent-rgb: 17, 17, 17;
+  --club-action: #111111;
+  --club-action-hover: #2a2a2a;
+  --club-on-action: #ffffff;
+  --club-active-bg: #ececef;
+  --club-active-bg-strong: #e2e2e6;
+  --club-secondary: #111111;
+  --club-danger: #b30000;
+  --club-danger-rgb: 179, 0, 0;
+  --club-data: #b30000;
+}
+
+/* 페이지 바탕: 레이아웃 바깥 여백까지 같은 검정 */
+body[data-club-look="next"] .clubRoomLayout,
+body[data-club-look="next"] .clubRoombody {
+  background-color: var(--club-bg);
+}
+
+/* 숫자는 자리 폭 고정 (홈과 동일) */
+body[data-club-look="next"] :is(.mypageHub, .recommend, .recommendEditor, .reservation) {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- 마이페이지 ----------------
+   선 목록 → 홈처럼 카드 묶음. 섹션 제목은 작은 회색 글씨, 행 사이 구분선 없음. */
+body[data-club-look="next"] .mypageHub .mypageHub__pageTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+body[data-club-look="next"] .mypageHub .mypageHub__sectionTitle {
+  margin-bottom: 8px;
+  padding-inline: 4px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--club-text-muted);
+  letter-spacing: 0;
+  text-transform: none;
+}
+body[data-club-look="next"] .mypageHub .mypageHub__menuList {
+  padding: 4px;
+  border: 0;
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+body[data-club-look="next"] .mypageHub .mypageHub__menuItem {
+  border: 0;
+}
+body[data-club-look="next"] .mypageHub .mypageHub__menuRow {
+  min-height: 52px;
+  padding: 12px 14px;
+  border-radius: var(--club-radius-sm);
+  color: var(--club-text);
+}
+body[data-club-look="next"] .mypageHub .mypageHub__menuRow:hover {
+  background: var(--club-surface-2);
+}
+body[data-club-look="next"] .mypageHub .mypageHub__menuRow--danger {
+  color: var(--club-danger);
+}
+
+/* ---------------- 추천 ----------------
+   목록은 카드 하나에 행들, 행 사이 선 없음. 해시태그는 회색 칩.
+   좋아요(내 데이터)만 로고 레드, 스크랩은 글자색. */
+body[data-club-look="next"] :is(.recommend, .mypageHub) {
+  --rec-hashtag-fg: var(--club-text-muted);
+  --rec-hashtag-fg-hover: var(--club-text);
+  --rec-hashtag-border: transparent;
+  --rec-hashtag-bg: var(--club-surface-2);
+  --rec-hashtag-bg-hover: var(--club-hover);
+  --rec-hashtag-focus: var(--club-text);
+}
+body[data-club-look="next"] .recommend .recommend__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+body[data-club-look="next"] .recommend .recommend__searchWrap,
+body[data-club-look="next"] .recommend .recommend__sortTrigger {
+  border-color: transparent;
+  border-radius: var(--club-radius-sm);
+  background: var(--club-surface);
+}
+body[data-club-look="next"] .recommend .recommend__searchWrap:focus-within {
+  border-color: var(--club-text-muted);
+}
+body[data-club-look="next"] .recommend .recommend__list {
+  gap: 2px;
+  margin-top: 8px;
+  padding: 4px;
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+body[data-club-look="next"] .recommend .recCard {
+  padding-inline: 8px;
+  border-radius: var(--club-radius-sm);
+  box-shadow: none;
+}
+body[data-club-look="next"] .recommend .recCard:hover {
+  background: var(--club-surface-2);
+}
+body[data-club-look="next"] .recCard__thumbWrap {
+  border-radius: var(--club-radius-sm);
+  background: var(--club-surface-2);
+}
+body[data-club-look="next"] .recCard__hashtag {
+  border-radius: 4px;
+}
+body[data-club-look="next"] .recCard__iconBtn--active {
+  color: var(--club-data);
+}
+body[data-club-look="next"] .recCard__iconBtn--scrapActive {
+  color: var(--club-text);
+}
+
+/* ---------------- 예약 ----------------
+   달력: 칸 채움·테두리 없음, 선택한 날짜만 반전, 오늘은 빨간 숫자, 예약 표시는 빨간 ✦ (홈 달력과 동일).
+   카드는 테두리 없이 밝기 단계로만. */
+body[data-club-look="next"] :is(.reservation__calendarSection, .reservation__daySection, .reservation__mySection) {
+  border: 0;
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+body[data-club-look="next"] .reservation__day {
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+body[data-club-look="next"] .reservation__day:hover:not(:disabled) {
+  border: 0;
+  background: var(--club-surface-2);
+}
+body[data-club-look="next"] .reservation__day--today {
+  border: 0;
+  color: var(--club-data);
+}
+body[data-club-look="next"] :is(.reservation__day--selected, .reservation__day--selected.reservation__day--today),
+body[data-club-look="next"] .reservation__day--selected:hover:not(:disabled) {
+  border: 0;
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+}
+body[data-club-look="next"] .reservation__dayDots {
+  gap: 0;
+}
+body[data-club-look="next"] .reservation__dayDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 0;
+  background: var(--club-text-muted); /* 회색: 예약 표시는 보이되 시선을 뺏지 않게 */
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+body[data-club-look="next"] .reservation__day--selected .reservation__dayDot {
+  background: var(--club-on-accent);
+}
+body[data-club-look="next"] .reservation__todayBadge {
+  border: 0;
+  border-radius: 4px;
+  background: rgba(var(--club-danger-rgb), 0.16);
+  color: var(--club-data);
+}
+body[data-club-look="next"] .reservation__dayItem {
+  border-left: 0;
+}
+/* 초록·형광 강조 → 무채색. 취소(위험 동작)만 빨간 글씨 */
+body[data-club-look="next"] .reservation__shareBtn {
+  border: 0;
+  background: var(--club-surface);
+  color: var(--club-text);
+}
+body[data-club-look="next"] .reservation__shareBtn:hover {
+  border: 0;
+  background: var(--club-hover);
+  color: var(--club-text);
+}
+body[data-club-look="next"] .reservation__cancelBtn {
+  border: 0;
+  background: var(--club-surface);
+  color: var(--club-danger);
+}
+body[data-club-look="next"] .reservation__cancelBtn:hover {
+  border: 0;
+  background: rgba(var(--club-danger-rgb), 0.16);
+  color: var(--club-danger);
+}
+body[data-club-look="next"] .reservation__mineBadge {
+  border-radius: 4px;
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+}
+
+/* 상단: 제목 한 줄, 그 아래 '이용 수칙 · 위치 안내' 글자 버튼 한 줄.
+   설명 문구는 달력 아래 안내와 겹쳐서 숨김 */
+body[data-club-look="next"] .reservation__titleRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  margin: 16px 0 14px;
+  padding: 0 4px;
+}
+body[data-club-look="next"] .reservation__titleText {
+  display: block;
+}
+body[data-club-look="next"] .reservation__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+body[data-club-look="next"] .reservation__subtitle {
+  display: none;
+}
+body[data-club-look="next"] .reservation__titleActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+body[data-club-look="next"] :is(.reservation__mapBtn, .reservation__rulesBar--inline .reservation__rulesOpenBtn) {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: 36px;
+  min-height: 36px;
+  padding: 0 14px 0 12px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: var(--club-surface);
+  color: var(--club-text);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+body[data-club-look="next"] :is(.reservation__mapBtn, .reservation__rulesBar--inline .reservation__rulesOpenBtn):hover {
+  border: 0;
+  background: var(--club-surface-2);
+  color: var(--club-text);
+}
+body[data-club-look="next"] :is(.reservation__mapBtnIcon, .reservation__rulesBar--inline .reservation__rulesOpenIcon) {
+  width: 1rem;
+  height: 1rem;
+  color: var(--club-text-muted);
+}
+body[data-club-look="next"] .reservation__mapBtnText {
+  display: inline;
+}
+@media (min-width: 1200px) {
+  body[data-club-look="next"] .reservation__titleRow {
+    margin: 28px 0 16px;
+  }
+  body[data-club-look="next"] .reservation__title {
+    font-size: 1.75rem;
+  }
+}
+
+/* '이 날 예약하기': 꽉 찬 큰 버튼 → 적당한 크기, 카드 오른쪽 아래 */
+body[data-club-look="next"] .reservation__daySection .reservation__reserveBtn {
+  align-self: flex-end;
+  width: auto;
+  min-height: 40px;
+  height: 40px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+
+/* 위치 안내 모달: 그라데이션 → 단색 카드, 닫기 버튼은 반전 버튼 */
+body[data-club-look="next"] .clubRoomLocationModal__dialog {
+  border: 0;
+  border-radius: 16px;
+  background: var(--club-surface);
+  color: var(--club-text);
+}
+body[data-club-look="next"] .clubRoomLocationModal__closeBtn {
+  min-height: 44px;
+  border-radius: var(--club-radius-sm);
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+}
+body[data-club-look="next"] .clubRoomLocationModal__closeBtn:hover {
+  filter: none;
+  background: var(--club-accent-hover);
+}
+
+/* 예약 버튼: 시간을 고르기 전엔 색 없음(회색), 고르면 반전 버튼 */
+body[data-club-look="next"] .reservation__daySection .reservation__reserveBtn:disabled {
+  opacity: 1;
+  background: var(--club-surface-2);
+  color: var(--club-text-muted);
+  cursor: default;
+}
+
+
+/* 예약 달력 머리: 홈 달력처럼 '2026년 11월'은 왼쪽, 이전·다음 화살표는 오른쪽에 모아 테두리 없이 */
+body[data-club-look="next"] .reservation__monthNav {
+  justify-content: flex-start;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+body[data-club-look="next"] .reservation__monthTitleWrap {
+  order: 0;
+  justify-content: flex-start;
+  margin-right: auto;
+  gap: 0;
+}
+body[data-club-look="next"] .reservation__monthNav > .reservation__monthBtn:first-child {
+  order: 1;
+}
+body[data-club-look="next"] .reservation__monthNav > .reservation__monthBtn:last-child {
+  order: 2;
+}
+body[data-club-look="next"] .reservation__monthBtn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: transparent;
+  color: var(--club-text-muted);
+  font-size: 18px;
+}
+body[data-club-look="next"] .reservation__monthBtn:hover {
+  background: var(--club-surface-2);
+  color: var(--club-text);
+}
+/* 연·월: 글자 버튼. 연은 작고 회색, 월은 크고 굵게 */
+body[data-club-look="next"] .reservation__monthPickBtn {
+  padding: 4px 6px;
+  border-radius: var(--club-radius-sm);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--club-text);
+}
+body[data-club-look="next"] .reservation__monthPickBtn:first-child {
+  padding-right: 2px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--club-text-muted);
+}
+body[data-club-look="next"] .reservation__monthPickBtn:hover,
+body[data-club-look="next"] .reservation__monthPickBtn--active {
+  background: var(--club-surface-2);
+}
+/* 드롭다운: 제목이 왼쪽으로 갔으니 왼쪽 기준으로 */
+body[data-club-look="next"] .reservation__monthPicker {
+  left: 0;
+  transform: none;
+  border: 0;
+  background: var(--club-surface-2);
+}

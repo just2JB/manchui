@@ -121,7 +121,7 @@ const EditUser = () => {
           className="mypageSaved__back"
           onClick={handleBack}
         >
-          ← 내정보 수정
+          ← 내 정보 수정
         </button>
         <h1 className="mypageHub__pageTitle">잘못된 접근</h1>
         <p className="mypageEdit__status">
@@ -134,7 +134,7 @@ const EditUser = () => {
   return (
     <div className="mypageHub mypageEdit">
       <button type="button" className="mypageSaved__back" onClick={handleBack}>
-        ← 내정보 수정
+        ← 내 정보 수정
       </button>
 
       <h1 className="mypageHub__pageTitle">{meta.title}</h1>

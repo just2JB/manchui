@@ -1,5 +1,30 @@
 /* 동아리방 Reservation 등과 같은 다크 테마 모달 */
 
+.header { display: none; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+:global(body[data-club-theme]) .header { display: flex; }
+.title { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
+.close { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; margin: -10px -10px -10px 0; border: 0; border-radius: 8px; background: transparent; color: var(--text-primary); cursor: pointer; }
+.close svg { width: 24px; height: 24px; }
+
+:global(body[data-club-theme]) .modal {
+  max-width: min(420px, calc(100vw - 2rem));
+  padding: 28px;
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  box-shadow: var(--club-overlay-shadow);
+}
+:global(body[data-club-theme]) .message { color: var(--club-text-muted); margin-bottom: 28px; line-height: 1.65; }
+:global(body[data-club-theme]) .buttonGroup { flex-wrap: nowrap; }
+:global(body[data-club-theme]) .button {
+  flex: 1; min-height: 44px; border-radius: var(--club-radius-sm); font-weight: 600; letter-spacing: 0;
+  box-shadow: none; filter: none;
+}
+:global(body[data-club-theme]) :is(.confirmBtn, .checkBtn) { background: var(--club-primary); color: var(--club-on-primary); }
+:global(body[data-club-theme]) :is(.confirmBtn, .checkBtn):hover { background: var(--club-primary-hover); }
+:global(body[data-club-theme]) .cancelBtn { background: var(--club-surface-2); color: var(--club-text); border-color: transparent; }
+:global(body[data-club-theme]) :is(.cancelBtn, .close):hover { background: var(--club-hover); }
+
 .overlay {
   position: fixed;
   inset: 0;

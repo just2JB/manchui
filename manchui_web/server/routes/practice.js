@@ -12,7 +12,8 @@ const {
 
 router.post("/create", async (req, res) => {
   try {
-    const { teamId, date, time, members, memberByHour, place } = req.body;
+    const { teamId, date, time, members, memberByHour, place, guestNames, pollId } =
+      req.body;
     const team = await Team.findById(teamId);
     if (!team) {
       return res.status(404).json({ message: "존재하지 않는 팀입니다." });
@@ -33,6 +34,11 @@ router.post("/create", async (req, res) => {
       members: resolved.members,
       memberByHour: resolved.memberByHour,
       place,
+      guestNames: (Array.isArray(guestNames) ? guestNames : [])
+        .map((name) => String(name ?? "").trim().slice(0, 20))
+        .filter(Boolean)
+        .slice(0, 100),
+      pollId: pollId ? String(pollId) : null,
     });
 
     await applyScheduleHoldbacks(practice);

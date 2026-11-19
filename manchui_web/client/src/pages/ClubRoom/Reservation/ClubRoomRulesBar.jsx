@@ -24,7 +24,9 @@ export default function ClubRoomRulesBar({ inline = false }) {
           aria-expanded={open}
         >
           <IoReaderOutline className="reservation__rulesOpenIcon" aria-hidden />
-          동아리방 이용 수칙
+          <span className="reservation__rulesOpenText">
+            {inline ? "이용 수칙" : "동아리방 이용 수칙"}
+          </span>
         </button>
       </div>
       {open ? (

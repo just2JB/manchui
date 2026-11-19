@@ -1,0 +1,108 @@
+/* 예약 정보 창 — 홈 룩: 단색 카드, 큰 팀 이름·시간, 회색 태그, 하루 막대 */
+.reservation__detailDialog.slotDetail {
+  display: grid;
+  gap: 0;
+  width: min(360px, calc(100vw - 32px));
+  padding: 22px 20px 18px;
+  border: 0;
+  border-radius: 16px;
+  background: var(--club-surface);
+  color: var(--club-text);
+  box-shadow: 0 24px 48px -16px rgba(0, 0, 0, 0.6);
+}
+
+.slotDetail__date {
+  margin: 0 0 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--club-text-muted);
+}
+
+.slotDetail__team {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.slotDetail__time {
+  margin: 4px 0 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.slotDetail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.slotDetail__tags:empty {
+  display: none;
+}
+
+.slotDetail__tag {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 4px;
+  background: var(--club-surface-2);
+  color: var(--club-text-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.slotDetail__tag--mine {
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+}
+
+/* 하루 24시간 막대에서 이 예약이 차지한 구간 */
+.slotDetail__day {
+  margin-top: 20px;
+}
+.slotDetail__bar {
+  position: relative;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--club-surface-2);
+  overflow: hidden;
+}
+.slotDetail__fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--club-text) 45%, var(--club-surface));
+}
+.slotDetail__fill[data-mine] {
+  background: var(--club-accent);
+}
+.slotDetail__ticks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 0.6875rem;
+  color: var(--club-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.reservation__detailOkBtn.slotDetail__ok {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 20px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+  font-weight: 600;
+}
+.reservation__detailOkBtn.slotDetail__ok:hover {
+  background: var(--club-accent-hover);
+}

@@ -11,8 +11,10 @@ export default function ReservationCalendarFooter({
     <div className="reservation__calendarFooter">
       {loading ? (
         <LoadingHint className="reservation__calendarLoadingHint" />
-      ) : (
+      ) : hint ? (
         <p className="reservation__hint">{hint}</p>
+      ) : (
+        <span />
       )}
       {!isViewingTodayMonth ? (
         <button

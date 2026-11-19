@@ -1,0 +1,41 @@
+/* 내 정보 수정: 상단 명함 카드 + 현재 값이 보이는 계정 행 */
+.editProfile .profileCard {
+  margin-top: 4px;
+}
+.editProfile .mypageHub__menuRow {
+  gap: 12px;
+}
+.editProfile__label {
+  flex: none;
+  min-width: 56px;
+}
+.editProfile__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  font-size: 0.875rem;
+  color: var(--club-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.editProfile__value--action {
+  color: var(--club-text);
+  font-weight: 600;
+}
+.editProfile__rowStatic {
+  cursor: default;
+}
+.editProfile__rowStatic:hover {
+  background: transparent !important;
+}
+.editProfile__deleteText {
+  display: grid;
+  gap: 2px;
+  text-align: left;
+}
+.editProfile__deleteText small {
+  font-size: 0.75rem;
+  color: var(--club-text-muted);
+}

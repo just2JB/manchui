@@ -1,18 +1,18 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { IoPersonAddOutline, IoSettingsOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoShareOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
-import { fetchMySchedules } from "../../../api/scheduleApi";
-import { buildUserScheduleMap } from "../Home/clubHomeUtils";
+import { fetchTeamPolls } from "../../../api/pollApi";
 import { useAuth } from "../../../context/AuthContext";
 import Loading from "../../../components/Loading/Loading";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
-import TeamCalendar from "./TeamCalendar";
-import TeamDashboard from "./TeamDashboard";
 import TeamPracticeEditSheet from "./TeamPracticeEditSheet";
 import TeamUpcomingPractice from "./TeamUpcomingPractice";
-import { normalizeDateKey } from "./teamCalendarUtils";
+import TeamPollSection from "../Poll/TeamPollSection";
+import PollPracticeSheet from "../Poll/PollPracticeSheet";
+import { getPendingTeamMembers, isPollActive } from "../Poll/pollUtils";
 import {
+  getMemberDisplayName,
   isDefaultComment,
   isTeamLeader,
   isTeamMember,
@@ -28,11 +28,12 @@ const TeamDetail = () => {
   const modal = useManchuiModal();
   const [team, setTeam] = useState(null);
   const [practices, setPractices] = useState([]);
-  const [memberSchedules, setMemberSchedules] = useState([]);
-  const [userSchedules, setUserSchedules] = useState([]);
+  const [polls, setPolls] = useState([]);
+  const [pollsLoading, setPollsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [editingPractice, setEditingPractice] = useState(null);
+  const [practiceSheetOpen, setPracticeSheetOpen] = useState(false);
 
   const loadTeam = useCallback(async () => {
     if (!teamId) {
@@ -48,21 +49,19 @@ const TeamDetail = () => {
       });
       const nextTeam = res.data?.team ?? null;
       setTeam(nextTeam);
-      setMemberSchedules(
-        Array.isArray(res.data?.memberSchedules) ? res.data.memberSchedules : [],
-      );
       if (!nextTeam) {
         setNotFound(true);
         setPractices([]);
-        setMemberSchedules([]);
+        setPolls([]);
         return;
       }
 
-      const [practiceResult, schedulesResult] = await Promise.allSettled([
+      setPollsLoading(true);
+      const [practiceResult, pollsResult] = await Promise.allSettled([
         apiClient.get(`/api/practice/teamPractice/${teamId}`, {
           withCredentials: true,
         }),
-        user?._id ? fetchMySchedules() : Promise.resolve([]),
+        fetchTeamPolls(teamId),
       ]);
 
       if (practiceResult.status === "fulfilled") {
@@ -76,12 +75,13 @@ const TeamDetail = () => {
         setPractices([]);
       }
 
-      if (schedulesResult.status === "fulfilled") {
-        setUserSchedules(schedulesResult.value);
+      if (pollsResult.status === "fulfilled") {
+        setPolls(pollsResult.value);
       } else {
-        console.error(schedulesResult.reason);
-        setUserSchedules([]);
+        console.error(pollsResult.reason);
+        setPolls([]);
       }
+      setPollsLoading(false);
     } catch (error) {
       console.error(error);
       if (error.response?.status === 404) {
@@ -91,45 +91,23 @@ const TeamDetail = () => {
     } finally {
       setLoading(false);
     }
-  }, [teamId, user?._id]);
+  }, [teamId]);
 
   useEffect(() => {
     void loadTeam();
   }, [loadTeam, location.key]);
 
-  const scheduleMap = useMemo(
-    () => buildUserScheduleMap(userSchedules),
-    [userSchedules],
-  );
 
-  const handleScheduleSaved = useCallback(
-    (dateKey, schedule) => {
-      setUserSchedules((prev) => {
-        const next = prev.filter(
-          (item) => normalizeDateKey(item.date) !== dateKey,
-        );
-        if (schedule && schedule.category !== "temp") {
-          next.push(schedule);
-        }
-        return next;
-      });
 
-      if (!user?._id) return;
-      const userKey = String(user._id);
-      setMemberSchedules((prev) => {
-        const next = prev.filter(
-          (item) =>
-            normalizeDateKey(item.date) !== dateKey ||
-            String(item.userId) !== userKey,
-        );
-        if (schedule && schedule.category !== "temp") {
-          next.push(schedule);
-        }
-        return next;
-      });
-    },
-    [user?._id],
-  );
+  const handlePollChanged = useCallback((nextPoll) => {
+    setPolls((prev) =>
+      prev.map((item) => (item._id === nextPoll._id ? nextPoll : item)),
+    );
+  }, []);
+
+  const handlePollDeleted = useCallback((pollId) => {
+    setPolls((prev) => prev.filter((item) => item._id !== pollId));
+  }, []);
 
   const handlePracticeClick = useCallback((practice) => {
     if (!practice) return;
@@ -181,13 +159,21 @@ const TeamDetail = () => {
   const isMember = isTeamMember(team, user?._id);
   const isLeader = isTeamLeader(team, user?._id);
   const accent = team.teamColor || "#E87070";
+  // 연습 추가 시트에 쓸 일정 종합: 진행 중인 것 우선, 없으면 가장 최근 것
+  const practicePoll = polls.find(isPollActive) ?? polls[0] ?? null;
+  const pendingForSheet =
+    practicePoll && isPollActive(practicePoll)
+      ? getPendingTeamMembers(
+          practicePoll,
+          members.map((member) => ({
+            _id: String(member?._id ?? member),
+            username: getMemberDisplayName(member),
+          })),
+        )
+      : [];
   const comment = isDefaultComment(team.comment)
     ? "아직 팀 소개가 없습니다."
     : team.comment;
-
-  const calendarRequests = Array.isArray(team.requestSchedules)
-    ? team.requestSchedules
-    : [];
 
   return (
     <div
@@ -202,45 +188,54 @@ const TeamDetail = () => {
         ← 팀 목록
       </button>
 
-      <section
-        className="teamDetailHero"
-        aria-label="팀 정보"
-        style={{ "--team-accent": accent }}
-      >
-        <span className="teamDetailHero__logoMark" aria-hidden />
-        <div className="teamDetailHero__row">
-          <div className="teamDetailHero__main">
-            <h1 className="teamDetailHero__name">{team.name}</h1>
-            <div className="teamDetailHero__metaRow">
-              <p className="teamDetailHero__meta">멤버 {members.length}명</p>
-              {isMember ? (
-                <button
-                  type="button"
-                  className="teamDetailHero__invite"
-                  onClick={() => void shareTeamInvite(team.name, teamId, modal)}
-                >
-                  <IoPersonAddOutline aria-hidden />
-                  멤버 초대
-                </button>
-              ) : null}
-            </div>
-          </div>
+      {/* 상단: 박스 없이 팀 이름 · 설정, 아래 한 줄에 멤버 수 · 링크 공유 */}
+      <header className="teamHead">
+        <div className="teamHead__row">
+          <h1 className="teamHead__name">
+            <span className="teamHead__dot" aria-hidden="true" />
+            {team.name}
+          </h1>
           <button
             type="button"
-            className="teamDetailHero__settings"
+            className="teamHead__settings"
             onClick={() => nav(`/club/team/${teamId}/settings`)}
             aria-label="팀 설정"
           >
             <IoSettingsOutline aria-hidden />
           </button>
         </div>
-      </section>
+        <p className="teamHead__meta">
+          멤버 {members.length}명
+          {isMember ? (
+            <>
+              <span aria-hidden="true"> · </span>
+              <button
+                type="button"
+                className="teamHead__share"
+                onClick={() => void shareTeamInvite(team.name, teamId, modal)}
+              >
+                <IoShareOutline aria-hidden />
+                링크 공유
+              </button>
+            </>
+          ) : null}
+        </p>
+      </header>
 
       <TeamUpcomingPractice
         practices={practices}
         members={members}
         isLeader={isLeader}
         onPracticeClick={isLeader ? handlePracticeClick : undefined}
+        onAddPractice={isLeader && practicePoll ? () => setPracticeSheetOpen(true) : undefined}
+      />
+
+      <PollPracticeSheet
+        open={practiceSheetOpen}
+        poll={practicePoll}
+        teamId={teamId}
+        pendingMembers={pendingForSheet}
+        onClose={() => setPracticeSheetOpen(false)}
       />
 
       <TeamPracticeEditSheet
@@ -252,48 +247,16 @@ const TeamDetail = () => {
         onDeleted={handlePracticeDeleted}
       />
 
-      <section className="teamDetailBlock" aria-labelledby="team-cal-title">
-        <h2 id="team-cal-title" className="teamDetailBlock__title">
-          캘린더
-        </h2>
-        <TeamCalendar
-          teamId={teamId}
-          teamName={team.name}
-          isLeader={isLeader}
-          isMember={isMember}
-          requestSchedules={calendarRequests}
-          practices={practices}
-          scheduleMap={scheduleMap}
-          accentColor={accent}
-          onScheduleSaved={handleScheduleSaved}
-          onRequestSchedulesUpdated={(nextSchedules) => {
-            if (Array.isArray(nextSchedules)) {
-              setTeam((prev) =>
-                prev ? { ...prev, requestSchedules: nextSchedules } : prev,
-              );
-            } else {
-              void loadTeam();
-            }
-          }}
-          onPracticeClick={isLeader ? handlePracticeClick : undefined}
-        />
-      </section>
-
-      <section
-        className="teamDetailBlock teamDetailBlock--dashboard"
-        aria-labelledby="team-dash-title"
-      >
-        <h2 id="team-dash-title" className="teamDetailBlock__title">
-          대시보드
-        </h2>
-        <TeamDashboard
-          teamId={teamId}
-          practiceCount={practices.length}
-          members={members}
-          requestSchedules={calendarRequests}
-          memberSchedules={memberSchedules}
-        />
-      </section>
+      <TeamPollSection
+        team={team}
+        teamId={teamId}
+        polls={polls}
+        loading={pollsLoading}
+        isLeader={isLeader}
+        currentUserId={user?._id}
+        onPollChanged={handlePollChanged}
+        onPollDeleted={handlePollDeleted}
+      />
 
       <section className="teamDetailBlock" aria-labelledby="team-intro-title">
         <h2 id="team-intro-title" className="teamDetailBlock__title">

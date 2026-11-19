@@ -1,311 +1,60 @@
-import React, { useMemo, useState } from "react";
+﻿import { useRef, useState } from "react";
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
-import { useCalendarMonthSlide } from "../Reservation/useCalendarMonthSlide";
-import {
-  WEEK_LABELS,
-  buildConsecutiveRanges,
-  buildMonthWeeks,
-  buildWeekRangeBarSegments,
-  formatDateKey,
-  formatPracticeTimeLabel,
-  startOfMonth,
-} from "../Team/teamCalendarUtils";
+import { WEEK_LABELS, buildMonthWeeks, formatDateKey } from "../Team/teamCalendarUtils";
+import { parseDateKey } from "./clubHomeUtils";
 
-function reqSpanRadius(roundLeft, roundRight) {
-  const r = 3;
-  const tl = roundLeft ? r : 0;
-  const bl = roundLeft ? r : 0;
-  const tr = roundRight ? r : 0;
-  const br = roundRight ? r : 0;
-  return `${tl}px ${tr}px ${br}px ${bl}px`;
-}
+export default function ClubHomeCalendar({ selected, onSelect, practiceByDate, reservationByDate, pollsByDate }) {
+  const [expanded, setExpanded] = useState(false);
+  const touchStart = useRef(null);
+  const date = parseDateKey(selected);
+  const today = formatDateKey(new Date());
+  const month = date.getMonth();
+  const year = date.getFullYear();
+  const cells = expanded ? buildMonthWeeks(date).flat() : WEEK_LABELS.map((_, index) => {
+    const day = new Date(year, month, date.getDate() - date.getDay() + index);
+    return { key: formatDateKey(day), date: day };
+  });
 
-function getBarSegmentDateKeys(weekCells, bar) {
-  const keys = [];
-  const startCol = bar.colStart - 1;
-  for (let i = 0; i < bar.colSpan; i += 1) {
-    const cell = weekCells[startCol + i];
-    keys.push(cell?.date ? cell.key : null);
+  function move(direction) {
+    const target = expanded
+      ? new Date(year, month + direction, Math.min(date.getDate(), new Date(year, month + direction + 1, 0).getDate()))
+      : new Date(year, month, date.getDate() + direction * 7);
+    onSelect(formatDateKey(target));
   }
-  return keys;
-}
 
-const ClubHomeCalendar = ({
-  practiceByDate,
-  scheduleDateSet,
-  requestDateSet,
-  onDateSelect,
-}) => {
-  const [viewMonth, setViewMonth] = useState(() => startOfMonth(new Date()));
-
-  const weeks = useMemo(() => buildMonthWeeks(viewMonth), [viewMonth]);
-  const todayKey = useMemo(() => formatDateKey(new Date()), []);
-  const monthLabel = `${viewMonth.getFullYear()}년 ${viewMonth.getMonth() + 1}월`;
-
-  const {
-    slideDir,
-    goPrevMonth,
-    goNextMonth,
-    swipeHandlers,
-    consumeClickAfterSwipe,
-    monthKey,
-  } = useCalendarMonthSlide(viewMonth, setViewMonth);
-
-  const requestRanges = useMemo(
-    () => buildConsecutiveRanges([...requestDateSet]),
-    [requestDateSet],
-  );
-
-  const scheduleDayRanges = useMemo(
-    () =>
-      [...scheduleDateSet]
-        .sort()
-        .map((key) => ({ start: key, end: key })),
-    [scheduleDateSet],
-  );
-
-  const practiceDateSet = useMemo(
-    () => new Set(practiceByDate.keys()),
-    [practiceByDate],
-  );
-
-  const scheduleBarSkipDateSet = useMemo(() => {
-    const set = new Set(practiceDateSet);
-    for (const key of requestDateSet) set.add(key);
-    return set;
-  }, [practiceDateSet, requestDateSet]);
-
-  const monthPanelClass = slideDir
-    ? ` clubHomeCal__monthPanel--${slideDir}`
-    : "";
-
-  const renderCell = (cell) => {
-    if (!cell.date) {
-      return (
-        <span
-          key={cell.key}
-          className="clubHomeCal__cell clubHomeCal__cell--empty"
-          role="gridcell"
-          aria-hidden
-        />
-      );
-    }
-
-    const dateKey = cell.key;
-    const isToday = dateKey === todayKey;
-    const dayPractices = practiceByDate.get(dateKey) ?? [];
-    const hasPractice = dayPractices.length > 0;
-    const isPracticeMulti = dayPractices.length > 1;
-    const hasSchedule = scheduleDateSet.has(dateKey);
-    const hasRequest = requestDateSet.has(dateKey);
-    const practiceAccent =
-      dayPractices.length === 1
-        ? (dayPractices[0].teamColor ?? "#E87070")
-        : null;
-
-    const ariaParts = [dateKey];
-    if (hasPractice) {
-      const times = dayPractices
-        .map((practice) => formatPracticeTimeLabel(practice.time))
-        .join(", ");
-      ariaParts.push(`연습 ${times}`);
-    }
-    if (hasSchedule) ariaParts.push("내 일정 입력됨");
-    if (hasRequest && !hasPractice) ariaParts.push("일정 취합 요청");
-
-    const className = [
-      "clubHomeCal__cell",
-      "clubHomeCal__cell--interactive",
-      isToday ? "clubHomeCal__cell--today" : "",
-      hasPractice ? "clubHomeCal__cell--practice" : "",
-      isPracticeMulti ? "clubHomeCal__cell--practiceMulti" : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-
-    return (
-      <button
-        key={cell.key}
-        type="button"
-        className={className}
-        role="gridcell"
-        data-date-key={dateKey}
-        aria-label={ariaParts.join(", ")}
-        style={
-          practiceAccent
-            ? { "--practice-accent": practiceAccent }
-            : undefined
-        }
-        onClick={() => {
-          if (consumeClickAfterSwipe()) return;
-          onDateSelect?.(dateKey);
-        }}
-      >
-        <span className="clubHomeCal__day">{cell.date.getDate()}</span>
-        {hasPractice ? (
-          <span className="clubHomeCal__practiceBars">
-            {dayPractices.map((practice) => (
-              <span
-                key={practice._id ?? `${dateKey}-${practice.time}`}
-                className="clubHomeCal__practiceTimeBar"
-                style={{
-                  "--practice-accent": practice.teamColor ?? "#E87070",
-                }}
-                title={practice.time}
-              >
-                {formatPracticeTimeLabel(practice.time)}
-              </span>
-            ))}
-          </span>
-        ) : null}
-      </button>
-    );
-  };
-
-  return (
-    <div className="clubHomeCal">
-      <div className="clubHomeCal__nav">
-        <button
-          type="button"
-          className="clubHomeCal__navBtn"
-          onClick={goPrevMonth}
-          aria-label="이전 달"
-        >
-          <IoChevronBack aria-hidden />
+  return <div className="dCal">
+    <div className="dCal__head">
+      <p className="dCal__title">{year !== new Date().getFullYear() && <small>{year}년 </small>}{month + 1}월</p>
+      <div className="dCal__tools">
+        {selected !== today && <button type="button" className="dCal__today" onClick={() => onSelect(today)}>오늘</button>}
+        <button type="button" className="dCal__icon" aria-label={expanded ? "이전 달" : "이전 주"} onClick={() => move(-1)}><IoChevronBack /></button>
+        <button type="button" className="dCal__icon" aria-label={expanded ? "다음 달" : "다음 주"} onClick={() => move(1)}><IoChevronForward /></button>
+        <button type="button" className="dCal__mode" aria-pressed={expanded} onClick={() => setExpanded(v => !v)}>
+          {expanded ? "주간" : "월간"}
         </button>
-        <span className="clubHomeCal__month">{monthLabel}</span>
-        <button
-          type="button"
-          className="clubHomeCal__navBtn"
-          onClick={goNextMonth}
-          aria-label="다음 달"
-        >
-          <IoChevronForward aria-hidden />
-        </button>
-      </div>
-
-      <div className="clubHomeCal__monthSwipe" {...swipeHandlers}>
-        <div
-          key={monthKey}
-          className={`clubHomeCal__monthPanel${monthPanelClass}`}
-        >
-          <div className="clubHomeCal__weekHead" aria-hidden>
-            {WEEK_LABELS.map((label) => (
-              <span key={label} className="clubHomeCal__weekLabel">
-                {label}
-              </span>
-            ))}
-          </div>
-
-          <div
-            className="clubHomeCal__body"
-            role="grid"
-            aria-label={monthLabel}
-          >
-            {weeks.map((weekCells, weekIndex) => {
-              const requestBarSegments = buildWeekRangeBarSegments(
-                weekCells,
-                requestRanges,
-                practiceDateSet,
-                "req",
-              );
-              const scheduleBarSegments = buildWeekRangeBarSegments(
-                weekCells,
-                scheduleDayRanges,
-                scheduleBarSkipDateSet,
-                "sched",
-              );
-
-              return (
-                <div
-                  key={`week-${weekIndex}`}
-                  className="clubHomeCal__week"
-                  role="row"
-                >
-                  {weekCells.map((cell) => renderCell(cell))}
-
-                  {scheduleBarSegments.length > 0 ? (
-                    <div
-                      className="clubHomeCal__barLayer clubHomeCal__barLayer--schedule"
-                      aria-hidden
-                    >
-                      {scheduleBarSegments.map((bar) => (
-                        <span
-                          key={bar.id}
-                          className="clubHomeCal__schedSpan"
-                          style={{
-                            gridColumn: `${bar.colStart} / span ${bar.colSpan}`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                  ) : null}
-
-                  {requestBarSegments.length > 0 ? (
-                    <div
-                      className="clubHomeCal__barLayer clubHomeCal__barLayer--request"
-                      aria-hidden
-                    >
-                      {requestBarSegments.map((bar) => {
-                        const segmentDateKeys = getBarSegmentDateKeys(
-                          weekCells,
-                          bar,
-                        );
-
-                        return (
-                          <span
-                            key={bar.id}
-                            className="clubHomeCal__reqSpan"
-                            style={{
-                              gridColumn: `${bar.colStart} / span ${bar.colSpan}`,
-                              borderRadius: reqSpanRadius(
-                                bar.roundLeft,
-                                bar.roundRight,
-                              ),
-                              "--req-cols": bar.colSpan,
-                            }}
-                          >
-                            {segmentDateKeys.map((key, index) => (
-                              <span
-                                key={key ?? `req-gap-${bar.id}-${index}`}
-                                className={[
-                                  "clubHomeCal__reqSpanCell",
-                                  key && scheduleDateSet.has(key)
-                                    ? "clubHomeCal__reqSpanCell--schedule"
-                                    : "",
-                                ]
-                                  .filter(Boolean)
-                                  .join(" ")}
-                              />
-                            ))}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      <div className="clubHomeCal__legend">
-        <span className="clubHomeCal__legendItem">
-          <span className="clubHomeCal__legendSwatch clubHomeCal__legendSwatch--practice" />
-          연습
-        </span>
-        <span className="clubHomeCal__legendItem">
-          <span className="clubHomeCal__legendBar clubHomeCal__legendBar--request" />
-          일정 취합 요청
-        </span>
-        <span className="clubHomeCal__legendItem">
-          <span className="clubHomeCal__legendBar clubHomeCal__legendBar--schedule" />
-          내 일정
-        </span>
       </div>
     </div>
-  );
-};
-
-export default ClubHomeCalendar;
+    <div className="dCal__grid" data-expanded={expanded}
+      onTouchStart={e => { touchStart.current = e.touches[0]; }}
+      onTouchEnd={e => {
+        const start = touchStart.current;
+        touchStart.current = null;
+        if (!start) return;
+        const dx = e.changedTouches[0].clientX - start.clientX;
+        const dy = e.changedTouches[0].clientY - start.clientY;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) move(dx < 0 ? 1 : -1);
+      }}>
+      {WEEK_LABELS.map((label, index) => <span className="dCal__weekday" data-sunday={index === 0 || undefined} key={label}>{label}</span>)}
+      {cells.map(cell => {
+        if (!cell.date) return <span key={cell.key} />;
+        const count = (practiceByDate.get(cell.key)?.length ?? 0) + (reservationByDate.get(cell.key)?.length ?? 0) + (pollsByDate.get(cell.key)?.length ?? 0);
+        return <button type="button" key={cell.key} className="dCal__day" aria-pressed={selected === cell.key}
+          aria-current={cell.key === today ? "date" : undefined} data-outside={cell.date.getMonth() !== month || undefined}
+          aria-label={cell.key + (count ? `, 일정 ${count}건` : "")} onClick={() => onSelect(cell.key)}>
+          <span>{cell.date.getDate()}</span>
+          <i aria-hidden="true" data-on={count > 0 || undefined} />
+        </button>;
+      })}
+    </div>
+  </div>;
+}

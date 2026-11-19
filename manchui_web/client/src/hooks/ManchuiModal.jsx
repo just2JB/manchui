@@ -1,9 +1,13 @@
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useId } from "react";
+import { IoCloseOutline } from "react-icons/io5";
 import { createPortal } from "react-dom";
 import styles from "./ManchuiModal.module.css";
 const ModalContext = createContext();
 
 export const ModalProvider = ({ children }) => {
+  const dialogRef = useRef(null);
+  const titleId = useId();
+  const messageId = useId();
   const [state, setState] = useState({
     isOpen: false,
     type: "",
@@ -22,10 +26,38 @@ export const ModalProvider = ({ children }) => {
     });
   }, []);
 
-  const handleClose = (result) => {
-    state.resolve?.(result); // Promise 종료 (true 또는 false 반환)
+  const resolveModal = state.resolve;
+  const handleClose = useCallback((result) => {
+    resolveModal?.(result); // Promise 종료 (true 또는 false 반환)
     setState({ isOpen: false, message: "", resolve: null });
-  };
+  }, [resolveModal]);
+
+  useEffect(() => {
+    if (!state.isOpen) return;
+    const previousFocus = document.activeElement;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    dialogRef.current?.focus();
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") handleClose(false);
+      if (event.key !== "Tab") return;
+      const buttons = dialogRef.current?.querySelectorAll("button:not(:disabled)");
+      if (!buttons?.length) return;
+      const first = buttons[0];
+      const last = buttons[buttons.length - 1];
+      if (event.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault(); first.focus();
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = overflow;
+      document.removeEventListener("keydown", onKeyDown);
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
+  }, [state.isOpen, handleClose]);
 
   return (
     <ModalContext.Provider value={modal}>
@@ -33,8 +65,15 @@ export const ModalProvider = ({ children }) => {
       {state.isOpen &&
         createPortal(
           <div className={styles.overlay}>
-            <div className={styles.modal}>
-              <p className={styles.message}>{state.message}</p>
+            <div className={styles.modal} ref={dialogRef} tabIndex={-1}
+              role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={messageId}>
+              <div className={styles.header}>
+                <h2 id={titleId} className={styles.title}>{state.type === "confirm" ? "확인해주세요" : "안내"}</h2>
+                <button type="button" className={styles.close} aria-label="닫기" onClick={() => handleClose(false)}>
+                  <IoCloseOutline aria-hidden="true" />
+                </button>
+              </div>
+              <p id={messageId} className={styles.message}>{state.message}</p>
 
               {state.type === "confirm" ? (
                 <div className={styles.buttonGroup}>
@@ -47,7 +86,6 @@ export const ModalProvider = ({ children }) => {
                   <button
                     className={`${styles.button} ${styles.confirmBtn}`}
                     onClick={() => handleClose(true)}
-                    autoFocus
                   >
                     확인
                   </button>
@@ -57,7 +95,6 @@ export const ModalProvider = ({ children }) => {
                   <button
                     className={`${styles.button} ${styles.checkBtn}`}
                     onClick={() => handleClose(false)}
-                    autoFocus
                   >
                     닫기
                   </button>

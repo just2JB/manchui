@@ -27,8 +27,6 @@ import RecommendDetail from "./pages/ClubRoom/Recommend/RecommendDetail";
 import RecommendEditor from "./pages/ClubRoom/Recommend/RecommendEditor";
 import MypageSavedRecommendations from "./pages/ClubRoom/Mypage/MypageSavedRecommendations";
 import MypageReservations from "./pages/ClubRoom/Mypage/MypageReservations";
-import MypageWeeklyTimetable from "./pages/ClubRoom/Mypage/MypageWeeklyTimetable";
-import MypageSchedule from "./pages/ClubRoom/Mypage/MypageSchedule";
 import AdminHome from "./pages/Admin/AdminHome";
 import AdminJoin from "./pages/Admin/AdminJoin";
 import AdminSetting from "./pages/Admin/AdminSetting";
@@ -55,6 +53,8 @@ import TeamDetail from "./pages/ClubRoom/Team/TeamDetail";
 import TeamSettings from "./pages/ClubRoom/Team/TeamSettings";
 import TeamJoin from "./pages/ClubRoom/Team/TeamJoin";
 import TeamPracticeCreate from "./pages/ClubRoom/Team/TeamPracticeCreate";
+import PollCreate from "./pages/ClubRoom/Poll/PollCreate";
+import PollRespond from "./pages/ClubRoom/Poll/PollRespond";
 
 const router = createBrowserRouter([
   {
@@ -81,6 +81,8 @@ const router = createBrowserRouter([
         path: "reservation/share/:id",
         element: <ReservationShare />,
       },
+      /** 웬투밋식 일정 투표: 계정 없이(게스트)도 응답 가능 */
+      { path: "poll/:pollId", element: <PollRespond /> },
       {
         element: <ProtectedRoute />,
         children: [
@@ -98,11 +100,6 @@ const router = createBrowserRouter([
                 element: <MypageSavedRecommendations />,
               },
               { path: "mypage/reservations", element: <MypageReservations /> },
-              { path: "mypage/schedule", element: <MypageSchedule /> },
-              {
-                path: "mypage/weekly-timetable",
-                element: <MypageWeeklyTimetable />,
-              },
               { path: "mypage/profile", element: <EditProfile /> },
               { path: "mypage/username", element: <EditUser /> },
               { path: "mypage/Identification", element: <EditUser /> },
@@ -113,6 +110,7 @@ const router = createBrowserRouter([
                 path: "team/:teamId/practice/new",
                 element: <TeamPracticeCreate />,
               },
+              { path: "team/:teamId/poll/new", element: <PollCreate /> },
               { path: "team/new", element: <TeamCreate /> },
               { path: "team/:teamId/settings", element: <TeamSettings /> },
               { path: "team/:teamId", element: <TeamDetail /> },

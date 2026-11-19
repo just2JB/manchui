@@ -115,7 +115,7 @@
 .recommendEditor__field input:focus,
 .recommendEditor__field textarea:focus {
   outline: none;
-  border-color: rgba(255, 69, 58, 0.45);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
 }
 
 .recommendEditor__hint {
@@ -139,9 +139,9 @@
   max-width: 100%;
   padding: 4px 10px;
   border-radius: var(--club-radius-sm);
-  border: 1px solid var(--rec-hashtag-border, rgba(232, 112, 112, 0.5));
-  background: var(--rec-hashtag-bg, rgba(232, 112, 112, 0.12));
-  color: var(--rec-hashtag-fg, #e87070);
+  border: 1px solid var(--rec-hashtag-border, rgba(var(--club-accent-rgb, 255, 69, 58), 0.5));
+  background: var(--rec-hashtag-bg, rgba(var(--club-accent-rgb, 255, 69, 58), 0.12));
+  color: var(--rec-hashtag-fg, var(--club-accent, #e87070));
   font: inherit;
   font-size: 0.82rem;
   font-weight: 500;
@@ -150,9 +150,9 @@
 }
 
 .recommendEditor__tagCommitChip:hover {
-  background: var(--rec-hashtag-bg-hover, rgba(232, 112, 112, 0.24));
+  background: var(--rec-hashtag-bg-hover, rgba(var(--club-accent-rgb, 255, 69, 58), 0.24));
   border-color: var(--rec-hashtag-focus, rgba(255, 130, 130, 0.75));
-  color: var(--rec-hashtag-fg-hover, #ffb1b1);
+  color: var(--rec-hashtag-fg-hover, var(--club-accent, #ffb1b1));
 }
 
 .recommendEditor__tagInputField {
@@ -169,7 +169,7 @@
 }
 
 .recommendEditor__tagInputField:focus {
-  border-color: rgba(255, 69, 58, 0.45);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
 }
 
 .recommendEditor__suggestLabel {
@@ -188,8 +188,8 @@
 .recommendEditor__tagChip {
   padding: 5px 10px;
   border-radius: var(--club-radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.16);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
   color: var(--text-gray);
   font: inherit;
   font-size: 0.78rem;
@@ -203,19 +203,19 @@
 }
 
 .recommendEditor__tagChip:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.26);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.26);
   color: var(--text-primary);
 }
 
 .recommendEditor__tagChip--active {
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.3);
   color: var(--text-primary);
 }
 
 .recommendEditor__tagChip:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline: 2px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.35);
   outline-offset: 2px;
 }
 
@@ -231,7 +231,7 @@
 
 .recommendEditor__actions--inForm {
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
 }
 
 .recommendEditor__btn {
@@ -262,7 +262,7 @@
 }
 
 .recommendEditor__btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   color: var(--text-primary);
 }
 
@@ -281,7 +281,7 @@
 .recommendEditor__errorLink {
   display: inline-block;
   margin-top: 12px;
-  color: #7ecbff;
+  color: var(--club-secondary, #7ecbff);
   text-decoration: none;
 }
 

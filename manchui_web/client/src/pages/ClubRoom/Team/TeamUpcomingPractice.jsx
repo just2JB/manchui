@@ -1,5 +1,5 @@
 import React from "react";
-import { IoClipboardOutline } from "react-icons/io5";
+import { IoAdd, IoClipboardOutline } from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import {
   buildUpcomingPracticesCopyText,
@@ -20,6 +20,7 @@ const TeamUpcomingPractice = ({
   members = [],
   isLeader = false,
   onPracticeClick,
+  onAddPractice,
 }) => {
   const modal = useManchuiModal();
   const upcoming = getUpcomingPractices(practices, { limit: UPCOMING_LIMIT });
@@ -50,6 +51,14 @@ const TeamUpcomingPractice = ({
         <h2 id="team-upcoming-title" className="teamDetailBlock__title">
           다가오는 연습
         </h2>
+        <span className="teamUpcoming__headActions">
+        {/* 팀장: 연습 추가 (일정 종합의 추천 시간 / 직접 정하기 시트) */}
+        {onAddPractice ? (
+          <button type="button" className="teamUpcoming__addBtn" onClick={onAddPractice}>
+            <IoAdd aria-hidden />
+            연습 추가
+          </button>
+        ) : null}
         {hasUpcoming ? (
           <button
             type="button"
@@ -61,6 +70,7 @@ const TeamUpcomingPractice = ({
             <IoClipboardOutline aria-hidden />
           </button>
         ) : null}
+        </span>
       </div>
 
       {upcoming.length === 0 ? (

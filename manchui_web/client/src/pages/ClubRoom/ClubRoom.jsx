@@ -1,3 +1,4 @@
+import { useRefreshOnFocus } from "../../hooks/useRefreshOnFocus";
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoAdd, IoArrowForward, IoChevronForward } from "react-icons/io5";
@@ -29,7 +30,6 @@ import {
 import {
   emptyReservationsMine,
   isClubInitialLoading,
-  useClubQueryInvalidationOnFocus,
   useInvalidateClubHome,
   useMyOpenPollsQuery,
   useMyReservationsQuery,
@@ -83,7 +83,7 @@ const ClubRoom = () => {
   const reservationsQuery = useMyReservationsQuery(userId);
 
   const invalidateHome = useInvalidateClubHome(userId);
-  useClubQueryInvalidationOnFocus(invalidateHome);
+  useRefreshOnFocus(invalidateHome);
 
   const practices = practicesQuery.data ?? EMPTY_LIST;
   const openPolls = openPollsQuery.data ?? EMPTY_LIST;

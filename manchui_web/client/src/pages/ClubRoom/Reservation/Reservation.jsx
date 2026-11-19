@@ -1,3 +1,4 @@
+import { useRefreshOnFocus } from "../../../hooks/useRefreshOnFocus";
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { serverUrl } from "../../../api/apiClient";
@@ -37,7 +38,6 @@ import {
 import {
   isClubInitialLoading,
   useAllReservationsQuery,
-  useClubQueryInvalidationOnFocus,
   useInvalidateClubReservations,
   useMyReservationsQuery,
   useReservationMutations,
@@ -125,9 +125,9 @@ const Reservation = () => {
   const allQuery = useAllReservationsQuery();
   const mineQuery = useMyReservationsQuery(userId);
   const { createReservation, deleteReservation } =
-    useReservationMutations(userId);
+    useReservationMutations();
   const invalidateReservations = useInvalidateClubReservations(userId);
-  useClubQueryInvalidationOnFocus(invalidateReservations);
+  useRefreshOnFocus(invalidateReservations);
 
   const trimmedTeamName = teamName.trim();
 

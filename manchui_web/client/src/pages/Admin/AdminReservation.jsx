@@ -1,3 +1,4 @@
+import { useRefreshOnFocus } from "../../hooks/useRefreshOnFocus";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { authRequestConfig } from "../../api/tokenStorage";
@@ -25,7 +26,6 @@ import {
 } from "../ClubRoom/Reservation/reservationRetention";
 import {
   useReservationNow,
-  useReservationRefreshOnFocus,
 } from "../ClubRoom/Reservation/useReservationLiveSync";
 
 const authConfig = authRequestConfig;
@@ -274,7 +274,7 @@ const AdminReservation = () => {
   }, [loadList]);
 
   const now = useReservationNow();
-  useReservationRefreshOnFocus(loadList);
+  useRefreshOnFocus(loadList);
 
   const visibleAllReservations = useMemo(
     () => filterAdminVisibleReservations(allReservations, now),

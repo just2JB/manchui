@@ -486,6 +486,19 @@ const ClubLogin = () => {
         password: signUpForm.password,
         emailVerificationToken,
       });
+      /** 가입 직후 바로 로그인 — 실패하면 기존처럼 로그인 화면으로 */
+      try {
+        const data = await loginClubRoom({
+          email: getSignUpEmailValue(),
+          password: signUpForm.password,
+        });
+        setAccessToken(data.accessToken || data.token);
+        setUser(data.user);
+        navigate(redirectTo, { replace: true });
+        return;
+      } catch {
+        /* 아래 기존 흐름으로 */
+      }
       manchuiModal("회원가입이 완료되었습니다. 로그인 해주세요.");
       setIsSignUpMode(false);
       setFormStep(0);
@@ -742,6 +755,10 @@ const ClubLogin = () => {
     setInlineError(null);
     setFieldError(null);
     setEmailCode(digits);
+    /** 6자리를 다 입력하면 '인증 확인'을 누르지 않아도 바로 확인 */
+    if (digits.length === 6 && emailCode.length < 6) {
+      window.setTimeout(() => nextButtonRef.current?.click(), 0);
+    }
   };
 
   const handleKakaoSignupChange = (e) => {

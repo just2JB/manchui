@@ -20,21 +20,15 @@
 
 .clubHome__hero {
   padding: 18px 16px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  background: linear-gradient(
-    135deg,
-    rgba(179, 0, 0, 0.14) 0%,
-    rgba(255, 255, 255, 0.02) 55%
-  );
-  box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04) inset,
-    0 8px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+  border-left: 3px solid var(--club-accent);
 }
 
 .clubHome__greeting {
   margin: 0;
-  font-size: clamp(1.25rem, 4vw, 1.5rem);
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.3;
@@ -48,10 +42,10 @@
 }
 
 .clubHome__block {
-  border: 1px solid var(--primary-200);
-  border-radius: 14px;
+  border: 1px solid var(--club-border);
+  border-radius: var(--club-radius);
   padding: 14px;
-  background: var(--box-1);
+  background: var(--club-surface);
 }
 
 .clubHome__blockTitle {
@@ -65,7 +59,7 @@
 .clubHome__empty {
   margin: 0;
   padding: 14px 10px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   text-align: center;
   font-size: 0.88rem;
   color: var(--text-more);
@@ -102,7 +96,7 @@
   width: min(52vw, 152px);
   min-height: 100px;
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(0, 0, 0, 0.18);
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-sizing: border-box;
@@ -161,7 +155,7 @@
   flex-direction: column;
   gap: 6px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.06);
 }
@@ -180,7 +174,7 @@
 
 .clubHome__requestChip {
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 183, 77, 0.14);
   border: 1px solid rgba(255, 183, 77, 0.35);
   color: #ffd89a;
@@ -204,7 +198,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(72, 187, 120, 0.08);
   border: 1px solid rgba(72, 187, 120, 0.22);
 }
@@ -278,7 +272,7 @@
   height: 36px;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.15);
   color: var(--text-more);
   font-size: 1.1rem;
@@ -408,7 +402,7 @@
 }
 
 .clubHomeCal__cell--interactive:hover {
-  border-color: rgba(179, 0, 0, 0.28);
+  border-color: rgba(255, 69, 58, 0.28);
 }
 
 .clubHomeCal__cell--today .clubHomeCal__day {
@@ -665,10 +659,10 @@
   max-height: min(88dvh, 720px);
   overflow-y: auto;
   padding: 8px 16px calc(20px + env(safe-area-inset-bottom, 0px));
-  border-radius: 18px 18px 0 0;
-  background: var(--background-dark);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.45);
+  border-radius: var(--club-radius) var(--club-radius) 0 0;
+  background: var(--club-surface);
+  border: 1px solid var(--club-border);
+  box-shadow: var(--club-overlay-shadow);
   color: var(--text-primary);
 }
 
@@ -725,7 +719,7 @@
   flex-direction: column;
   gap: 3px;
   padding: 10px 12px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: color-mix(
     in srgb,
     var(--item-accent, #e87070) 10%,
@@ -758,7 +752,7 @@
 
 .clubHomeSheet__requestBlock {
   padding: 12px;
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(160, 164, 172, 0.08);
   border: 1px solid rgba(160, 164, 172, 0.2);
 }
@@ -794,14 +788,13 @@
   width: 100%;
   padding: 12px 16px;
   border: none;
-  border-radius: 10px;
-  background: var(--brand-red);
+  border-radius: var(--club-radius-sm);
+  background: var(--club-accent);
   color: #fff;
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.28);
 }
 
 .clubHomeSheet__writeBtn--solo {
@@ -844,7 +837,7 @@
   height: 48px;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.2);
   cursor: pointer;
   font: inherit;
@@ -852,8 +845,8 @@
 }
 
 .clubHomeSheet__hourBtn--selected {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.22);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.22);
 }
 
 .clubHomeSheet__hourLabel {
@@ -878,7 +871,7 @@
 
 .clubHomeSheet__action {
   padding: 10px 16px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   font: inherit;
   font-size: 0.86rem;
   font-weight: 700;
@@ -893,7 +886,7 @@
 
 .clubHomeSheet__action--primary {
   border: none;
-  background: var(--brand-red);
+  background: var(--club-accent);
   color: #fff;
 }
 
@@ -964,7 +957,7 @@
   height: 32px;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.2);
   color: var(--text-more);
   font-size: 1rem;
@@ -1023,8 +1016,8 @@
 
 .clubScheduleEditor__dawnToggleInput:checked
   + .clubScheduleEditor__dawnToggleTrack {
-  background: rgba(179, 0, 0, 0.55);
-  border-color: rgba(179, 0, 0, 0.65);
+  background: rgba(255, 69, 58, 0.55);
+  border-color: rgba(255, 69, 58, 0.65);
 }
 
 .clubScheduleEditor__dawnToggleInput:checked
@@ -1048,7 +1041,7 @@
   flex-shrink: 0;
   padding: 8px 10px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: rgba(255, 255, 255, 0.06);
   color: var(--text-more);
   font: inherit;
@@ -1250,7 +1243,7 @@
   min-height: var(--sched-head-h);
   max-height: var(--sched-head-h);
   padding: 4px 4px 5px;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: rgba(18, 18, 18, 0.72);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
@@ -1266,15 +1259,15 @@
 
 .clubScheduleEditor__floatDateCell--requested {
   background: var(--sched-request-bg-soft);
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
 }
 
 .clubScheduleEditor__dateWeeklyBtn {
   margin-top: 1px;
   padding: 2px 7px;
   border: none;
-  border-radius: 999px;
-  background: rgba(179, 0, 0, 0.2);
+  border-radius: var(--club-radius-sm);
+  background: rgba(255, 69, 58, 0.2);
   color: #ffd0d0;
   font: inherit;
   font-size: 0.58rem;
@@ -1291,7 +1284,7 @@
 }
 
 .clubScheduleEditor__dateWeeklyBtn--loaded {
-  background: rgba(179, 0, 0, 0.35);
+  background: rgba(255, 69, 58, 0.35);
   color: #fff;
 }
 
@@ -1367,15 +1360,15 @@
 }
 
 .clubScheduleEditor__slot--selected {
-  border-color: rgba(179, 0, 0, 0.55);
-  background: rgba(179, 0, 0, 0.28);
-  box-shadow: inset 0 0 0 1px rgba(179, 0, 0, 0.35);
+  border-color: rgba(255, 69, 58, 0.55);
+  background: rgba(255, 69, 58, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(255, 69, 58, 0.35);
 }
 
 .clubScheduleEditor__slot--selected.clubScheduleEditor__slot--am {
   background: color-mix(
     in srgb,
-    rgba(179, 0, 0, 0.28) 70%,
+    rgba(255, 69, 58, 0.28) 70%,
     var(--sched-am-tint-mix)
   );
 }
@@ -1403,7 +1396,7 @@
 .clubScheduleEditor__weeklyLoadBtn {
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
   font: inherit;
@@ -1431,7 +1424,7 @@
   height: 42px;
   padding: 0;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
   font-size: 1.15rem;
@@ -1451,14 +1444,13 @@
 .clubScheduleEditor__saveBtn {
   padding: 12px 24px;
   border: none;
-  border-radius: 12px;
-  background: var(--brand-red);
+  border-radius: var(--club-radius);
+  background: var(--club-accent);
   color: #fff;
   font: inherit;
   font-size: 0.92rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(179, 0, 0, 0.32);
 }
 
 .clubScheduleEditor__saveBtn:disabled {
@@ -1502,7 +1494,7 @@
 
   .clubHome__block {
     padding: 20px;
-    border-radius: 16px;
+    border-radius: var(--club-radius);
   }
 
   /* 좁은 오른쪽 열에서는 가로 스크롤 대신 세로 목록 */

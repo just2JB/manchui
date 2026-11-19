@@ -1,16 +1,10 @@
-﻿import React, { useState, useEffect, useLayoutEffect } from "react";
+﻿import React, { useState, useLayoutEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { scrollWindowTopAfterNav } from "../../utils/navScroll";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, MotionConfig, useReducedMotion } from "motion/react";
 import "./MainPage.css";
 import DarkVeil from "../../components/DarkVeil/DarkVeil";
 import ActivityIllustration from "./ActivityIllustration";
-
-const COPY_LINES = ["by chance,", "however", "you dance,", "forever"];
-const CHUNK_STAGGER = 0.32;
-const BLANK_AFTER_TYPING_MS = 2200;
-const CONTENT_AFTER_BLANK_MS = 500;
-const CONTENT_STAGGER = 0.2;
 
 const SESSION_ITEMS = [
   {
@@ -129,7 +123,7 @@ const renderAwardsTextWithHighlight = (text) =>
 
 const MainPage = () => {
   const location = useLocation();
-  const [phase, setPhase] = useState("typing");
+  const calmMotion = useReducedMotion();
   const [sessionIndex, setSessionIndex] = useState(0);
   const [sessionDirection, setSessionDirection] = useState(1);
   const [openFaqIndices, setOpenFaqIndices] = useState(() => new Set());
@@ -146,150 +140,58 @@ const MainPage = () => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [location.hash]);
 
-  useEffect(() => {
-    const t1 = setTimeout(() => setPhase("blank"), BLANK_AFTER_TYPING_MS);
-    const t2 = setTimeout(
-      () => setPhase("content"),
-      BLANK_AFTER_TYPING_MS + CONTENT_AFTER_BLANK_MS,
-    );
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, []);
+  const selectSession = (index) => {
+    const next = (index + SESSION_ITEMS.length) % SESSION_ITEMS.length;
+    setSessionDirection(index > sessionIndex ? 1 : -1);
+    setSessionIndex(next);
+  };
+
+  const handleSessionKey = (event, index) => {
+    let next;
+    if (event.key === "ArrowRight") next = (index + 1) % SESSION_ITEMS.length;
+    else if (event.key === "ArrowLeft") next = (index - 1 + SESSION_ITEMS.length) % SESSION_ITEMS.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = SESSION_ITEMS.length - 1;
+    else return;
+    event.preventDefault();
+    selectSession(next);
+    document.getElementById(`activity-tab-${next}`)?.focus();
+  };
 
   return (
-    <div className="main-page">
+    <MotionConfig reducedMotion={calmMotion ? "always" : "user"}>
+    <div className={`main-page ${calmMotion ? "main-page--calm" : ""}`}>
       <div className="main-page-bg" aria-hidden="true">
-        <DarkVeil
+        {!calmMotion && <DarkVeil
           hueShift={245}
           noiseIntensity={0.28}
           scanlineIntensity={1}
-          speed={1}
+          speed={0.35}
           scanlineFrequency={1}
-          warpAmount={3.4}
-        />
+          warpAmount={1.2}
+        />}
       </div>
-      <section className={`copy ${phase === "content" ? "copy--header" : ""}`}>
-        <AnimatePresence mode="wait">
-          {phase === "typing" && (
-            <motion.div
-              key="text"
-              className="copy-text-wrap"
-              initial={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-            >
-              <div className="copy-lines">
-                {COPY_LINES.map((line, i) => (
-                  <motion.p
-                    key={line}
-                    className="copy-line"
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: 0.55,
-                      delay: i * CHUNK_STAGGER,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                  >
-                    {line}
-                  </motion.p>
-                ))}
-              </div>
-            </motion.div>
-          )}
-          {phase === "blank" && <div key="blank" className="copy-blank" />}
-          {phase === "content" && (
-            <motion.div
-              key="content"
-              className="copy-header"
-              initial={false}
-              animate={{ opacity: 1 }}
-            >
-              <motion.p
-                className="copy-header-tagline"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.45,
-                  delay: 0,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                BY CHANCE · HOWEVER · YOU DANCE · FOREVER
-              </motion.p>
-              <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.45,
-                  delay: CONTENT_STAGGER,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                <img
-                  src="/logos/longLogo_white.png"
-                  alt="만취"
-                  className="copy-header-logo"
-                />
-              </motion.div>
-              <motion.p
-                className="copy-header-crew"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.45,
-                  delay: CONTENT_STAGGER * 2,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                MANCHUI DANCE CREW
-              </motion.p>
-              <motion.p
-                className="copy-header-desc"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.45,
-                  delay: CONTENT_STAGGER * 3,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                한양대학교 ERICA 중앙동아리 소속 종합예술 댄스동아리
-              </motion.p>
-              <motion.div
-                className="copy-header-buttons"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.45,
-                  delay: CONTENT_STAGGER * 4,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
-              >
-                <Link
-                  to="/join"
-                  className="copy-header-btn copy-header-btn--primary"
-                  onClick={() => scrollWindowTopAfterNav("/join", location)}
-                >
-                  가입 하기
-                </Link>
-                <button
-                  type="button"
-                  className="copy-header-btn copy-header-btn--secondary"
-                  onClick={() =>
-                    document
-                      .getElementById("session")
-                      ?.scrollIntoView({ behavior: "smooth" })
-                  }
-                >
-                  활동 보기
-                </button>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+      <section className="copy copy--header">
+        <motion.div className="copy-header" initial={calmMotion ? false : { opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
+          <p className="copy-header-tagline">BY CHANCE · HOWEVER · YOU DANCE · FOREVER</p>
+          <h1><img src="/logos/longLogo_white.png" alt="만취" className="copy-header-logo" /></h1>
+          <p className="copy-header-crew">MANCHUI DANCE CREW</p>
+          <p className="copy-header-desc">한양대학교 ERICA 중앙동아리 소속 종합예술 댄스동아리</p>
+          <div className="copy-header-buttons">
+            <Link to="/join" className="copy-header-btn copy-header-btn--primary"
+              onClick={() => scrollWindowTopAfterNav("/join", location)}>가입하기 <span aria-hidden="true">→</span></Link>
+            <button type="button" className="copy-header-btn copy-header-btn--secondary"
+              onClick={() => document.getElementById("session")?.scrollIntoView({ behavior: calmMotion ? "instant" : "smooth" })}>
+              활동 보기 <span aria-hidden="true">↓</span>
+            </button>
+          </div>
+        </motion.div>
+        <div className="hero-controls">
+          <button type="button" onClick={() => document.getElementById("about")?.scrollIntoView({ behavior: calmMotion ? "instant" : "smooth" })}>
+            만취 알아보기 <span aria-hidden="true">↓</span>
+          </button>
+        </div>
       </section>
       <section className="keyword-band keyword-band--reverse keyword-band--top">
         <div className="keyword-band-viewport">
@@ -363,16 +265,17 @@ const MainPage = () => {
             src="/logos/shortLogo.png"
             alt=""
             aria-hidden="true"
-            initial={{ x: -80, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
+            initial={calmMotion ? false : { y: 18, opacity: 0 }}
+            whileInView={{ y: 0, opacity: 1 }}
             viewport={{ once: true, amount: 0.6 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           />
           <div className="about-text">
+            <p className="main-eyebrow main-eyebrow--start">ABOUT US</p>
             <motion.h2
               className="about-title"
-              initial={{ x: 80, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
+              initial={calmMotion ? false : { y: 18, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, amount: 0.6 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -380,8 +283,8 @@ const MainPage = () => {
             </motion.h2>
             <motion.div
               className="about-body"
-              initial={{ x: 80, opacity: 0 }}
-              whileInView={{ x: 0, opacity: 1 }}
+              initial={calmMotion ? false : { y: 18, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
               viewport={{ once: true, amount: 0.6 }}
               transition={{
                 duration: 0.5,
@@ -476,43 +379,53 @@ const MainPage = () => {
         </div>
       </section>
       <section className="session" id="session">
+        <p className="main-eyebrow">ACTIVITIES</p>
         <h2 className="session-heading">주요 활동</h2>
-        <div className="session-menu">
-          {SESSION_ITEMS.map((item, i) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`session-menu-btn ${i === sessionIndex ? "session-menu-btn--active" : ""}`}
-              onClick={() => {
-                if (i === sessionIndex) return;
-                setSessionDirection(i > sessionIndex ? 1 : -1);
-                setSessionIndex(i);
-              }}
-            >
-              {item.title}
-            </button>
-          ))}
-        </div>
-        <div className="session-content-wrap">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={sessionIndex}
-              className="session-content"
-              custom={sessionDirection}
-              initial={(dir) => ({ x: dir > 0 ? 72 : -72, opacity: 0 })}
-              animate={{ x: 0, opacity: 1 }}
-              exit={(dir) => ({ x: dir > 0 ? -72 : 72, opacity: 0 })}
-              transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <ActivityIllustration type={SESSION_ITEMS[sessionIndex].id} />
-              <p className="session-desc">
-                {SESSION_ITEMS[sessionIndex].description}
-              </p>
-            </motion.div>
-          </AnimatePresence>
+        <div className="session-inner">
+          <div className="session-menu" role="tablist" aria-label="주요 활동 선택">
+            {SESSION_ITEMS.map((item, i) => (
+              <button key={item.id} type="button" role="tab" id={`activity-tab-${i}`}
+                aria-selected={i === sessionIndex} aria-controls="activity-panel" tabIndex={i === sessionIndex ? 0 : -1}
+                className={`session-menu-btn ${i === sessionIndex ? "session-menu-btn--active" : ""}`}
+                onKeyDown={(event) => handleSessionKey(event, i)} onClick={() => selectSession(i)}>
+                {item.title}
+              </button>
+            ))}
+          </div>
+          <div className="session-content-wrap" role="tabpanel" id="activity-panel" aria-labelledby={`activity-tab-${sessionIndex}`} tabIndex={0}>
+            <AnimatePresence mode="wait" initial={false} custom={sessionDirection}>
+              <motion.div key={sessionIndex} className="session-content" custom={sessionDirection}
+                variants={{ enter: dir => ({ x: calmMotion ? 0 : dir * 24, opacity: 0 }), exit: dir => ({ x: calmMotion ? 0 : dir * -24, opacity: 0 }) }}
+                initial="enter" animate={{ x: 0, opacity: 1 }} exit="exit"
+                transition={{ duration: calmMotion ? 0 : 0.18 }}>
+                <ActivityIllustration type={SESSION_ITEMS[sessionIndex].id} />
+                <div className="session-copy">
+                  <span className="session-number">0{sessionIndex + 1} / 0{SESSION_ITEMS.length}</span>
+                  <h3>{SESSION_ITEMS[sessionIndex].title}</h3>
+                  <p className="session-desc">{SESSION_ITEMS[sessionIndex].description}</p>
+                  <p className="session-flow">{[
+                    "안무 연습 → 함께 촬영 → 챌린지 완성",
+                    "새로운 장르 → 안무 배우기 → 함께 연습",
+                    "팀 연습 → 무대 준비 → 축제 공연",
+                    "공연 준비 → 무대에 서기 → 관객과 소통",
+                    "MT · 회식 → 함께 웃고 → 더 가까이",
+                  ][sessionIndex]}</p>
+                  <Link to="/join" className="session-join">함께하고 싶다면 <span aria-hidden="true">↗</span></Link>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+          <div className="session-controls">
+            <p aria-live="polite">{sessionIndex + 1} / {SESSION_ITEMS.length} · {SESSION_ITEMS[sessionIndex].title}</p>
+            <div>
+              <button type="button" onClick={() => selectSession(sessionIndex - 1)} aria-label="이전 활동">←</button>
+              <button type="button" onClick={() => selectSession(sessionIndex + 1)} aria-label="다음 활동">→</button>
+            </div>
+          </div>
         </div>
       </section>
       <section className="awards faq-section" id="awards">
+        <p className="main-eyebrow">FAQ</p>
         <h2 className="awards-title">자주 묻는 질문</h2>
         <div className="faq-list">
           {QNA_ITEMS.map((item, i) => {
@@ -572,7 +485,7 @@ const MainPage = () => {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{
-                        duration: 0.32,
+                        duration: calmMotion ? 0 : 0.24,
                         ease: [0.22, 1, 0.36, 1],
                       }}
                       style={{ overflow: "hidden" }}
@@ -587,14 +500,15 @@ const MainPage = () => {
         </div>
       </section>
       <section className="qna qna--awards" id="qna">
+        <p className="main-eyebrow">HISTORY</p>
         <h2 className="qna-heading">주요 행적</h2>
         <div className="qna-list">
-          {AWARDS_YEARS.map((block, i) => (
+          {AWARDS_YEARS.map((block) => (
             <motion.div
               key={block.year}
               className="qna-item"
-              initial={{ opacity: 0, x: i % 2 === 0 ? -28 : 28 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={calmMotion ? false : { opacity: 0, y: 18 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.9 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
@@ -619,12 +533,12 @@ const MainPage = () => {
       <section className="toJoin" id="toJoin">
         <motion.div
           className="toJoin-inner"
-          initial={{ y: -56, opacity: 0 }}
+          initial={calmMotion ? false : { y: 18, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           viewport={{ once: true, amount: 0.9 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="toJoin-tagline">JOIN THE CREW</p>
+          <p className="main-eyebrow toJoin-tagline">JOIN THE CREW</p>
           <h2 className="toJoin-title">
             누구나
             <br />
@@ -649,6 +563,7 @@ const MainPage = () => {
         </motion.div>
       </section>
     </div>
+    </MotionConfig>
   );
 };
 

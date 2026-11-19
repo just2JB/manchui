@@ -192,3 +192,11 @@
     animation: none;
   }
 }
+
+/* Match the home page's compact, outlined action style. */
+.public-page .joinActions { animation: none; gap: 12px; }
+.public-page .joinBtn { align-items: flex-start; text-align: left; padding: 20px 24px; border-radius: 6px; position: relative; box-shadow: none; }
+.public-page .joinBtn::after { content: "→"; position: absolute; right: 24px; top: 28px; font-size: 22px; transition: transform .2s; }
+.public-page .joinBtn:hover::after { transform: translateX(5px); }
+.public-page .joinBtnSecondary { background: transparent; border-color: var(--public-border); }
+.public-page .joinBtnSecondary:hover { border-color: #aaa; background: rgba(255,255,255,.04); }

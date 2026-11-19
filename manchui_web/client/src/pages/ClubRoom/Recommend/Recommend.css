@@ -35,7 +35,7 @@
 .recommend__title {
   margin: 14px 0 0;
   padding: 0 2px;
-  font-size: clamp(1.45rem, 4vw, 1.75rem);
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.2;
@@ -67,13 +67,13 @@
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--primary-200);
   background: var(--box-1);
 }
 
 .recommend__searchWrap:focus-within {
-  border-color: rgba(179, 0, 0, 0.45);
+  border-color: rgba(255, 69, 58, 0.45);
 }
 
 .recommend__searchIcon {
@@ -105,7 +105,7 @@
   align-items: center;
   max-width: 100%;
   padding: 5px 11px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--rec-hashtag-border);
   background: var(--rec-hashtag-bg);
   color: var(--rec-hashtag-fg);
@@ -169,7 +169,7 @@
   width: 100%;
   min-height: 40px;
   padding: 6px 10px 6px 11px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--box-1);
   color: var(--text-primary);
@@ -182,17 +182,17 @@
 }
 
 .recommend__sortTrigger:hover {
-  border-color: rgba(179, 0, 0, 0.35);
+  border-color: rgba(255, 69, 58, 0.35);
 }
 
 .recommend__sortTrigger:focus-visible {
-  outline: 2px solid rgba(179, 0, 0, 0.45);
+  outline: 2px solid rgba(255, 69, 58, 0.45);
   outline-offset: 2px;
 }
 
 .recommend__sortTrigger[aria-expanded="true"] {
-  border-color: rgba(179, 0, 0, 0.42);
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.2);
+  border-color: rgba(255, 69, 58, 0.42);
+  box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.2);
 }
 
 .recommend__sortTriggerInner {
@@ -262,7 +262,7 @@
   margin: 0;
   padding: 5px;
   list-style: none;
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: var(--box-1);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
@@ -283,7 +283,7 @@
   margin: 0;
   padding: 9px 11px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: transparent;
   color: var(--text-gray);
   font: inherit;
@@ -306,15 +306,14 @@
 }
 
 .recommend__sortOption:focus-visible {
-  outline: 2px solid rgba(179, 0, 0, 0.45);
+  outline: 2px solid rgba(255, 69, 58, 0.45);
   outline-offset: 0;
 }
 
 .recommend__sortOption--active {
-  background: rgba(179, 0, 0, 0.18);
+  background: var(--club-active-bg);
   color: var(--text-primary);
   font-weight: 600;
-  box-shadow: 0 0 0 1px rgba(179, 0, 0, 0.22);
 }
 
 .recommend__list {
@@ -330,7 +329,7 @@
   color: var(--text-more);
   font-size: 0.95rem;
   border: 1px dashed rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
 }
 
 .recommend__loading {
@@ -425,7 +424,7 @@
   display: inline-block;
   width: 2.6rem;
   height: 1.05rem;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   flex-shrink: 0;
 }
 
@@ -532,7 +531,7 @@
   aspect-ratio: 4 / 3;
   height: auto;
   max-height: 100%;
-  border-radius: 7px;
+  border-radius: var(--club-radius-sm);
   overflow: hidden;
   background: var(--box-2);
   border: none;
@@ -715,7 +714,7 @@
   text-align: left;
   font: inherit;
   color: inherit;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   text-decoration: none;
 }
 
@@ -774,7 +773,7 @@
   width: 32px;
   height: 32px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   background: transparent;
   color: var(--text-gray);
   cursor: pointer;
@@ -812,7 +811,7 @@
   align-items: center;
   box-sizing: border-box;
   padding: 1px 8px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--rec-hashtag-border);
   background: var(--rec-hashtag-bg);
   font: inherit;
@@ -827,7 +826,7 @@ button.recCard__hashtag--clickable {
   align-items: center;
   box-sizing: border-box;
   padding: 1px 8px;
-  border-radius: 999px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid var(--rec-hashtag-border);
   background: var(--rec-hashtag-bg);
   margin: 0;
@@ -909,7 +908,7 @@ button.recCard__hashtag--clickable {
   font-weight: 500;
   color: var(--rec-detail-link);
   text-decoration: none;
-  border-radius: 6px;
+  border-radius: var(--club-radius-sm);
 }
 
 .recCard__detailLink:hover {
@@ -1004,7 +1003,7 @@ button.recCard__hashtag--clickable {
   height: 34px;
   padding: 0;
   font: inherit;
-  border-radius: 8px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: var(--box-2);
   color: var(--text-gray);
@@ -1056,9 +1055,9 @@ button.recCard__hashtag--clickable {
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  border: 1px solid rgba(179, 0, 0, 0.35);
-  border-radius: 999px;
-  background: rgba(179, 0, 0, 0.12);
+  border: 1px solid rgba(255, 69, 58, 0.35);
+  border-radius: var(--club-radius-sm);
+  background: rgba(255, 69, 58, 0.12);
   color: #ffb1b1;
   font: inherit;
   font-size: 0.82rem;
@@ -1071,8 +1070,8 @@ button.recCard__hashtag--clickable {
 }
 
 .recommend__fab:hover:not(:disabled) {
-  background: rgba(179, 0, 0, 0.22);
-  border-color: rgba(179, 0, 0, 0.5);
+  background: rgba(255, 69, 58, 0.22);
+  border-color: rgba(255, 69, 58, 0.5);
 }
 
 .recommend__fab:disabled {

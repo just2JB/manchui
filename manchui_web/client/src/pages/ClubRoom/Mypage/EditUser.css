@@ -26,7 +26,7 @@
   margin-bottom: 14px;
   padding: 12px 14px;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   background: rgba(255, 255, 255, 0.03);
 }
 
@@ -53,7 +53,7 @@
 
 .mypageEdit__card {
   border: 1px solid var(--primary-200);
-  border-radius: 12px;
+  border-radius: var(--club-radius);
   padding: 16px 14px;
   background: var(--box-1);
 }
@@ -92,7 +92,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: var(--background-dark);
   color: var(--text-primary);
@@ -108,13 +108,13 @@
 
 .mypageEdit__field input:focus {
   outline: none;
-  border-color: rgba(179, 0, 0, 0.5);
+  border-color: rgba(255, 69, 58, 0.5);
 }
 
 .mypageEdit__inputWrap {
   display: flex;
   align-items: stretch;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: var(--background-dark);
   overflow: hidden;
@@ -122,7 +122,7 @@
 }
 
 .mypageEdit__inputWrap:focus-within {
-  border-color: rgba(179, 0, 0, 0.5);
+  border-color: rgba(255, 69, 58, 0.5);
 }
 
 .mypageEdit__inputPrefix {
@@ -163,7 +163,7 @@
   font: inherit;
   font-size: 0.95rem;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: var(--club-radius-sm);
   cursor: pointer;
   transition:
     background-color 0.2s ease,
@@ -173,7 +173,7 @@
 
 .mypageEdit__btn--primary {
   border: none;
-  background: var(--brand-red);
+  background: var(--club-accent);
   color: var(--text-primary);
 }
 

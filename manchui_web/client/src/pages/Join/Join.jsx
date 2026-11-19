@@ -3,6 +3,7 @@ import "./Join.css";
 import { useNavigate } from "react-router-dom";
 import { useAppSettings } from "../../context/AppSettingsContext";
 import { LOADING_TEXT } from "../../constants/loadingText";
+import PublicPage from "../../components/PublicPage/PublicPage";
 
 const Join = () => {
   const nav = useNavigate();
@@ -16,10 +17,12 @@ const Join = () => {
   const displayPresident = joinConfig?.president;
 
   return (
-    <div className="join">
-      <div className="joinInner">
-        <h1 className="joinTitle">만취 가입하기</h1>
-        <p className="joinDesc">
+    <>
+      <PublicPage label="JOIN THE CREW" title="만취 가입하기"
+        description="장르 불문, 실력 불문. 춤에 대한 열정 하나면 충분합니다. 만취에서 함께 춤춰요."
+        note="신청이 처음이어도, 신청 내역이 궁금해도 여기서 시작하세요.">
+        <h2>함께할 준비가 되셨나요?</h2>
+        <p>
           {joinConfigLoading
             ? LOADING_TEXT
             : `${generation != null ? `${generation}기 ` : ""}가입 신청 또는 신청 내역을 확인하세요.`}
@@ -68,7 +71,7 @@ const Join = () => {
             </button>
           ) : null}
         </div>
-      </div>
+      </PublicPage>
       {showEventPopup ? (
         <div className="joinEventPopup" role="region" aria-labelledby="join-event-title">
           <section className="joinEventPopupCard">
@@ -82,7 +85,7 @@ const Join = () => {
           </section>
         </div>
       ) : null}
-    </div>
+    </>
   );
 };
 

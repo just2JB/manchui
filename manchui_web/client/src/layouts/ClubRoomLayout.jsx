@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import ClubRoomNavbar from "../pages/ClubRoom/ClubRoomNavbar";
+import "../pages/ClubRoom/clubMinimalTheme.css";
 import { ScrollToTopOnRoute } from "../components/ScrollToTopOnRoute/ScrollToTopOnRoute";
 import Loading from "../components/Loading/Loading";
 import PreparingPage from "./PreparingPage";
@@ -12,7 +13,7 @@ function isReservationSharePath(pathname) {
 }
 
 /** 예약 페이지는 데스크톱에서 600px 열 대신 전체 폭 사용 */
-function isReservationPagePath(pathname) {
+function isWideBodyPath(pathname) {
   return /^\/club\/reservation\/?$/.test(pathname);
 }
 
@@ -26,7 +27,7 @@ const ClubRoomLayout = () => {
     ensureJoinConfigLoaded,
   } = useAppSettings();
   const shareOnly = isReservationSharePath(location.pathname);
-  const wideBody = isReservationPagePath(location.pathname);
+  const wideBody = isWideBodyPath(location.pathname);
   const hideBottomNav = location.pathname === "/club/login";
 
   useEffect(() => {

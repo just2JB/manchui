@@ -1,4 +1,6 @@
 .main-page {
+  /* 섹션 위아래 여백: 화면 높이에 맞춰 64~112px (이웃 섹션과 합쳐 128~224px) */
+  --main-section-pad: clamp(64px, 9vh, 112px);
   width: 100%;
   max-width: 100%;
   min-height: 100vh;
@@ -24,9 +26,13 @@
 
 /* ---------- Copy (Landing Hero) ---------- */
 .copy {
-  height: 105vh;
-  min-height: 105vh;
-  max-height: 105vh;
+  /* 첫 화면은 딱 한 화면 (모바일 주소창 높이 변화 대응: svh) */
+  height: 100vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  height: 100svh;
+  min-height: 100svh;
+  max-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -422,7 +428,7 @@
 /* ---------- About Section ---------- */
 .about {
   position: relative;
-  min-height: 100vh;
+  min-height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -431,7 +437,7 @@
     var(--background-dark) 90%,
     transparent 100%
   );
-  padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
+  padding: var(--main-section-pad) clamp(1.5rem, 5vw, 3rem);
   box-sizing: border-box;
   overflow: hidden;
 }
@@ -642,10 +648,10 @@
 }
 
 .awards.faq-section {
-  min-height: 100vh;
+  min-height: auto;
   box-sizing: border-box;
   justify-content: center;
-  padding: clamp(2.5rem, 7vw, 4.75rem) clamp(1.75rem, 5.5vw, 3.5rem);
+  padding: var(--main-section-pad) clamp(1.75rem, 5.5vw, 3.5rem);
 }
 
 .awards-title {
@@ -750,11 +756,11 @@
 
 /* ---------- Session Section ---------- */
 .session {
-  min-height: 100vh;
+  min-height: auto;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: clamp(2rem, 6vw, 4rem) 8vw;
+  padding: var(--main-section-pad) 8vw;
   background-color: var(--background-dark);
   box-sizing: border-box;
 }
@@ -1072,9 +1078,9 @@
 
 /* ---------- QnA Section ---------- */
 .qna {
-  min-height: 100vh;
+  min-height: auto;
   box-sizing: border-box;
-  padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 5vw, 3rem);
+  padding: var(--main-section-pad) clamp(1.5rem, 5vw, 3rem);
   background: linear-gradient(var(--background-dark) 70%, transparent);
   display: flex;
   flex-direction: column;
@@ -1293,7 +1299,9 @@
 
 /* ---------- Join CTA Section ---------- */
 .toJoin {
-  min-height: 100vh;
+  /* 마지막 가입 유도 화면은 넉넉하게, 하지만 한 화면을 다 쓰지는 않게 */
+  min-height: 85vh;
+  min-height: 85svh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1309,12 +1317,7 @@
 }
 
 .toJoin-tagline {
-  font-family: "Moderniz", sans-serif;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  color: var(--brand-red);
-  margin: 0 0 1rem;
+  margin-bottom: 1rem;
 }
 
 .toJoin-title {
@@ -1461,3 +1464,89 @@
     width: 12ch;
   }
 }
+
+/* 섹션 제목 위 영문 라벨 (ABOUT US · ACTIVITIES · FAQ · HISTORY · JOIN THE CREW) */
+.main-eyebrow {
+  margin: 0 0 0.75rem;
+  font-family: "Moderniz", sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--brand-red);
+  text-align: center;
+}
+
+.main-eyebrow--start {
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+
+@media (max-width: 767px) {
+  .main-eyebrow--start {
+    text-align: center;
+  }
+}
+
+/* Bounded activity panel and purposeful controls. */
+.session { padding-inline: 24px; scroll-margin-top: 76px; }
+.session-inner { width: min(100%, 940px); margin-inline: auto; }
+.session-menu { justify-content: center; gap: 8px; margin-bottom: 24px; }
+.session-menu-btn { min-height: 44px; font-weight: 500; }
+.session-content-wrap { min-height: 290px; border-block: 1px solid rgba(255,255,255,.12); padding: 24px 0; overflow: hidden; }
+.session-content { display: grid; grid-template-columns: 1.1fr 1fr; align-items: center; gap: 36px; }
+.activity-art { aspect-ratio: 2 / 1; max-height: 250px; border-radius: 6px; }
+.session-copy { min-width: 0; }
+.session-number { font: 11px "Moderniz", sans-serif; color: #ff6666; letter-spacing: .1em; }
+.session-copy h3 { font-size: 28px; margin: 14px 0; letter-spacing: -.03em; }
+.session-desc { color: #b8b8b8; font-size: 16px; word-break: keep-all; }
+.session-flow { margin-top: 18px; color: #ccc; font-size: 12px; line-height: 1.8; }
+.session-join { display: inline-flex; gap: 18px; padding: 16px 0 4px; font-size: 14px; color: #fff; text-decoration: none; }
+.session-join:hover { color: #ff7777; }
+.session-controls { display: flex; align-items: center; justify-content: space-between; padding-top: 18px; gap: 16px; }
+.session-controls p { color: #aaa; font-size: 13px; }
+.session-controls > div { display: flex; gap: 8px; }
+.session-controls button { width: 44px; height: 44px; border: 1px solid #555; border-radius: 50%; background: transparent; color: #fff; font-size: 22px; cursor: pointer; transition: background .2s, transform .2s; }
+.session-controls button:hover { background: var(--brand-red); border-color: var(--brand-red); }
+.session-controls button:active { transform: scale(.94); }
+.main-page-bg { background: radial-gradient(ellipse at 50% 70%, #410d15, transparent 65%); }
+.copy-header h1 { margin: 0; line-height: 1; width: 100%; }
+.copy-header-btn { gap: 16px; }
+.copy-header-btn span { transition: transform .2s; }
+.copy-header-btn:hover span { transform: translateY(3px); }
+.hero-controls { position: absolute; bottom: 28px; left: 24px; right: 24px; display: flex; justify-content: space-between; gap: 12px; }
+.hero-controls button { border: none; border-bottom: 1px solid #555; background: transparent; color: #ccc; min-height: 44px; font: inherit; font-size: 12px; padding: 8px 4px; cursor: pointer; }
+.hero-controls button:hover { color: #fff; border-color: #fff; }
+.hero-controls button:disabled { color: #aaa; cursor: default; }
+#about { scroll-margin-top: 76px; }
+.main-page :is(button, a, [role="tabpanel"]):focus-visible { outline: 2px solid #ff7777; outline-offset: 4px; }
+.keyword-band:hover .keyword-band-track { animation-play-state: paused; }
+.main-page--calm *, .main-page--calm *::before, .main-page--calm *::after { animation-play-state: paused !important; }
+.main-page--calm .keyword-band-track { animation: none; }
+.activity-art__figure { transform-origin: center bottom; }
+.activity-art--popup .activity-art__figure { animation: activity-teach 1.8s ease-in-out infinite alternate; }
+.activity-art--festival .activity-art__figure { animation: activity-bounce 1.2s ease-in-out infinite alternate; }
+.activity-art--community .activity-art__figure { animation: activity-wave-left 2s ease-in-out infinite alternate; }
+@media (max-width: 767px) {
+  .session { padding-inline: 24px; }
+  .session-heading { margin-bottom: 28px; }
+  .session-menu { gap: 6px; }
+  .session-menu-btn { padding: 9px 11px; font-size: 13px; }
+  .session-content { grid-template-columns: 1fr; gap: 24px; }
+  .session-content-wrap { min-height: 420px; }
+  .activity-art { max-height: 200px; }
+  .session-copy h3 { font-size: 24px; margin: 10px 0; }
+  .session-flow { margin-top: 12px; }
+  .hero-controls { bottom: 20px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .main-page *, .main-page *::before, .main-page *::after { animation: none !important; transition: none !important; }
+}
+.activity-art__label { fill: #ff9999; font: 600 13px "pretendard", sans-serif; letter-spacing: 2px; }
+.activity-art__arms { transform-box: fill-box; transform-origin: center; }
+.activity-art--challenge .activity-art__arms { animation: activity-arm-step 1.15s ease-in-out infinite alternate; }
+@keyframes activity-arm-step { from { transform: rotate(-9deg); } to { transform: rotate(9deg); } }
+@media (max-height: 560px) and (min-width: 768px) {
+  .copy { height: auto; min-height: 620px; max-height: none; padding-top: 100px; padding-bottom: 100px; }
+}
+@media (prefers-reduced-motion: reduce) { .activity-art__arms { animation: none; } }

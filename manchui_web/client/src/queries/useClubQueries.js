@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from "react";
+import { useCallback } from "react";
 import {
   keepPreviousData,
   useInfiniteQuery,
@@ -11,40 +11,17 @@ import { DEFAULT_RESERVATION_QUOTA } from "../pages/ClubRoom/Reservation/reserva
 import {
   fetchAllReservations,
   fetchMyReservations,
-  fetchMyScheduleRequests,
-  fetchMySchedules,
   fetchPracticesForTeams,
   fetchRecommendationsPage,
   fetchUserTeams,
 } from "./clubFetchers";
 import { clubKeys, teamIdsKey } from "./clubQueryKeys";
+import { fetchMyOpenPolls } from "../api/pollApi";
 const RECOMMEND_PAGE_SIZE = 16;
-const REFRESH_INTERVAL_MS = 5 * 60_000;
-
-/** 탭 복귀·주기적 백그라운드 갱신 */
-export function useClubQueryInvalidationOnFocus(invalidate) {
-  useEffect(() => {
-    if (!invalidate) return undefined;
-
-    const run = () => {
-      if (document.visibilityState === "visible") void invalidate();
-    };
-
-    document.addEventListener("visibilitychange", run);
-    window.addEventListener("focus", run);
-    const id = window.setInterval(run, REFRESH_INTERVAL_MS);
-
-    return () => {
-      document.removeEventListener("visibilitychange", run);
-      window.removeEventListener("focus", run);
-      window.clearInterval(id);
-    };
-  }, [invalidate]);
-}
 
 export function useInvalidateClubReservations(userId) {
   const queryClient = useQueryClient();
-  return () => {
+  return useCallback(() => {
     void queryClient.invalidateQueries({
       queryKey: clubKeys.reservationsAll(),
     });
@@ -53,27 +30,24 @@ export function useInvalidateClubReservations(userId) {
         queryKey: clubKeys.reservationsMine(userId),
       });
     }
-  };
+  }, [queryClient, userId]);
 }
 
 export function useInvalidateClubHome(userId) {
   const queryClient = useQueryClient();
-  return () => {
+  return useCallback(() => {
     if (!userId) return;
     void queryClient.invalidateQueries({ queryKey: clubKeys.teams(userId) });
     void queryClient.invalidateQueries({
       queryKey: [...clubKeys.all, "practices", userId],
     });
     void queryClient.invalidateQueries({
-      queryKey: clubKeys.schedules(userId),
-    });
-    void queryClient.invalidateQueries({
-      queryKey: clubKeys.scheduleRequests(userId),
+      queryKey: clubKeys.openPolls(userId),
     });
     void queryClient.invalidateQueries({
       queryKey: clubKeys.reservationsMine(userId),
     });
-  };
+  }, [queryClient, userId]);
 }
 
 export function useInvalidateClubTeams(userId) {
@@ -115,19 +89,10 @@ export function usePracticesQuery(userId, teams) {
   });
 }
 
-export function useMySchedulesQuery(userId) {
+export function useMyOpenPollsQuery(userId) {
   return useQuery({
-    queryKey: clubKeys.schedules(userId),
-    queryFn: fetchMySchedules,
-    enabled: Boolean(userId),
-    placeholderData: keepPreviousData,
-  });
-}
-
-export function useMyScheduleRequestsQuery(userId) {
-  return useQuery({
-    queryKey: clubKeys.scheduleRequests(userId),
-    queryFn: fetchMyScheduleRequests,
+    queryKey: clubKeys.openPolls(userId),
+    queryFn: fetchMyOpenPolls,
     enabled: Boolean(userId),
     placeholderData: keepPreviousData,
   });
@@ -169,7 +134,7 @@ export function useRecommendationsInfiniteQuery(sort, q) {
   });
 }
 
-export function useReservationMutations(userId) {
+export function useReservationMutations() {
   const queryClient = useQueryClient();
 
   /** 전체·내 예약 모두 갱신 */

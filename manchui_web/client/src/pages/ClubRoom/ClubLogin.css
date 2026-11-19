@@ -64,7 +64,7 @@
 }
 
 .clubLoginForm__topLink:focus-visible {
-  outline: 2px solid rgba(179, 0, 0, 0.45);
+  outline: 2px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
   outline-offset: 2px;
 }
 
@@ -111,7 +111,7 @@
 }
 
 .clubLoginForm__modeSwitch:focus-visible {
-  outline: 2px solid rgba(179, 0, 0, 0.45);
+  outline: 2px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
   outline-offset: 2px;
 }
 
@@ -132,7 +132,7 @@
   height: 100%;
   border-radius: 999px;
   transition: width 0.6s cubic-bezier(0.34, 1.2, 0.64, 1);
-  box-shadow: 0 0 10px rgba(179, 0, 0, 0.3);
+  box-shadow: 0 0 10px rgba(var(--club-accent-rgb, 255, 69, 58), 0.3);
   pointer-events: none;
 }
 
@@ -203,8 +203,8 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--brand-red);
-  border: 1px solid rgba(179, 0, 0, 0.45);
-  background: rgba(179, 0, 0, 0.12);
+  border: 1px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.12);
   border-radius: 999px;
   padding: 6px 14px;
   line-height: 1.2;
@@ -373,7 +373,7 @@
 }
 
 .clubLoginForm__pwToggle:focus-visible {
-  outline: 2px solid rgba(179, 0, 0, 0.45);
+  outline: 2px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
   outline-offset: 2px;
 }
 
@@ -409,7 +409,7 @@
   margin: 0 10px;
   height: 50px;
   background: linear-gradient(135deg, var(--brand-red) 0%, #8a0000 100%);
-  box-shadow: 0 4px 16px rgba(179, 0, 0, 0.35);
+  box-shadow: 0 4px 16px rgba(var(--club-accent-rgb, 255, 69, 58), 0.35);
   text-align: center;
   align-content: center;
   border-radius: 80px;
@@ -429,7 +429,7 @@
 
 .clubLoginForm__nextButton:hover:not(:disabled) {
   background: linear-gradient(135deg, #cc0000 0%, var(--brand-red) 100%);
-  box-shadow: 0 6px 20px rgba(179, 0, 0, 0.45);
+  box-shadow: 0 6px 20px rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
 }
 
 .clubLoginForm__nextButton:disabled {
@@ -485,7 +485,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
 }
 
 .clubLoginForm__kakaoButton {
@@ -569,7 +569,7 @@
   padding: 4px 10px;
   border-radius: 999px;
   background: rgba(76, 175, 80, 0.16);
-  color: #8fd694;
+  color: var(--club-ok, #8fd694);
   font-size: 0.82rem;
   font-weight: 600;
   letter-spacing: -0.02em;

@@ -1,0 +1,157 @@
+/* Assistant palette: change these two blocks to recolor every themed component.
+   Scoped to the route on body so portals inherit the same palette. */
+body[data-club-theme] {
+  color-scheme: dark;
+  --club-bg: #050505; /* 홈·새 룩 페이지와 같은 바탕 */
+  --club-sidebar-bg: #151619;
+  --club-surface: #18191c;
+  --club-surface-hi: #18191c;
+  --club-surface-2: #292d33;
+  --club-ink-rgb: 244, 245, 247;
+  --club-border: #454b55;
+  --club-hover: #30353d;
+  --club-text: #f4f5f7;
+  --club-text-muted: #a9b0bc;
+  --club-primary: #f4f5f7;
+  --club-primary-hover: #ffffff;
+  --club-on-primary: #181b20;
+  --club-accent: #ff655c;
+  --club-accent-hover: #ff786f;
+  --club-on-accent: #311014;
+  --club-accent-rgb: 255, 69, 58;
+  /* Saturated brand fill is separate from readable red text on dark surfaces. */
+  --club-action: #b30000;
+  --club-action-hover: #990000;
+  --club-on-action: #ffffff;
+  --club-active-bg: #341c1c;
+  --club-active-bg-strong: #432020;
+  --club-secondary: #93b4ff;
+  --club-danger: #ff8992;
+  --club-danger-rgb: 255, 137, 146;
+  --club-ok: #8cdbb1;
+  --club-warning: #f2c578;
+  --club-radius: 8px;
+  --club-radius-sm: 6px;
+  --club-card-shadow: none;
+  --club-overlay-shadow: none;
+  --background-dark: var(--club-bg);
+  --box-1: var(--club-surface);
+  --box-2: var(--club-surface-2);
+  --box-3: var(--club-hover);
+  --box-4: var(--club-hover);
+  --primary-200: var(--club-surface-2);
+  --primary-300: var(--club-text-muted);
+  --text-primary: var(--club-text);
+  --text-gray: var(--club-text);
+  --text-more: var(--club-text-muted);
+  --brand-red: var(--club-action);
+  --accent-200: var(--club-accent);
+  --request-1: var(--club-accent);
+  --complete-green: var(--club-ok);
+  --cold-gray: var(--club-surface-2);
+  background: var(--club-bg);
+  color: var(--club-text);
+}
+
+body[data-club-theme="light"] {
+  color-scheme: light;
+  --club-bg: #f4f4f5; /* 홈·새 룩 페이지와 같은 바탕 */
+  --club-sidebar-bg: #ffffff;
+  --club-surface: #ffffff;
+  --club-surface-hi: #ffffff;
+  --club-surface-2: #edf0f4;
+  --club-ink-rgb: 24, 27, 32;
+  --club-border: #b2bac6;
+  --club-hover: #e3e8ef;
+  --club-text: #181b20;
+  --club-text-muted: #59616e;
+  --club-primary: #181b20;
+  --club-primary-hover: #303641;
+  --club-on-primary: #ffffff;
+  --club-accent: #b30000;
+  --club-accent-hover: #990000;
+  --club-on-accent: #ffffff;
+  --club-accent-rgb: 179, 0, 0;
+  --club-active-bg: #fcecec;
+  --club-active-bg-strong: #f9dcdc;
+  --club-secondary: #2457c5;
+  --club-danger: #bf3545;
+  --club-danger-rgb: 191, 53, 69;
+  --club-ok: #226844;
+  --club-warning: #815500;
+  --club-overlay-shadow: none;
+}
+
+/* A-style controls. Red remains the brand action, white/black is confirmation. */
+body[data-club-theme] :is(.reservation__btn, .reservation__rulesOkBtn, .reservation__detailOkBtn,
+  .clubHomeSheet__action, .clubHomeSheet__writeBtn, .clubScheduleEditor__saveBtn,
+  .teamPage__headerAction, .teamPage__emptyBtn, .weeklyTimetablePage__addBtn) {
+  min-height: 44px;
+  border-radius: var(--club-radius-sm);
+  font-weight: 600;
+  box-shadow: none;
+  filter: none;
+}
+body[data-club-theme] .reservation__btn--primary {
+  background: var(--club-action);
+  color: var(--club-on-action);
+}
+body[data-club-theme] .reservation__btn--primary:hover:not(:disabled) {
+  background: var(--club-action-hover);
+}
+/* PC 사이드바 선택 표시: 페이지 색(--club-accent)과 무관하게 항상 같은 색 (ClubRoomNavbar.css --side-*) */
+body[data-club-theme] .ClubRoomSideNav__item--active {
+  background: var(--side-active-bg);
+  color: var(--side-active-text);
+}
+body[data-club-theme] .ClubRoomSideNav__logo { color: #fff; }
+body[data-club-theme="light"] .ClubRoomSideNav__logo { color: #000; }
+body[data-club-theme] .clubScheduleEditor__dateWeeklyBtn--loaded { color: var(--club-text); }
+body[data-club-theme] :is(.teamCalSheet__writeBtn, .teamInvite__acceptBtn, .clubLoginForm__nextButton) {
+  background: var(--club-action);
+  color: var(--club-on-action);
+  border-radius: var(--club-radius-sm);
+  box-shadow: none;
+}
+body[data-club-theme] :is(.teamCalSheet__writeBtn, .teamInvite__acceptBtn, .clubLoginForm__nextButton):hover:not(:disabled) {
+  background: var(--club-action-hover);
+  box-shadow: none;
+}
+body[data-club-theme] :is(.clubHome__linkBtn, .recommendEditor__link) { color: var(--club-secondary); }
+body[data-club-theme] :is(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--club-secondary);
+  outline-offset: 3px;
+}
+body[data-club-theme] :is(input, textarea)::placeholder {
+  color: var(--club-text-muted);
+  opacity: 1;
+}
+body[data-club-theme] ::selection {
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+}
+body[data-club-theme] :is(.reservation__detailDialog, .reservation__rulesDialog) {
+  padding: 28px;
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+body[data-club-theme] :is(.reservation__detailTitle, .reservation__rulesTitle) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--club-text);
+}
+body[data-club-theme] .reservation__detailRow { padding-block: 5px; }
+body[data-club-theme] .reservation__detailRow dt { color: var(--club-text-muted); }
+body[data-club-theme] .reservation__detailOkBtn { margin-top: 8px; }
+body[data-club-theme] :is(.reservation__sheet, .clubHomeSheet, .teamCalSheet) {
+  border-radius: var(--club-radius) var(--club-radius) 0 0;
+}
+@media (min-width: 640px) {
+  body[data-club-theme] .reservation__sheet { border-radius: var(--club-radius); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body[data-club-theme] :is(button, [role="dialog"]) {
+    animation: none;
+    transition: none;
+  }
+}

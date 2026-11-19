@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { IoAdd, IoPeopleOutline } from "react-icons/io5";
 import { useAuth } from "../../../context/AuthContext";
@@ -21,10 +21,6 @@ const TeamList = () => {
   const activeTeamIds = teamsQuery.data?.activeTeamIds ?? [];
   const loading = isClubInitialLoading(teamsQuery);
 
-  const teamCountLabel = useMemo(() => {
-    if (teams.length === 0) return null;
-    return `내 팀 ${teams.length}개`;
-  }, [teams.length]);
 
   return (
     <div className="teamPage teamPage--list">
@@ -67,10 +63,7 @@ const TeamList = () => {
         </div>
       ) : (
         <>
-          {teamCountLabel ? (
-            <p className="teamPage__sectionLabel">{teamCountLabel}</p>
-          ) : null}
-          <div className="teamPage__list">
+          <div className="teamPage__list teamPage__list--tiles">
             {teams.map((team) => {
               const id = String(team._id);
               return (

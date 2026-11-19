@@ -30,19 +30,32 @@ const TeamPracticeAvailabilityGrid = ({
   memberSchedules = [],
   leaderIds = [],
   onSelectionChange,
+  /** 일정 투표 기반일 때: 투표 시간대만 표시 (새벽 토글 숨김) */
+  hours: hoursOverride = null,
+  initialSelection = null,
+  /** 미리 계산한 추천 목록 (없으면 기존 방식으로 계산) */
+  recommendations: recommendationsOverride = null,
+  defaultShowRecommendations = false,
 }) => {
-  const [selectionByDate, setSelectionByDate] = useState({});
+  const [selectionByDate, setSelectionByDate] = useState(
+    () => initialSelection ?? {},
+  );
   const [showDawn, setShowDawn] = useState(false);
-  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(
+    defaultShowRecommendations,
+  );
   const [expandedMemberKey, setExpandedMemberKey] = useState(null);
   const [unavailableInspect, setUnavailableInspect] = useState(null);
-  const prevDateKeysKeyRef = useRef("");
+  const prevDateKeysKeyRef = useRef(dateKeys.join(","));
   const scrollRef = useRef(null);
   const bubbleRef = useRef(null);
   const longPressAnchorRef = useRef(null);
   const longPressTimerRef = useRef(null);
   const suppressClickRef = useRef(false);
-  const visibleHours = useMemo(() => getPracticeGridHours(showDawn), [showDawn]);
+  const visibleHours = useMemo(
+    () => hoursOverride ?? getPracticeGridHours(showDawn),
+    [hoursOverride, showDawn],
+  );
 
   const { matrix, totalMembers, respondedByDate } = useMemo(
     () =>
@@ -68,12 +81,13 @@ const TeamPracticeAvailabilityGrid = ({
 
   const recommendations = useMemo(
     () =>
+      recommendationsOverride ??
       buildRecommendedPracticeSlots(
         dateKeys,
         fullDayMatrix,
         fullDayTotalMembers,
       ),
-    [dateKeys, fullDayMatrix, fullDayTotalMembers],
+    [recommendationsOverride, dateKeys, fullDayMatrix, fullDayTotalMembers],
   );
 
   const totalResponded = useMemo(() => {
@@ -262,7 +276,7 @@ const TeamPracticeAvailabilityGrid = ({
   const handleAdoptRecommendation = (item) => {
     if (!item) return;
 
-    if (recommendationNeedsDawn([item])) {
+    if (!hoursOverride && recommendationNeedsDawn([item])) {
       setShowDawn(true);
     }
 
@@ -291,6 +305,7 @@ const TeamPracticeAvailabilityGrid = ({
           <h2 id="team-practice-grid-title" className="teamPracticeGrid__title">
             팀원 가능 시간
           </h2>
+          {hoursOverride ? null : (
           <label className="teamPracticeGrid__dawnToggle">
             <input
               type="checkbox"
@@ -301,6 +316,7 @@ const TeamPracticeAvailabilityGrid = ({
             <span className="teamPracticeGrid__dawnToggleTrack" aria-hidden />
             <span className="teamPracticeGrid__dawnToggleLabel">새벽연습</span>
           </label>
+          )}
         </div>
         <p className="teamPracticeGrid__meta">
           일정 제출 최대 {totalResponded}/{totalMembers}명 · 진할수록 더 많은

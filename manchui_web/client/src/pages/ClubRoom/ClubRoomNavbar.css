@@ -2,111 +2,190 @@
   display: none;
 }
 
+/* —— 모바일 하단 탭바 (떠 있는 바) ——
+   화면 가장자리에서 띄운 둥근 바. 선택된 탭은 흰 알약(라이트: 검은 알약)에 아이콘 + 라벨,
+   나머지는 아이콘만 (라벨은 aria-label 로 제공).
+   알약은 하나만 있고 선택이 바뀌면 스윽 미끄러진다 (ClubRoomNavbar.jsx useSlidingPill).
+   어두운 화면에서는 그림자가 안 보이므로: 바 뒤로 아래에서 올라오는 페이드 + 밝은 반투명 테두리
+   + 윗면 하이라이트로 떠 보이게 한다.
+   높이 64 + 아래 여백 12 + safe-area → App.css --club-room-bottom-nav 와 맞춤 */
+body[data-club-theme] .ClubRoomBottomNav,
+.ClubRoomBottomNav {
+  --nav-bg: #1a1a1c;
+  --nav-edge: rgba(255, 255, 255, 0.09);
+  --nav-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  --nav-idle: #a3a3a8;
+  --nav-hover: rgba(255, 255, 255, 0.06);
+  --nav-pill: #ffffff;
+  --nav-on-pill: #0a0a0a;
+  --nav-fade: 5, 5, 5;            /* 페이지 바탕색 (rgb) */
+  --nav-shadow: 0 12px 32px -6px rgba(0, 0, 0, 0.9);
+  --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+body[data-club-theme="light"] .ClubRoomBottomNav {
+  --nav-bg: #ffffff;
+  --nav-edge: #e6e6e9;
+  --nav-highlight: inset 0 1px 0 rgba(255, 255, 255, 0);
+  --nav-idle: #6b6b6b;
+  --nav-hover: #f1f1f3;
+  --nav-pill: #111111;
+  --nav-on-pill: #ffffff;
+  --nav-fade: 244, 244, 245;
+  --nav-shadow: 0 10px 30px -10px rgba(17, 17, 17, 0.25);
+}
+
 .ClubRoomBottomNav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  left: 12px;
+  right: 12px;
+  bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   margin-inline: auto;
-  width: 600px;
-  max-width: 100%;
+  max-width: 576px;
   box-sizing: border-box;
   display: flex;
-  align-items: stretch;
-  justify-content: space-around;
-  gap: 0;
-  min-height: 62px;
-  padding: 8px 4px calc(8px + env(safe-area-inset-bottom, 0px));
-  background-color: var(--club-sidebar-bg);
-  border-top: 1px solid var(--club-border);
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  height: 64px;
+  padding: 0 10px;
   user-select: none;
   z-index: 810;
 }
 
-.ClubRoomBottomNav__item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  min-width: 0;
-  padding: 6px 2px 4px;
-  border: none;
-  background: transparent;
-  color: var(--text-more, #888);
-  font: inherit;
-  font-size: 10px;
-  line-height: 1.2;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+/* 바 면: 페이드(::before) 위에 칠해지도록 ::after 로 분리 (같은 z-index 면 나중 것이 위) */
+.ClubRoomBottomNav::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 1px solid var(--nav-edge);
+  border-radius: 22px;
+  background: var(--nav-bg);
+  box-shadow: var(--nav-highlight), var(--nav-shadow); /* 떠 있는 요소에만 쓰는 그림자 */
+  pointer-events: none;
+}
+
+/* 바 뒤로 깔리는 페이드: 아래로 지나가는 콘텐츠가 흐려지며 바가 떠 보인다 */
+.ClubRoomBottomNav::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -13px;
+  right: -13px;
+  bottom: calc(-13px - env(safe-area-inset-bottom, 0px));
+  height: calc(104px + env(safe-area-inset-bottom, 0px)); /* 바 + 아래 여백 + 위로 약간. 떠 있는 버튼(FAB)은 덮지 않음 */
+  background: linear-gradient(
+    to top,
+    rgba(var(--nav-fade), 0.96) 0%,
+    rgba(var(--nav-fade), 0.85) 45%,
+    rgba(var(--nav-fade), 0) 100%
+  );
+  pointer-events: none;
+}
+
+/* 선택 알약: 하나만 존재, 위치와 너비가 부드럽게 바뀐다 */
+.ClubRoomBottomNav__pill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0;
+  height: 44px;
+  margin-top: -22px;
+  border-radius: 999px;
+  background: var(--nav-pill);
+  opacity: 0;
+  pointer-events: none;
   transition:
-    color 0.2s ease,
+    transform 0.42s var(--nav-ease),
+    width 0.42s var(--nav-ease),
     opacity 0.2s ease;
 }
 
-.ClubRoomBottomNav__item--placeholder {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-.ClubRoomBottomNav__item--limited {
-  opacity: 0.55;
-}
-
-.ClubRoomBottomNav__item--placeholder:disabled {
-  opacity: 0.55;
-}
-
-.ClubRoomBottomNav__item:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.ClubRoomBottomNav__item:not(:disabled):not(
-    .ClubRoomBottomNav__item--active
-  ):active {
-  opacity: 0.85;
-}
-
-.ClubRoomBottomNav__item--active {
-  color: var(--text-primary, #fff);
-}
-
-.ClubRoomBottomNav__iconWrap {
+.ClubRoomBottomNav__item {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--nav-idle);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.42s var(--nav-ease),
+    color 0.3s ease,
+    background 0.2s ease;
+}
+.ClubRoomBottomNav__item:hover:not(.ClubRoomBottomNav__item--active) {
+  background: var(--nav-hover);
+}
+
+.ClubRoomBottomNav__iconWrap {
+  display: grid;
+  place-items: center;
+  flex: none;
+  transition: transform 0.15s ease;
+}
+.ClubRoomBottomNav__item:active .ClubRoomBottomNav__iconWrap {
+  transform: scale(0.9);
 }
 
 .ClubRoomBottomNav__icon {
-  font-size: 22px;
+  font-size: 24px;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
 }
 
-.ClubRoomBottomNav__item--active .ClubRoomBottomNav__icon {
-  color: var(--text-primary, #fff);
-  transform: scale(1.05);
-}
-
+/* 선택되지 않은 탭은 라벨을 숨김 */
 .ClubRoomBottomNav__label {
+  display: none;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  font-weight: 500;
-  transition: font-weight 0.2s ease;
 }
 
+body[data-club-theme] .ClubRoomBottomNav__item--active,
+.ClubRoomBottomNav__item--active {
+  flex: 0 0 auto;
+  padding: 0 18px 0 14px;
+  background: transparent;
+  color: var(--nav-on-pill);
+}
 .ClubRoomBottomNav__item--active .ClubRoomBottomNav__label {
-  font-weight: 700;
-  color: var(--text-primary, #fff);
+  display: inline;
+  animation: clubNavLabelIn 0.36s var(--nav-ease) 0.06s both;
+}
+@keyframes clubNavLabelIn {
+  from { opacity: 0; transform: translateX(-4px); }
+  to { opacity: 1; transform: none; }
 }
 
-@media screen and (max-width: 767px) {
-  .ClubRoomBottomNav {
-    width: 100%;
+.ClubRoomBottomNav__item:focus-visible {
+  outline: 2px solid var(--nav-idle);
+  outline-offset: 2px;
+}
+
+/* 배포 제한 탭: 흐리게, 누르면 안내 모달 */
+.ClubRoomBottomNav__item--limited {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ClubRoomBottomNav__pill,
+  .ClubRoomBottomNav__item,
+  .ClubRoomBottomNav__iconWrap {
+    transition: none;
+  }
+  .ClubRoomBottomNav__item--active .ClubRoomBottomNav__label {
+    animation: none;
   }
 }
 
@@ -149,7 +228,7 @@
     font-weight: 700;
     font-size: 20px;
     letter-spacing: 0.08em;
-    color: #e0e0e0;
+    color: var(--club-text-muted, #e0e0e0);
   }
 
   .ClubRoomSideNav__brandSub {
@@ -178,7 +257,7 @@
     border: none;
     border-radius: var(--club-radius-sm);
     background: transparent;
-    color: var(--text-more, #888);
+    color: var(--text-more, var(--club-text-muted, #888));
     font: inherit;
     font-size: 0.95rem;
     font-weight: 500;
@@ -191,7 +270,7 @@
 
   .ClubRoomSideNav__item:hover {
     background: var(--club-hover);
-    color: var(--text-gray, #e0e0e0);
+    color: var(--text-gray, var(--club-text-muted, #e0e0e0));
   }
 
   .ClubRoomSideNav__item--active {
@@ -268,9 +347,9 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    background: linear-gradient(145deg, var(--box-2, #2c2c2c) 0%, #151515 100%);
-    color: var(--text-gray, #e0e0e0);
+    border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
+    background: linear-gradient(145deg, var(--box-2, #2c2c2c) 0%, var(--club-surface-2, #151515) 100%);
+    color: var(--text-gray, var(--club-text-muted, #e0e0e0));
     font-size: 18px;
   }
 
@@ -290,7 +369,7 @@
 
   .ClubRoomSideNav__userSub {
     font-size: 0.75rem;
-    color: var(--text-more, #888);
+    color: var(--text-more, var(--club-text-muted, #888));
   }
 
   .ClubRoomSideNav__exit {
@@ -299,29 +378,72 @@
     gap: 8px;
     padding: 8px 12px;
     border-radius: var(--club-radius-sm);
-    color: var(--text-more, #888);
+    color: var(--text-more, var(--club-text-muted, #888));
     font-size: 0.82rem;
     text-decoration: none;
   }
 
   .ClubRoomSideNav__exit:hover {
     background: var(--club-hover);
-    color: var(--text-gray, #e0e0e0);
+    color: var(--text-gray, var(--club-text-muted, #e0e0e0));
   }
 }
 
-/* —— 모바일 하단 탭: 사이드바와 같은 활성 표시 (아이콘 뒤 빨간 알약) —— */
-.ClubRoomBottomNav__iconWrap {
-  width: 52px;
-  height: 30px;
-  border-radius: var(--club-radius-sm);
-  transition: background 0.15s ease;
+.ClubRoomSideNav__admin {
+  justify-content: space-between;
+  background: var(--club-surface-2);
+  color: var(--club-text);
+  min-height: 44px;
+  font-weight: 600;
 }
 
-.ClubRoomBottomNav__item--active .ClubRoomBottomNav__iconWrap {
-  background: var(--club-active-bg);
+/* —— PC 사이드바 색: 페이지마다 다른 --club-* 대신 고정 토큰 ——
+   (홈·팀은 기본 팔레트라 빨강, 마이페이지·예약·추천은 새 룩이라 흰색으로 갈리던 문제) */
+body[data-club-theme] .ClubRoomSideNav {
+  --side-bg: #050505;
+  --side-border: #1f1f1f;
+  --side-hover: #161616;
+  --side-active-bg: #1f1f1f;
+  --side-active-bg-hover: #262626;
+  --side-active-text: #ffffff;
+  --side-active-bar: #ffffff;
+  background: var(--side-bg);
+  border-right-color: var(--side-border);
+}
+body[data-club-theme="light"] .ClubRoomSideNav {
+  --side-bg: #ffffff;
+  --side-border: #e8e8e8;
+  --side-hover: #f4f4f5;
+  --side-active-bg: #ececef;
+  --side-active-bg-hover: #e4e4e7;
+  --side-active-text: #111111;
+  --side-active-bar: #111111;
+}
+@media screen and (min-width: 1024px) {
+  body[data-club-theme] .ClubRoomSideNav .ClubRoomSideNav__item:hover {
+    background: var(--side-hover);
+  }
+  body[data-club-theme] .ClubRoomSideNav .ClubRoomSideNav__item--active,
+  body[data-club-theme] .ClubRoomSideNav .ClubRoomSideNav__item--active:hover {
+    background: var(--side-active-bg);
+    color: var(--side-active-text);
+  }
+  body[data-club-theme] .ClubRoomSideNav .ClubRoomSideNav__item--active:hover {
+    background: var(--side-active-bg-hover);
+  }
+  body[data-club-theme] .ClubRoomSideNav .ClubRoomSideNav__item--active::before {
+    background: var(--side-active-bar);
+  }
 }
 
-.ClubRoomBottomNav__item--active .ClubRoomBottomNav__icon {
-  transform: none;
+/* 일정 종합 화면 등: 모바일 하단 탭바 숨김 (ClubRoomLayout 의 clubRoomLayout--noTabBar) */
+.clubRoomLayout--noTabBar .ClubRoomBottomNav {
+  display: none;
+}
+
+/* 로고 아래 '어시스턴트': 페이지 색(--club-accent)과 무관하게 항상 같은 색 */
+@media screen and (min-width: 1024px) {
+  body[data-club-theme] .ClubRoomSideNav .ClubRoomSideNav__brandSub {
+    color: var(--side-active-text);
+  }
 }

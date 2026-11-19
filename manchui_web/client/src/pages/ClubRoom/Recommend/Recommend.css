@@ -3,9 +3,9 @@
 .mypageHub {
   --rec-hashtag-fg: #e87070;
   --rec-hashtag-fg-hover: #ffb1b1;
-  --rec-hashtag-border: rgba(232, 112, 112, 0.5);
-  --rec-hashtag-bg: rgba(232, 112, 112, 0.12);
-  --rec-hashtag-bg-hover: rgba(232, 112, 112, 0.24);
+  --rec-hashtag-border: rgba(var(--club-accent-rgb, 255, 69, 58), 0.5);
+  --rec-hashtag-bg: rgba(var(--club-accent-rgb, 255, 69, 58), 0.12);
+  --rec-hashtag-bg-hover: rgba(var(--club-accent-rgb, 255, 69, 58), 0.24);
   --rec-hashtag-focus: rgba(255, 130, 130, 0.75);
 }
 
@@ -73,7 +73,7 @@
 }
 
 .recommend__searchWrap:focus-within {
-  border-color: rgba(255, 69, 58, 0.45);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
 }
 
 .recommend__searchIcon {
@@ -170,7 +170,7 @@
   min-height: 40px;
   padding: 6px 10px 6px 11px;
   border-radius: var(--club-radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
   background: var(--box-1);
   color: var(--text-primary);
   font: inherit;
@@ -182,17 +182,17 @@
 }
 
 .recommend__sortTrigger:hover {
-  border-color: rgba(255, 69, 58, 0.35);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.35);
 }
 
 .recommend__sortTrigger:focus-visible {
-  outline: 2px solid rgba(255, 69, 58, 0.45);
+  outline: 2px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
   outline-offset: 2px;
 }
 
 .recommend__sortTrigger[aria-expanded="true"] {
-  border-color: rgba(255, 69, 58, 0.42);
-  box-shadow: 0 0 0 1px rgba(255, 69, 58, 0.2);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.42);
+  box-shadow: 0 0 0 1px rgba(var(--club-accent-rgb, 255, 69, 58), 0.2);
 }
 
 .recommend__sortTriggerInner {
@@ -251,7 +251,7 @@
 
 .recommend__sortChev--open {
   transform: rotate(180deg);
-  color: rgba(255, 180, 180, 0.85);
+  color: var(--club-text-muted);
 }
 
 .recommend__sortMenu {
@@ -263,7 +263,7 @@
   padding: 5px;
   list-style: none;
   border-radius: var(--club-radius);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
   background: var(--box-1);
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45);
   /* 트리거보다 넓게: 긴 옵션 라벨 한 줄 표시 (오른쪽은 트리거와 정렬) */
@@ -301,12 +301,12 @@
 }
 
 .recommend__sortOption:hover {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   color: var(--text-primary);
 }
 
 .recommend__sortOption:focus-visible {
-  outline: 2px solid rgba(255, 69, 58, 0.45);
+  outline: 2px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
   outline-offset: 0;
 }
 
@@ -328,7 +328,7 @@
   text-align: center;
   color: var(--text-more);
   font-size: 0.95rem;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border: 1px dashed rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   border-radius: var(--club-radius);
 }
 
@@ -358,7 +358,7 @@
   background: linear-gradient(
     90deg,
     var(--box-2) 0%,
-    rgba(255, 255, 255, 0.1) 45%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.1) 45%,
     var(--box-2) 90%
   );
   background-size: 200% 100%;
@@ -383,7 +383,7 @@
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.12) 45%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.12) 45%,
     transparent 90%
   );
   background-size: 200% 100%;
@@ -438,7 +438,7 @@
   background: linear-gradient(
     90deg,
     var(--box-2) 0%,
-    rgba(255, 255, 255, 0.1) 45%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.1) 45%,
     var(--box-2) 90%
   );
   background-size: 200% 100%;
@@ -482,7 +482,7 @@
   gap: 10px;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  box-shadow: 0 1px 0 0 rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 @media (min-width: 400px) {
@@ -723,7 +723,7 @@
 }
 
 .recCard__titleTap:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline: 2px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.35);
   outline-offset: 2px;
 }
 
@@ -796,7 +796,7 @@
 }
 
 .recCard__iconBtn--scrapActive {
-  color: #ffd54f;
+  color: var(--club-warning, #ffd54f);
 }
 
 .recCard__tags {
@@ -872,7 +872,7 @@ button.recCard__hashtag--clickable {
   gap: 6px;
   padding-top: 10px;
   margin-top: 1px;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
 }
 
 .recCard__detail[hidden] {
@@ -1004,7 +1004,7 @@ button.recCard__hashtag--clickable {
   padding: 0;
   font: inherit;
   border-radius: var(--club-radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   background: var(--box-2);
   color: var(--text-gray);
   cursor: pointer;
@@ -1021,7 +1021,7 @@ button.recCard__hashtag--clickable {
 }
 
 .recCard__manageBtn:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.35);
+  outline: 2px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.35);
   outline-offset: 2px;
 }
 
@@ -1032,7 +1032,7 @@ button.recCard__hashtag--clickable {
 
 .recCard__manageBtn--danger:hover {
   background: rgba(255, 68, 68, 0.12);
-  color: #ff8a8a;
+  color: var(--club-danger, #ff8a8a);
   border-color: rgba(255, 68, 68, 0.45);
 }
 
@@ -1055,10 +1055,10 @@ button.recCard__hashtag--clickable {
   align-items: center;
   gap: 4px;
   padding: 8px 12px;
-  border: 1px solid rgba(255, 69, 58, 0.35);
+  border: 1px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.35);
   border-radius: var(--club-radius-sm);
-  background: rgba(255, 69, 58, 0.12);
-  color: #ffb1b1;
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.12);
+  color: var(--club-accent, #ffb1b1);
   font: inherit;
   font-size: 0.82rem;
   font-weight: 600;
@@ -1070,8 +1070,8 @@ button.recCard__hashtag--clickable {
 }
 
 .recommend__fab:hover:not(:disabled) {
-  background: rgba(255, 69, 58, 0.22);
-  border-color: rgba(255, 69, 58, 0.5);
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.22);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.5);
 }
 
 .recommend__fab:disabled {

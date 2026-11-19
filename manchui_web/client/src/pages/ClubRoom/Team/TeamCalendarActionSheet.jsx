@@ -1,11 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { IoAdd } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import apiClient from "../../../api/apiClient";
-import { useManchuiModal } from "../../../hooks/ManchuiModal";
-import ClubHomeScheduleEditor from "../Home/ClubHomeScheduleEditor";
-import { timesToHours } from "../Home/clubHomeUtils";
 import "../Home/ClubHome.css";
 import {
   buildPracticeByDate,
@@ -30,22 +26,14 @@ const TeamCalendarActionSheet = ({
   mode,
   dates = [],
   teamId,
-  teamName = "",
   isLeader = false,
-  isMember = false,
   practices = [],
-  scheduleMap,
   accentColor = "#E87070",
   requestSet,
   onClose,
-  onScheduleSaved,
-  onRequestSchedulesUpdated,
   onPracticeClick,
 }) => {
   const nav = useNavigate();
-  const modal = useManchuiModal();
-  const [requesting, setRequesting] = useState(false);
-  const [editingSchedule, setEditingSchedule] = useState(false);
   const ignoreBackdropCloseRef = useRef(false);
 
   const practiceByDate = useMemo(
@@ -54,10 +42,7 @@ const TeamCalendarActionSheet = ({
   );
 
   useEffect(() => {
-    if (!open) {
-      setEditingSchedule(false);
-      return undefined;
-    }
+    if (!open) return undefined;
     ignoreBackdropCloseRef.current = true;
     const id = window.setTimeout(() => {
       ignoreBackdropCloseRef.current = false;
@@ -79,62 +64,13 @@ const TeamCalendarActionSheet = ({
     ? (practiceByDate.get(selectedDate) ?? [])
     : [];
 
-  const pendingDates = dates.filter((date) => !requestSet.has(date));
-  const alreadyRequested = dates.filter((date) => requestSet.has(date));
+  const pollDateCount = dates.filter((date) => requestSet?.has(date)).length;
 
-  const hasScheduleRequest =
-    isMember &&
-    !isLeader &&
-    isSingle &&
-    selectedDate &&
-    requestSet.has(selectedDate);
-  const hasSavedSchedule =
-    hasScheduleRequest &&
-    timesToHours(scheduleMap?.get(selectedDate)?.times).length > 0;
-  const scheduleWriteLabel = hasSavedSchedule ? "일정 수정" : "일정 작성";
-
-  const toggleRequestSchedules = async (targetDates, successMessage) => {
-    if (requesting || targetDates.length === 0) return;
-
-    setRequesting(true);
-    try {
-      let latestSchedules = null;
-      for (const date of targetDates) {
-        const res = await apiClient.post(
-          "/api/team/request-schedule",
-          { teamId, date },
-          { withCredentials: true },
-        );
-        latestSchedules = res.data?.newRequestSchedules ?? latestSchedules;
-      }
-      await modal(successMessage);
-      onRequestSchedulesUpdated?.(latestSchedules);
-      onClose();
-    } catch (error) {
-      await modal(
-        error.response?.data?.message ?? "일정 취합 요청 처리에 실패했습니다.",
-      );
-    } finally {
-      setRequesting(false);
-    }
-  };
-
-  const handleRequestSchedule = () => {
-    void toggleRequestSchedules(
-      pendingDates,
-      pendingDates.length === 1
-        ? "일정 취합을 요청했습니다."
-        : `${pendingDates.length}일에 일정 취합을 요청했습니다.`,
-    );
-  };
-
-  const handleCancelRequestSchedule = () => {
-    void toggleRequestSchedules(
-      alreadyRequested,
-      alreadyRequested.length === 1
-        ? "일정 취합 요청을 취소했습니다."
-        : `${alreadyRequested.length}일의 일정 취합 요청을 취소했습니다.`,
-    );
+  const handleCreatePoll = () => {
+    const query = buildPracticeCreateSearch(dates);
+    if (!query) return;
+    onClose();
+    nav(`/club/team/${teamId}/poll/new?${query}`);
   };
 
   const handleCreatePractice = () => {
@@ -143,10 +79,6 @@ const TeamCalendarActionSheet = ({
     if (!query) return;
     onClose();
     nav(`/club/team/${teamId}/practice/new?${query}`);
-  };
-
-  const handleOpenScheduleEditor = () => {
-    setEditingSchedule(true);
   };
 
   const handleOpenPracticeEdit = (practice) => {
@@ -191,8 +123,6 @@ const TeamCalendarActionSheet = ({
   };
 
   return createPortal(
-    <>
-    {!editingSchedule ? (
     <div className="teamCalSheet__root" role="presentation">
       <button
         type="button"
@@ -214,33 +144,12 @@ const TeamCalendarActionSheet = ({
         <h2 id="team-cal-sheet-title" className="teamCalSheet__title">
           {formatDateSummary(dates)}
         </h2>
-        {isLeader && alreadyRequested.length > 0 ? (
+        {pollDateCount > 0 ? (
           <p className="teamCalSheet__hint">
-            {alreadyRequested.length === dates.length
-              ? "선택한 날짜는 모두 취합 요청 중입니다. 아래에서 요청을 취소할 수 있습니다."
-              : `이미 요청 중인 날짜 ${alreadyRequested.length}일은 건너뜁니다.`}
+            {pollDateCount === dates.length
+              ? "일정 종합이 진행 중인 날짜예요."
+              : `${pollDateCount}일은 이미 일정 종합이 진행 중이에요.`}
           </p>
-        ) : null}
-
-        {hasScheduleRequest ? (
-          <section
-            className="teamCalSheet__requestSection"
-            aria-labelledby="team-cal-request-label"
-          >
-            <p id="team-cal-request-label" className="teamCalSheet__sectionLabel">
-              일정 취합 요청
-            </p>
-            <p className="teamCalSheet__requestHint">
-              {teamName || "팀"}에서 이 날짜에 가능한 시간을 알려주세요.
-            </p>
-            <button
-              type="button"
-              className="teamCalSheet__writeBtn"
-              onClick={handleOpenScheduleEditor}
-            >
-              {scheduleWriteLabel}
-            </button>
-          </section>
         ) : null}
 
         {isSingle ? (
@@ -321,49 +230,18 @@ const TeamCalendarActionSheet = ({
 
         {isLeader ? (
           <div className="teamCalSheet__actions">
-            {pendingDates.length > 0 ? (
-              <button
-                type="button"
-                className="teamCalSheet__action teamCalSheet__action--primary"
-                onClick={handleRequestSchedule}
-                disabled={requesting}
-              >
-                {requesting ? "처리 중…" : "일정 취합 요청"}
-              </button>
-            ) : null}
-            {alreadyRequested.length > 0 ? (
-              <button
-                type="button"
-                className="teamCalSheet__action teamCalSheet__action--cancel"
-                onClick={handleCancelRequestSchedule}
-                disabled={requesting}
-              >
-                {requesting
-                  ? "처리 중…"
-                  : alreadyRequested.length === 1
-                    ? "취합 요청 취소"
-                    : `취합 요청 취소 (${alreadyRequested.length}일)`}
-              </button>
-            ) : null}
+            <button
+              type="button"
+              className="teamCalSheet__action teamCalSheet__action--primary"
+              onClick={handleCreatePoll}
+            >
+              이 날짜로 일정 종합 만들기
+              {dates.length > 1 ? ` (${dates.length}일)` : ""}
+            </button>
           </div>
         ) : null}
       </div>
-    </div>
-    ) : null}
-
-    <ClubHomeScheduleEditor
-      open={editingSchedule}
-      dateKey={selectedDate}
-      scheduleMap={scheduleMap}
-      requestDateSet={requestSet}
-      onClose={() => setEditingSchedule(false)}
-      onSaveComplete={() => {
-        setEditingSchedule(false);
-        onClose();
-      }}
-      onScheduleSaved={onScheduleSaved}
-    />
-    </>,
+    </div>,
     document.body,
   );
 };

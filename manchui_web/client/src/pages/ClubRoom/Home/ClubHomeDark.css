@@ -1,0 +1,251 @@
+/* Club home — "Next up" layout, true-black flat style.
+   Elevation by lightness alone (ground → surface → raised), no borders or shadows on cards.
+   Brand red is the one data hue: it marks data (event dots, today, pending polls, a practice
+   happening today) and never fills buttons, tabs or the selected day. The primary control
+   is made primary by inversion.
+   Dark is the default palette. Light mode only swaps the tokens (body[data-club-theme="light"]). */
+.dHome {
+  --h-bg: #050505;
+  --h-surface: #121212;
+  --h-raised: #222222;
+  --h-hover: #2c2c2c;
+  --h-text: #ffffff;
+  --h-muted: #b4b4b4;        /* secondary text */
+  --h-meta: #949494;         /* meta, 4.5:1 on the raised panel */
+  --h-off: #5a5a5a;          /* days outside the month */
+  --h-brand: #b30000;        /* logo red: filled shapes with white text */
+  --h-data: #ff3b3b;         /* logo red lifted for text and small ✦ marks on black */
+  --h-data-soft: #2a1010;    /* the red's dark tint, for tags */
+  --h-invert-bg: #ffffff;    /* primary and selected: inversion, not colour */
+  --h-invert-text: #000000;
+  --h-hero: #121212;
+  --h-hero-raised: #222222;
+  --h-hero-text: #ffffff;
+  --h-hero-muted: #b4b4b4;
+  --h-radius: 10px;          /* sharp, after the logo's cut strokes */
+  --h-radius-inner: 6px;
+  --h-radius-control: 6px;
+}
+
+body[data-club-theme="light"] .dHome {
+  --h-bg: #f4f4f5;
+  --h-surface: #ffffff;
+  --h-raised: #f1f1f3;
+  --h-hover: #e7e7ea;
+  --h-text: #111111;
+  --h-muted: #55555c;
+  --h-meta: #6b6b6b;
+  --h-off: #b4b4b8;
+  --h-brand: #b30000;
+  --h-data: #b30000;
+  --h-data-soft: #ffeceb;
+  --h-invert-bg: #111111;
+  --h-invert-text: #ffffff;
+  --h-hero: #111111;          /* the lead block stays the darkest thing on a light screen */
+  --h-hero-raised: #262626;
+  --h-hero-text: #ffffff;
+  --h-hero-muted: #b4b4b4;
+}
+
+/* ---------- ✦ mark ----------
+   The one shape of this screen, cut like the logo's strokes. Coloured by background. */
+.dHome :is(.dHero__team i, .dHero__later i, .dAgenda__list i, .dCal__day i, .dList__mark),
+.dSpark {
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* ---------- Frame ----------
+   Phone: one column, 16px margins, 12px gap.
+   ≥1024: 1.5fr + 1fr columns, 20px gap; head spans both. */
+.clubRoomLayout .clubHome.dHome:not(.clubHome--loading),
+.clubHome.dHome {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 1120px;
+  min-height: 100%;
+  margin-inline: auto;
+  padding: 20px 16px 40px;
+  background: var(--h-bg);
+  color: var(--h-text);
+  font-variant-numeric: tabular-nums;
+}
+.dHome *, .dHome *::before, .dHome *::after { box-sizing: border-box; }
+.dHome :is(h1, h2, p, ul) { margin: 0; }
+.dHome ul { list-style: none; padding: 0; }
+.dHome a { color: inherit; text-decoration: none; }
+.dHome button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; -webkit-tap-highlight-color: transparent; }
+.dHome :focus-visible { outline: 2px solid var(--h-text); outline-offset: 2px; }
+.dHome__main, .dHome__side { display: grid; gap: 12px; min-width: 0; align-content: start; }
+
+/* ---------- Title row ---------- */
+.dHome__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 4px 8px; }
+.dHome__hello { margin-bottom: 4px !important; font-size: .875rem; color: var(--h-muted); }
+.dHome__date { font-size: 1.375rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
+.dHome__add {
+  flex: none; display: inline-flex; align-items: center; gap: 4px;
+  height: 36px; padding: 0 14px 0 10px; border-radius: var(--h-radius-control);
+  background: var(--h-invert-bg); color: var(--h-invert-text) !important;
+  font-size: .875rem; font-weight: 600;
+  transition: opacity .15s, transform .15s;
+}
+.dHome__add svg { font-size: 18px; }
+.dHome__add:hover { opacity: .88; }
+.dHome__add:active { transform: scale(.96); }
+
+/* ---------- Next practice (the lead block) ---------- */
+.dHero {
+  --team: var(--h-hero-muted);
+  padding: 20px; border-radius: var(--h-radius);
+  background: var(--h-hero); color: var(--h-hero-text);
+}
+.dHero__eyebrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .875rem; font-weight: 500; color: var(--h-hero-muted); }
+.dHero__dday {
+  flex: none; padding: 4px 10px; border-radius: var(--h-radius-control);
+  background: var(--h-hero-raised); color: var(--h-hero-text);
+  font-size: .8125rem; font-weight: 600;
+}
+.dHero__dday[data-today] { background: var(--h-brand); color: #fff; }
+.dHero__team { display: flex; align-items: center; gap: 8px; margin-top: 20px !important; font-size: 1rem; font-weight: 600; }
+.dHero__team i, .dHero__later i, .dAgenda__list i { flex: none; width: 12px; height: 12px; background: var(--team); }
+.dHero__time {
+  margin-top: 4px !important;
+  font-size: clamp(2rem, 8.5vw, 2.5rem); font-weight: 600; line-height: 1.1; letter-spacing: -.035em;
+  overflow-wrap: anywhere;
+}
+.dHero__time--empty { margin-top: 20px !important; font-size: 1.375rem; letter-spacing: -.02em; }
+.dHero__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.dHero__meta { font-size: .9375rem; color: var(--h-hero-muted); overflow-wrap: anywhere; }
+.dHero__go {
+  flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: var(--h-radius-control);
+  background: var(--h-hero-raised) !important; color: var(--h-hero-text) !important; font-size: 18px;
+  transition: background .15s, transform .15s;
+}
+.dHero__go:hover { background: var(--h-hero-text) !important; color: var(--h-hero) !important; }
+.dHero__go:active { transform: scale(.94); }
+.dHero__later { display: grid; gap: 2px; margin-top: 16px !important; padding: 6px !important; border-radius: var(--h-radius-inner); background: var(--h-hero-raised); }
+.dHero__later li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px; font-size: .875rem; }
+.dHero__later span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dHero__later time { color: var(--h-hero-muted); font-size: .8125rem; }
+.dHero__empty { display: grid; justify-items: start; gap: 16px; }
+.dHero__cta {
+  display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--h-radius-control);
+  background: var(--h-hero-text); color: var(--h-hero) !important; font-size: .875rem; font-weight: 600;
+}
+
+/* ---------- Cards ---------- */
+.dCard { min-width: 0; padding: 20px; border-radius: var(--h-radius); background: var(--h-surface); }
+.dCard__title { display: flex; align-items: center; gap: 8px; margin-bottom: 12px !important; font-size: 1rem; font-weight: 600; }
+.dCard__more { margin-left: auto; font-size: .8125rem; font-weight: 500; color: var(--h-muted) !important; }
+.dCard__more:hover { color: var(--h-text) !important; }
+.dCard__empty { padding: 4px 0; font-size: .875rem; color: var(--h-muted); }
+.dCard__empty a { color: var(--h-text) !important; font-weight: 600; text-decoration: underline !important; text-underline-offset: 3px; }
+.dBadge {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 4px;
+  background: var(--h-brand); color: #fff; font-size: .75rem; font-weight: 600;
+}
+
+/* ---------- Calendar ---------- */
+.dCal__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.dCal__title { font-size: 1rem; font-weight: 600; }
+.dCal__title small { font-size: .875rem; font-weight: 500; color: var(--h-muted); }
+.dCal__tools { display: flex; align-items: center; gap: 4px; }
+.dCal__icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--h-radius-control); color: var(--h-muted) !important; font-size: 16px; }
+.dCal__icon:hover, .dCal__today:hover, .dCal__mode:hover { background: var(--h-hover) !important; color: var(--h-text) !important; }
+.dCal__today, .dCal__mode {
+  height: 32px; padding: 0 12px; border-radius: var(--h-radius-control);
+  font-size: .8125rem !important; font-weight: 600; color: var(--h-text) !important;
+}
+.dCal__mode { background: var(--h-raised) !important; }
+.dCal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 2px; touch-action: pan-y; }
+.dCal__weekday { padding: 4px 0 6px; text-align: center; font-size: .75rem; font-weight: 500; color: var(--h-meta); }
+.dCal__weekday[data-sunday] { color: var(--h-data); }
+.dCal__day {
+  justify-self: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  width: min(100%, 44px); height: 52px; border-radius: 8px;
+  font-size: .9375rem; font-weight: 500;
+  transition: background .15s, color .15s, transform .15s;
+}
+.dCal__grid[data-expanded=true] .dCal__day { height: 44px; border-radius: 8px; }
+.dCal__day:hover:not([aria-pressed=true]) { background: var(--h-raised); }
+.dCal__day:active { transform: scale(.94); }
+.dCal__day[data-outside] { color: var(--h-off); }
+.dCal__day[aria-current=date] { color: var(--h-data); font-weight: 600; }
+.dCal__day[aria-pressed=true] { background: var(--h-invert-bg); color: var(--h-invert-text); font-weight: 600; }
+.dCal__day i { width: 9px; height: 9px; }
+.dCal__day i[data-on] { background: var(--h-data); }
+.dCal__day[aria-pressed=true] i[data-on] { background: var(--h-invert-text); }
+
+/* ---------- The chosen day ---------- */
+.dAgenda { margin-top: 12px; }
+.dAgenda__title { margin-bottom: 8px !important; font-size: .8125rem; font-weight: 500; color: var(--h-meta); }
+.dAgenda__empty { padding: 14px 16px; border-radius: var(--h-radius-inner); background: var(--h-raised); font-size: .875rem; color: var(--h-muted); }
+.dAgenda__list { display: grid; gap: 2px; padding: 4px; border-radius: var(--h-radius-inner); background: var(--h-raised); }
+.dAgenda__list li {
+  --team: var(--h-muted);
+  display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; column-gap: 12px;
+  min-height: 56px; padding: 8px 12px;
+}
+.dAgenda__list li[data-kind="투표"] { --team: var(--h-data); }
+.dAgenda__list strong { display: block; font-size: .9375rem; font-weight: 600; overflow-wrap: anywhere; }
+.dAgenda__list strong a { text-decoration: underline; text-decoration-color: var(--h-off); text-underline-offset: 3px; }
+.dAgenda__list strong a:hover { text-decoration-color: currentColor; }
+.dAgenda__list small { display: block; margin-top: 2px; font-size: .8125rem; color: var(--h-meta); overflow-wrap: anywhere; }
+.dAgenda__list time { justify-self: end; text-align: right; font-size: .875rem; font-weight: 500; color: var(--h-muted); white-space: nowrap; }
+
+/* ---------- Lists: to-do and bookings ---------- */
+.dList { display: grid; gap: 2px; }
+.dList__row {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  min-height: 60px; margin-inline: -8px; padding: 8px; border-radius: var(--h-radius-inner);
+  transition: background .15s;
+}
+a.dList__row:hover { background: var(--h-raised); }
+.dList__mark {
+  width: 18px; height: 18px; margin-inline: 2px; background: var(--team, var(--h-data)); /* 일정 종합: 팀 색 */
+}
+.dList__row[data-done] .dList__mark { background: var(--h-off); }
+.dList__row[data-done] .dList__body strong { color: var(--h-muted); font-weight: 500; }
+.dList__body { min-width: 0; }
+.dList__body strong { display: block; font-size: .9375rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dList__body small { display: block; margin-top: 2px; font-size: .8125rem; color: var(--h-meta); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dList__action { display: inline-flex; align-items: center; gap: 2px; font-size: .8125rem; font-weight: 600; color: var(--h-text); }
+.dList__row[data-done] .dList__action { color: var(--h-meta); font-weight: 500; }
+.dList__date {
+  display: grid; place-items: center; align-content: center; width: 44px; height: 44px; border-radius: var(--h-radius-inner);
+  background: var(--h-raised); line-height: 1.1;
+}
+.dList__date b { font-size: 1rem; font-weight: 600; }
+.dList__date small { margin-top: 1px; font-size: .75rem; color: var(--h-meta); }
+.dList__tag { flex: none; padding: 3px 8px; border-radius: 4px; background: var(--h-raised); color: var(--h-muted); font-size: .75rem; font-weight: 600; white-space: nowrap; }
+.dList__tag[data-today] { background: var(--h-data-soft); color: var(--h-data); }
+
+/* ---------- Wider screens ---------- */
+@media (min-width: 720px) {
+  .clubRoomLayout .clubHome.dHome:not(.clubHome--loading),
+  .clubHome.dHome { padding: 28px 24px 48px; gap: 16px; }
+  .dHome__main, .dHome__side { gap: 16px; }
+  .dHero, .dCard { padding: 24px; }
+  .dHome__date { font-size: 1.5rem; }
+}
+@media (min-width: 1024px) {
+  .clubRoomLayout .clubHome.dHome:not(.clubHome--loading),
+  .clubHome.dHome {
+    grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+    grid-template-areas: "head head" "main side";
+    align-items: start;
+    gap: 20px;
+    padding: 36px 32px 56px;
+  }
+  .dHome__head { grid-area: head; }
+  .dHome__main { grid-area: main; gap: 20px; }
+  .dHome__side { grid-area: side; gap: 20px; position: sticky; top: 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dHome * { transition: none !important; }
+}

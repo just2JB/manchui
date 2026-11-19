@@ -1,0 +1,206 @@
+/* 마이페이지 프로필 카드 — 명함.
+   다크·라이트 모두 검은 카드 (홈의 '다음 연습' 카드처럼 화면의 중심).
+   층: 바탕 → 홀로그램(.holo) → 하이라이트(.glare) → 빛 띠(.sweep) → 내용. */
+.profileCard {
+  --mx: 50%;
+  --my: 0%;
+  --rx: 0deg;
+  --ry: 0deg;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  aspect-ratio: 1.7 / 1;
+  max-height: 260px;
+  padding: 20px 22px 18px;
+  border: 0;
+  border-radius: 16px;
+  background:
+    radial-gradient(120% 90% at 100% 0%, #262626 0%, transparent 60%),
+    #0e0e0e;
+  color: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 40px -22px rgba(0, 0, 0, 0.9);
+  transform: perspective(900px) rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-tap-highlight-color: transparent;
+}
+.profileCard[data-active] {
+  transition: transform 0.08s linear;
+}
+.profileCard--static {
+  cursor: default;
+}
+.profileCard:focus-visible {
+  outline: 2px solid var(--club-text, #fff);
+  outline-offset: 3px;
+}
+
+/* 홀로그램: 은은한 무지갯빛, 손 위치를 따라 흐름 */
+.profileCard__holo {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    115deg,
+    transparent 22%,
+    rgba(255, 92, 92, 0.22) 36%,
+    rgba(255, 214, 120, 0.2) 45%,
+    rgba(120, 230, 210, 0.18) 54%,
+    rgba(120, 170, 255, 0.2) 63%,
+    transparent 78%
+  );
+  background-size: 260% 260%;
+  background-position: var(--mx) var(--my);
+  mix-blend-mode: color-dodge;
+  opacity: 0.12; /* 가만히 있을 땐 거의 안 보이게, 닿으면 0.75 */
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.profileCard[data-active] .profileCard__holo {
+  opacity: 0.75;
+}
+
+/* 하이라이트: 닿은 자리에 빛 */
+.profileCard__glare {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(
+    circle at var(--mx) var(--my),
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.06) 28%,
+    transparent 55%
+  );
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.profileCard[data-active] .profileCard__glare {
+  opacity: 1;
+}
+
+/* 빛 띠: 몇 초마다 한 번 표면을 훑고 지나감 */
+.profileCard__sweep {
+  position: absolute;
+  inset: -20% -60%;
+  z-index: -1;
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.06) 46%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.06) 54%,
+    transparent 58%
+  );
+  transform: translateX(-60%);
+  animation: profileCardSweep 6s cubic-bezier(0.45, 0, 0.2, 1) 0.6s infinite;
+  pointer-events: none;
+}
+@keyframes profileCardSweep {
+  0% { transform: translateX(-60%); }
+  28% { transform: translateX(60%); }
+  100% { transform: translateX(60%); }
+}
+
+/* 로고: 명함 바탕에 투명하게 깔린 워터마크 (오른쪽으로 살짝 잘림) */
+.profileCard__watermark {
+  position: absolute;
+  z-index: -1;
+  right: -14%;
+  top: 50%;
+  width: 82%;
+  aspect-ratio: 1750 / 622;
+  transform: translateY(-58%) rotate(-8deg);
+  background: #ffffff;
+  -webkit-mask: url("/logos/longLogo_white.png") center / contain no-repeat;
+  mask: url("/logos/longLogo_white.png") center / contain no-repeat;
+  opacity: 0.06;
+  pointer-events: none;
+}
+
+/* ---------- 내용 ---------- */
+.profileCard__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  min-height: 18px;
+}
+
+/* 카카오 연동: 아이콘 없이 연한 글씨 */
+.profileCard__kakao {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.profileCard__bottom {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.profileCard__role {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: #b4b4b4;
+}
+.profileCard__name {
+  font-size: clamp(1.5rem, 7vw, 1.875rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.profileCard__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+.profileCard__id {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  color: #d4d4d4;
+  font-variant-numeric: tabular-nums;
+}
+.profileCard__idLabel {
+  margin-right: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #8e8e8e;
+}
+.profileCard__more {
+  flex: none;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .profileCard,
+  .profileCard[data-active] {
+    transform: none;
+    transition: none;
+  }
+  .profileCard__sweep {
+    animation: none;
+    opacity: 0;
+  }
+}

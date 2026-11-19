@@ -101,12 +101,13 @@ const AdminRecommend = () => {
         if (!append) setItems([]);
         setHasMore(false);
       } finally {
-        if (gen !== fetchGenRef.current) return;
-        if (append) {
-          loadingMoreRef.current = false;
-          setLoadingMore(false);
-        } else {
-          setLoading(false);
+        if (gen === fetchGenRef.current) {
+          if (append) {
+            loadingMoreRef.current = false;
+            setLoadingMore(false);
+          } else {
+            setLoading(false);
+          }
         }
       }
     },

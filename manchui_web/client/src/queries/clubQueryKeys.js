@@ -7,8 +7,7 @@ export const clubKeys = {
     userId,
     teamIdsKey,
   ],
-  schedules: (userId) => [...clubKeys.all, "schedules", userId],
-  scheduleRequests: (userId) => [...clubKeys.all, "scheduleRequests", userId],
+  openPolls: (userId) => [...clubKeys.all, "openPolls", userId],
   reservationsAll: () => [...clubKeys.all, "reservations", "all"],
   reservationsMine: (userId) => [...clubKeys.all, "reservations", "mine", userId],
   recommendations: (sort, q) => [

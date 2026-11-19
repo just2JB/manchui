@@ -1,13 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
+import { ClubThemeContext } from "../../../hooks/useClubTheme";
 import { Link, useNavigate } from "react-router-dom";
 import "./Mypage.css";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { IoPersonOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { DEVELOPER_CONTACT_MODAL_MESSAGE } from "../../../constants/developerContact";
 import { useAuth } from "../../../context/AuthContext";
-import kakaoTalkMark from "../../../assets/kakao/kakaotalk_mark.png";
+import MypageProfileCard from "./MypageProfileCard";
 
 function isKakaoLinkedUser(user) {
   return (
@@ -18,6 +18,7 @@ function isKakaoLinkedUser(user) {
 }
 
 const Mypage = () => {
+  const { theme, toggleTheme } = useContext(ClubThemeContext);
   const { user, logout } = useAuth();
   const manchuiModal = useManchuiModal();
   const nav = useNavigate();
@@ -44,93 +45,17 @@ const Mypage = () => {
   };
 
   return (
-    <div className="mypageHub">
+    <div className="mypageHub mypageOverview">
       <h1 className="mypageHub__pageTitle">마이페이지</h1>
 
-      <button
-        type="button"
-        className="mypageHub__infoCard"
-        onClick={() => nav("/club/mypage/profile")}
-      >
-        <span className="mypageHub__infoCardWatermark" aria-hidden="true" />
-        <div className="mypageHub__infoCardBody">
-          <div className="mypageHub__avatar" aria-hidden="true">
-            <IoPersonOutline className="mypageHub__avatarIcon" />
-          </div>
-          <div className="mypageHub__infoMain">
-            <span className="mypageHub__infoNameRow">
-              <span className="mypageHub__infoName">
-                {user?.username ?? "이름 없음"}
-              </span>
-              {isKakaoLinked ? (
-                <span
-                  className="mypageHub__kakaoMark"
-                  title="카카오 연동"
-                  aria-label="카카오 연동"
-                >
-                  <img
-                    src={kakaoTalkMark}
-                    alt=""
-                    className="mypageHub__kakaoMarkImg"
-                    width={22}
-                    height={22}
-                  />
-                </span>
-              ) : null}
-            </span>
-            <div className="mypageHub__infoMeta">
-              <span className="mypageHub__infoMetaItem">
-                <span className="mypageHub__infoMetaLabel">아이디</span>
-                <span className="mypageHub__infoMetaValue">
-                  {user?.Identification ?? "—"}
-                </span>
-              </span>
-              <span className="mypageHub__infoMetaItem">
-                <span className="mypageHub__infoMetaLabel">직책</span>
-                <span className="mypageHub__infoMetaValue">
-                  {user?.position ? `만취 ${user.position}` : "—"}
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <MdOutlineKeyboardArrowRight className="mypageHub__infoArrow" />
-      </button>
+      <MypageProfileCard
+        user={user}
+        isKakaoLinked={isKakaoLinked}
+        onOpen={() => nav("/club/mypage/profile")}
+      />
 
-      <section className="mypageHub__section" aria-label="일정">
-        <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
-          일정
-        </div>
-        <ul className="mypageHub__menuList">
-          <li className="mypageHub__menuItem">
-            <button
-              type="button"
-              className="mypageHub__menuRow"
-              onClick={() => nav("/club/mypage/schedule")}
-            >
-              <span>내 일정 작성</span>
-              <MdOutlineKeyboardArrowRight
-                className="mypageHub__menuRowArrow"
-                aria-hidden
-              />
-            </button>
-          </li>
-          <li className="mypageHub__menuItem">
-            <button
-              type="button"
-              className="mypageHub__menuRow"
-              onClick={() => nav("/club/mypage/weekly-timetable")}
-            >
-              <span>내 시간표</span>
-              <MdOutlineKeyboardArrowRight
-                className="mypageHub__menuRowArrow"
-                aria-hidden
-              />
-            </button>
-          </li>
-        </ul>
-      </section>
-
+      <div className="mypageOverview__columns">
+      <div className="mypageOverview__column">
       <section className="mypageHub__section" aria-label="동아리방">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
           동아리방
@@ -186,6 +111,24 @@ const Mypage = () => {
         </ul>
       </section>
 
+      </div>
+      <div className="mypageOverview__column">
+      <section className="mypageHub__section" aria-labelledby="mypage-appearance-title">
+        <h2 id="mypage-appearance-title" className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">화면 설정</h2>
+        <ul className="mypageHub__menuList">
+          <li className="mypageHub__menuItem">
+            <button type="button" className="mypageHub__menuRow" role="switch"
+              aria-checked={theme === "dark"} aria-label="다크 모드" onClick={toggleTheme}>
+              <span className="mypageHub__themeLabel">
+                <span>다크 모드</span>
+                <span className="mypageHub__themeHint">{theme === "dark" ? "어두운 화면 사용 중" : "밝은 화면 사용 중"}</span>
+              </span>
+              <span className="mypageHub__themeSwitch" data-checked={theme === "dark"} aria-hidden="true"><span /></span>
+            </button>
+          </li>
+        </ul>
+      </section>
+
       <section className="mypageHub__section" aria-label="기타">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
           기타
@@ -235,6 +178,8 @@ const Mypage = () => {
         </ul>
       </section>
 
+      </div>
+      </div>
       <footer className="mypageHub__footer">
         <div className="mypageHub__legal">
           <Link to="/privacy" className="mypageHub__legalLink">

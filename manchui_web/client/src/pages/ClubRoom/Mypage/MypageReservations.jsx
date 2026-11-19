@@ -1,3 +1,4 @@
+import { useRefreshOnFocus } from "../../../hooks/useRefreshOnFocus";
 import React, { useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { IoShareSocialOutline } from "react-icons/io5";
@@ -15,7 +16,6 @@ import ReservationMyListSkeleton from "../Reservation/ReservationMyListSkeleton"
 import {
   emptyReservationsMine,
   isClubInitialLoading,
-  useClubQueryInvalidationOnFocus,
   useInvalidateClubReservations,
   useMyReservationsQuery,
   useReservationMutations,
@@ -30,9 +30,9 @@ const MypageReservations = () => {
   const userId = user?._id;
 
   const mineQuery = useMyReservationsQuery(userId);
-  const { deleteReservation } = useReservationMutations(userId);
+  const { deleteReservation } = useReservationMutations();
   const invalidateReservations = useInvalidateClubReservations(userId);
-  useClubQueryInvalidationOnFocus(invalidateReservations);
+  useRefreshOnFocus(invalidateReservations);
 
   const mineData = mineQuery.data ?? emptyReservationsMine();
   const myReservations = mineData.reservations;

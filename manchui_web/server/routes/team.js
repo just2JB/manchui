@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
 const Practice = require("../models/Practice");
+const TeamPoll = require("../models/TeamPoll");
 const requireExecutive = require("../middleware/requireExecutive");
 const { buildAdminTeamSummaries, getTeamCreatedAt } = require("../utils/teamActivity");
 const { releaseScheduleHoldbacksForPractices } = require("../utils/practiceScheduleHold");
@@ -115,6 +116,7 @@ router.delete("/admin/:teamId", requireExecutive, async (req, res) => {
     const teamPractices = await Practice.find({ teamId: String(team._id) });
     await releaseScheduleHoldbacksForPractices(teamPractices);
     await Practice.deleteMany({ teamId: String(team._id) });
+    await TeamPoll.deleteMany({ teamId: String(team._id) });
     await Team.findByIdAndDelete(team._id);
 
     res.json({ message: "팀이 삭제되었습니다." });
@@ -157,6 +159,7 @@ router.delete("/:id", async (req, res) => {
     const teamPractices = await Practice.find({ teamId: String(team._id) });
     await releaseScheduleHoldbacksForPractices(teamPractices);
     await Practice.deleteMany({ teamId: String(team._id) });
+    await TeamPoll.deleteMany({ teamId: String(team._id) });
     await Team.findByIdAndDelete(req.params.id);
     res.json({ message: "팀이 삭제되었습니다." });
   } catch (error) {
@@ -245,6 +248,7 @@ router.post("/quit", async (req, res) => {
       return res.status(201).json({ message: "탈퇴되었습니다" });
     } else {
       await Team.findByIdAndDelete(teamId);
+      await TeamPoll.deleteMany({ teamId: String(teamId) });
       console.log("팀 인원 0명으로 팀 삭제");
       return res.status(201).json({ message: "탈퇴되었습니다" });
     }

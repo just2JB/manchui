@@ -1,12 +1,12 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { createPortal } from "react-dom";
+import { Link } from "react-router-dom";
 import { formatReservationTimeRange } from "../Reservation/reservationTimeFormat";
 import {
   formatPracticeTimeDisplay,
   formatUpcomingPracticeDate,
 } from "../Team/teamCalendarUtils";
-import { timesToHours } from "./clubHomeUtils";
-import ClubHomeScheduleEditor from "./ClubHomeScheduleEditor";
+import { getPollDisplayTitle } from "../Poll/pollUtils";
 
 function formatPlace(place) {
   const value = String(place ?? "").trim();
@@ -18,25 +18,12 @@ const ClubHomeScheduleSheet = ({
   dateKey,
   practices = [],
   reservations = [],
-  requestTeams = [],
-  requestDateSet,
-  scheduleMap,
-  initialSchedule,
+  polls = [],
   onClose,
-  onScheduleSaved,
-  onSchedulesRefreshed,
 }) => {
-  const [editingSchedule, setEditingSchedule] = useState(false);
-
-  const hasRequest = requestTeams.length > 0;
+  const hasPoll = polls.length > 0;
   const hasPractice = practices.length > 0;
   const hasReservation = reservations.length > 0;
-  const hasSavedSchedule = timesToHours(initialSchedule?.times).length > 0;
-
-  useEffect(() => {
-    if (!open || !dateKey) return;
-    setEditingSchedule(false);
-  }, [open, dateKey]);
 
   const dateLabel = useMemo(
     () => (dateKey ? formatUpcomingPracticeDate(dateKey) : ""),
@@ -44,8 +31,6 @@ const ClubHomeScheduleSheet = ({
   );
 
   if (!open || !dateKey) return null;
-
-  const scheduleWriteLabel = hasSavedSchedule ? "일정 수정" : "일정 작성";
 
   return createPortal(
     <>
@@ -69,7 +54,7 @@ const ClubHomeScheduleSheet = ({
             {dateLabel}
           </h2>
 
-          {hasRequest ? (
+          {hasPoll ? (
             <section
               className="clubHomeSheet__section clubHomeSheet__requestBlock"
               aria-labelledby="club-home-request-label"
@@ -78,39 +63,34 @@ const ClubHomeScheduleSheet = ({
                 id="club-home-request-label"
                 className="clubHomeSheet__sectionLabel"
               >
-                일정 취합 요청
+                일정 종합
               </p>
               <ul className="clubHomeSheet__requestInfoList">
-                {requestTeams.map((entry) => (
-                  <li key={entry.teamName} className="clubHomeSheet__requestInfo">
+                {polls.map((poll) => (
+                  <li key={poll._id} className="clubHomeSheet__requestInfo">
                     <span className="clubHomeSheet__requestInfoTeam">
-                      {entry.teamName}
+                      {poll.team?.name ?? "팀"}
                     </span>
                     <span className="clubHomeSheet__requestInfoDesc">
-                      이 날짜에 가능한 시간을 알려주세요.
+                      {getPollDisplayTitle(poll)}
+                      {poll.responded ? " · 응답 완료" : ""}
                     </span>
+                    <Link
+                      className="clubHomeSheet__writeBtn"
+                      to={`/club/poll/${poll._id}`}
+                      onClick={onClose}
+                    >
+                      {poll.responded ? "내 시간 수정" : "가능한 시간 입력"}
+                    </Link>
                   </li>
                 ))}
               </ul>
-              <button
-                type="button"
-                className="clubHomeSheet__writeBtn"
-                onClick={() => setEditingSchedule(true)}
-              >
-                {scheduleWriteLabel}
-              </button>
             </section>
-          ) : (
-            <section className="clubHomeSheet__section">
-              <button
-                type="button"
-                className="clubHomeSheet__writeBtn clubHomeSheet__writeBtn--solo"
-                onClick={() => setEditingSchedule(true)}
-              >
-                {scheduleWriteLabel}
-              </button>
-            </section>
-          )}
+          ) : null}
+
+          {!hasPoll && !hasPractice && !hasReservation ? (
+            <p className="clubHomeSheet__empty">이 날은 일정이 없어요.</p>
+          ) : null}
 
           {hasPractice ? (
             <section
@@ -184,19 +164,6 @@ const ClubHomeScheduleSheet = ({
         </div>
       </div>
 
-      <ClubHomeScheduleEditor
-        open={editingSchedule}
-        dateKey={dateKey}
-        scheduleMap={scheduleMap}
-        requestDateSet={requestDateSet}
-        onClose={() => setEditingSchedule(false)}
-        onSaveComplete={async () => {
-          setEditingSchedule(false);
-          await onSchedulesRefreshed?.();
-          onClose();
-        }}
-        onScheduleSaved={onScheduleSaved}
-      />
     </>,
     document.body,
   );

@@ -1,8 +1,4 @@
 import apiClient, { serverUrl } from "../api/apiClient";
-import {
-  fetchMyScheduleRequests,
-  fetchMySchedules,
-} from "../api/scheduleApi";
 import { enrichPracticesWithTeam } from "../pages/ClubRoom/Home/clubHomeUtils";
 import { parseMineResponse } from "../pages/ClubRoom/Reservation/reservationMine";
 
@@ -87,4 +83,3 @@ export async function fetchRecommendationsPage({
   };
 }
 
-export { fetchMySchedules, fetchMyScheduleRequests };

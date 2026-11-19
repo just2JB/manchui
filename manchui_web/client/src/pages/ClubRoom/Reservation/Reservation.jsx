@@ -1,3 +1,4 @@
+import { useRefreshOnFocus } from "../../../hooks/useRefreshOnFocus";
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { serverUrl } from "../../../api/apiClient";
@@ -13,7 +14,8 @@ import "./Reservation.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 import ClubRoomRulesBar from "./ClubRoomRulesBar";
 import ReservedSlotDetailModal from "./ReservedSlotDetailModal";
-import ReservationHourPicker from "./ReservationHourPicker";
+import ReservationDayTimeline from "./ReservationDayTimeline";
+import ReservationDoneModal from "./ReservationDoneModal";
 import ReservationMyListSkeleton from "./ReservationMyListSkeleton";
 import {
   calendarDayLoadingClass,
@@ -36,7 +38,6 @@ import {
 import {
   isClubInitialLoading,
   useAllReservationsQuery,
-  useClubQueryInvalidationOnFocus,
   useInvalidateClubReservations,
   useMyReservationsQuery,
   useReservationMutations,
@@ -118,13 +119,15 @@ const Reservation = () => {
   const [submitting, setSubmitting] = useState(false);
   const [viewingReservation, setViewingReservation] = useState(null);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
+  /** 예약 완료 창(요약 + 이용 수칙). null 이면 닫힘 */
+  const [doneInfo, setDoneInfo] = useState(null);
 
   const allQuery = useAllReservationsQuery();
   const mineQuery = useMyReservationsQuery(userId);
   const { createReservation, deleteReservation } =
-    useReservationMutations(userId);
+    useReservationMutations();
   const invalidateReservations = useInvalidateClubReservations(userId);
-  useClubQueryInvalidationOnFocus(invalidateReservations);
+  useRefreshOnFocus(invalidateReservations);
 
   const trimmedTeamName = teamName.trim();
 
@@ -219,11 +222,15 @@ const Reservation = () => {
   }, [selectedDateKey, reservedOnSelected, todayKey, now]);
 
   const openSheet = () => {
-    if (!selectedDateKey) return;
-    setSelectedHours([]);
+    if (!selectedDateKey || selectedHours.length === 0) return;
     setHeadcount(1);
     setSheetOpen(true);
   };
+
+  /** 날짜를 바꾸면 고른 시간은 초기화 (시간은 달력 아래 시간 막대에서 바로 고름) */
+  useEffect(() => {
+    setSelectedHours([]);
+  }, [selectedDateKey]);
 
   const closeSheet = () => {
     setSheetOpen(false);
@@ -319,8 +326,14 @@ const Reservation = () => {
         headcount: hc,
       });
       writeLastTeamName(trimmedTeamName);
+      const summary = {
+        date: formatDateLabel(selectedDateKey),
+        time: formatReservationTimeRange(selectedHours),
+        team: trimmedTeamName,
+      };
       closeSheet();
-      await modal("예약이 완료되었습니다.", "alert");
+      setSelectedHours([]);
+      setDoneInfo(summary);
     } catch (err) {
       const msg =
         err.response?.data?.message || err.message || "예약에 실패했습니다.";
@@ -416,6 +429,29 @@ const Reservation = () => {
   const submitDisabled =
     submitting || selectedHours.length === 0 || !trimmedTeamName || quotaFull;
 
+  const reserveButton = (
+    <button
+      type="button"
+      className="reservation__btn reservation__btn--primary reservation__reserveBtn"
+      onClick={openSheet}
+      disabled={
+        loading ||
+        !selectedDateKey ||
+        !selectedDayHasFreeHour ||
+        quotaFull ||
+        selectedHours.length === 0
+      }
+    >
+      {quotaFull
+        ? `예약 가능 건수(${reservationLimit}건)를 모두 사용했어요`
+        : !loading && selectedDateKey && !selectedDayHasFreeHour
+          ? "예약 가능한 시간이 없어요"
+          : selectedHours.length > 0
+            ? `${formatReservationTimeRange(selectedHours)} 예약하기`
+            : "예약하기"}
+    </button>
+  );
+
   return (
     <div className="reservation">
       <header className="reservation__titleRow">
@@ -424,17 +460,6 @@ const Reservation = () => {
           <p className="reservation__subtitle">
             날짜를 골라 예약 현황을 보고, 팀 이름으로 예약하세요.
           </p>
-        </div>
-        <div className="reservation__titleActions">
-          <ClubRoomRulesBar inline />
-          <button
-            type="button"
-            className="reservation__mapBtn"
-            onClick={() => setLocationModalOpen(true)}
-            aria-label="동아리방 위치 보기"
-          >
-            <IoMapOutline className="reservation__mapBtnIcon" aria-hidden />
-          </button>
         </div>
       </header>
 
@@ -517,7 +542,6 @@ const Reservation = () => {
           </ReservationCalendarSlide>
           <ReservationCalendarFooter
             loading={loading}
-            hint="날짜를 누르면 그날 예약 현황을 볼 수 있어요."
             onToday={goToToday}
             isViewingTodayMonth={isViewingTodayMonth}
           />
@@ -547,48 +571,25 @@ const Reservation = () => {
             </div>
 
             {loading ? (
-              <ReservationMyListSkeleton count={1} />
-            ) : selectedDayReservations.length === 0 ? (
-              <p className="reservation__empty">아직 예약이 없어요.</p>
+              <>
+                <ReservationMyListSkeleton count={1} />
+                {reserveButton}
+              </>
             ) : (
-              <ul className="reservation__dayList">
-                {selectedDayReservations.map((r) => (
-                  <li key={r._id} className="reservation__dayItem">
-                    <span className="reservation__dayItemTime">
-                      {formatReservationTimeRange(r.time)}
-                    </span>
-                    <span className="reservation__dayItemTeam">
-                      {getReservationBookerName(r)}
-                      {myReservationIds.has(String(r._id)) ? (
-                        <span className="reservation__mineBadge">내 예약</span>
-                      ) : null}
-                    </span>
-                    <span className="reservation__dayItemMeta">
-                      {r.bookingType === "admin" ? "임원진 · " : ""}
-                      {r.headcount != null ? `${r.headcount}명` : ""}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+              <ReservationDayTimeline
+                reservations={selectedDayReservations}
+                myIds={myReservationIds}
+                isToday={selectedDateKey === todayKey}
+                now={now}
+                onSelect={setViewingReservation}
+                selectable={!quotaFull}
+                selectedHours={selectedHours}
+                isHourBlocked={isHourBlocked}
+                onSelectHour={(h) => void handleHourClick(h)}
+                footer={reserveButton}
+              />
             )}
 
-            <button
-              type="button"
-              className="reservation__btn reservation__btn--primary reservation__reserveBtn"
-              onClick={openSheet}
-              disabled={
-                loading ||
-                !selectedDateKey ||
-                !selectedDayHasFreeHour ||
-                quotaFull
-              }
-            >
-              {quotaFull
-                ? `예약 가능 건수(${reservationLimit}건)를 모두 사용했어요`
-                : !loading && selectedDateKey && !selectedDayHasFreeHour
-                  ? "예약 가능한 시간이 없어요"
-                  : "이 날 예약하기"}
-            </button>
           </section>
 
           <section
@@ -608,10 +609,6 @@ const Reservation = () => {
                 </span>
               ) : null}
             </div>
-            <p className="reservation__quotaNote">
-              계정당 최대 {reservationLimit}건까지 예약할 수 있어요. 취소하면
-              다시 예약할 수 있어요.
-            </p>
             {mineLoading ? (
               <ReservationMyListSkeleton count={2} />
             ) : myReservations.length === 0 ? (
@@ -666,6 +663,20 @@ const Reservation = () => {
         </aside>
       </div>
 
+      {/* 이용 수칙 · 위치 안내: 페이지 맨 아래 (예약 완료 창에서도 수칙을 보여 줌) */}
+      <footer className="reservation__pageFooter">
+        <ClubRoomRulesBar inline />
+        <button
+          type="button"
+          className="reservation__mapBtn"
+          onClick={() => setLocationModalOpen(true)}
+          aria-label="동아리방 위치 보기"
+        >
+          <IoMapOutline className="reservation__mapBtnIcon" aria-hidden />
+          <span className="reservation__mapBtnText">위치 안내</span>
+        </button>
+      </footer>
+
       {sheetOpen && selectedDateKey
         ? createPortal(
             <div className="reservation__sheetRoot" role="presentation">
@@ -702,32 +713,9 @@ const Reservation = () => {
                 </div>
 
                 <div className="reservation__sheetBody">
-                  <fieldset className="reservation__step">
-                    <legend className="reservation__stepTitle">
-                      <span className="reservation__stepNum">1</span>
-                      시간 선택
-                    </legend>
-                    <p className="reservation__timeHint">
-                      시작 시간과 끝 시간을 차례로 누르세요. 예약된 칸을 누르면
-                      정보를 볼 수 있어요.
-                    </p>
-                    <ReservationHourPicker
-                      selectedDateKey={selectedDateKey}
-                      selectedHours={selectedHours}
-                      reservedOnSelected={reservedOnSelected}
-                      todayKey={todayKey}
-                      canCreateReservation
-                      allReservations={allReservations}
-                      onSelectHour={(h) => void handleHourClick(h)}
-                      onViewReservation={setViewingReservation}
-                    />
-                  </fieldset>
 
                   <div className="reservation__step">
-                    <p className="reservation__stepTitle">
-                      <span className="reservation__stepNum">2</span>
-                      예약 정보
-                    </p>
+                    <p className="reservation__stepTitle">예약 정보</p>
                     <label className="reservation__field reservation__field--stack">
                       <span className="reservation__label">팀 이름</span>
                       <input
@@ -831,9 +819,18 @@ const Reservation = () => {
       {viewingReservation ? (
         <ReservedSlotDetailModal
           reservation={viewingReservation}
+          mine={myReservationIds.has(String(viewingReservation._id))}
           onClose={() => setViewingReservation(null)}
         />
       ) : null}
+      <ReservationDoneModal
+        info={doneInfo}
+        onClose={() => setDoneInfo(null)}
+        onShowLocation={() => {
+          setDoneInfo(null);
+          setLocationModalOpen(true);
+        }}
+      />
       <ClubRoomLocationModal
         open={locationModalOpen}
         onClose={() => setLocationModalOpen(false)}

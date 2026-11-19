@@ -1,29 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import "./Mypage.css";
+import "./EditProfile.css";
+import MypageProfileCard from "./MypageProfileCard";
 import { MdOutlineKeyboardArrowRight } from "react-icons/md";
-import { IoPersonOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
 import { startKakaoLink } from "../../../api/auth";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useAuth } from "../../../context/AuthContext";
-
-function KakaoIcon() {
-  return (
-    <svg
-      className="editProfile__kakaoIcon"
-      width="16"
-      height="16"
-      viewBox="0 0 24 24"
-      aria-hidden="true"
-    >
-      <path
-        fill="currentColor"
-        d="M12 3C7.03 3 3 6.36 3 10.35c0 2.55 1.68 4.79 4.21 6.06-.19.68-.69 2.47-.79 2.86-.12.47.17.46.36.33.15-.1 2.37-1.61 3.33-2.26.29.04.58.06.89.06 4.97 0 9-3.36 9-7.35S16.97 3 12 3z"
-      />
-    </svg>
-  );
-}
 
 const EditProfile = () => {
   const { user, logout, verifySession } = useAuth();
@@ -116,27 +100,9 @@ const EditProfile = () => {
         ← 마이페이지
       </button>
 
-      <h1 className="mypageHub__pageTitle">내정보 수정</h1>
+      <h1 className="mypageHub__pageTitle">내 정보 수정</h1>
 
-      <div className="editProfile__hero">
-        <div className="editProfile__avatar" aria-hidden="true">
-          <IoPersonOutline className="editProfile__avatarIcon" />
-        </div>
-        <h2 className="editProfile__name">
-          {user?.username ?? "이름 없음"}
-        </h2>
-        <p className="editProfile__meta">
-          <span className="editProfile__metaItem">
-            {user?.Identification ?? "—"}
-          </span>
-          <span className="editProfile__metaDot" aria-hidden="true">
-            ·
-          </span>
-          <span className="editProfile__metaItem">
-            {user?.position ? `만취 ${user.position}` : "—"}
-          </span>
-        </p>
-      </div>
+      <MypageProfileCard user={user} isKakaoLinked={isKakaoLinked} />
 
       <section className="mypageHub__section" aria-label="계정 정보">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
@@ -149,7 +115,8 @@ const EditProfile = () => {
               className="mypageHub__menuRow"
               onClick={() => nav("/club/mypage/username")}
             >
-              <span>이름</span>
+              <span className="editProfile__label">이름</span>
+              <span className="editProfile__value">{user?.username ?? "—"}</span>
               <MdOutlineKeyboardArrowRight
                 className="mypageHub__menuRowArrow"
                 aria-hidden
@@ -162,7 +129,8 @@ const EditProfile = () => {
               className="mypageHub__menuRow"
               onClick={() => nav("/club/mypage/Identification")}
             >
-              <span>아이디</span>
+              <span className="editProfile__label">아이디</span>
+              <span className="editProfile__value">{user?.Identification ?? "—"}</span>
               <MdOutlineKeyboardArrowRight
                 className="mypageHub__menuRowArrow"
                 aria-hidden
@@ -176,46 +144,56 @@ const EditProfile = () => {
               onClick={() => nav("/club/mypage/password")}
               hidden={user?.authProvider === "kakao"}
             >
-              <span>비밀번호</span>
+              <span className="editProfile__label">비밀번호</span>
+              <span className="editProfile__value"><span aria-label="설정됨">••••••••</span></span>
               <MdOutlineKeyboardArrowRight
                 className="mypageHub__menuRowArrow"
                 aria-hidden
               />
             </button>
           </li>
-          <li className="mypageHub__menuItem mypageHub__menuItem--kakao">
+          <li className="mypageHub__menuItem">
             {isKakaoLinked ? (
-              <div className="mypageHub__menuRow editProfile__kakaoStatus">
-                <span>카카오 연동</span>
-                <span className="editProfile__kakaoBadge">연동됨</span>
+              <div className="mypageHub__menuRow editProfile__rowStatic">
+                <span className="editProfile__label">카카오</span>
+                <span className="editProfile__value">연동됨</span>
               </div>
             ) : canLinkKakao ? (
               <button
                 type="button"
-                className="editProfile__kakaoLinkBtn"
+                className="mypageHub__menuRow"
                 onClick={() => void handleKakaoLink()}
                 disabled={kakaoLinkLoading}
               >
-                <KakaoIcon />
-                {kakaoLinkLoading ? "연동 중…" : "카카오 연동하기"}
+                <span className="editProfile__label">카카오</span>
+                <span className="editProfile__value editProfile__value--action">
+                  {kakaoLinkLoading ? "연동 중…" : "연동하기"}
+                </span>
+                <MdOutlineKeyboardArrowRight
+                  className="mypageHub__menuRowArrow"
+                  aria-hidden
+                />
               </button>
             ) : null}
           </li>
         </ul>
       </section>
 
-      <section className="mypageHub__section" aria-label="계정 삭제">
+      <section className="mypageHub__section" aria-label="계정 관리">
         <div className="mypageHub__sectionTitle mypageHub__sectionTitle--ko">
-          위험 구역
+          계정 관리
         </div>
         <ul className="mypageHub__menuList">
           <li className="mypageHub__menuItem">
             <button
               type="button"
-              className="mypageHub__menuRow mypageHub__menuRow--danger"
+              className="mypageHub__menuRow mypageHub__menuRow--danger editProfile__deleteRow"
               onClick={() => void deleteUserHandle()}
             >
-              <span>계정 삭제</span>
+              <span className="editProfile__deleteText">
+                <span>계정 삭제</span>
+                <small>삭제하면 되돌릴 수 없어요</small>
+              </span>
               <MdOutlineKeyboardArrowRight
                 className="mypageHub__menuRowArrow"
                 aria-hidden

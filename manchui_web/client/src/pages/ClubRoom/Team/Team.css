@@ -60,10 +60,10 @@
   gap: 4px;
   margin-top: 14px;
   padding: 8px 12px;
-  border: 1px solid rgba(255, 69, 58, 0.35);
+  border: 1px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.35);
   border-radius: var(--club-radius-sm);
-  background: rgba(255, 69, 58, 0.12);
-  color: #ffb1b1;
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.12);
+  color: var(--club-accent, #ffb1b1);
   font: inherit;
   font-size: 0.82rem;
   font-weight: 600;
@@ -74,8 +74,8 @@
 }
 
 .teamPage__headerAction:hover {
-  background: rgba(255, 69, 58, 0.22);
-  border-color: rgba(255, 69, 58, 0.5);
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.22);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.5);
 }
 
 .teamPage__headerAction svg {
@@ -106,9 +106,9 @@
   vertical-align: top;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.06) 100%
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.06) 0%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.12) 50%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.06) 100%
   );
   background-size: 200% 100%;
   animation: teamSkShimmer 1.2s ease-in-out infinite;
@@ -169,7 +169,7 @@
   border-color: color-mix(in srgb, var(--team-accent) 35%, transparent);
   transform: translateY(-1px);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 1px 0 rgba(var(--club-ink-rgb, 255, 255, 255), 0.06) inset,
     0 12px 32px rgba(0, 0, 0, 0.28);
 }
 
@@ -237,14 +237,14 @@
 }
 
 .teamListCard__badge--leader {
-  background: rgba(255, 69, 58, 0.22);
-  color: #ffb1b1;
-  border: 1px solid rgba(255, 69, 58, 0.35);
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.22);
+  color: var(--club-accent, #ffb1b1);
+  border: 1px solid rgba(var(--club-accent-rgb, 255, 69, 58), 0.35);
 }
 
 .teamListCard__badge--active {
   background: rgba(123, 198, 126, 0.15);
-  color: #9ee0a1;
+  color: var(--club-ok, #9ee0a1);
   border: 1px solid rgba(123, 198, 126, 0.35);
 }
 
@@ -263,8 +263,8 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-more);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
 }
 
 .teamListCard__chip--accent {
@@ -320,9 +320,9 @@
 
 .teamListCard--skeleton:hover {
   transform: none;
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   box-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 1px 0 rgba(var(--club-ink-rgb, 255, 255, 255), 0.04) inset,
     0 8px 24px rgba(0, 0, 0, 0.18);
 }
 
@@ -330,10 +330,10 @@
   opacity: 1;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.04) 0%,
-    rgba(255, 69, 58, 0.14) 45%,
-    rgba(255, 255, 255, 0.1) 55%,
-    rgba(255, 255, 255, 0.04) 100%
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.04) 0%,
+    rgba(var(--club-accent-rgb, 255, 69, 58), 0.14) 45%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.1) 55%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.04) 100%
   );
   background-size: 200% 100%;
   animation: teamSkShimmer 1.2s ease-in-out infinite;
@@ -355,9 +355,9 @@
   border-radius: var(--club-radius-sm);
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.12) 50%,
-    rgba(255, 255, 255, 0.06) 100%
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.06) 0%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.12) 50%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.06) 100%
   );
   background-size: 200% 100%;
   animation: teamSkShimmer 1.2s ease-in-out infinite;
@@ -413,12 +413,12 @@
   justify-content: center;
   margin-top: 12px;
   padding: 40px 20px 48px;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border: 1px dashed rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   border-radius: var(--club-radius);
   text-align: center;
   background: radial-gradient(
     ellipse 80% 60% at 50% 0%,
-    rgba(255, 69, 58, 0.08),
+    rgba(var(--club-accent-rgb, 255, 69, 58), 0.08),
     transparent 70%
   );
 }
@@ -431,8 +431,8 @@
   height: 72px;
   margin-bottom: 16px;
   border-radius: var(--club-radius);
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 .teamPage__emptyIcon {
@@ -463,8 +463,8 @@
   padding: 12px 22px;
   border: none;
   border-radius: var(--club-radius);
-  background: var(--club-accent);
-  color: #fff;
+  background: var(--club-action, var(--club-accent));
+  color: var(--club-on-action, #fff);
   font: inherit;
   font-size: 0.92rem;
   font-weight: 700;
@@ -521,7 +521,7 @@
   width: 100%;
   box-sizing: border-box;
   padding: 12px 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.2);
   color: var(--text-primary);
@@ -532,7 +532,7 @@
 .teamForm__input:focus,
 .teamForm__textarea:focus {
   outline: none;
-  border-color: rgba(255, 69, 58, 0.45);
+  border-color: rgba(var(--club-accent-rgb, 255, 69, 58), 0.45);
 }
 
 .teamForm__textarea {
@@ -583,7 +583,7 @@
   gap: 10px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 .teamForm__customColorLabel {
@@ -625,8 +625,8 @@
   padding: 14px;
   border: none;
   border-radius: var(--club-radius);
-  background: var(--club-accent);
-  color: #fff;
+  background: var(--club-action, var(--club-accent));
+  color: var(--club-on-action, #fff);
   font: inherit;
   font-size: 1rem;
   font-weight: 700;
@@ -683,8 +683,8 @@
   width: 36px;
   height: 20px;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.16);
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
@@ -869,7 +869,7 @@
   background: color-mix(
     in srgb,
     var(--team-accent) calc(8% + var(--avail-intensity, 0) * 68%),
-    rgba(255, 255, 255, 0.03)
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.03)
   );
   cursor: pointer;
   transition:
@@ -886,7 +886,7 @@
   background: color-mix(
     in srgb,
     var(--team-accent) calc(28% + var(--avail-intensity, 0) * 52%),
-    rgba(255, 255, 255, 0.08)
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.08)
   );
 }
 
@@ -911,7 +911,7 @@
   background: color-mix(in srgb, #2a2224 92%, #ff6b6b 8%);
   box-shadow:
     0 10px 28px rgba(0, 0, 0, 0.38),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
+    0 0 0 1px rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
   transform: translate(-50%, -100%);
   pointer-events: auto;
 }
@@ -966,7 +966,7 @@
 .teamPracticeGrid__unavailClose {
   flex-shrink: 0;
   padding: 4px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
   border-radius: 999px;
   background: transparent;
   color: var(--text-more);
@@ -978,7 +978,7 @@
 
 .teamPracticeGrid__unavailClose:hover {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.28);
 }
 
 .teamPracticeGrid__unavailEmpty {
@@ -1020,7 +1020,7 @@
   gap: 8px;
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 .teamPracticeGrid__selectionBlock {
@@ -1047,7 +1047,7 @@
 .teamPracticeGrid__selectionClear {
   flex-shrink: 0;
   padding: 4px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
   border-radius: var(--club-radius-sm);
   background: transparent;
   color: var(--text-more);
@@ -1059,7 +1059,7 @@
 
 .teamPracticeGrid__selectionClear:hover {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.28);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.28);
 }
 
 .teamPracticeGrid__selectionDate {
@@ -1102,7 +1102,7 @@
   padding: 8px 10px;
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
 }
 
 .teamPracticeGrid__selectionSegment {
@@ -1113,7 +1113,7 @@
 
 .teamPracticeGrid__selectionSegment + .teamPracticeGrid__selectionSegment {
   padding-top: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 .teamPracticeGrid__selectionSegmentHead {
@@ -1164,7 +1164,7 @@
 .teamPracticeGrid__recommend {
   margin-top: 14px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 .teamPracticeGrid__recommendBtn {
@@ -1191,7 +1191,7 @@
 .teamPracticeGrid__recommendPanel {
   margin-top: 10px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.12);
 }
@@ -1231,7 +1231,7 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   border-radius: var(--club-radius-sm);
   background: color-mix(in srgb, var(--team-accent) 4%, var(--box-1));
 }
@@ -1314,7 +1314,7 @@
   position: relative;
   overflow: hidden;
   padding: 28px 22px 22px;
-  border: 1px solid color-mix(in srgb, var(--team-accent) 32%, rgba(255, 255, 255, 0.12));
+  border: 1px solid color-mix(in srgb, var(--team-accent) 32%, rgba(var(--club-ink-rgb, 255, 255, 255), 0.12));
   border-radius: 4px;
   background:
     linear-gradient(
@@ -1428,7 +1428,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    color-mix(in srgb, var(--team-accent) 45%, rgba(255, 255, 255, 0.2)),
+    color-mix(in srgb, var(--team-accent) 45%, rgba(var(--club-ink-rgb, 255, 255, 255), 0.2)),
     transparent
   );
 }
@@ -1562,17 +1562,17 @@
   background: linear-gradient(
     180deg,
     color-mix(in srgb, var(--team-accent) 22%, var(--club-accent)) 0%,
-    rgba(255, 69, 58, 0.92) 100%
+    rgba(var(--club-accent-rgb, 255, 69, 58), 0.92) 100%
   );
-  color: #fff;
+  color: var(--club-on-accent, #fff);
   font: inherit;
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow:
-    0 8px 24px rgba(255, 69, 58, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 8px 24px rgba(var(--club-accent-rgb, 255, 69, 58), 0.28),
+    inset 0 1px 0 rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   transition:
     filter 0.2s ease,
     transform 0.15s ease;
@@ -1592,8 +1592,8 @@
 }
 
 .teamInvite__acceptBtn--muted {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   box-shadow: none;
   color: var(--text-primary);
 }
@@ -1601,7 +1601,7 @@
 .teamInvite__plainBtn {
   width: 100%;
   padding: 12px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
   border-radius: var(--club-radius-sm);
   background: transparent;
   color: var(--text-primary);
@@ -1615,8 +1615,8 @@
 }
 
 .teamInvite__plainBtn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.22);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.22);
 }
 
 .teamInvite__sign {
@@ -1628,7 +1628,7 @@
   font-weight: 600;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.28);
+  color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.28);
 }
 
 .teamSettings {
@@ -1638,7 +1638,7 @@
 }
 
 .teamSettings__section {
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   border-radius: var(--club-radius);
   padding: 16px 14px;
   background: var(--box-1);
@@ -1649,8 +1649,8 @@
 }
 
 .teamSettings__section--danger {
-  border-color: rgba(255, 69, 58, 0.22);
-  background: rgba(255, 69, 58, 0.06);
+  border-color: rgba(var(--club-danger-rgb, 255, 69, 58), 0.22);
+  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.06);
 }
 
 .teamSettings__sectionTitle {
@@ -1677,7 +1677,7 @@
   padding: 10px 12px;
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
 }
 
 .teamSettings__memberMain {
@@ -1707,8 +1707,8 @@
 }
 
 .teamSettings__memberBadge--coLeader {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.18);
   color: var(--text-gray);
 }
 
@@ -1732,15 +1732,15 @@
 }
 
 .teamSettings__memberCoLeader {
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.16);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   color: var(--text-gray);
 }
 
 .teamSettings__memberCoLeader:hover:not(:disabled) {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.24);
-  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.24);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
 }
 
 .teamSettings__memberTransfer {
@@ -1755,14 +1755,14 @@
 }
 
 .teamSettings__memberRemove {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
   color: var(--text-more);
 }
 
 .teamSettings__memberRemove:hover:not(:disabled) {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.22);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.22);
 }
 
 .teamSettings__memberTransfer:disabled,
@@ -1783,8 +1783,8 @@
   padding: 8px 16px;
   border: none;
   border-radius: var(--club-radius-sm);
-  background: var(--club-accent);
-  color: #fff;
+  background: var(--club-action, var(--club-accent));
+  color: var(--club-on-action, #fff);
   font: inherit;
   font-size: 0.86rem;
   font-weight: 700;
@@ -1806,10 +1806,10 @@
 .teamSettings__dangerBtn {
   width: 100%;
   padding: 12px;
-  border: 1px solid rgba(255, 69, 58, 0.45);
+  border: 1px solid rgba(var(--club-danger-rgb, 255, 69, 58), 0.45);
   border-radius: var(--club-radius-sm);
-  background: rgba(255, 69, 58, 0.18);
-  color: #ffb1b1;
+  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.18);
+  color: var(--club-danger, #ffb1b1);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -1817,7 +1817,7 @@
 }
 
 .teamSettings__dangerBtn:hover:not(:disabled) {
-  background: rgba(255, 69, 58, 0.28);
+  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.28);
 }
 
 .teamSettings__dangerBtn:disabled {
@@ -1927,7 +1927,7 @@
   width: 40px;
   height: 40px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   border-radius: var(--club-radius);
   background: rgba(0, 0, 0, 0.2);
   color: var(--text-more);
@@ -1993,7 +1993,7 @@
   width: 34px;
   height: 34px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.18);
   color: var(--text-more);
@@ -2018,7 +2018,7 @@
   text-align: center;
   font-size: 0.88rem;
   color: var(--text-more);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
 }
 
 .teamUpcoming__trackWrap {
@@ -2059,7 +2059,7 @@
   padding: 14px 14px 13px;
   border-radius: var(--club-radius);
   background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   box-sizing: border-box;
 }
 
@@ -2138,16 +2138,16 @@
 .teamPracticeEdit__danger {
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 69, 58, 0.22);
+  border-top: 1px solid rgba(var(--club-danger-rgb, 255, 69, 58), 0.22);
 }
 
 .teamPracticeEdit__deleteBtn {
   width: 100%;
   padding: 12px;
-  border: 1px solid rgba(255, 69, 58, 0.45);
+  border: 1px solid rgba(var(--club-danger-rgb, 255, 69, 58), 0.45);
   border-radius: var(--club-radius-sm);
-  background: rgba(255, 69, 58, 0.12);
-  color: #ffb1b1;
+  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.12);
+  color: var(--club-danger, #ffb1b1);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -2155,7 +2155,7 @@
 }
 
 .teamPracticeEdit__deleteBtn:hover:not(:disabled) {
-  background: rgba(255, 69, 58, 0.22);
+  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.22);
 }
 
 .teamPracticeEdit__deleteBtn:disabled {
@@ -2186,7 +2186,7 @@
 
 .teamDetailBlock--dashboard {
   border-style: dashed;
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.02);
 }
 
 .teamDashboard {
@@ -2208,7 +2208,7 @@
   padding: 14px 12px;
   border-radius: var(--club-radius);
   background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
 }
 
 .teamDashboard__statValue {
@@ -2239,7 +2239,7 @@
   gap: 10px;
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.14);
   color: var(--text-more);
@@ -2300,7 +2300,7 @@
   text-align: center;
   font-size: 0.86rem;
   color: var(--text-more);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
 }
 
 .teamDashboard__requestList {
@@ -2317,7 +2317,7 @@
   padding: 12px;
   border-radius: var(--club-radius);
   background: rgba(0, 0, 0, 0.16);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   color: inherit;
   font: inherit;
   text-align: left;
@@ -2329,7 +2329,7 @@
 
 .teamDashboard__requestItem:hover {
   background: rgba(0, 0, 0, 0.22);
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
 }
 
 .teamDashboard__requestItem:active {
@@ -2369,12 +2369,12 @@
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-more);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
 }
 
 .teamDashboard__requestBadge--complete {
-  color: #9ff5df;
+  color: var(--club-ok, #9ff5df);
   background: rgba(0, 255, 200, 0.1);
   border-color: rgba(0, 255, 200, 0.22);
 }
@@ -2383,7 +2383,7 @@
   height: 6px;
   border-radius: 999px;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   margin-bottom: 10px;
 }
 
@@ -2420,8 +2420,8 @@
 
 .teamDashboard__memberChip--pending {
   color: var(--text-more);
-  background: rgba(255, 255, 255, 0.04);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
   opacity: 0.85;
 }
 
@@ -2429,7 +2429,7 @@
   padding: 20px 12px;
   border-radius: var(--club-radius-sm);
   text-align: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
 }
 
 .teamDetailBlock__placeholderText {
@@ -2467,7 +2467,7 @@
   width: 36px;
   height: 36px;
   padding: 0;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
   border-radius: var(--club-radius-sm);
   background: rgba(0, 0, 0, 0.15);
   color: var(--text-more);
@@ -2477,7 +2477,7 @@
 
 .teamCalendar__navBtn:hover {
   color: var(--text-primary);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.18);
 }
 
 .teamCalendar__month {
@@ -2502,11 +2502,11 @@
 }
 
 .teamCalendar__weekLabel:first-child {
-  color: #e87070;
+  color: var(--club-accent, #e87070);
 }
 
 .teamCalendar__weekLabel:last-child {
-  color: #6ba3e8;
+  color: var(--club-secondary, #6ba3e8);
 }
 
 .teamCalendar__monthSwipe {
@@ -2589,7 +2589,7 @@
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--text-gray);
-  background: rgba(255, 255, 255, 0.02);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.02);
   overflow: hidden;
   box-sizing: border-box;
 }
@@ -2639,7 +2639,7 @@
   min-width: 1.5rem;
   min-height: 1.5rem;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
   color: var(--text-primary);
 }
 
@@ -2709,7 +2709,7 @@
   );
   color: color-mix(in srgb, #fff 82%, var(--team-accent));
   border: 1px solid color-mix(in srgb, var(--team-accent) 32%, transparent);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 0 rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   font-size: clamp(0.48rem, 2.2vw, 0.58rem);
   font-weight: 700;
   line-height: 1.15;
@@ -2884,7 +2884,7 @@
   border: none;
   border-radius: var(--club-radius-sm);
   background: var(--team-accent);
-  color: #fff;
+  color: var(--club-on-accent, #fff);
   font: inherit;
   font-size: 0.9rem;
   font-weight: 700;
@@ -2945,7 +2945,7 @@
   padding: 14px 14px 13px;
   border-radius: var(--club-radius);
   background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   box-sizing: border-box;
 }
 
@@ -3003,7 +3003,7 @@
   text-align: center;
   font-size: 0.88rem;
   color: var(--text-more);
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
 }
 
 .teamCalendar__cell--view {
@@ -3019,9 +3019,9 @@
 .teamCalSheet__action {
   width: 100%;
   padding: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
   border-radius: var(--club-radius);
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
   color: var(--text-primary);
   font: inherit;
   font-size: 0.95rem;
@@ -3031,13 +3031,13 @@
 
 .teamCalSheet__action--primary {
   border-color: color-mix(in srgb, var(--club-accent) 45%, transparent);
-  background: rgba(255, 69, 58, 0.18);
-  color: #ffb1b1;
+  background: rgba(var(--club-accent-rgb, 255, 69, 58), 0.18);
+  color: var(--club-accent, #ffb1b1);
 }
 
 .teamCalSheet__action--cancel {
-  border-color: rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.16);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
   color: var(--text-more);
 }
 
@@ -3082,4 +3082,139 @@
   .teamPage:not(.teamPage--list):not(.teamPage--detail) {
     max-width: 760px;
   }
+}
+
+/* ---------- 팀 메인 상단: 박스 없이 이름 · 설정, 아래 한 줄 메타 ---------- */
+.teamHead {
+  display: grid;
+  gap: 4px;
+  padding: 4px 2px 0;
+}
+.teamHead__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.teamHead__name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+}
+.teamHead__dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--team-accent, var(--club-accent));
+}
+.teamHead__settings {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: transparent;
+  color: var(--club-text-muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+.teamHead__settings:hover {
+  background: var(--club-surface);
+  color: var(--club-text);
+}
+.teamHead__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 4px;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--club-text-muted);
+}
+.teamHead__share {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: var(--club-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.teamHead__share:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ---------- 팀 메인: 섹션 박스 제거 ---------- */
+.teamPage--detail .teamDetailBlock {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.teamPage--detail .teamDetailBlock__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--club-text);
+}
+.teamPage--detail .teamUpcoming__empty {
+  padding: 4px 2px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+
+/* 팀 이름 앞: 팀 색 ✦ (홈과 같은 곡선 별) */
+.teamHead__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 0;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
+/* 다가오는 연습: 다시 박스로 */
+.teamPage--detail .teamDetailBlock.teamUpcoming {
+  padding: 14px 16px 16px;
+  border-radius: var(--club-radius);
+  background: var(--club-surface);
+}
+
+/* 다가오는 연습 머리: 오른쪽에 '연습 추가'(팀장) · 복사 */
+.teamUpcoming__headActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.teamUpcoming__addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 32px;
+  padding: 0 12px 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--club-text);
+  color: var(--club-bg);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.teamUpcoming__addBtn:hover {
+  opacity: 0.88;
 }

@@ -25,3 +25,7 @@ dist-ssr
 *.sw?
 
 .env
+
+# 개발 도구가 만드는 캐시·점검 결과 (커밋하지 않음)
+.vite/
+.taste-skill/

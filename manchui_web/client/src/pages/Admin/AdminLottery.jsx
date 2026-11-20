@@ -29,6 +29,35 @@ const formatDrawnAt = (iso) => {
   });
 };
 
+/** 상단 실시간 시계: 1초마다 갱신 (현장 추첨 진행용) */
+const LiveClock = () => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const date = now.toLocaleDateString("ko-KR", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    weekday: "short",
+  });
+  const time = now.toLocaleTimeString("ko-KR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  });
+  return (
+    <div className="adminLottery__clock" role="timer" aria-live="off" aria-label={`현재 시각 ${time}`}>
+      <span className="adminLottery__clockDate">{date}</span>
+      <time className="adminLottery__clockTime" dateTime={now.toISOString()}>
+        {time}
+      </time>
+    </div>
+  );
+};
+
 const AdminLottery = () => {
   const manchuiModal = useManchuiModal();
   const [prizes, setPrizes] = useState([]);
@@ -38,6 +67,7 @@ const AdminLottery = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [drawing, setDrawing] = useState(false);
+  const [deletingDraw, setDeletingDraw] = useState(false);
   const [error, setError] = useState("");
 
   const totalWinners = useMemo(
@@ -188,6 +218,25 @@ const AdminLottery = () => {
     }
   };
 
+  const handleDeleteDraw = async () => {
+    if (!(await manchuiModal("추첨 결과를 삭제할까요?\n상품·참여자 목록은 그대로 남습니다.", "confirm"))) {
+      return;
+    }
+    setDeletingDraw(true);
+    setError("");
+    try {
+      await apiClient.delete("/api/lottery/draw");
+      setLastDraw(null);
+      setShowResults(false);
+    } catch (err) {
+      const msg = err.response?.data?.message || "추첨 결과를 삭제하지 못했습니다.";
+      setError(msg);
+      await manchuiModal(msg);
+    } finally {
+      setDeletingDraw(false);
+    }
+  };
+
   const updatePrize = (id, field, value) => {
     setPrizes((prev) =>
       prev.map((p) => (p._id === id ? { ...p, [field]: value } : p)),
@@ -211,83 +260,92 @@ const AdminLottery = () => {
 
   return (
     <div className="adminLottery">
-      <h1 className="admin-page-heading">상품 추첨</h1>
-      <div className="adminLottery__rules" role="note" aria-label="추첨 규칙 안내">
-        <section className="adminLottery__ruleBlock">
-          <h2 className="adminLottery__ruleTitle">
-            <span className="adminLottery__ruleMark" aria-hidden>
-              ❗
-            </span>
-            중복 참여 가능!
-          </h2>
-          <ul className="adminLottery__ruleList">
-            <li>참여 횟수만큼 상품 당첨 확률이 올라갑니다.</li>
-            <li>
-              <em>최대 &lsquo;3번&rsquo;까지만 인정 가능합니다!</em>
-            </li>
-            <li>
-              <em>같은 멤버로는 1곡만 가능합니다!</em>
-            </li>
-          </ul>
-        </section>
-        <section className="adminLottery__ruleBlock">
-          <h2 className="adminLottery__ruleTitle">
-            <span className="adminLottery__ruleMark" aria-hidden>
-              ❗
-            </span>
-            당첨 상품은 1인 1개!
-          </h2>
-          <p className="adminLottery__ruleText">
-            당첨 확률만 올라갈 뿐, 상품은 1인 1개입니다.
-          </p>
-        </section>
+      <div className="adminLottery__head">
+        <h1 className="admin-page-heading">상품 추첨</h1>
+        <LiveClock />
       </div>
-
-      <p className="adminLottery__lead">
-        가중치: 1회→1 · 2회→2 · 3회 이상→3. 당첨자 선정 후 상품은 무작위로
-        1인 1개씩 배정합니다. 상품·참여자 목록은 &lsquo;목록 저장&rsquo;으로
-        보관할 수 있습니다.
-      </p>
 
       {error ? <p className="adminLottery__error">{error}</p> : null}
 
-      <div className="adminLottery__stats">
-        <span>
-          당첨 인원: <strong>{totalWinners}명</strong>
-        </span>
-        <span>
-          참여자: <strong>{participants.filter((p) => p.name?.trim()).length}명</strong>
-        </span>
-        <span>
-          가중치: <strong>1회=1 · 2회=2 · 3회+=3</strong>
-        </span>
-      </div>
+      {/* 왼쪽 안내 사항 · 오른쪽 조작 */}
+      <div className="adminLottery__top">
+        <div className="adminLottery__topInfo">
+          <div className="adminLottery__rules" role="note" aria-label="추첨 규칙 안내">
+            <section className="adminLottery__ruleBlock">
+              <h2 className="adminLottery__ruleTitle">
+                <span className="adminLottery__ruleMark" aria-hidden>
+                  ❗
+                </span>
+                중복 참여 가능!
+              </h2>
+              <ul className="adminLottery__ruleList">
+                <li>참여 횟수만큼 상품 당첨 확률이 올라갑니다.</li>
+                <li>
+                  <em>최대 &lsquo;3번&rsquo;까지만 인정 가능합니다!</em>
+                </li>
+                <li>
+                  <em>같은 멤버로는 1곡만 가능합니다!</em>
+                </li>
+              </ul>
+            </section>
+            <section className="adminLottery__ruleBlock">
+              <h2 className="adminLottery__ruleTitle">
+                <span className="adminLottery__ruleMark" aria-hidden>
+                  ❗
+                </span>
+                당첨 상품은 1인 1개!
+              </h2>
+              <p className="adminLottery__ruleText">
+                당첨 확률만 올라갈 뿐, 상품은 1인 1개입니다.
+              </p>
+            </section>
+          </div>
+          <p className="adminLottery__lead">
+            가중치: 1회→1 · 2회→2 · 3회 이상→3. 당첨자 선정 후 상품은 무작위로
+            1인 1개씩 배정합니다. 상품·참여자 목록은 &lsquo;목록 저장&rsquo;으로
+            보관할 수 있습니다.
+          </p>
+        </div>
+        <div className="adminLottery__controls">
+          <div className="adminLottery__stats">
+            <span>
+              당첨 인원: <strong>{totalWinners}명</strong>
+            </span>
+            <span>
+              참여자: <strong>{participants.filter((p) => p.name?.trim()).length}명</strong>
+            </span>
+            <span>
+              가중치: <strong>1회=1 · 2회=2 · 3회+=3</strong>
+            </span>
+          </div>
 
-      <div className="adminLottery__toolbar">
-        <button
-          type="button"
-          className="adminLottery__btn adminLottery__btn--primary"
-          onClick={handleSave}
-          disabled={saving || drawing}
-        >
-          {saving ? "저장 중…" : "목록 저장"}
-        </button>
-        <button
-          type="button"
-          className="adminLottery__btn adminLottery__btn--draw"
-          onClick={handleDraw}
-          disabled={saving || drawing || totalWinners < 1}
-        >
-          {drawing ? "추첨 중…" : "랜덤 추첨 실행"}
-        </button>
-        <button
-          type="button"
-          className="adminLottery__btn"
-          onClick={() => void fetchConfig()}
-          disabled={saving || drawing}
-        >
-          새로고침
-        </button>
+          <div className="adminLottery__toolbar">
+            <button
+              type="button"
+              className="adminLottery__btn adminLottery__btn--primary"
+              onClick={handleSave}
+              disabled={saving || drawing}
+            >
+              {saving ? "저장 중…" : "목록 저장"}
+            </button>
+            <button
+              type="button"
+              className="adminLottery__btn adminLottery__btn--draw"
+              onClick={handleDraw}
+              disabled={saving || drawing || totalWinners < 1}
+            >
+              {drawing ? "추첨 중…" : "랜덤 추첨 실행"}
+            </button>
+            <button
+              type="button"
+              className="adminLottery__btn"
+              onClick={() => void fetchConfig()}
+              disabled={saving || drawing}
+            >
+              새로고침
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="adminLottery__grid">
@@ -442,14 +500,24 @@ const AdminLottery = () => {
                 {sortedDrawResults.length}명
               </p>
             </div>
-            <button
-              type="button"
-              className="adminLottery__resultsClose"
-              onClick={() => setShowResults(false)}
-              aria-label="추첨 결과 닫기"
-            >
-              닫기
-            </button>
+            <div className="adminLottery__resultsActions">
+              <button
+                type="button"
+                className="adminLottery__resultsDelete"
+                onClick={() => void handleDeleteDraw()}
+                disabled={deletingDraw || drawing}
+              >
+                {deletingDraw ? "삭제 중…" : "결과 삭제"}
+              </button>
+              <button
+                type="button"
+                className="adminLottery__resultsClose"
+                onClick={() => setShowResults(false)}
+                aria-label="추첨 결과 닫기"
+              >
+                닫기
+              </button>
+            </div>
           </div>
           <div className="adminLottery__tableWrap adminLottery__resultsTable">
             <table className="adminLottery__table">

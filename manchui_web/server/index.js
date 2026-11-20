@@ -37,7 +37,6 @@ const teamRouter = require("./routes/team");
 const practiceRouter = require("./routes/practice");
 const recommendationRouter = require("./routes/recommendation");
 const lotteryRouter = require("./routes/lottery");
-const eventRouter = require("./routes/event");
 const pollRouter = require("./routes/poll");
 
 app.use(
@@ -64,7 +63,6 @@ app.use("/api/team", teamRouter);
 app.use("/api/practice", practiceRouter);
 app.use("/api/recommendations", recommendationRouter);
 app.use("/api/lottery", lotteryRouter);
-app.use("/api/event", eventRouter);
 app.use("/api/poll", pollRouter);
 
 app.get("/", (req, res) => {

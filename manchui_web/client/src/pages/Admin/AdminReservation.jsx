@@ -2,14 +2,15 @@ import { useRefreshOnFocus } from "../../hooks/useRefreshOnFocus";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { authRequestConfig } from "../../api/tokenStorage";
-import { IoMapOutline } from "react-icons/io5";
+import { createPortal } from "react-dom";
+import { IoCloseOutline, IoMapOutline } from "react-icons/io5";
 import ClubRoomLocationModal from "../../components/ClubRoomMapEmbed/ClubRoomLocationModal";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import "../ClubRoom/Reservation/Reservation.css";
 import { formatReservationTimeRange } from "../ClubRoom/Reservation/reservationTimeFormat";
 import ClubRoomRulesBar from "../ClubRoom/Reservation/ClubRoomRulesBar";
 import ReservedSlotDetailModal from "../ClubRoom/Reservation/ReservedSlotDetailModal";
-import ReservationHourPicker from "../ClubRoom/Reservation/ReservationHourPicker";
+import ReservationDayTimeline from "../ClubRoom/Reservation/ReservationDayTimeline";
 import "./AdminReservation.css";
 import { LOADING_TEXT } from "../../constants/loadingText";
 import {
@@ -189,8 +190,8 @@ function AdminDayReservationList({
               </span>
             </div>
             <p className="admin-reservation__dayCardMeta">
-              팀 {teamLabel(r)}
-              {r.headcount != null ? ` · 인원 ${r.headcount}명` : ""}
+              {teamLabel(r)}
+              {r.headcount != null ? ` · ${r.headcount}명` : ""}
               {" · "}
               {memberLabel(r)}
             </p>
@@ -238,6 +239,8 @@ const AdminReservation = () => {
   const [purging, setPurging] = useState(false);
   const [viewingReservation, setViewingReservation] = useState(null);
   const [locationModalOpen, setLocationModalOpen] = useState(false);
+  /** 시간은 시간 막대에서 고르고, 팀 이름·인원은 바텀시트에서 (동아리방 예약 페이지와 같은 흐름) */
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const loadList = useCallback(async () => {
     if (!serverUrl) return;
@@ -332,6 +335,7 @@ const AdminReservation = () => {
     setTeamName("");
     setHeadcount(1);
     setViewingReservation(null);
+    setSheetOpen(false);
     const [y, m] = dateKey.split("-").map(Number);
     if (y && m) {
       navigateToMonth(new Date(y, m - 1, 1));
@@ -427,6 +431,7 @@ const AdminReservation = () => {
         },
         authConfig(),
       );
+      setSheetOpen(false);
       await modal("예약이 완료되었습니다.", "alert");
       setSelectedHours([]);
       setTeamName("");
@@ -490,9 +495,6 @@ const AdminReservation = () => {
 
   const grid = useMemo(() => buildMonthGrid(viewMonth), [viewMonth]);
 
-  const hasReservationOnDate = (dateKey) =>
-    visibleAllReservations.some((r) => r.date === dateKey);
-
   const allReservationRows = useMemo(
     () => sortReservationRowsDesc(visibleAllReservations),
     [visibleAllReservations],
@@ -504,6 +506,15 @@ const AdminReservation = () => {
       visibleAllReservations.filter((r) => r.date === selectedDateKey),
     );
   }, [selectedDateKey, visibleAllReservations]);
+
+  /** 시간 막대에서 관리자 예약을 밝은 블록으로 */
+  const adminBookingIds = new Set(
+    dayReservations.filter(isAdminBooking).map((r) => String(r._id)),
+  );
+  const selectionLabel =
+    selectedHours.length > 0
+      ? `${formatReservationTimeRange(selectedHours)} · ${selectedHours.length}시간`
+      : null;
 
   if (!serverUrl) {
     return (
@@ -517,21 +528,21 @@ const AdminReservation = () => {
 
   return (
     <div className="reservation admin-reservation admin-reservation--manage">
-      <div className="reservation__titleRow">
-        <h1 className="admin-page-heading reservation__title">예약 관리</h1>
-        <button
-          type="button"
-          className="reservation__mapBtn"
-          onClick={() => setLocationModalOpen(true)}
-          aria-label="동아리방 위치 보기"
-        >
-          <IoMapOutline className="reservation__mapBtnIcon" aria-hidden />
-        </button>
+      <div className="admin-reservation__head">
+        <h1 className="admin-page-heading">예약 관리</h1>
+        <div className="admin-reservation__headActions">
+          <ClubRoomRulesBar inline />
+          <button
+            type="button"
+            className="reservation__mapBtn"
+            onClick={() => setLocationModalOpen(true)}
+            aria-label="동아리방 위치 보기"
+          >
+            <IoMapOutline className="reservation__mapBtnIcon" aria-hidden />
+            <span className="reservation__mapBtnText">위치 안내</span>
+          </button>
+        </div>
       </div>
-      <p className="admin-reservation__lead">
-        캘린더에서 날짜를 선택해 해당 일 예약을 확인하고, 아래에서 관리자
-        예약을 추가할 수 있습니다.
-      </p>
 
       {listError ? (
         <p className="reservation__warn" role="alert">
@@ -539,24 +550,99 @@ const AdminReservation = () => {
         </p>
       ) : null}
 
-      <section
-        className={`reservation__calendarSection admin-reservation__calendarSection${loading ? " reservation__calendarSection--loading" : ""}`}
-        aria-label="예약 캘린더"
-        aria-busy={loading}
-      >
-        <div className="admin-reservation__calendarHead">
-          <label className="admin-reservation__toggle">
-            <input
-              type="checkbox"
-              className="admin-reservation__toggleInput"
-              checked={showAllReservations}
-              onChange={(e) => setShowAllReservations(e.target.checked)}
-            />
-            <span className="admin-reservation__toggleTrack" aria-hidden />
-            <span className="admin-reservation__toggleLabel">전체 예약 보기</span>
-          </label>
-          <div className="admin-reservation__calendarHeadActions">
-            <ClubRoomRulesBar inline />
+      {/* PC: 왼쪽 달력 · 오른쪽 선택한 날(시간 막대 + 예약 목록). 모바일은 위아래 */}
+      <div className="admin-reservation__grid">
+        <section
+          className={`reservation__calendarSection admin-reservation__calendarSection${loading ? " reservation__calendarSection--loading" : ""}`}
+          aria-label="예약 캘린더"
+          aria-busy={loading}
+        >
+          <ReservationMonthNav
+            viewMonth={viewMonth}
+            slideDir={slideDir}
+            goPrevMonth={goPrevMonth}
+            goNextMonth={goNextMonth}
+            navigateToMonth={navigateToMonth}
+          />
+
+          <ReservationCalendarSlide
+            monthKey={monthKey}
+            slideDir={slideDir}
+            swipeHandlers={swipeHandlers}
+          >
+            <div className="reservation__weekRow">
+              {WEEK_LABELS.map((w, i) => (
+                <span
+                  key={w}
+                  className={`reservation__weekCell${i === 0 ? " reservation__weekCell--sun" : ""}${i === 6 ? " reservation__weekCell--sat" : ""}`}
+                >
+                  {w}
+                </span>
+              ))}
+            </div>
+
+            <div
+              className={`reservation__dayGrid${calendarGridLoadingClass(loading)}`}
+            >
+              {grid.map((cell) => {
+                if (!cell.date) {
+                  return <div key={cell.key} className="reservation__dayEmpty" />;
+                }
+                const key = cell.key;
+                const t = cell.date.getTime();
+                const isPast = t < todayStart;
+                const isToday = key === todayKey;
+                const isSelected = key === selectedDateKey;
+                const count = loading
+                  ? 0
+                  : visibleAllReservations.filter((r) => r.date === key).length;
+                return (
+                  <button
+                    key={cell.key}
+                    type="button"
+                    disabled={loading}
+                    className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}${isSelected ? " reservation__day--selected" : ""}${calendarDayLoadingClass(loading)}`}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onClick={() => !loading && selectDate(key)}
+                    aria-pressed={isSelected}
+                    aria-label={`${key}${count ? `, 예약 ${count}건` : ""}${isSelected ? ", 선택됨" : ""}`}
+                  >
+                    <span className="reservation__dayNum">
+                      {cell.date.getDate()}
+                    </span>
+                    {count > 0 ? (
+                      <span className="reservation__dayDots" aria-hidden>
+                        {Array.from({ length: Math.min(count, 3) }, (_, i) => (
+                          <span key={i} className="reservation__dayDot" />
+                        ))}
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </ReservationCalendarSlide>
+          <ReservationCalendarFooter
+            loading={loading}
+            onToday={() => {
+              goToToday();
+              selectDate(todayKey);
+            }}
+            isViewingTodayMonth={isViewingTodayMonth}
+          />
+
+          <div className="admin-reservation__calendarTools">
+            <label className="admin-reservation__toggle">
+              <input
+                type="checkbox"
+                className="admin-reservation__toggleInput"
+                checked={showAllReservations}
+                onChange={(e) => setShowAllReservations(e.target.checked)}
+              />
+              <span className="admin-reservation__toggleTrack" aria-hidden />
+              <span className="admin-reservation__toggleLabel">전체 예약 보기</span>
+            </label>
             {showAllReservations ? (
               <button
                 type="button"
@@ -568,75 +654,69 @@ const AdminReservation = () => {
               </button>
             ) : null}
           </div>
-        </div>
+        </section>
 
-        <ReservationMonthNav
-          viewMonth={viewMonth}
-          slideDir={slideDir}
-          goPrevMonth={goPrevMonth}
-          goNextMonth={goNextMonth}
-          navigateToMonth={navigateToMonth}
-        />
-
-        <ReservationCalendarSlide
-          monthKey={monthKey}
-          slideDir={slideDir}
-          swipeHandlers={swipeHandlers}
-        >
-          <div className="reservation__weekRow">
-            {WEEK_LABELS.map((w) => (
-              <span key={w} className="reservation__weekCell">
-                {w}
-              </span>
-            ))}
-          </div>
-
-          <div
-            className={`reservation__dayGrid${calendarGridLoadingClass(loading)}`}
+        {selectedDateKey ? (
+          <section
+            className="reservation__daySection admin-reservation__dayPanel"
+            aria-label={`${selectedDateKey} 예약`}
           >
-            {grid.map((cell) => {
-              if (!cell.date) {
-                return <div key={cell.key} className="reservation__dayEmpty" />;
-              }
-              const key = cell.key;
-              const t = cell.date.getTime();
-              const isPast = t < todayStart;
-              const isToday = key === todayKey;
-              const isSelected = key === selectedDateKey;
-              const hasDot = !loading && hasReservationOnDate(key);
-              return (
-                <button
-                  key={cell.key}
-                  type="button"
-                  disabled={loading}
-                  className={`reservation__day${isToday ? " reservation__day--today" : ""}${isPast ? " reservation__day--past" : ""}${isSelected ? " reservation__day--selected" : ""}${calendarDayLoadingClass(loading)}`}
-                  onPointerDown={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => e.stopPropagation()}
-                  onClick={() => !loading && selectDate(key)}
-                  aria-pressed={isSelected}
-                  aria-label={`${key}${hasDot ? ", 예약 있음" : ""}${isSelected ? ", 선택됨" : ""}`}
-                >
-                  <span className="reservation__dayNum">
-                    {cell.date.getDate()}
-                  </span>
-                  {hasDot ? (
-                    <span className="reservation__dayDot" aria-hidden />
-                  ) : null}
-                </button>
-              );
-            })}
-          </div>
-        </ReservationCalendarSlide>
-        <ReservationCalendarFooter
-          loading={loading}
-          hint="날짜를 선택하면 해당 일의 예약 내역과 관리자 예약 추가 폼이 아래에 표시됩니다."
-          onToday={() => {
-            goToToday();
-            selectDate(todayKey);
-          }}
-          isViewingTodayMonth={isViewingTodayMonth}
-        />
-      </section>
+            <div className="reservation__dayHead">
+              <h2 className="reservation__sectionTitle">
+                {selectedDateKey}
+                {selectedDateKey === todayKey ? (
+                  <span className="reservation__todayBadge">오늘</span>
+                ) : null}
+                {selectedDateIsPast ? (
+                  <span className="admin-reservation__dayTitleTag">지난 날</span>
+                ) : null}
+              </h2>
+              <span className="reservation__dayCount">
+                {loading ? "" : `예약 ${dayReservations.length}건`}
+              </span>
+            </div>
+
+            {loading ? (
+              <p className="reservation__hint">{LOADING_TEXT}</p>
+            ) : (
+              <ReservationDayTimeline
+                reservations={dayReservations}
+                myIds={adminBookingIds}
+                isToday={selectedDateKey === todayKey}
+                now={now}
+                onSelect={setViewingReservation}
+                selectable={!selectedDateIsPast}
+                selectedHours={selectedHours}
+                isHourBlocked={isHourBlocked}
+                onSelectHour={(h) => void handleHourClick(h)}
+                footer={
+                  selectedDateIsPast ? null : (
+                    <button
+                      type="button"
+                      className="reservation__btn reservation__btn--primary reservation__reserveBtn"
+                      disabled={selectedHours.length === 0}
+                      onClick={() => setSheetOpen(true)}
+                    >
+                      {selectedHours.length > 0
+                        ? `${formatReservationTimeRange(selectedHours)} 관리자 예약`
+                        : "관리자 예약"}
+                    </button>
+                  )
+                }
+              />
+            )}
+
+            {!loading ? (
+              <AdminDayReservationList
+                rows={dayReservations}
+                busyId={busyId}
+                onDeleteOne={(id) => void handleDeleteOne(id)}
+                onViewDetail={setViewingReservation}
+              />
+            ) : null}
+          </section>
+        ) : null}
+      </div>
 
       {showAllReservations ? (
         <section
@@ -644,9 +724,6 @@ const AdminReservation = () => {
           aria-label="전체 예약 목록"
         >
           <h2 className="admin-reservation__listTitle">전체 예약</h2>
-          <p className="admin-reservation__subHint">
-            모든 일반·관리자 예약을 날짜순으로 표시합니다.
-          </p>
           {loading ? (
             <p className="reservation__hint">{LOADING_TEXT}</p>
           ) : allReservationRows.length === 0 ? (
@@ -662,130 +739,123 @@ const AdminReservation = () => {
         </section>
       ) : null}
 
-      {selectedDateKey ? (
-        <>
-          <section
-            className="admin-reservation__daySection"
-            aria-label={`${selectedDateKey} 예약 내역`}
-          >
-            <h2 className="admin-reservation__dayTitle">
-              {selectedDateKey} 예약
-              {selectedDateIsPast ? (
-                <span className="admin-reservation__dayTitleTag">지난 날</span>
-              ) : null}
-            </h2>
-            {loading ? (
-              <p className="reservation__hint">{LOADING_TEXT}</p>
-            ) : (
-              <AdminDayReservationList
-                rows={dayReservations}
-                busyId={busyId}
-                onDeleteOne={(id) => void handleDeleteOne(id)}
-                onViewDetail={setViewingReservation}
+      {/* 바텀시트: 팀 이름 · 인원 (예약 페이지와 같은 틀) */}
+      {sheetOpen && selectedDateKey
+        ? createPortal(
+            <div className="reservation__sheetRoot" role="presentation">
+              <button
+                type="button"
+                className="reservation__sheetBackdrop"
+                aria-label="닫기"
+                tabIndex={-1}
+                onClick={() => setSheetOpen(false)}
               />
-            )}
-          </section>
+              <form
+                className="reservation__sheet"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="admin-reservation-sheet-title"
+                onSubmit={handleSubmit}
+              >
+                <div className="reservation__sheetHeader">
+                  <span className="reservation__sheetHandle" aria-hidden />
+                  <h2
+                    id="admin-reservation-sheet-title"
+                    className="reservation__sheetTitle"
+                  >
+                    {selectedDateKey} 관리자 예약
+                  </h2>
+                  <button
+                    type="button"
+                    className="reservation__sheetClose"
+                    onClick={() => setSheetOpen(false)}
+                    aria-label="닫기"
+                  >
+                    <IoCloseOutline aria-hidden />
+                  </button>
+                </div>
 
-          <section
-            className="admin-reservation__addSection"
-            aria-label="관리자 예약 추가"
-          >
-            <h2 className="admin-reservation__dayTitle">관리자 예약 추가</h2>
-            <p className="admin-reservation__quotaNote" role="status">
-              관리자 예약은 회원별 건수 제한에 포함되지 않습니다.
-            </p>
-            {selectedDateIsPast ? (
-              <p className="admin-reservation__emptyBlock">
-                지난 날짜에는 새 예약을 등록할 수 없습니다.
-              </p>
-            ) : (
-              <form className="reservation__form" onSubmit={handleSubmit}>
-                <fieldset className="reservation__field">
-                  <ReservationHourPicker
-                    active={Boolean(selectedDateKey)}
-                    selectedDateKey={selectedDateKey}
-                    selectedHours={selectedHours}
-                    reservedOnSelected={reservedOnSelected}
-                    todayKey={todayKey}
-                    canCreateReservation={canCreateReservation}
-                    allReservations={allReservations}
-                    onSelectHour={(h) => void handleHourClick(h)}
-                    onViewReservation={setViewingReservation}
-                  />
-                </fieldset>
+                <div className="reservation__sheetBody">
+                  <div className="reservation__step">
+                    <p className="reservation__stepTitle">예약 정보</p>
+                    <label className="reservation__field reservation__field--stack">
+                      <span className="reservation__label">팀 이름</span>
+                      <input
+                        type="text"
+                        className="reservation__input"
+                        value={teamName}
+                        onChange={(e) => setTeamName(e.target.value.slice(0, 20))}
+                        placeholder="예: 만취 1팀"
+                        maxLength={20}
+                        autoComplete="off"
+                      />
+                    </label>
 
-                <label className="reservation__field reservation__field--stack">
-                  <span className="reservation__label">팀 이름</span>
-                  <input
-                    type="text"
-                    className="reservation__input"
-                    value={teamName}
-                    onChange={(e) => setTeamName(e.target.value.slice(0, 20))}
-                    placeholder="예: 만취 1팀"
-                    maxLength={20}
-                  />
-                </label>
-
-                <label className="reservation__field reservation__field--stack">
-                  <span className="reservation__label">사용 인원</span>
-                  <div className="reservation__numberWrap">
-                    <button
-                      type="button"
-                      className="reservation__numberBtn"
-                      aria-label="인원 한 명 줄이기"
-                      disabled={headcountStepValue <= 1}
-                      onClick={() =>
-                        setHeadcount(Math.max(1, headcountStepValue - 1))
-                      }
-                    >
-                      −
-                    </button>
-                    <input
-                      type="number"
-                      min={1}
-                      max={99}
-                      inputMode="numeric"
-                      className="reservation__input reservation__input--numberCore"
-                      value={headcount}
-                      onChange={(e) => {
-                        const raw = e.target.value;
-                        if (raw === "") {
-                          setHeadcount("");
-                          return;
-                        }
-                        const n = Number(raw);
-                        if (!Number.isFinite(n)) return;
-                        setHeadcount(Math.max(1, Math.min(99, n)));
-                      }}
-                    />
-                    <button
-                      type="button"
-                      className="reservation__numberBtn"
-                      aria-label="인원 한 명 늘리기"
-                      disabled={headcountStepValue >= 99}
-                      onClick={() =>
-                        setHeadcount(Math.min(99, headcountStepValue + 1))
-                      }
-                    >
-                      +
-                    </button>
+                    <div className="reservation__field reservation__field--stack">
+                      <span className="reservation__label">사용 인원</span>
+                      <div className="reservation__numberWrap">
+                        <button
+                          type="button"
+                          className="reservation__numberBtn"
+                          aria-label="인원 한 명 줄이기"
+                          disabled={headcountStepValue <= 1}
+                          onClick={() =>
+                            setHeadcount(Math.max(1, headcountStepValue - 1))
+                          }
+                        >
+                          −
+                        </button>
+                        <input
+                          type="number"
+                          min={1}
+                          max={99}
+                          inputMode="numeric"
+                          className="reservation__input reservation__input--numberCore"
+                          value={headcount}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            if (raw === "") {
+                              setHeadcount("");
+                              return;
+                            }
+                            const n = Number(raw);
+                            if (!Number.isFinite(n)) return;
+                            setHeadcount(Math.max(1, Math.min(99, n)));
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="reservation__numberBtn"
+                          aria-label="인원 한 명 늘리기"
+                          disabled={headcountStepValue >= 99}
+                          onClick={() =>
+                            setHeadcount(Math.min(99, headcountStepValue + 1))
+                          }
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                </label>
+                </div>
 
-                <div className="reservation__formActions">
+                <div className="reservation__sheetFooter">
+                  <p className="reservation__selectionSummary" aria-live="polite">
+                    {selectionLabel ?? "시간을 선택해 주세요"}
+                  </p>
                   <button
                     type="submit"
                     className="reservation__btn reservation__btn--primary"
-                    disabled={submitting || selectedHours.length === 0}
+                    disabled={submitting || selectedHours.length === 0 || !teamName.trim()}
                   >
-                    {submitting ? "처리 중…" : "예약 등록"}
+                    {submitting ? "처리 중…" : "예약하기"}
                   </button>
                 </div>
               </form>
-            )}
-          </section>
-        </>
-      ) : null}
+            </div>,
+            document.body,
+          )
+        : null}
 
       {viewingReservation ? (
         <ReservedSlotDetailModal

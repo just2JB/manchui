@@ -302,3 +302,107 @@
 .adminLottery__loading {
   color: var(--text-secondary, #a8a8b3);
 }
+
+/* ---------- 상단: 제목 + 실시간 시계 ---------- */
+.adminLottery__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 20px;
+  margin-bottom: 1.25rem;
+}
+.adminLottery__head .admin-page-heading {
+  margin: 0;
+}
+.adminLottery__clock {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.adminLottery__clockDate {
+  font-size: 0.8125rem;
+  color: var(--text-more);
+}
+.adminLottery__clockTime {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text-primary);
+}
+
+/* ---------- 왼쪽 안내 · 오른쪽 조작 ---------- */
+.adminLottery__top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  margin-bottom: 1.25rem;
+}
+.adminLottery__topInfo > :last-child,
+.adminLottery__controls > :last-child {
+  margin-bottom: 0;
+}
+.adminLottery__controls {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--box-1);
+}
+.adminLottery__controls .adminLottery__stats,
+.adminLottery__controls .adminLottery__toolbar {
+  margin: 0;
+}
+.adminLottery__controls .adminLottery__toolbar {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.adminLottery__controls .adminLottery__btn--draw {
+  grid-column: 1 / -1;
+  order: -1;
+  min-height: 48px;
+  font-size: 1rem;
+}
+@media (min-width: 900px) {
+  .adminLottery__top {
+    grid-template-columns: minmax(0, 1.4fr) minmax(300px, 1fr);
+    align-items: start;
+  }
+  .adminLottery__clock {
+    justify-items: end;
+  }
+}
+@media (max-width: 899px) {
+  .adminLottery__clock {
+    justify-items: start;
+  }
+}
+
+/* ---------- 추첨 결과: 삭제 버튼 ---------- */
+.adminLottery__resultsActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.adminLottery__resultsDelete {
+  padding: 6px 12px;
+  border: 1px solid var(--brand-red);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--brand-red);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.adminLottery__resultsDelete:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-red) 14%, transparent);
+}
+.adminLottery__resultsDelete:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}

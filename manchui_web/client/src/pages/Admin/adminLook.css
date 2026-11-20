@@ -1,0 +1,212 @@
+/* 관리자 페이지 — 어시스턴트(동아리방)와 같은 룩.
+   관리자 화면은 예전 전역 토큰(--box-*, --text-*, --brand-red …)을 쓰므로, .admin-layout 안에서
+   그 토큰을 새 룩 값으로 다시 정의한다. 다크 기본, 라이트는 팔레트만 교체(useClubTheme 와 같은 설정).
+   - 층은 밝기 단계로만(바탕 → 카드 → 카드 안), 테두리는 아주 옅게
+   - 주 버튼·선택 상태는 반전(다크: 흰 바탕+검은 글씨). 빨강(--brand-red)은 삭제 같은 위험 동작에만 */
+
+body[data-club-theme] .admin-layout,
+.admin-layout {
+  --background-dark: #050505;
+  --box-1: #121212;
+  --box-2: #1c1c1c;
+  --box-3: #262626;
+  --box-4: #2c2c2c;
+  --primary-200: #2a2a2a;
+  --text-primary: #ffffff;
+  --text-gray: #d4d4d4;
+  --text-secondary: #b4b4b4;
+  --text-more: #9a9a9a;
+  --brand-red: #ff5c5c;
+  --accent-200: #ffffff;
+  --admin-primary: #ffffff;
+  --admin-on-primary: #000000;
+  --admin-line: rgba(255, 255, 255, 0.07);
+  --admin-hover: rgba(255, 255, 255, 0.06);
+  color-scheme: dark;
+  background: var(--background-dark);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+body[data-club-theme="light"] .admin-layout {
+  --background-dark: #f4f4f5;
+  --box-1: #ffffff;
+  --box-2: #f1f1f3;
+  --box-3: #e4e4e7;
+  --box-4: #dcdce0;
+  --primary-200: #e4e4e7;
+  --text-primary: #111111;
+  --text-gray: #333333;
+  --text-secondary: #55555c;
+  --text-more: #6b6b6b;
+  --brand-red: #b30000;
+  --accent-200: #111111;
+  --admin-primary: #111111;
+  --admin-on-primary: #ffffff;
+  --admin-line: rgba(0, 0, 0, 0.08);
+  --admin-hover: rgba(0, 0, 0, 0.05);
+  color-scheme: light;
+}
+
+/* ---------- 상단 바: 그라데이션 없이 바탕과 같은 층 + 옅은 선 ---------- */
+.admin-layout .admin-nav {
+  background: var(--background-dark);
+  border-bottom-color: var(--admin-line);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.admin-layout .admin-nav__link {
+  border-radius: 999px;
+}
+.admin-layout .admin-nav__link:hover {
+  background: var(--admin-hover);
+}
+/* 선택된 메뉴: 빨간 틴트 대신 반전 알약 */
+.admin-layout .admin-nav__link--active,
+.admin-layout .admin-nav__link--active:hover {
+  background: var(--admin-primary);
+  color: var(--admin-on-primary);
+  box-shadow: none;
+}
+/* 로그인한 임원 이름: 빨간 틴트 대신 무채색 */
+.admin-layout .admin-nav__user {
+  border-color: var(--admin-line);
+  background: var(--box-2);
+  color: var(--text-primary);
+}
+.admin-layout .admin-nav__link--active .admin-nav__linkIcon {
+  color: var(--admin-on-primary);
+}
+.admin-layout :is(.admin-nav__club, .admin-nav__logout) {
+  border-color: var(--admin-line);
+  background: transparent;
+}
+.admin-layout :is(.admin-nav__club, .admin-nav__logout):hover {
+  border-color: var(--admin-line);
+  background: var(--admin-hover);
+  color: var(--text-primary);
+}
+
+/* ---------- 주 버튼·선택 상태: 반전 ---------- */
+.admin-layout :is(
+    .adminJoinConfig .configSave,
+    .adminJoin .configSave,
+    .joinSetting .configSave,
+    .adminRecommend__btn
+  ) {
+  border: 0;
+  background: var(--admin-primary);
+  color: var(--admin-on-primary);
+}
+.admin-layout :is(
+    .adminJoinConfig .configSave,
+    .adminJoin .configSave,
+    .joinSetting .configSave,
+    .adminRecommend__btn
+  ):hover:not(:disabled) {
+  filter: none;
+  opacity: 0.88;
+}
+.admin-layout .adminJoinConfig .configToggle.on,
+.admin-layout .adminTeam__tab--active {
+  border-color: var(--admin-primary);
+  background: var(--admin-primary);
+  color: var(--admin-on-primary);
+}
+
+/* 빨간 장식 아이콘·포커스선 → 글자색 (빨강은 위험 동작에만) */
+.admin-layout .adminHome__linkIcon {
+  color: var(--text-primary);
+}
+.admin-layout :is(button, a, input, select, textarea):focus-visible {
+  outline-color: var(--text-primary);
+}
+
+/* 페이지 제목: 어시스턴트 페이지와 같은 크기 */
+.admin-layout .admin-page-heading {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+/* ---------- 예약 관리: PC 좌(달력) · 우(선택한 날) ---------- */
+.admin-layout .admin-reservation--manage {
+  max-width: none;
+  padding: 0;
+}
+.admin-reservation__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.admin-reservation__head .admin-page-heading {
+  margin: 0;
+}
+.admin-reservation__headActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-reservation__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+}
+.admin-layout .admin-reservation__grid .reservation__daySection {
+  margin-top: 0;
+}
+.admin-reservation__calendarTools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.admin-reservation__dayPanel .admin-reservation__dayList,
+.admin-reservation__dayPanel .admin-reservation__emptyBlock {
+  margin-top: 4px;
+}
+.admin-reservation__listSection {
+  margin-top: 20px;
+}
+@media (min-width: 1024px) {
+  .admin-reservation__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 1fr);
+    gap: 20px;
+  }
+  /* 오른쪽 패널은 스크롤해도 따라오게 */
+  .admin-reservation__dayPanel {
+    position: sticky;
+    top: 16px;
+  }
+}
+
+/* 예약 관리 상단 탭(예약 관리 / 예약 건수 제한): 주황 대신 반전 알약 */
+.admin-layout .admin-reservation-layout__tab {
+  border-color: var(--admin-line);
+  background: transparent;
+  color: var(--text-more);
+}
+.admin-layout .admin-reservation-layout__tab:hover {
+  background: var(--admin-hover);
+  color: var(--text-primary);
+}
+.admin-layout .admin-reservation-layout__tab--active,
+.admin-layout .admin-reservation-layout__tab--active:hover {
+  border-color: var(--admin-primary);
+  background: var(--admin-primary);
+  color: var(--admin-on-primary);
+}
+/* 선택한 날짜: 관리자 전용 주황 테두리·그림자 제거 → 예약 페이지와 같은 반전 칸 */
+.admin-layout .admin-reservation--manage .reservation__day--selected,
+.admin-layout .admin-reservation--manage .reservation__day--past.reservation__day--selected {
+  border: 0;
+  box-shadow: none;
+  background: var(--club-accent);
+  color: var(--club-on-accent);
+}

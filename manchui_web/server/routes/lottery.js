@@ -137,4 +137,17 @@ router.post("/draw", requireExecutive, async (req, res) => {
   }
 });
 
+/** 마지막 추첨 결과 삭제 (상품·참여자 목록은 그대로) */
+router.delete("/draw", requireExecutive, async (req, res) => {
+  try {
+    const doc = await LotteryConfig.getSingleton();
+    doc.lastDraw = { drawnAt: undefined, results: [] };
+    await doc.save();
+    res.json({ message: "추첨 결과를 삭제했습니다." });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "추첨 결과를 삭제하지 못했습니다." });
+  }
+});
+
 module.exports = router;

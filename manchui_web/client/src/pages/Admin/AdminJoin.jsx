@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import "./AdminJoin.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import apiClient, { serverUrl } from "../../api/apiClient";
@@ -23,6 +23,47 @@ const formatDate = (date) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+/** 목록용 짧은 날짜: 11.18 19:00 (전체 일시는 title로) */
+const formatShortDate = (date) => {
+  if (!date) return "-";
+  const d = new Date(date);
+  if (Number.isNaN(d.getTime())) return "-";
+  const p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getMonth() + 1)}.${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
+};
+
+/** 시트(구글 시트·엑셀)에 붙여넣기용: 조작(상세·삭제) 없이 정보만 */
+const SHEET_HEADERS = ["이름", "학번", "단과대", "전공", "연락처"];
+const toSheetCells = (d) => [
+  d.name || "",
+  d.studentId || "",
+  d.college || "",
+  d.major || "",
+  d.phone || d.kakaoId || d.contact || "",
+];
+const toTsv = (rows) =>
+  rows
+    .map((cells) => cells.map((c) => String(c).replace(/[\t\r\n]+/g, " ")).join("\t"))
+    .join("\n");
+
+const writeClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.select();
+    const ok = document.execCommand("copy");
+    ta.remove();
+    return ok;
+  }
 };
 
 /** CSV 필드 이스케이프 (쉼표·줄바꿈·따옴표 포함 시 따옴표로 감싸기) */
@@ -151,6 +192,8 @@ const AdminJoin = () => {
   const [joinData, setJoinData] = useState([]);
   const [formOpen, setFormOpen] = useState(false);
   const [currentGeneration, setCurrentGeneration] = useState(1);
+  /** 서버에 저장된 값 (변경 여부·현재 상태 표시용) */
+  const [savedConfig, setSavedConfig] = useState({ formOpen: false, generation: 1 });
   const [configLoading, setConfigLoading] = useState(true);
   const [listLoading, setListLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -170,8 +213,11 @@ const AdminJoin = () => {
     setConfigLoading(true);
     try {
       const res = await apiClient.get("/api/join/config");
-      setFormOpen(Boolean(res.data.formOpen));
-      setCurrentGeneration(Number(res.data.currentGeneration) || 1);
+      const open = Boolean(res.data.formOpen);
+      const gen = Number(res.data.currentGeneration) || 1;
+      setFormOpen(open);
+      setCurrentGeneration(gen);
+      setSavedConfig({ formOpen: open, generation: gen });
     } catch {
       // 설정 로드 실패해도 페이지는 표시
     } finally {
@@ -373,190 +419,357 @@ const AdminJoin = () => {
     return list;
   }, [filteredList, sortBy, sortOrder]);
 
+  /** 복사 알림 */
+  const [copyNotice, setCopyNotice] = useState("");
+  const copyTimer = useRef(null);
+  useEffect(() => () => clearTimeout(copyTimer.current), []);
+  const copyText = async (text, notice) => {
+    if (!text) return;
+    const ok = await writeClipboard(text);
+    clearTimeout(copyTimer.current);
+    setCopyNotice(ok ? notice : "복사하지 못했어요");
+    copyTimer.current = setTimeout(() => setCopyNotice(""), 1600);
+  };
+  /** 칸 클릭 = 그 칸 텍스트 복사 (드래그로 고르는 중이면 건너뜀) */
+  const copyCell = (text) => {
+    if (window.getSelection()?.toString()) return;
+    void copyText(text, `복사됨 · ${text}`);
+  };
+  /** 클릭 복사용 속성 (칸 안의 텍스트 하나 단위) */
+  const copyProps = (text) => ({
+    role: "button",
+    tabIndex: 0,
+    className: "joinList__copy",
+    title: `클릭해서 복사: ${text}`,
+    onClick: () => copyCell(String(text)),
+    onKeyDown: (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        copyCell(String(text));
+      }
+    },
+  });
+  const copySheet = () => {
+    void copyText(
+      toTsv([SHEET_HEADERS, ...sortedList.map(toSheetCells)]),
+      `${sortedList.length}명 복사됨 · 시트에 붙여넣기`,
+    );
+  };
+  /** 여러 줄·칸을 드래그해서 복사하면 정보 칸만 시트 형태(탭 구분)로 */
+  const handleTableCopy = (e) => {
+    const sel = window.getSelection();
+    if (!sel || sel.isCollapsed) return;
+    const cellOf = (n) => (n?.nodeType === 1 ? n : n?.parentElement)?.closest?.("[role=cell]");
+    const rowsEl = [...e.currentTarget.querySelectorAll("[data-row-id]")].filter((el) =>
+      sel.containsNode(el, true),
+    );
+    if (rowsEl.length <= 1 && cellOf(sel.anchorNode) === cellOf(sel.focusNode)) return;
+    const byId = new Map(sortedList.map((d) => [String(d._id), d]));
+    const rows = rowsEl.map((el) => byId.get(el.dataset.rowId)).filter(Boolean).map(toSheetCells);
+    const head = e.currentTarget.querySelector(".joinList__row--head");
+    if (head && sel.containsNode(head, true)) rows.unshift(SHEET_HEADERS);
+    if (!rows.length) return;
+    e.preventDefault();
+    e.clipboardData.setData("text/plain", toTsv(rows));
+    clearTimeout(copyTimer.current);
+    setCopyNotice(`${rowsEl.length}줄 복사됨 · 시트 형태`);
+    copyTimer.current = setTimeout(() => setCopyNotice(""), 1600);
+  };
+
   return (
     <div className="adminJoin">
       <h1 className="admin-page-heading">가입 신청 관리</h1>
 
-      <div className="adminJoinConfig">
-        <h3 className="configTitle">가입 폼 설정</h3>
+      {/* 가입 폼 상태: 한 줄 (상태 · 열기/닫기 · 모집 기수 · 저장). 모바일은 두 줄 */}
+      <section className="joinConfigBar" aria-label="가입 폼 설정">
         {configLoading ? (
           <p className="adminJoin__loading" aria-live="polite">
             {LOADING_TEXT}
           </p>
         ) : (
           <>
-        <div className="configRow">
-          <span className="configLabel">가입 신청 폼</span>
-          <button
-            type="button"
-            className={`configToggle ${formOpen ? "on" : "off"}`}
-            onClick={() => setFormOpen((p) => !p)}
-          >
-            {formOpen ? "열림" : "닫힘"}
-          </button>
-        </div>
-        <div className="configRow">
-          <span className="configLabel">모집 기수</span>
-          <input
-            type="number"
-            min={1}
-            step={0.5}
-            value={currentGeneration}
-            onChange={(e) => {
-              const v = Number(e.target.value);
-              const rounded = v >= 1 ? Math.round(v * 2) / 2 : 1;
-              setCurrentGeneration(rounded);
-            }}
-          />
-          <span className="configUnit">기</span>
-        </div>
-        <button
-          type="button"
-          className="configSave"
-          onClick={handleSaveConfig}
-          disabled={saving}
-        >
-          {saving ? "저장 중…" : "설정 저장"}
-        </button>
+            <div className="joinConfigBar__state">
+              <span className="joinConfigBar__title">가입 폼</span>
+              <span
+                className={`joinConfigBar__status${savedConfig.formOpen ? " joinConfigBar__status--on" : ""}`}
+              >
+                <i aria-hidden="true" />
+                {savedConfig.formOpen ? `${savedConfig.generation}기 모집 중` : "모집 닫힘"}
+              </span>
+            </div>
+
+            <div className="joinConfigBar__controls">
+              <div className="joinConfigBar__segment" role="radiogroup" aria-label="신청 폼">
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={formOpen}
+                  onClick={() => setFormOpen(true)}
+                >
+                  열기
+                </button>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={!formOpen}
+                  onClick={() => setFormOpen(false)}
+                >
+                  닫기
+                </button>
+              </div>
+
+              <div className="joinConfigBar__stepper" aria-label="모집 기수">
+                <button
+                  type="button"
+                  aria-label="기수 0.5 줄이기"
+                  disabled={Number(currentGeneration) <= 1}
+                  onClick={() =>
+                    setCurrentGeneration((g) => Math.max(1, Math.round((Number(g) - 0.5) * 2) / 2))
+                  }
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  step={0.5}
+                  inputMode="decimal"
+                  aria-label="모집 기수"
+                  value={currentGeneration}
+                  onChange={(e) => {
+                    const v = Number(e.target.value);
+                    const rounded = v >= 1 ? Math.round(v * 2) / 2 : 1;
+                    setCurrentGeneration(rounded);
+                  }}
+                />
+                <button
+                  type="button"
+                  aria-label="기수 0.5 늘리기"
+                  onClick={() =>
+                    setCurrentGeneration((g) => Math.round((Number(g) + 0.5) * 2) / 2)
+                  }
+                >
+                  +
+                </button>
+                <span className="joinConfigBar__unit">기</span>
+              </div>
+
+              <button
+                type="button"
+                className="joinConfigBar__save"
+                onClick={handleSaveConfig}
+                disabled={
+                  saving ||
+                  (formOpen === savedConfig.formOpen &&
+                    Number(currentGeneration) === savedConfig.generation)
+                }
+                title={
+                  formOpen !== savedConfig.formOpen ||
+                  Number(currentGeneration) !== savedConfig.generation
+                    ? "저장되지 않은 변경이 있어요"
+                    : "변경 사항 없음"
+                }
+              >
+                {saving ? "저장 중…" : "저장"}
+              </button>
+            </div>
           </>
         )}
-      </div>
+      </section>
 
-      <div className="joinSection">
-        <div className="sectionHeader">
-          <h3 className="sectionTitle">
-            {currentGeneration}기 신청 목록 ({sortedList.length}명){" "}
+      <div className="joinSection joinList">
+        {/* 머리: 제목·인원 + CSV 내보내기 */}
+        <div className="joinList__head">
+          <h3 className="joinList__title">
+            {currentGeneration}기 신청 <span>{baseList.length}명</span>
+          </h3>
+          <div className="joinList__exports">
             <button
               type="button"
-              className="configSave"
+              className="joinList__sheetBtn"
+              onClick={copySheet}
+              disabled={!sortedList.length}
+              title="보이는 목록을 이름·학번·단과대·전공·연락처로 복사 (시트에 바로 붙여넣기)"
+            >
+              시트로 복사
+            </button>
+            <button
+              type="button"
               onClick={handleExportPhoneCsv}
               disabled={!sortedList.filter(hasPhone).length}
               title="전화번호가 있는 신청만 구글 주소록 가져오기용 CSV로 저장 (010- 형식, Mobile 열)"
             >
-              전화번호 CSV (구글 주소록)
+              전화번호 CSV
             </button>
             <button
               type="button"
-              className="configSave"
               onClick={handleExportKakaoIdCsv}
               disabled={!sortedList.filter(hasKakaoId).length}
               title="카카오ID가 있는 신청만 CSV로 저장"
             >
               카카오ID CSV
             </button>
-          </h3>
-          <div className="toolbar">
-            <select
-              className="sortSelect"
-              value={contactFilter}
-              onChange={(e) => setContactFilter(e.target.value)}
-              title="연락처로 필터"
-            >
-              <option value="all">연락처: 전체</option>
-              <option value="kakao">카카오ID 있음</option>
-              <option value="phone">전화번호 있음</option>
-            </select>
-            <select
-              className="sortSelect"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              title="상태로 필터"
-            >
-              <option value="all">상태: 전체</option>
-              {STATUS_OPTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
-            </select>
-            <select
-              className="sortSelect"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              {SORT_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <button
-              type="button"
-              className="sortOrderBtn"
-              onClick={() =>
-                setSortOrder((o) => (o === "asc" ? "desc" : "asc"))
-              }
-            >
-              {sortOrder === "asc" ? "↑ 오름차순" : "↓ 내림차순"}
-            </button>
-            <div className="searchBox">
-              <input
-                type="text"
-                placeholder="이름, 학번, 전화번호, 카카오ID 검색"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
           </div>
+        </div>
+
+        {/* 상태별 개수 = 상태 필터 */}
+        <div className="joinList__tabs" role="tablist" aria-label="상태로 보기">
+          {[["all", "전체"], ...STATUS_OPTIONS.map((st) => [st, st])].map(([value, label]) => {
+            const count =
+              value === "all"
+                ? baseList.length
+                : baseList.filter((d) => (d.status || "신청") === value).length;
+            return (
+              <button
+                key={value}
+                type="button"
+                role="tab"
+                aria-selected={statusFilter === value}
+                className="joinList__tab"
+                onClick={() => setStatusFilter(value)}
+              >
+                {label}
+                <span>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* 검색 · 연락처 · 정렬 한 줄 */}
+        <div className="joinList__tools">
+          <input
+            type="search"
+            className="joinList__search"
+            placeholder="이름, 학번, 전화번호, 카카오ID"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <select
+            value={contactFilter}
+            onChange={(e) => setContactFilter(e.target.value)}
+            title="연락처로 필터"
+          >
+            <option value="all">연락처 전체</option>
+            <option value="kakao">카카오ID 있음</option>
+            <option value="phone">전화번호 있음</option>
+          </select>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)} title="정렬 기준">
+            {SORT_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}순
+              </option>
+            ))}
+          </select>
+          <button
+            type="button"
+            className="joinList__order"
+            onClick={() => setSortOrder((o) => (o === "asc" ? "desc" : "asc"))}
+            aria-label={sortOrder === "asc" ? "오름차순" : "내림차순"}
+            title={sortOrder === "asc" ? "오름차순" : "내림차순"}
+          >
+            {sortOrder === "asc" ? "↑" : "↓"}
+          </button>
         </div>
 
         {listLoading ? (
           <p className="adminJoin__loading" aria-live="polite">
             {LOADING_TEXT}
           </p>
+        ) : sortedList.length === 0 ? (
+          <p className="joinList__empty">조건에 맞는 신청이 없어요.</p>
         ) : (
-        <div className="joinDatas">
-          {sortedList.map((data) => (
-            <div
-              key={data._id}
-              className={`data ${detailData?._id === data._id ? "selected" : ""}`}
-            >
-              <span className="dataName">{data.name}</span>
-              <span className="dataInfo">
-                {data.college} · {data.major} · {data.studentId}
-              </span>
-              <span
-                className={`dataStatus status-${(data.status || "신청").replace(/ /g, "")}`}
-              >
-                {data.status || "신청"}
-              </span>
-              <select
-                className="dataStatusSelect"
-                value={data.status || "신청"}
-                onChange={(e) => handleStatusChange(data._id, e.target.value)}
-                disabled={updatingId === data._id}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {STATUS_OPTIONS.map((s) => (
-                  <option key={s} value={s}>
-                    {s}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                className="dataDetail"
-                onClick={() =>
-                  setDetailData(detailData?._id === data._id ? null : data)
-                }
-              >
-                상세
-              </button>
-              <button
-                type="button"
-                className="dataDelete"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDelete(data._id);
-                }}
-              >
-                삭제
-              </button>
+          <div
+            className="joinList__table"
+            role="table"
+            aria-label="신청 목록"
+            onCopy={handleTableCopy}
+          >
+            <div className="joinList__row joinList__row--head" role="row">
+              <span role="columnheader">이름</span>
+              <span role="columnheader">학번</span>
+              <span role="columnheader">단과대 · 전공</span>
+              <span role="columnheader">연락처</span>
+              <span role="columnheader">신청일</span>
+              <span role="columnheader">상태</span>
+              <span role="columnheader" aria-label="관리" />
             </div>
-          ))}
-        </div>
+            {sortedList.map((data) => {
+              const status = data.status || "신청";
+              return (
+                <div
+                  key={data._id}
+                  data-row-id={String(data._id)}
+                  role="row"
+                  className={`joinList__row${detailData?._id === data._id ? " joinList__row--selected" : ""}`}
+                >
+                  <span role="cell" className="joinList__name">
+                    <span {...copyProps(data.name)}>{data.name}</span>
+                  </span>
+                  <span role="cell" className="joinList__num">
+                    <span {...copyProps(data.studentId)}>{data.studentId}</span>
+                  </span>
+                  {/* 단과대 · 전공은 따로 눌러 복사 */}
+                  <span role="cell" className="joinList__muted">
+                    {data.college ? <span {...copyProps(data.college)}>{data.college}</span> : null}
+                    {data.college && data.major ? <span aria-hidden> · </span> : null}
+                    {data.major ? <span {...copyProps(data.major)}>{data.major}</span> : null}
+                  </span>
+                  <span role="cell" className="joinList__muted">
+                    {data.phone || data.kakaoId || data.contact ? (
+                      <span {...copyProps(data.phone || data.kakaoId || data.contact)}>
+                        {data.phone || data.kakaoId || data.contact}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </span>
+                  <span role="cell" className="joinList__num joinList__muted" title={formatDate(data.applyAt)}>
+                    {formatShortDate(data.applyAt)}
+                  </span>
+                  <span role="cell">
+                    <select
+                      className={`joinList__status status-${status.replace(/ /g, "")}`}
+                      value={status}
+                      onChange={(e) => handleStatusChange(data._id, e.target.value)}
+                      disabled={updatingId === data._id}
+                      aria-label={`${data.name} 상태`}
+                    >
+                      {STATUS_OPTIONS.map((st) => (
+                        <option key={st} value={st}>
+                          {st}
+                        </option>
+                      ))}
+                    </select>
+                  </span>
+                  <span role="cell" className="joinList__actions">
+                    <button
+                      type="button"
+                      onClick={() => setDetailData(detailData?._id === data._id ? null : data)}
+                    >
+                      상세
+                    </button>
+                    <button
+                      type="button"
+                      className="joinList__delete"
+                      onClick={() => handleDelete(data._id)}
+                    >
+                      삭제
+                    </button>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
+
+      <p
+        className={`joinList__toast${copyNotice ? " joinList__toast--on" : ""}`}
+        role="status"
+        aria-live="polite"
+      >
+        {copyNotice}
+      </p>
 
       {detailData && (
         <div

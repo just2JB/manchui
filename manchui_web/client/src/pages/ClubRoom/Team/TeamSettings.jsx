@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
-import Loading from "../../../components/Loading/Loading";
+import ClubPageSkeleton from "../ClubPageSkeleton";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import {
   getMemberDisplayName,
@@ -244,7 +244,10 @@ const TeamSettings = () => {
   if (loading) {
     return (
       <div className="teamPage teamPage--settings">
-        <Loading />
+        <button type="button" className="teamPage__back" onClick={() => nav(`/club/team/${teamId}`)}>
+          ← 팀으로
+        </button>
+        <ClubPageSkeleton variant="form" />
       </div>
     );
   }

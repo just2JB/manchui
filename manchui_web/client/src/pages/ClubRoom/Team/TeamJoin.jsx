@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { IoMailOpenOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
-import Loading from "../../../components/Loading/Loading";
+import ClubPageSkeleton from "../ClubPageSkeleton";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import { getMemberDisplayName, isDefaultComment, isTeamMember } from "./teamUtils";
@@ -80,7 +80,7 @@ const TeamJoin = () => {
   if (loading) {
     return (
       <div className="teamPage teamPage--join">
-        <Loading />
+        <ClubPageSkeleton variant="detail" />
       </div>
     );
   }

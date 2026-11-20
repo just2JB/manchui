@@ -35,15 +35,11 @@ const TeamPracticeAvailabilityGrid = ({
   initialSelection = null,
   /** 미리 계산한 추천 목록 (없으면 기존 방식으로 계산) */
   recommendations: recommendationsOverride = null,
-  defaultShowRecommendations = false,
 }) => {
   const [selectionByDate, setSelectionByDate] = useState(
     () => initialSelection ?? {},
   );
   const [showDawn, setShowDawn] = useState(false);
-  const [showRecommendations, setShowRecommendations] = useState(
-    defaultShowRecommendations,
-  );
   const [expandedMemberKey, setExpandedMemberKey] = useState(null);
   const [unavailableInspect, setUnavailableInspect] = useState(null);
   const prevDateKeysKeyRef = useRef(dateKeys.join(","));
@@ -152,7 +148,6 @@ const TeamPracticeAvailabilityGrid = ({
     if (prevDateKeysKeyRef.current === dateKeysKey) return;
     prevDateKeysKeyRef.current = dateKeysKey;
     setSelectionByDate({});
-    setShowRecommendations(false);
     setExpandedMemberKey(null);
     setUnavailableInspect(null);
   }, [dateKeysKey]);
@@ -169,7 +164,12 @@ const TeamPracticeAvailabilityGrid = ({
     setExpandedMemberKey(null);
   }, [selectionByDate]);
 
+  // 내용이 같으면 부모에 다시 알리지 않는다 (props 배열이 매번 새로 와도 렌더 루프 방지)
+  const lastReportedRef = useRef(null);
   useEffect(() => {
+    const signature = JSON.stringify(selectedEntries);
+    if (lastReportedRef.current === signature) return;
+    lastReportedRef.current = signature;
     onSelectionChange?.(selectedEntries);
   }, [selectedEntries, onSelectionChange]);
 
@@ -273,8 +273,13 @@ const TeamPracticeAvailabilityGrid = ({
     });
   };
 
-  const handleAdoptRecommendation = (item) => {
+  const handleToggleRecommendation = (item) => {
     if (!item) return;
+
+    if (isRecommendationAdopted(item)) {
+      handleClearRange(item.dateKey, item.startHour, item.endHour);
+      return;
+    }
 
     if (!hoursOverride && recommendationNeedsDawn([item])) {
       setShowDawn(true);
@@ -319,15 +324,46 @@ const TeamPracticeAvailabilityGrid = ({
           )}
         </div>
         <p className="teamPracticeGrid__meta">
-          일정 제출 최대 {totalResponded}/{totalMembers}명 · 진할수록 더 많은
-          팀원이 가능합니다
-        </p>
-        <p className="teamPracticeGrid__hint">
-          시간 칸을 탭해 연습 시간을 선택하세요. 같은 칸을 다시 탭하면 해제됩니다.
-          연속된 시간은 하나의 연습으로 합쳐집니다. 칸을 길게 누르거나 우클릭하면
-          해당 시간에 불가능한 멤버를 볼 수 있습니다.
+          일정 제출 {totalResponded}/{totalMembers}명 · 칸을 탭해 선택, 이어진 시간은
+          하나의 연습이 돼요 · 길게 누르면 안 되는 멤버
         </p>
       </div>
+
+      {recommendations.length > 0 ? (
+        <div className="teamPracticeGrid__recommend">
+          <p className="teamPracticeGrid__recommendLabel">추천 시간</p>
+          <ul className="teamPracticeGrid__recommendList" aria-label="추천 연습시간">
+            {recommendations.map((item) => {
+              const { month, day, week } = formatPracticeGridDateHeader(item.dateKey);
+              const adopted = isRecommendationAdopted(item);
+              return (
+                <li key={item.id}>
+                  <button
+                    type="button"
+                    className={[
+                      "teamPracticeGrid__recommendChip",
+                      adopted ? "teamPracticeGrid__recommendChip--adopted" : "",
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                    onClick={() => handleToggleRecommendation(item)}
+                    aria-pressed={adopted}
+                    aria-label={`${month}월 ${day}일 ${item.time}, ${item.minAvailable}명 가능${adopted ? ", 선택됨" : ""}`}
+                  >
+                    <span className="teamPracticeGrid__recommendDate">
+                      {month}/{day} ({week})
+                    </span>
+                    <span className="teamPracticeGrid__recommendTime">{item.time}</span>
+                    <span className="teamPracticeGrid__recommendMeta">
+                      {item.minAvailable}/{item.totalMembers}명 가능
+                    </span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ) : null}
 
       <div className="teamPracticeGrid__legend">
         <span className="teamPracticeGrid__legendItem">
@@ -594,74 +630,6 @@ const TeamPracticeAvailabilityGrid = ({
         )}
       </div>
 
-      <div className="teamPracticeGrid__recommend">
-        <button
-          type="button"
-          className="teamPracticeGrid__recommendBtn"
-          aria-expanded={showRecommendations}
-          onClick={() => setShowRecommendations((prev) => !prev)}
-        >
-          추천 연습시간
-        </button>
-
-        {showRecommendations ? (
-          <div className="teamPracticeGrid__recommendPanel">
-            <p className="teamPracticeGrid__recommendHint">
-              2시간 이상 연속 · 참여 가능 인원 많은 순 · 오후 시간 우선 · 항목의
-              채택 버튼을 누르면 바로 반영됩니다
-            </p>
-            {recommendations.length === 0 ? (
-              <p className="teamPracticeGrid__recommendEmpty">
-                조건에 맞는 추천 시간이 없습니다.
-              </p>
-            ) : (
-              <ul className="teamPracticeGrid__recommendList">
-                {recommendations.map((item) => {
-                  const { month, day, week } = formatPracticeGridDateHeader(
-                    item.dateKey,
-                  );
-                  const adopted = isRecommendationAdopted(item);
-
-                  return (
-                    <li key={item.id} className="teamPracticeGrid__recommendItem">
-                      <div
-                        className={[
-                          "teamPracticeGrid__recommendRow",
-                          adopted ? "teamPracticeGrid__recommendRow--adopted" : "",
-                        ]
-                          .filter(Boolean)
-                          .join(" ")}
-                      >
-                        <div className="teamPracticeGrid__recommendBody">
-                          <span className="teamPracticeGrid__recommendDate">
-                            {month}/{day} ({week})
-                          </span>
-                          <span className="teamPracticeGrid__recommendTime">
-                            {item.time}
-                          </span>
-                          <span className="teamPracticeGrid__recommendMeta">
-                            {item.minAvailable}/{item.totalMembers}명 가능
-                            {item.isAfternoon ? " · 오후" : " · 오전"}
-                          </span>
-                        </div>
-                        <button
-                          type="button"
-                          className="teamPracticeGrid__recommendAdopt"
-                          onClick={() => handleAdoptRecommendation(item)}
-                          disabled={adopted}
-                          aria-label={`${month}월 ${day}일 ${item.time} 채택`}
-                        >
-                          {adopted ? "채택됨" : "채택"}
-                        </button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </div>
-        ) : null}
-      </div>
     </section>
   );
 };

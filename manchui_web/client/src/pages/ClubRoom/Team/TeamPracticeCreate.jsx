@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
-import Loading from "../../../components/Loading/Loading";
+import ClubPageSkeleton from "../ClubPageSkeleton";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import { fetchPoll } from "../../../api/pollApi";
@@ -105,6 +105,9 @@ const TeamPracticeCreate = () => {
     [team?.members],
   );
 
+  // 매 렌더 새 배열이면 그리드 선택 계산 → onSelectionChange → 재렌더가 무한 반복된다
+  const leaderIds = useMemo(() => (team ? getTeamLeaderIds(team) : []), [team]);
+
   const memberIds = pollGrid ? pollGrid.memberIds : teamMemberIds;
   const gridMembers = pollGrid
     ? pollGrid.members
@@ -204,7 +207,10 @@ const TeamPracticeCreate = () => {
   if (loading) {
     return (
       <div className="teamPage teamPage--practiceCreate">
-        <Loading />
+        <button type="button" className="teamPage__back" onClick={() => nav(teamId ? `/club/team/${teamId}` : "/club/team")}>
+          ← 팀으로
+        </button>
+        <ClubPageSkeleton variant="grid" />
       </div>
     );
   }
@@ -243,35 +249,45 @@ const TeamPracticeCreate = () => {
         ← {team.name}
       </button>
 
-      <div className="teamPage__top">
-        <h1 className="teamPage__title">연습 생성</h1>
-        <p className="teamPage__intro">
-          {poll ? `${getPollDisplayTitle(poll)} 응답 기준 · ` : ""}
-          {formatPracticeDatesSummary(dateKeys)} · 표에서 연습 시간을 선택하세요.
+      <header className="practiceCreate__head">
+        <h1 className="practiceCreate__title">연습 시간 정하기</h1>
+        <p className="practiceCreate__sub">
+          {poll ? (
+            <span className="practiceCreate__poll">{getPollDisplayTitle(poll)}</span>
+          ) : null}
+          <span>{formatPracticeDatesSummary(dateKeys)}</span>
         </p>
-      </div>
+      </header>
 
       <TeamPracticeAvailabilityGrid
         dateKeys={dateKeys}
         memberIds={memberIds}
         members={gridMembers}
         memberSchedules={gridSchedules}
-        leaderIds={getTeamLeaderIds(team)}
+        leaderIds={leaderIds}
         onSelectionChange={handleSelectionChange}
         hours={pollGrid ? pollGrid.hours : null}
         initialSelection={initialSelection}
         recommendations={pollRecommendations}
-        defaultShowRecommendations={Boolean(poll)}
       />
 
-      <div className="teamForm">
+      <div className="practiceCreate__bar">
+        <p className="practiceCreate__barInfo" aria-live="polite">
+          {selectedEntries.length === 0
+            ? "시간을 선택하세요"
+            : `연습 ${selectedEntries.length}개 선택됨`}
+        </p>
         <button
           type="button"
-          className="teamForm__submit"
+          className="practiceCreate__submit"
           onClick={() => void handleCreate()}
           disabled={selectedEntries.length === 0 || submitting}
         >
-          {submitting ? "생성 중…" : "연습 생성"}
+          {submitting
+            ? "만드는 중…"
+            : selectedEntries.length > 1
+              ? `${selectedEntries.length}개 만들기`
+              : "연습 만들기"}
         </button>
       </div>
     </div>

@@ -1,18 +1,16 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { IoSettingsOutline, IoShareOutline } from "react-icons/io5";
 import apiClient from "../../../api/apiClient";
 import { fetchTeamPolls } from "../../../api/pollApi";
 import { useAuth } from "../../../context/AuthContext";
-import Loading from "../../../components/Loading/Loading";
+import ClubPageSkeleton from "../ClubPageSkeleton";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import TeamPracticeEditSheet from "./TeamPracticeEditSheet";
 import TeamUpcomingPractice from "./TeamUpcomingPractice";
 import TeamPollSection from "../Poll/TeamPollSection";
-import PollPracticeSheet from "../Poll/PollPracticeSheet";
-import { getPendingTeamMembers, isPollActive } from "../Poll/pollUtils";
+import { isPollActive } from "../Poll/pollUtils";
 import {
-  getMemberDisplayName,
   isDefaultComment,
   isTeamLeader,
   isTeamMember,
@@ -33,7 +31,8 @@ const TeamDetail = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [editingPractice, setEditingPractice] = useState(null);
-  const [practiceSheetOpen, setPracticeSheetOpen] = useState(false);
+  /** 이미 불러온 팀이면 다시 들어와도 자리표시 없이 조용히 새로고침 */
+  const loadedTeamIdRef = useRef(null);
 
   const loadTeam = useCallback(async () => {
     if (!teamId) {
@@ -41,7 +40,8 @@ const TeamDetail = () => {
       setLoading(false);
       return;
     }
-    setLoading(true);
+    const silent = loadedTeamIdRef.current === teamId;
+    if (!silent) setLoading(true);
     setNotFound(false);
     try {
       const res = await apiClient.get(`/api/team/${teamId}`, {
@@ -56,7 +56,7 @@ const TeamDetail = () => {
         return;
       }
 
-      setPollsLoading(true);
+      if (!silent) setPollsLoading(true);
       const [practiceResult, pollsResult] = await Promise.allSettled([
         apiClient.get(`/api/practice/teamPractice/${teamId}`, {
           withCredentials: true,
@@ -82,12 +82,16 @@ const TeamDetail = () => {
         setPolls([]);
       }
       setPollsLoading(false);
+      loadedTeamIdRef.current = teamId;
     } catch (error) {
       console.error(error);
       if (error.response?.status === 404) {
         setNotFound(true);
+        loadedTeamIdRef.current = null;
+        setTeam(null);
+      } else if (!silent) {
+        setTeam(null);
       }
-      setTeam(null);
     } finally {
       setLoading(false);
     }
@@ -135,7 +139,10 @@ const TeamDetail = () => {
   if (loading) {
     return (
       <div className="teamPage teamPage--detail">
-        <Loading />
+        <button type="button" className="teamPage__back" onClick={() => nav("/club/team")}>
+          ← 팀 목록
+        </button>
+        <ClubPageSkeleton variant="detail" />
       </div>
     );
   }
@@ -159,18 +166,17 @@ const TeamDetail = () => {
   const isMember = isTeamMember(team, user?._id);
   const isLeader = isTeamLeader(team, user?._id);
   const accent = team.teamColor || "#E87070";
-  // 연습 추가 시트에 쓸 일정 종합: 진행 중인 것 우선, 없으면 가장 최근 것
+  // 연습 추가 시 기준이 될 일정 종합: 진행 중인 것 우선, 없으면 가장 최근 것
   const practicePoll = polls.find(isPollActive) ?? polls[0] ?? null;
-  const pendingForSheet =
-    practicePoll && isPollActive(practicePoll)
-      ? getPendingTeamMembers(
-          practicePoll,
-          members.map((member) => ({
-            _id: String(member?._id ?? member),
-            username: getMemberDisplayName(member),
-          })),
-        )
-      : [];
+  // 편집 시트의 장소 빠른 선택: 최근에 쓴 장소 최대 4개
+  const placeSuggestions = [
+    ...new Set(
+      [...practices]
+        .sort((a, b) => String(b.date ?? "").localeCompare(String(a.date ?? "")))
+        .map((practice) => String(practice.place ?? "").trim())
+        .filter((place) => place && place !== "미확정"),
+    ),
+  ].slice(0, 4);
   const comment = isDefaultComment(team.comment)
     ? "아직 팀 소개가 없습니다."
     : team.comment;
@@ -227,21 +233,19 @@ const TeamDetail = () => {
         members={members}
         isLeader={isLeader}
         onPracticeClick={isLeader ? handlePracticeClick : undefined}
-        onAddPractice={isLeader && practicePoll ? () => setPracticeSheetOpen(true) : undefined}
-      />
-
-      <PollPracticeSheet
-        open={practiceSheetOpen}
-        poll={practicePoll}
-        teamId={teamId}
-        pendingMembers={pendingForSheet}
-        onClose={() => setPracticeSheetOpen(false)}
+        onAddPractice={
+          isLeader && practicePoll
+            ? () => nav(`/club/team/${teamId}/practice/new?poll=${encodeURIComponent(practicePoll._id)}`)
+            : undefined
+        }
       />
 
       <TeamPracticeEditSheet
         open={Boolean(editingPractice)}
         practice={editingPractice}
         accentColor={accent}
+        teamMembers={members}
+        placeSuggestions={placeSuggestions}
         onClose={() => setEditingPractice(null)}
         onSaved={handlePracticeSaved}
         onDeleted={handlePracticeDeleted}

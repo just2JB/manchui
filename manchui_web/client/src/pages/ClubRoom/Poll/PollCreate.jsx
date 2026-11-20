@@ -10,7 +10,7 @@ import apiClient from "../../../api/apiClient";
 import { createPoll } from "../../../api/pollApi";
 import { useAuth } from "../../../context/AuthContext";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
-import Loading from "../../../components/Loading/Loading";
+import ClubPageSkeleton from "../ClubPageSkeleton";
 import {
   buildMonthGrid,
   formatDateKey,
@@ -147,7 +147,10 @@ const PollCreate = () => {
   if (loading) {
     return (
       <div className="teamPage">
-        <Loading />
+        <button type="button" className="teamPage__back" onClick={() => nav(`/club/team/${teamId}`)}>
+          ← 팀으로
+        </button>
+        <ClubPageSkeleton variant="form" />
       </div>
     );
   }

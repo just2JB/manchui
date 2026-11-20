@@ -1,18 +1,29 @@
-import React from "react";
-import { IoAdd, IoClipboardOutline } from "react-icons/io5";
+import React, { useState } from "react";
+import { IoAdd, IoChevronDown, IoChevronUp, IoClipboardOutline } from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import {
   buildUpcomingPracticesCopyText,
+  formatDateKey,
   formatPracticeTimeDisplay,
   formatUpcomingPracticeDate,
   getUpcomingPractices,
 } from "./teamCalendarUtils";
 
-const UPCOMING_LIMIT = 6;
+/** 처음에 보여줄 연습 수 (다음 연습 1 + 이후 3) */
+const INITIAL_COUNT = 4;
 
 function formatPlace(place) {
   const value = String(place ?? "").trim();
   return value || "미확정";
+}
+
+function formatDDay(dateKey) {
+  const today = new Date(formatDateKey(new Date()) + "T00:00");
+  const target = new Date(dateKey + "T00:00");
+  const diff = Math.round((target - today) / 86400000);
+  if (diff === 0) return "오늘";
+  if (diff === 1) return "내일";
+  return `D-${diff}`;
 }
 
 const TeamUpcomingPractice = ({
@@ -23,9 +34,11 @@ const TeamUpcomingPractice = ({
   onAddPractice,
 }) => {
   const modal = useManchuiModal();
-  const upcoming = getUpcomingPractices(practices, { limit: UPCOMING_LIMIT });
-  const hasUpcoming =
-    getUpcomingPractices(practices, { limit: 0 }).length > 0;
+  const [expanded, setExpanded] = useState(false);
+  const all = getUpcomingPractices(practices, { limit: 0 });
+  const [next, ...rest] = all;
+  const visibleRest = expanded ? rest : rest.slice(0, INITIAL_COUNT - 1);
+  const hiddenCount = rest.length - visibleRest.length;
 
   const handleCopy = async () => {
     const text = buildUpcomingPracticesCopyText(practices, members);
@@ -42,6 +55,27 @@ const TeamUpcomingPractice = ({
     }
   };
 
+  const keyOf = (practice, index) =>
+    practice._id ?? `${practice.dateKey}-${practice.time}-${index}`;
+
+  const labelOf = (practice) =>
+    `${formatUpcomingPracticeDate(practice.dateKey)} ${formatPracticeTimeDisplay(practice.time)} 연습 편집`;
+
+  /** 팀장이면 버튼(편집), 아니면 정적 요소 */
+  const renderItem = (practice, className, children) =>
+    isLeader ? (
+      <button
+        type="button"
+        className={`${className} teamUpcoming__item--clickable`}
+        onClick={() => onPracticeClick?.(practice)}
+        aria-label={labelOf(practice)}
+      >
+        {children}
+      </button>
+    ) : (
+      <div className={className}>{children}</div>
+    );
+
   return (
     <section
       className="teamDetailBlock teamUpcoming"
@@ -50,16 +84,11 @@ const TeamUpcomingPractice = ({
       <div className="teamUpcoming__head">
         <h2 id="team-upcoming-title" className="teamDetailBlock__title">
           다가오는 연습
+          {all.length > 0 ? (
+            <span className="teamUpcoming__count">{all.length}</span>
+          ) : null}
         </h2>
-        <span className="teamUpcoming__headActions">
-        {/* 팀장: 연습 추가 (일정 종합의 추천 시간 / 직접 정하기 시트) */}
-        {onAddPractice ? (
-          <button type="button" className="teamUpcoming__addBtn" onClick={onAddPractice}>
-            <IoAdd aria-hidden />
-            연습 추가
-          </button>
-        ) : null}
-        {hasUpcoming ? (
+        {all.length > 0 ? (
           <button
             type="button"
             className="teamUpcoming__copyBtn"
@@ -70,65 +99,81 @@ const TeamUpcomingPractice = ({
             <IoClipboardOutline aria-hidden />
           </button>
         ) : null}
-        </span>
       </div>
 
-      {upcoming.length === 0 ? (
+      {!next ? (
         <p className="teamUpcoming__empty">예정된 연습이 없습니다.</p>
       ) : (
-        <div className="teamUpcoming__trackWrap">
-          <ul className="teamUpcoming__track" aria-label="다가오는 연습 목록">
-            {upcoming.map((practice, index) => {
-              const key =
-                practice._id ??
-                `${practice.dateKey}-${practice.time}-${index}`;
+        <>
+          {renderItem(
+            next,
+            "teamUpcoming__next",
+            <>
+              <span className="teamUpcoming__nextTop">
+                <span className="teamUpcoming__nextDate">
+                  {formatUpcomingPracticeDate(next.dateKey)}
+                </span>
+                <span className="teamUpcoming__dday">{formatDDay(next.dateKey)}</span>
+              </span>
+              <span className="teamUpcoming__nextTime">
+                {formatPracticeTimeDisplay(next.time)}
+              </span>
+              <span className="teamUpcoming__nextPlace">{formatPlace(next.place)}</span>
+            </>,
+          )}
 
-              const cardClassName = [
-                "teamUpcoming__card",
-                index === 0 ? "teamUpcoming__card--next" : "",
-                isLeader ? "teamUpcoming__card--clickable" : "",
-              ]
-                .filter(Boolean)
-                .join(" ");
-
-              const content = (
-                <>
-                  <span className="teamUpcoming__date">
-                    {formatUpcomingPracticeDate(practice.dateKey)}
-                  </span>
-                  <span className="teamUpcoming__time">
-                    {formatPracticeTimeDisplay(practice.time)}
-                  </span>
-                  <span className="teamUpcoming__place">
-                    {formatPlace(practice.place)}
-                  </span>
-                </>
-              );
-
-              if (isLeader) {
-                return (
-                  <li key={key}>
-                    <button
-                      type="button"
-                      className={cardClassName}
-                      onClick={() => onPracticeClick?.(practice)}
-                      aria-label={`${formatUpcomingPracticeDate(practice.dateKey)} ${formatPracticeTimeDisplay(practice.time)} 연습 편집`}
-                    >
-                      {content}
-                    </button>
-                  </li>
-                );
-              }
-
-              return (
-                <li key={key} className={cardClassName}>
-                  {content}
+          {visibleRest.length > 0 ? (
+            <ul className="teamUpcoming__list" aria-label="이후 연습">
+              {visibleRest.map((practice, index) => (
+                <li key={keyOf(practice, index)}>
+                  {renderItem(
+                    practice,
+                    "teamUpcoming__row",
+                    <>
+                      <span className="teamUpcoming__rowDate">
+                        {formatUpcomingPracticeDate(practice.dateKey)}
+                      </span>
+                      <span className="teamUpcoming__rowTime">
+                        {formatPracticeTimeDisplay(practice.time)}
+                      </span>
+                      <span className="teamUpcoming__rowPlace">
+                        {formatPlace(practice.place)}
+                      </span>
+                    </>,
+                  )}
                 </li>
-              );
-            })}
-          </ul>
-        </div>
+              ))}
+            </ul>
+          ) : null}
+
+          {rest.length > INITIAL_COUNT - 1 ? (
+            <button
+              type="button"
+              className="teamUpcoming__moreBtn"
+              onClick={() => setExpanded((value) => !value)}
+              aria-expanded={expanded}
+            >
+              {expanded ? (
+                <>
+                  접기 <IoChevronUp aria-hidden />
+                </>
+              ) : (
+                <>
+                  {hiddenCount}개 더 보기 <IoChevronDown aria-hidden />
+                </>
+              )}
+            </button>
+          ) : null}
+        </>
       )}
+
+      {/* 팀장: 연습 추가 (일정 종합의 추천 시간 / 직접 정하기 시트) */}
+      {onAddPractice ? (
+        <button type="button" className="teamUpcoming__addBtn" onClick={onAddPractice}>
+          <IoAdd aria-hidden />
+          연습 추가
+        </button>
+      ) : null}
     </section>
   );
 };

@@ -1539,8 +1539,9 @@ fieldset.reservation__field:disabled .reservation__hourChip {
 
   .reservation__layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.65fr) minmax(320px, 1fr);
-    gap: 28px;
+    /* 관리자 예약 관리 화면과 같은 좌우 비율 (캘린더 : 선택일 패널 = 1 : 1) */
+    grid-template-columns: minmax(0, 1fr) minmax(380px, 1fr);
+    gap: 20px;
     align-items: start;
   }
 

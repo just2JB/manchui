@@ -21,6 +21,11 @@ function isPollPath(pathname) {
   return /^\/club\/poll\/[^/]+\/?$/.test(pathname);
 }
 
+/** 연습 생성(시간 정하기) 화면: 하단에 만들기 바가 붙으므로 탭바를 숨긴다 */
+function isPracticeCreatePath(pathname) {
+  return /^\/club\/team\/[^/]+\/practice\/new\/?$/.test(pathname);
+}
+
 /** 홈 룩을 적용하는 페이지 (팀 페이지는 아직 제외) */
 function isNextLookPath(pathname) {
   return /^\/club\/(mypage|recommend|reservation)(\/|$)/.test(pathname);
@@ -48,8 +53,8 @@ const ClubRoomLayout = () => {
   // 비로그인 게스트가 투표 링크로 들어오면 어시스턴트 탭은 숨긴다
   const hideBottomNav =
     location.pathname === "/club/login" || (pollPage && !user);
-  /** 일정 종합 화면: 모바일 하단 탭바만 숨김 (PC 사이드바는 그대로) */
-  const hideMobileTabBar = pollPage;
+  /** 일정 종합 · 연습 생성 화면: 모바일 하단 탭바만 숨김 (PC 사이드바는 그대로) */
+  const hideMobileTabBar = pollPage || isPracticeCreatePath(location.pathname);
 
   useEffect(() => {
     if (!shareOnly) {

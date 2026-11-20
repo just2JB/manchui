@@ -1,9 +1,9 @@
 import { useRefreshOnFocus } from "../../hooks/useRefreshOnFocus";
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { IoAdd, IoArrowForward, IoChevronForward } from "react-icons/io5";
+import { IoAdd, IoChevronForward } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
-import Loading from "../../components/Loading/Loading";
+import ClubPageSkeleton from "./ClubPageSkeleton";
 import { filterVisibleReservations } from "./Reservation/reservationRetention";
 import { useReservationNow } from "./Reservation/useReservationLiveSync";
 import { formatReservationTimeRange } from "./Reservation/reservationTimeFormat";
@@ -20,7 +20,6 @@ import {
 import ClubHomeCalendar from "./Home/ClubHomeCalendar";
 import "./Home/ClubHomeLayout.css";
 import "./Home/ClubHomeDark.css";
-import ClubHomeScheduleSheet from "./Home/ClubHomeScheduleSheet";
 import {
   buildPracticeByDate,
   buildReservationByDate,
@@ -74,7 +73,6 @@ const ClubRoom = () => {
   const { user } = useAuth();
   const userId = user?._id;
   const [selected, setSelected] = useState(() => formatDateKey(new Date()));
-  const [sheetDateKey, setSheetDateKey] = useState(null);
 
   const teamsQuery = useUserTeamsQuery(userId);
   const teams = teamsQuery.data?.teams ?? [];
@@ -130,7 +128,7 @@ const ClubRoom = () => {
   );
 
   const upcomingPractices = useMemo(
-    () => getHomeUpcomingPractices(practices, { limit: 8 }),
+    () => getHomeUpcomingPractices(practices, { limit: 0 }),
     [practices],
   );
 
@@ -141,8 +139,8 @@ const ClubRoom = () => {
 
   if (showLoading) {
     return (
-      <div className="clubHome clubHome--loading">
-        <Loading overlay={false} />
+      <div className="clubHome dHome">
+        <ClubPageSkeleton variant="home" />
       </div>
     );
   }
@@ -150,6 +148,7 @@ const ClubRoom = () => {
   const todayKey = formatDateKey(now);
   const nextPractice = upcomingPractices[0];
   const laterPractices = upcomingPractices.slice(1, 4);
+  const morePracticeCount = Math.max(0, upcomingPractices.length - 4);
   const pendingPolls = openPolls.filter(poll => !poll.responded);
   const sortedPolls = [...pendingPolls, ...openPolls.filter(poll => poll.responded)];
   const dayEntries = [
@@ -188,8 +187,6 @@ const ClubRoom = () => {
             <p className="dHero__time">{formatPracticeTimeDisplay(nextPractice.time)}</p>
             <div className="dHero__foot">
               <p className="dHero__meta">{formatRelativeDay(todayKey, nextPractice.dateKey)} · {formatPlace(nextPractice.place)}</p>
-              <button type="button" className="dHero__go" aria-label="연습 상세 보기"
-                onClick={() => setSheetDateKey(nextPractice.dateKey)}><IoArrowForward /></button>
             </div>
             {laterPractices.length > 0 && <ul className="dHero__later" aria-label="이후 연습">
               {laterPractices.map((practice, index) => <li key={practice._id ?? `${practice.dateKey}-${index}`}
@@ -199,6 +196,9 @@ const ClubRoom = () => {
                 <time>{formatUpcomingPracticeDate(practice.dateKey)}</time>
               </li>)}
             </ul>}
+            {morePracticeCount > 0 && <Link className="dHero__more" to="/club/team">
+              연습 {morePracticeCount}개 더 있어요<IoChevronForward aria-hidden="true" />
+            </Link>}
           </> : <div className="dHero__empty">
             <p className="dHero__time dHero__time--empty">예정된 연습이 없어요</p>
             <Link className="dHero__cta" to="/club/team">{teams.length ? "팀에서 연습 잡기" : "팀 만들기"}</Link>
@@ -279,15 +279,6 @@ const ClubRoom = () => {
             </ul>}
         </section>
       </aside>
-
-      <ClubHomeScheduleSheet
-        open={Boolean(sheetDateKey)}
-        dateKey={sheetDateKey}
-        practices={sheetDateKey ? (practiceByDate.get(sheetDateKey) ?? []) : []}
-        reservations={sheetDateKey ? (reservationByDate.get(sheetDateKey) ?? []) : []}
-        polls={sheetDateKey ? (pollsByDate.get(sheetDateKey) ?? []) : []}
-        onClose={() => setSheetDateKey(null)}
-      />
     </div>
   );
 };

@@ -1,0 +1,49 @@
+.clubSk {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.clubSk__bar,
+.clubSk__block {
+  display: block;
+  border-radius: var(--club-radius-sm, 10px);
+  background: linear-gradient(
+    90deg,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.05) 0%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.11) 50%,
+    rgba(var(--club-ink-rgb, 255, 255, 255), 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: clubSkShimmer 1.2s ease-in-out infinite;
+}
+
+.clubSk__bar--title { width: 46%; height: 26px; }
+.clubSk__bar--sub { width: 30%; height: 14px; margin-bottom: 8px; }
+.clubSk__bar--chip { width: 120px; height: 56px; flex-shrink: 0; }
+
+.clubSk__row {
+  display: flex;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.clubSk__block { border-radius: var(--club-radius, 16px); }
+.clubSk__block--card { height: 168px; }
+.clubSk__block--short { height: 112px; }
+.clubSk__block--field { height: 52px; border-radius: var(--club-radius-sm, 10px); }
+.clubSk__block--hero { height: 200px; }
+.clubSk__block--grid { height: 360px; }
+
+@keyframes clubSkShimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clubSk__bar,
+  .clubSk__block {
+    animation: none;
+  }
+}

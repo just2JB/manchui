@@ -1161,132 +1161,92 @@
   color: var(--text-primary);
 }
 
+/* 추천 시간: 표 위 가로 칩 (탭하면 선택/해제) */
 .teamPracticeGrid__recommend {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  margin: 0 -14px 12px;
 }
 
-.teamPracticeGrid__recommendBtn {
-  width: 100%;
-  padding: 11px 14px;
-  border: 1px solid color-mix(in srgb, var(--team-accent) 35%, transparent);
-  border-radius: var(--club-radius-sm);
-  background: color-mix(in srgb, var(--team-accent) 10%, transparent);
-  color: var(--text-primary);
-  font: inherit;
-  font-size: 0.86rem;
+.teamPracticeGrid__recommendLabel {
+  margin: 0 14px 6px;
+  font-size: 0.75rem;
   font-weight: 700;
-  cursor: pointer;
-  transition:
-    background 0.12s ease,
-    border-color 0.12s ease;
-}
-
-.teamPracticeGrid__recommendBtn:hover {
-  background: color-mix(in srgb, var(--team-accent) 16%, transparent);
-  border-color: color-mix(in srgb, var(--team-accent) 50%, transparent);
-}
-
-.teamPracticeGrid__recommendPanel {
-  margin-top: 10px;
-  padding: 12px;
-  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
-  border-radius: var(--club-radius-sm);
-  background: rgba(0, 0, 0, 0.12);
-}
-
-.teamPracticeGrid__recommendHint {
-  margin: 0 0 10px;
-  font-size: 0.72rem;
-  line-height: 1.45;
   color: var(--text-more);
-}
-
-.teamPracticeGrid__recommendEmpty {
-  margin: 0;
-  font-size: 0.8rem;
-  color: var(--text-more);
-  text-align: center;
 }
 
 .teamPracticeGrid__recommendList {
   list-style: none;
   margin: 0;
-  padding: 0;
+  padding: 0 14px 2px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+
+.teamPracticeGrid__recommendList::-webkit-scrollbar {
+  display: none;
+}
+
+.teamPracticeGrid__recommendList > li {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.teamPracticeGrid__recommendChip {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.teamPracticeGrid__recommendItem {
-  margin: 0;
-}
-
-.teamPracticeGrid__recommendRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 10px;
-  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 120px;
+  padding: 10px 12px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
   border-radius: var(--club-radius-sm);
-  background: color-mix(in srgb, var(--team-accent) 4%, var(--box-1));
+  background: rgba(0, 0, 0, 0.14);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    transform 0.12s ease;
 }
 
-.teamPracticeGrid__recommendRow--adopted {
-  border-color: color-mix(in srgb, var(--team-accent) 35%, transparent);
-  background: color-mix(in srgb, var(--team-accent) 10%, var(--box-1));
+.teamPracticeGrid__recommendChip:hover {
+  border-color: color-mix(in srgb, var(--team-accent) 45%, transparent);
 }
 
-.teamPracticeGrid__recommendBody {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 6px 10px;
-  min-width: 0;
-  font-size: 0.8rem;
+.teamPracticeGrid__recommendChip:active {
+  transform: scale(0.97);
+}
+
+.teamPracticeGrid__recommendChip--adopted {
+  border-color: var(--team-accent);
+  background: color-mix(in srgb, var(--team-accent) 22%, transparent);
 }
 
 .teamPracticeGrid__recommendDate {
-  color: var(--text-more);
+  font-size: 0.72rem;
   font-weight: 600;
+  color: var(--text-more);
 }
 
 .teamPracticeGrid__recommendTime {
-  color: var(--text-primary);
+  font-size: 0.9rem;
   font-weight: 800;
+  color: var(--text-primary);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 .teamPracticeGrid__recommendMeta {
+  font-size: 0.7rem;
   color: var(--text-more);
-  font-size: 0.74rem;
 }
 
-.teamPracticeGrid__recommendAdopt {
-  flex-shrink: 0;
-  padding: 6px 12px;
-  border: 1px solid color-mix(in srgb, var(--team-accent) 45%, transparent);
-  border-radius: var(--club-radius-sm);
-  background: color-mix(in srgb, var(--team-accent) 18%, transparent);
+.teamPracticeGrid__recommendChip--adopted .teamPracticeGrid__recommendMeta {
   color: var(--text-primary);
-  font: inherit;
-  font-size: 0.72rem;
-  font-weight: 700;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.teamPracticeGrid__recommendAdopt:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--team-accent) 28%, transparent);
-  border-color: color-mix(in srgb, var(--team-accent) 60%, transparent);
-}
-
-.teamPracticeGrid__recommendAdopt:disabled {
-  opacity: 0.55;
-  cursor: default;
 }
 
 /* —— 팀 메인 (상세) —— */
@@ -2021,141 +1981,328 @@
   background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
 }
 
-.teamUpcoming__trackWrap {
-  margin: 0 -14px 0 0;
+.teamUpcoming__count {
+  margin-left: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-more);
+  font-variant-numeric: tabular-nums;
 }
 
-.teamUpcoming__track {
-  margin: 0;
-  padding: 2px 14px 6px 8px;
-  list-style: none;
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.teamUpcoming__track::-webkit-scrollbar {
-  display: none;
-}
-
-.teamUpcoming__track > li {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
-}
-
-.teamUpcoming__card {
-  flex: 0 0 auto;
-  scroll-snap-align: start;
+/* 다음 연습: 팀 색으로 강조된 큰 카드 */
+.teamUpcoming__next {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: min(74vw, 220px);
-  min-height: 108px;
-  padding: 14px 14px 13px;
+  gap: 4px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--team-accent) 38%, transparent);
   border-radius: var(--club-radius);
-  background: rgba(0, 0, 0, 0.18);
-  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
+  background: color-mix(in srgb, var(--team-accent) 12%, rgba(0, 0, 0, 0.18));
   box-sizing: border-box;
+  text-align: left;
+  font: inherit;
+  color: inherit;
 }
-
-.teamUpcoming__card--next {
-  border-color: color-mix(in srgb, var(--team-accent) 38%, transparent);
-  background: color-mix(in srgb, var(--team-accent) 10%, rgba(0, 0, 0, 0.18));
-  box-shadow: inset 0 1px 0 var(--team-accent);
+.teamUpcoming__nextTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
-
-.teamUpcoming__date {
-  font-size: 0.88rem;
-  font-weight: 700;
-  line-height: 1.3;
+.teamUpcoming__nextDate {
+  font-size: 0.875rem;
+  font-weight: 600;
   color: var(--text-primary);
 }
-
-.teamUpcoming__time {
-  font-size: 0.92rem;
+.teamUpcoming__dday {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--team-accent);
+  color: #fff;
+  font-size: 0.75rem;
   font-weight: 700;
-  line-height: 1.35;
-  color: color-mix(in srgb, #fff 80%, var(--team-accent));
-  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.teamUpcoming__nextTime {
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: color-mix(in srgb, #fff 85%, var(--team-accent));
+  font-variant-numeric: tabular-nums;
+}
+.teamUpcoming__nextPlace {
+  font-size: 0.8125rem;
+  color: var(--text-more);
+  overflow-wrap: anywhere;
 }
 
-.teamUpcoming__place {
-  margin-top: auto;
-  font-size: 0.78rem;
-  line-height: 1.4;
+/* 이후 연습: 한 줄 목록 */
+.teamUpcoming__list {
+  display: grid;
+  gap: 2px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.teamUpcoming__row {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.03);
+  box-sizing: border-box;
+  text-align: left;
+  font: inherit;
+  font-size: 0.875rem;
+  color: inherit;
+}
+.teamUpcoming__rowDate {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.teamUpcoming__rowTime {
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, #fff 80%, var(--team-accent));
+}
+.teamUpcoming__rowPlace {
+  text-align: right;
+  font-size: 0.8125rem;
   color: var(--text-more);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.teamUpcoming__card--clickable {
-  width: 100%;
-  text-align: left;
-  font: inherit;
-  color: inherit;
+.teamUpcoming__item--clickable {
   cursor: pointer;
   transition:
     border-color 0.2s ease,
     background-color 0.2s ease,
     transform 0.15s ease;
 }
-
-.teamUpcoming__card--clickable:hover {
-  border-color: color-mix(in srgb, var(--team-accent) 45%, transparent);
-  background: color-mix(in srgb, var(--team-accent) 14%, rgba(0, 0, 0, 0.18));
+.teamUpcoming__next.teamUpcoming__item--clickable:hover {
+  border-color: color-mix(in srgb, var(--team-accent) 55%, transparent);
+  background: color-mix(in srgb, var(--team-accent) 16%, rgba(0, 0, 0, 0.18));
+}
+.teamUpcoming__row.teamUpcoming__item--clickable:hover {
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.07);
+}
+.teamUpcoming__item--clickable:active {
+  transform: scale(0.99);
 }
 
-.teamUpcoming__card--clickable:active {
-  transform: scale(0.98);
+/* 더 있는 연습 펼치기 */
+.teamUpcoming__moreBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  height: 36px;
+  margin-top: 6px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: transparent;
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.teamUpcoming__moreBtn:hover {
+  color: var(--text-primary);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
 }
 
-.teamPracticeEdit__meta {
-  margin: -4px 0 16px;
-  font-size: 0.84rem;
-  line-height: 1.45;
+.teamPracticeEdit__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.teamPracticeEdit__head .teamCalSheet__title {
+  margin: 0;
+}
+.teamPracticeEdit__close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
+  color: var(--text-more);
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+.teamPracticeEdit__close:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+/* 요약 카드: 팀 색 */
+.teamPracticeEdit__summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--team-accent) 38%, transparent);
+  border-radius: var(--club-radius);
+  background: color-mix(in srgb, var(--team-accent) 12%, transparent);
+}
+.teamPracticeEdit__summaryTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.teamPracticeEdit__dday {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--team-accent);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.teamPracticeEdit__time {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  color: color-mix(in srgb, #fff 85%, var(--team-accent));
+}
+.teamPracticeEdit__count {
+  font-size: 0.8125rem;
   color: var(--text-more);
 }
 
-.teamPracticeEdit__form {
-  margin-bottom: 16px;
+.teamPracticeEdit__section {
+  margin-bottom: 18px;
 }
-
-.teamPracticeEdit__actions {
+.teamPracticeEdit__label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-more);
+}
+.teamPracticeEdit__inputWrap {
+  position: relative;
+}
+.teamPracticeEdit__inputIcon {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--text-more);
+  font-size: 1.05rem;
+  pointer-events: none;
+}
+.teamPracticeEdit__input {
+  width: 100%;
+  height: 48px;
+  padding: 0 14px 0 40px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
+  border-radius: var(--club-radius-sm);
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+.teamPracticeEdit__input:focus {
+  outline: none;
+  border-color: var(--team-accent);
+}
+.teamPracticeEdit__chips {
   display: flex;
-  gap: 10px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.teamPracticeEdit__chip {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.teamPracticeEdit__chip--on {
+  border-color: var(--team-accent);
+  background: color-mix(in srgb, var(--team-accent) 18%, transparent);
+  color: var(--text-primary);
+}
+.teamPracticeEdit__members {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.teamPracticeEdit__members li {
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.06);
+  font-size: 0.8125rem;
+  color: var(--text-primary);
 }
 
-.teamPracticeEdit__actions .teamCalSheet__action {
-  flex: 1;
+.teamPracticeEdit__save {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: var(--team-accent);
+  color: #fff;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
 }
-
-.teamPracticeEdit__danger {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(var(--club-danger-rgb, 255, 69, 58), 0.22);
+.teamPracticeEdit__save:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .teamPracticeEdit__deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   width: 100%;
-  padding: 12px;
-  border: 1px solid rgba(var(--club-danger-rgb, 255, 69, 58), 0.45);
+  height: 44px;
+  margin-top: 8px;
+  border: 0;
   border-radius: var(--club-radius-sm);
-  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.12);
-  color: var(--club-danger, #ffb1b1);
+  background: transparent;
+  color: var(--club-danger, #ff8a80);
   font: inherit;
-  font-size: 0.9rem;
-  font-weight: 700;
+  font-size: 0.875rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .teamPracticeEdit__deleteBtn:hover:not(:disabled) {
-  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.22);
+  background: rgba(var(--club-danger-rgb, 255, 69, 58), 0.1);
 }
 
 .teamPracticeEdit__deleteBtn:disabled {
@@ -3194,27 +3341,129 @@
   background: var(--club-surface);
 }
 
-/* 다가오는 연습 머리: 오른쪽에 '연습 추가'(팀장) · 복사 */
-.teamUpcoming__headActions {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
+/* 다가오는 연습 맨 아래: '연습 추가'(팀장) 전체 폭 버튼 */
 .teamUpcoming__addBtn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
-  height: 32px;
-  padding: 0 12px 0 10px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--club-text);
-  color: var(--club-bg);
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  height: 44px;
+  margin-top: 12px;
+  border: 1px dashed color-mix(in srgb, var(--team-accent) 50%, transparent);
+  border-radius: var(--club-radius-sm);
+  background: color-mix(in srgb, var(--team-accent) 6%, transparent);
+  color: var(--club-text);
   font: inherit;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 .teamUpcoming__addBtn:hover {
-  opacity: 0.88;
+  border-style: solid;
+  background: color-mix(in srgb, var(--team-accent) 14%, transparent);
+}
+
+/* —— 연습 시간 정하기 (생성) —— */
+.practiceCreate__head {
+  display: grid;
+  gap: 4px;
+}
+.practiceCreate__title {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--club-text, var(--text-primary));
+}
+.practiceCreate__sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--text-more);
+}
+.practiceCreate__poll {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--team-accent) 18%, transparent);
+  color: var(--club-text, var(--text-primary));
+  font-weight: 600;
+}
+.teamPage--practiceCreate .teamPracticeGrid {
+  margin-bottom: 0;
+}
+
+/* 하단 고정: 선택 개수 + 만들기 (PC: 열 안에서 sticky, 모바일: 화면 아래에 붙음) */
+.practiceCreate__bar {
+  position: sticky;
+  bottom: 12px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 10px 10px 16px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
+  border-radius: var(--club-radius);
+  background: var(--club-surface, var(--box-1));
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+}
+.practiceCreate__barInfo {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--club-text, var(--text-primary));
+}
+.practiceCreate__submit {
+  flex-shrink: 0;
+  height: 44px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--club-radius-sm);
+  background: var(--team-accent);
+  color: #fff;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+}
+.practiceCreate__submit:hover:not(:disabled) {
+  opacity: 0.9;
+}
+.practiceCreate__submit:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.practiceCreate__submit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 편집 시트가 길어지면 시트 안에서 스크롤 */
+.teamCalSheet.teamPracticeEdit {
+  max-height: 90dvh;
+  overflow-y: auto;
+}
+
+/* 모바일: 탭바 없이 화면 맨 아래에 붙는 만들기 바 */
+@media screen and (max-width: 1023px) {
+  .teamPage--practiceCreate {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+  .practiceCreate__bar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px));
+    border: 0;
+    border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
+    border-radius: 0;
+    box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.22);
+  }
 }

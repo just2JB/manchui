@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { IoCloseOutline, IoLocationOutline, IoTrashOutline } from "react-icons/io5";
 import { createPortal } from "react-dom";
 import apiClient from "../../../api/apiClient";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { getMemberDisplayName } from "./teamUtils";
 import {
+  formatDateKey,
   formatPracticeTimeDisplay,
   formatUpcomingPracticeDate,
   normalizeDateKey,
@@ -14,6 +17,15 @@ function practiceMemberIds(members) {
   );
 }
 
+function formatDDay(dateKey) {
+  if (!dateKey) return "";
+  const today = new Date(formatDateKey(new Date()) + "T00:00");
+  const diff = Math.round((new Date(dateKey + "T00:00") - today) / 86400000);
+  if (diff === 0) return "오늘";
+  if (diff === 1) return "내일";
+  return diff > 0 ? `D-${diff}` : "지난 연습";
+}
+
 function initialPlaceValue(place) {
   const value = String(place ?? "").trim();
   return value === "미확정" ? "" : value;
@@ -23,6 +35,10 @@ const TeamPracticeEditSheet = ({
   open,
   practice,
   accentColor = "#E87070",
+  /** 팀 멤버 (참석 멤버 이름 표시용) */
+  teamMembers = [],
+  /** 이전에 쓴 장소 (빠른 선택) */
+  placeSuggestions = [],
   onClose,
   onSaved,
   onDeleted,
@@ -40,6 +56,18 @@ const TeamPracticeEditSheet = ({
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open, practice, busy, onClose]);
+
+  const attendeeNames = useMemo(() => {
+    if (!practice) return [];
+    const nameById = new Map(
+      teamMembers.map((member) => [String(member?._id ?? member), getMemberDisplayName(member)]),
+    );
+    const names = practiceMemberIds(practice.members)
+      .map((id) => nameById.get(id))
+      .filter(Boolean);
+    const guests = (Array.isArray(practice.guestNames) ? practice.guestNames : []).filter(Boolean);
+    return [...names, ...guests];
+  }, [practice, teamMembers]);
 
   if (!open || !practice) return null;
 
@@ -124,61 +152,97 @@ const TeamPracticeEditSheet = ({
         <div className="teamCalSheet__handleWrap">
           <span className="teamCalSheet__handle" aria-hidden />
         </div>
-        <h2 id="team-practice-edit-title" className="teamCalSheet__title">
-          연습 편집
-        </h2>
-        <p className="teamPracticeEdit__meta">
-          {dateLabel} · {timeLabel}
-        </p>
+        <div className="teamPracticeEdit__head">
+          <h2 id="team-practice-edit-title" className="teamCalSheet__title">
+            연습 편집
+          </h2>
+          <button
+            type="button"
+            className="teamPracticeEdit__close"
+            onClick={onClose}
+            disabled={busy}
+            aria-label="닫기"
+          >
+            <IoCloseOutline aria-hidden />
+          </button>
+        </div>
 
-        <div className="teamPracticeEdit__form">
-          <label className="teamForm__field" htmlFor="team-practice-place">
-            <span className="teamForm__label">연습 장소</span>
+        <div className="teamPracticeEdit__summary">
+          <span className="teamPracticeEdit__summaryTop">
+            <span>{dateLabel}</span>
+            <span className="teamPracticeEdit__dday">{formatDDay(dateKey)}</span>
+          </span>
+          <span className="teamPracticeEdit__time">{timeLabel}</span>
+          <span className="teamPracticeEdit__count">참석 {attendeeNames.length}명</span>
+        </div>
+
+        <div className="teamPracticeEdit__section">
+          <label className="teamPracticeEdit__label" htmlFor="team-practice-place">
+            장소
+          </label>
+          <div className="teamPracticeEdit__inputWrap">
+            <IoLocationOutline className="teamPracticeEdit__inputIcon" aria-hidden />
             <input
               id="team-practice-place"
               type="text"
-              className="teamForm__input"
+              className="teamPracticeEdit__input"
               value={place}
               onChange={(event) => setPlace(event.target.value)}
-              placeholder="예: 동아리방, 00홀"
+              placeholder="비워 두면 미확정"
               autoComplete="off"
               disabled={busy}
             />
-          </label>
-          <p className="teamForm__hint">
-            비워 두면 「미확정」으로 표시됩니다.
-          </p>
+          </div>
+          {placeSuggestions.length > 0 ? (
+            <div className="teamPracticeEdit__chips" aria-label="최근 장소">
+              {placeSuggestions.map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={[
+                    "teamPracticeEdit__chip",
+                    place.trim() === value ? "teamPracticeEdit__chip--on" : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  onClick={() => setPlace(value)}
+                  disabled={busy}
+                >
+                  {value}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
 
-        <div className="teamPracticeEdit__actions">
-          <button
-            type="button"
-            className="teamCalSheet__action teamCalSheet__action--cancel"
-            onClick={onClose}
-            disabled={busy}
-          >
-            취소
-          </button>
-          <button
-            type="button"
-            className="teamCalSheet__action teamCalSheet__action--primary"
-            onClick={() => void handleSave()}
-            disabled={busy}
-          >
-            {busy ? "처리 중…" : "저장"}
-          </button>
-        </div>
+        {attendeeNames.length > 0 ? (
+          <div className="teamPracticeEdit__section">
+            <p className="teamPracticeEdit__label">참석 멤버</p>
+            <ul className="teamPracticeEdit__members">
+              {attendeeNames.map((name, index) => (
+                <li key={`${name}-${index}`}>{name}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
-        <div className="teamPracticeEdit__danger">
-          <button
-            type="button"
-            className="teamPracticeEdit__deleteBtn"
-            onClick={() => void handleDelete()}
-            disabled={busy}
-          >
-            연습 삭제
-          </button>
-        </div>
+        <button
+          type="button"
+          className="teamPracticeEdit__save"
+          onClick={() => void handleSave()}
+          disabled={busy}
+        >
+          {busy ? "처리 중…" : "저장"}
+        </button>
+        <button
+          type="button"
+          className="teamPracticeEdit__deleteBtn"
+          onClick={() => void handleDelete()}
+          disabled={busy}
+        >
+          <IoTrashOutline aria-hidden />
+          연습 삭제
+        </button>
       </div>
     </div>,
     document.body,

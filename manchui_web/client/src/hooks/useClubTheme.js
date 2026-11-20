@@ -9,7 +9,7 @@ function readTheme() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved === "light" || saved === "dark") return saved;
   } catch { /* Storage can be unavailable in private browsing. */ }
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return "dark";
 }
 
 export function useClubTheme() {

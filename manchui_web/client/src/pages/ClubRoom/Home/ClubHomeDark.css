@@ -28,14 +28,14 @@
 }
 
 body[data-club-theme="light"] .dHome {
-  --h-bg: #f4f4f5;
-  --h-surface: #ffffff;
-  --h-raised: #f1f1f3;
-  --h-hover: #e7e7ea;
-  --h-text: #111111;
-  --h-muted: #55555c;
-  --h-meta: #6b6b6b;
-  --h-off: #b4b4b8;
+  --h-bg: #e2e2df;
+  --h-surface: #efefec;
+  --h-raised: #d9d9d5;
+  --h-hover: #d6d6d2;
+  --h-text: #161616;
+  --h-muted: #4c4c4a;
+  --h-meta: #616160;
+  --h-off: #a3a3a0;
   --h-brand: #b30000;
   --h-data: #b30000;
   --h-data-soft: #ffeceb;

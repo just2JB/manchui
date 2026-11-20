@@ -35,6 +35,7 @@ import AdminReservationLayout from "./pages/Admin/AdminReservationLayout";
 import AdminReservationLimitsPage from "./pages/Admin/AdminReservationLimitsPage";
 import AdminRecommend from "./pages/Admin/AdminRecommend";
 import AdminLottery from "./pages/Admin/AdminLottery";
+import AdminArchive from "./pages/Admin/AdminArchive";
 import AdminLayout from "./pages/Admin/AdminLayout";
 import JoinForm from "./pages/Join/JoinForm";
 import JoinCheck from "./pages/Join/JoinCheck";
@@ -140,6 +141,7 @@ const router = createBrowserRouter([
           { path: "recommendation", element: <AdminRecommend /> },
           { path: "lottery", element: <AdminLottery /> },
           { path: "setting", element: <AdminSetting /> },
+          { path: "archive", element: <AdminArchive /> },
         ],
       },
     ],

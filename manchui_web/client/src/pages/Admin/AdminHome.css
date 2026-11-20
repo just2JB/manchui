@@ -1,86 +1,227 @@
-/* 관리자 홈 — 네비는 AdminNavbar, 본문은 카드 링크만 */
+/* 관리자 홈: 인사 · 요약 숫자 · 오늘 동아리방 + 메뉴 */
 
 .adminHome {
+  display: grid;
+  gap: 20px;
   width: 100%;
   box-sizing: border-box;
-  color: var(--text-primary);
+  color: var(--text-primary, #fff);
 }
-
-.adminHome__lead {
-  margin: 0 0 1.25rem;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--text-more);
-}
-
-.adminHome .linkBox {
+.adminHome__head {
   display: grid;
-  gap: 0.75rem;
-  max-width: 520px;
+  gap: 4px;
+}
+.adminHome__date {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--text-more, #9a9a9a);
+}
+.adminHome__title {
+  margin: 0;
 }
 
-@media screen and (min-width: 640px) {
-  .adminHome .linkBox {
-    max-width: 640px;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+/* ---------- 요약 숫자 ---------- */
+.adminHome__stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (min-width: 900px) {
+  .adminHome__stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
+.adminHome__stat {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--box-1, #121212);
+  color: inherit;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+.adminHome__stat:hover {
+  background: var(--box-2, #1c1c1c);
+}
+.adminHome__stat:focus-visible {
+  outline: 2px solid var(--admin-primary, #fff);
+  outline-offset: 2px;
+}
+.adminHome__statLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-more, #9a9a9a);
+}
+.adminHome__statValue {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.adminHome__statSub {
+  overflow: hidden;
+  font-size: 0.75rem;
+  color: var(--text-more, #9a9a9a);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+/* 처리할 가입 신청이 있을 때만 반전 */
+.adminHome__stat--accent {
+  background: var(--admin-primary, #fff);
+  color: var(--admin-on-primary, #000);
+}
+.adminHome__stat--accent:hover {
+  background: var(--admin-primary, #fff);
+  opacity: 0.92;
+}
+.adminHome__stat--accent .adminHome__statLabel,
+.adminHome__stat--accent .adminHome__statSub {
+  color: inherit;
+  opacity: 0.65;
+}
 
-.adminHome .linkbutton {
+/* ---------- 오늘 동아리방 + 메뉴 ---------- */
+.adminHome__grid {
+  display: grid;
+  gap: 16px;
+}
+@media (min-width: 900px) {
+  .adminHome__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+}
+.adminHome__panel {
+  padding: 14px 16px 16px;
+  border-radius: 12px;
+  background: var(--box-1, #121212);
+}
+.adminHome__panelHead {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.75rem;
-  min-height: 56px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.adminHome__panelTitle {
   margin: 0;
-  padding: 1rem 1.25rem;
-  font: inherit;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--text-primary);
-  text-align: left;
+}
+.adminHome__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.78rem;
+  color: var(--text-more, #9a9a9a);
   text-decoration: none;
+}
+.adminHome__more:hover {
+  color: var(--text-primary, #fff);
+}
+.adminHome__empty {
+  margin: 10px 0 2px;
+  font-size: 0.85rem;
+  color: var(--text-more, #9a9a9a);
+}
+.adminHome__resList {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.adminHome__resItem {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  min-height: 40px;
+  border-top: 1px solid var(--admin-line, rgba(255, 255, 255, 0.07));
+  font-size: 0.85rem;
+}
+.adminHome__resItem:first-child {
+  border-top: 0;
+}
+.adminHome__resTime {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-secondary, #b4b4b4);
+}
+.adminHome__resTeam {
+  overflow: hidden;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.adminHome__resCount {
+  font-size: 0.78rem;
+  color: var(--text-more, #9a9a9a);
+}
+
+.adminHome__menu {
+  display: grid;
+  overflow: hidden;
   border-radius: 12px;
-  background: var(--box-1);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-  transition:
-    transform 0.15s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+  background: var(--box-1, #121212);
 }
-
-.adminHome__linkIcon {
-  flex-shrink: 0;
-  width: 1.5rem;
-  height: 1.5rem;
-  color: var(--brand-red);
-  opacity: 0.95;
+@media (min-width: 640px) {
+  .adminHome__menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-
-.adminHome .linkbutton:hover .adminHome__linkIcon {
-  opacity: 1;
+.adminHome__menuItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 60px;
+  padding: 10px 14px;
+  border-top: 1px solid var(--admin-line, rgba(255, 255, 255, 0.07));
+  color: inherit;
+  text-decoration: none;
 }
-
-.adminHome__linkLabel {
+.adminHome__menuItem:first-child {
+  border-top: 0;
+}
+@media (min-width: 640px) {
+  .adminHome__menuItem:nth-child(2) {
+    border-top: 0;
+  }
+  .adminHome__menuItem:nth-child(odd) {
+    border-right: 1px solid var(--admin-line, rgba(255, 255, 255, 0.07));
+  }
+}
+.adminHome__menuItem:hover {
+  background: var(--admin-hover, rgba(255, 255, 255, 0.05));
+}
+.adminHome__menuItem:focus-visible {
+  outline: 2px solid var(--admin-primary, #fff);
+  outline-offset: -2px;
+}
+.adminHome__menuIcon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--text-secondary, #b4b4b4);
+}
+.adminHome__menuText {
+  display: grid;
   flex: 1;
+  gap: 2px;
   min-width: 0;
 }
-
-.adminHome .linkbutton:hover {
-  background: var(--box-2);
-  border-color: rgba(179, 0, 0, 0.35);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.28);
+.adminHome__menuLabel {
+  font-size: 0.9rem;
+  font-weight: 600;
 }
-
-.adminHome .linkbutton:active {
-  transform: scale(0.99);
+.adminHome__menuDesc {
+  overflow: hidden;
+  font-size: 0.75rem;
+  color: var(--text-more, #9a9a9a);
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
-
-.adminHome .linkbutton:focus-visible {
-  outline: 2px solid var(--brand-red);
-  outline-offset: 3px;
+.adminHome__menuArrow {
+  flex: none;
+  color: var(--text-more, #9a9a9a);
 }

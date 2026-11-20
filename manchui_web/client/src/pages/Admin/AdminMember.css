@@ -102,7 +102,7 @@
 
 .adminMember__table {
   width: 100%;
-  min-width: 620px;
+  min-width: 0;
   border-collapse: collapse;
   font-size: 0.88rem;
 }
@@ -374,4 +374,32 @@
 
 .adminMember__error {
   color: #ff8a8a;
+}
+
+/* ---------- 목록 (틀은 adminList.css) ---------- */
+.adminMember__table {
+  --cols: minmax(80px, 1fr) minmax(0, 1fr) minmax(0, 1.6fr) 132px 112px;
+}
+@media (max-width: 719px) {
+  .adminMember__table .aList__row--head {
+    display: none;
+  }
+  /* 모바일: 이름·아이디 / 직책 토글 · 관리 (이메일은 상세에서) */
+  .adminMember__table {
+    --cols: minmax(0, 1fr) auto;
+  }
+  .adminMember__table .adminMember__email {
+    display: none;
+  }
+  .adminMember__table .aList__row {
+    grid-template-areas:
+      "name id"
+      "role actions";
+    row-gap: 8px;
+    padding: 10px 14px;
+  }
+  .adminMember__table .aList__row > :nth-child(1) { grid-area: name; }
+  .adminMember__table .aList__row > :nth-child(2) { grid-area: id; text-align: right; }
+  .adminMember__table .aList__row > :nth-child(4) { grid-area: role; }
+  .adminMember__table .aList__row > :nth-child(5) { grid-area: actions; }
 }

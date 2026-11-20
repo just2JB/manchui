@@ -41,16 +41,16 @@ body[data-club-theme][data-club-look="next"] {
 }
 
 body[data-club-theme="light"][data-club-look="next"] {
-  --club-bg: #f4f4f5;
-  --club-sidebar-bg: #ffffff;
-  --club-surface: #ffffff;
-  --club-surface-hi: #ffffff;
-  --club-surface-2: #f1f1f3;
-  --club-ink-rgb: 17, 17, 17;
-  --club-border: #e4e4e7;
-  --club-hover: #e7e7ea;
-  --club-text: #111111;
-  --club-text-muted: #55555c;
+  --club-bg: #e2e2df;
+  --club-sidebar-bg: #efefec;
+  --club-surface: #efefec;
+  --club-surface-hi: #f4f4f1;
+  --club-surface-2: #d9d9d5;
+  --club-ink-rgb: 22, 22, 22;
+  --club-border: #c2c2bd;
+  --club-hover: #d6d6d2;
+  --club-text: #161616;
+  --club-text-muted: #4c4c4a;
   --club-primary: #111111;
   --club-primary-hover: #2a2a2a;
   --club-on-primary: #ffffff;
@@ -61,8 +61,8 @@ body[data-club-theme="light"][data-club-look="next"] {
   --club-action: #111111;
   --club-action-hover: #2a2a2a;
   --club-on-action: #ffffff;
-  --club-active-bg: #ececef;
-  --club-active-bg-strong: #e2e2e6;
+  --club-active-bg: #d9d9d5;
+  --club-active-bg-strong: #cfcfcb;
   --club-secondary: #111111;
   --club-danger: #b30000;
   --club-danger-rgb: 179, 0, 0;

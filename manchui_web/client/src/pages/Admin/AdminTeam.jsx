@@ -3,7 +3,8 @@ import { createPortal } from "react-dom";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { authRequestConfig } from "../../api/tokenStorage";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
-import { IoInformationCircleOutline } from "react-icons/io5";
+import TeamListCard from "../ClubRoom/Team/TeamListCard";
+import "./adminList.css";
 import "./AdminTeam.css";
 
 const authConfig = authRequestConfig;
@@ -184,126 +185,88 @@ const AdminTeam = () => {
   return (
     <div className="adminTeam">
       <div className="adminTeam__header">
-        <div>
-          <h1 className="adminTeam__title">팀 관리</h1>
-          <p className="adminTeam__lead">
-            활성 팀: 최근 1개월 내 연습·취합 일정이 있거나 생성된 지 1개월이
-            지나지 않은 팀
-          </p>
+        <h1 className="admin-page-heading">팀 관리</h1>
+      </div>
+
+      <div className="aList">
+        <div className="aList__tabs" role="tablist" aria-label="팀 분류">
+          {[
+            ["active", "활성", counts.activeCount],
+            ["inactive", "비활성", counts.inactiveCount],
+          ].map(([value, label, count]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={tab === value}
+              className="aList__tab"
+              onClick={() => setTab(value)}
+            >
+              {label}
+              <span>{count}</span>
+            </button>
+          ))}
+          <span
+            className="adminTeam__hint"
+            title="활성 팀: 최근 1개월 내 연습·취합 일정이 있거나 생성된 지 1개월이 지나지 않은 팀"
+          >
+            최근 1개월 기준
+          </span>
         </div>
-        <button
-          type="button"
-          className="adminTeam__refresh"
-          onClick={() => void fetchTeams()}
-          disabled={loading}
-        >
-          새로고침
-        </button>
-      </div>
 
-      <div className="adminTeam__tabs" role="tablist" aria-label="팀 분류">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "active"}
-          className={[
-            "adminTeam__tab",
-            tab === "active" ? "adminTeam__tab--active" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onClick={() => setTab("active")}
-        >
-          활성 팀 ({counts.activeCount})
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={tab === "inactive"}
-          className={[
-            "adminTeam__tab",
-            tab === "inactive" ? "adminTeam__tab--active" : "",
-          ]
-            .filter(Boolean)
-            .join(" ")}
-          onClick={() => setTab("inactive")}
-        >
-          비활성 팀 ({counts.inactiveCount})
-        </button>
-      </div>
-
-      <div className="adminTeam__toolbar">
-        <p className="adminTeam__count">
-          전체 {counts.totalCount}팀 · 표시 {filteredTeams.length}팀
-        </p>
-        <label className="adminTeam__searchLabel">
-          <span className="adminTeam__searchLabelText">검색</span>
+        <div className="aList__tools">
           <input
             type="search"
-            className="adminTeam__search"
+            className="aList__search"
             value={searchQuery}
             onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="팀 이름, 곡장, 코멘트…"
+            placeholder="팀 이름, 곡장, 코멘트"
+            aria-label="팀 검색"
           />
-        </label>
-      </div>
-
-      {error ? <p className="adminTeam__error">{error}</p> : null}
-
-      {loading ? (
-        <p className="adminTeam__status">불러오는 중…</p>
-      ) : filteredTeams.length === 0 ? (
-        <p className="adminTeam__status">
-          {tab === "active"
-            ? "활성 팀이 없습니다."
-            : "비활성 팀이 없습니다."}
-        </p>
-      ) : (
-        <div className="adminTeam__tableWrap">
-          <table className="adminTeam__table">
-            <thead>
-              <tr>
-                <th>팀 이름</th>
-                <th>곡장</th>
-                <th>멤버</th>
-                <th>연습</th>
-                <th>취합</th>
-                <th>생성일</th>
-                <th>상세</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredTeams.map((team) => (
-                <tr key={team._id}>
-                  <td>
-                    <span
-                      className="adminTeam__nameSwatch"
-                      style={{ background: team.teamColor || "#888" }}
-                      aria-hidden
-                    />
-                    {team.name}
-                  </td>
-                  <td>{team.leaderName}</td>
-                  <td>{team.memberCount}명</td>
-                  <td>{team.practiceCount}</td>
-                  <td>{team.requestScheduleCount}</td>
-                  <td>{formatDateTimeKo(team.createdAt)}</td>
-                  <td>
-                    <button
-                      type="button"
-                      className="adminTeam__detailBtn"
-                      onClick={() => openDetail(team._id)}
-                      aria-label={`${team.name} 상세`}
-                    >
-                      <IoInformationCircleOutline aria-hidden />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <button
+            type="button"
+            className="aList__ghost"
+            onClick={() => void fetchTeams()}
+            disabled={loading}
+          >
+            새로고침
+          </button>
         </div>
-      )}
+
+        {error ? <p className="aList__error">{error}</p> : null}
+
+        {loading ? (
+          <p className="aList__empty">불러오는 중…</p>
+        ) : filteredTeams.length === 0 ? (
+          <p className="aList__empty">
+            {searchQuery.trim()
+              ? "조건에 맞는 팀이 없어요."
+              : tab === "active"
+                ? "활성 팀이 없어요."
+                : "비활성 팀이 없어요."}
+          </p>
+        ) : (
+          <div className="adminTeam__grid">
+            {filteredTeams.map((team) => (
+              <TeamListCard
+                key={team._id}
+                team={team}
+                className={tab === "inactive" ? "adminTeam__card--inactive" : ""}
+                ariaLabel={`${team.name} 상세 보기`}
+                meta={[
+                  team.leaderName ? `곡장 ${team.leaderName}` : null,
+                  `멤버 ${team.memberCount ?? 0}명`,
+                  `연습 ${team.practiceCount ?? 0}`,
+                  `취합 ${team.requestScheduleCount ?? 0}`,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+                onClick={() => openDetail(team._id)}
+              />
+            ))}
+          </div>
+        )}
+      </div>
 
       {detailTeamId
         ? createPortal(

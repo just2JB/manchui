@@ -438,3 +438,31 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- 카드 목록 (팀 목록 카드 재사용) ---------- */
+.adminTeam__header {
+  margin-bottom: 4px;
+}
+.adminTeam__hint {
+  align-self: center;
+  margin-left: auto;
+  padding: 0 4px;
+  font-size: 0.75rem;
+  color: var(--text-more, #9a9a9a);
+  white-space: nowrap;
+  cursor: help;
+}
+.adminTeam__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+.adminTeam__card--inactive {
+  filter: saturate(0.35);
+  opacity: 0.7;
+}
+.adminTeam__card--inactive:hover,
+.adminTeam__card--inactive:focus-visible {
+  filter: none;
+  opacity: 1;
+}

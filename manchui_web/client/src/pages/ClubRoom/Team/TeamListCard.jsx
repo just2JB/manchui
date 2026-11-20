@@ -9,7 +9,8 @@ import "./TeamListCard.css";
  * 배경 글자 폰트: 영문 Bebas Neue, 한글 Black Han Sans. 한글은 같은 크기면 커 보여서 조금 작게.
  * 앞쪽 이름은 흰색.
  */
-const TeamListCard = ({ team, isLeader, isActive, onClick }) => {
+/** meta: 위쪽 작은 줄을 직접 줄 때 (관리자 화면 등) */
+const TeamListCard = ({ team, isLeader, isActive, onClick, meta: metaOverride, className = "", ariaLabel }) => {
   const { ref, handlers } = useShineCard();
   const color = team.teamColor || "#E87070";
   const memberCount = Array.isArray(team.members) ? team.members.length : 0;
@@ -48,7 +49,7 @@ const TeamListCard = ({ team, isLeader, isActive, onClick }) => {
       alive = false;
     };
   }, [name]);
-  const meta = [`멤버 ${memberCount}명`, isLeader ? "팀장" : null, isActive ? "연습 중" : null]
+  const meta = metaOverride ?? [`멤버 ${memberCount}명`, isLeader ? "팀장" : null, isActive ? "연습 중" : null]
     .filter(Boolean)
     .join(" · ");
 
@@ -56,10 +57,10 @@ const TeamListCard = ({ team, isLeader, isActive, onClick }) => {
     <button
       ref={ref}
       type="button"
-      className="teamTile"
+      className={`teamTile${className ? ` ${className}` : ""}`}
       onClick={onClick}
       style={{ "--team": color }}
-      aria-label={`${name} 팀 열기`}
+      aria-label={ariaLabel ?? `${name} 팀 열기`}
       {...handlers}
     >
       <svg className="teamTile__bigName" aria-hidden="true" focusable="false">

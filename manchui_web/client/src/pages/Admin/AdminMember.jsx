@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { authRequestConfig } from "../../api/tokenStorage";
 import { useAuth } from "../../context/AuthContext";
-import { IoInformationCircleOutline } from "react-icons/io5";
+import "./adminList.css";
 import "./AdminMember.css";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 
@@ -65,6 +65,8 @@ const AdminMember = () => {
   const [busyId, setBusyId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [detailMember, setDetailMember] = useState(null);
+  /** all | exec | member */
+  const [roleFilter, setRoleFilter] = useState("all");
 
   const filteredMembers = useMemo(() => {
     return members.filter((m) => memberMatchesQuery(m, searchQuery));
@@ -170,164 +172,151 @@ const AdminMember = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="adminMember">
-        <h1 className="admin-page-heading">부원 관리</h1>
-        <p className="adminMember__empty">불러오는 중…</p>
-      </div>
+  const roleCounts = {
+    all: members.length,
+    exec: members.filter((m) => m.position === "임원진").length,
+    member: members.filter((m) => m.position !== "임원진").length,
+  };
+  /** 임원진 먼저, 그다음 이름순 */
+  const shownMembers = filteredMembers
+    .filter((m) => {
+      if (roleFilter === "exec") return m.position === "임원진";
+      if (roleFilter === "member") return m.position !== "임원진";
+      return true;
+    })
+    .sort(
+      (a, b) =>
+        (b.position === "임원진") - (a.position === "임원진") ||
+        String(a.username ?? "").localeCompare(String(b.username ?? ""), "ko"),
     );
-  }
 
   return (
     <div className="adminMember">
       <h1 className="admin-page-heading">부원 관리</h1>
 
-      <div className="adminMember__toolbar">
-        <div className="adminMember__toolbarLeft">
-          <span className="adminMember__count">
-            전체 {members.length}명
-            {searchQuery.trim() ? (
-              <>
-                {" "}
-                · 검색 결과 {filteredMembers.length}명
-              </>
-            ) : null}
-          </span>
+      <div className="aList">
+        <div className="aList__tabs" role="tablist" aria-label="직책으로 보기">
+          {[
+            ["all", "전체"],
+            ["exec", "임원진"],
+            ["member", "일반"],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={roleFilter === value}
+              className="aList__tab"
+              onClick={() => setRoleFilter(value)}
+            >
+              {label}
+              <span>{roleCounts[value]}</span>
+            </button>
+          ))}
         </div>
-        <div className="adminMember__toolbarRight">
-          <label className="adminMember__searchLabel" htmlFor="admin-member-search">
-            <span className="adminMember__searchLabelText">검색</span>
-            <input
-              id="admin-member-search"
-              type="search"
-              className="adminMember__search"
-              placeholder="이름, 아이디, 이메일, 직책"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              autoComplete="off"
-            />
-          </label>
+
+        <div className="aList__tools">
+          <input
+            id="admin-member-search"
+            type="search"
+            className="aList__search"
+            placeholder="이름, 아이디, 이메일, 직책"
+            aria-label="회원 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            autoComplete="off"
+          />
           <button
             type="button"
-            className="adminMember__refresh"
+            className="aList__ghost"
             onClick={() => {
               setLoading(true);
               fetchMembers();
             }}
-            disabled={!serverUrl}
+            disabled={!serverUrl || loading}
           >
             새로고침
           </button>
         </div>
-      </div>
 
-      {error ? <p className="adminMember__error">{error}</p> : null}
+        {error ? <p className="aList__error">{error}</p> : null}
 
-      {!error && members.length === 0 ? (
-        <p className="adminMember__empty">등록된 회원이 없습니다.</p>
-      ) : null}
-
-      {!error && members.length > 0 && filteredMembers.length === 0 ? (
-        <p className="adminMember__empty">
-          검색 조건에 맞는 회원이 없습니다.
-        </p>
-      ) : null}
-
-      {!error && members.length > 0 && filteredMembers.length > 0 ? (
-        <div className="adminMember__tableWrap">
-          <table className="adminMember__table">
-            <thead>
-              <tr>
-                <th>이름</th>
-                <th>아이디</th>
-                <th>직책</th>
-                <th>관리</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredMembers.map((m) => {
-                const isSelf =
-                  adminUser?._id &&
-                  String(m._id) === String(adminUser._id);
-                const isExec = m.position === "임원진";
-                const disabled = busyId === m._id;
-                return (
-                  <tr key={m._id}>
-                    <td>
-                      <div className="adminMember__nameCell">
-                        <span className="adminMember__nameText">
-                          {m.username ?? "—"}
-                          {isSelf ? (
-                            <span className="adminMember__self">(나)</span>
-                          ) : null}
-                        </span>
-                        <button
-                          type="button"
-                          className="adminMember__detailIconBtn"
-                          onClick={() => setDetailMember(m)}
-                          aria-label={`${m.username ?? "회원"} 상세정보`}
-                          title="상세정보"
-                        >
-                          <IoInformationCircleOutline
-                            className="adminMember__detailIcon"
-                            aria-hidden
-                          />
-                        </button>
-                      </div>
-                    </td>
-                    <td>{m.Identification ?? "—"}</td>
-                    <td>
-                      <span
-                        className={`adminMember__badge ${isExec ? "adminMember__badge--exec" : "adminMember__badge--member"}`}
+        {loading ? (
+          <p className="aList__empty" aria-live="polite">
+            불러오는 중…
+          </p>
+        ) : !error && shownMembers.length === 0 ? (
+          <p className="aList__empty">
+            {members.length === 0 ? "등록된 회원이 없어요." : "조건에 맞는 회원이 없어요."}
+          </p>
+        ) : !error ? (
+          <div className="aList__table adminMember__table" role="table" aria-label="회원 목록">
+            <div className="aList__row aList__row--head" role="row">
+              <span role="columnheader">이름</span>
+              <span role="columnheader">아이디</span>
+              <span role="columnheader">이메일</span>
+              <span role="columnheader">직책</span>
+              <span role="columnheader" aria-label="관리" />
+            </div>
+            {shownMembers.map((m) => {
+              const isSelf = adminUser?._id && String(m._id) === String(adminUser._id);
+              const isExec = m.position === "임원진";
+              const disabled = busyId === m._id;
+              return (
+                <div key={m._id} role="row" className="aList__row">
+                  <span role="cell" className="aList__ellipsis aList__strong">
+                    {m.username ?? "—"}
+                    {isSelf ? <span className="aList__tag">나</span> : null}
+                  </span>
+                  <span role="cell" className="aList__ellipsis aList__muted">
+                    {m.Identification ?? "—"}
+                  </span>
+                  <span role="cell" className="aList__ellipsis aList__muted adminMember__email">
+                    {m.email ?? "—"}
+                  </span>
+                  <span role="cell">
+                    <span className="aSegment" role="radiogroup" aria-label={`${m.username ?? ""} 직책`}>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={!isExec}
+                        disabled={disabled || Boolean(isSelf && isExec)}
+                        title={isSelf && isExec ? "본인을 일반으로 바꿀 수 없어요" : undefined}
+                        onClick={() => handleRoleSelectChange(m, "댄서")}
                       >
-                        {positionLabel(m.position)}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="adminMember__manageCol">
-                        <div className="adminMember__roleChange">
-                          <span className="adminMember__roleLabel">직책</span>
-                          <select
-                            className="adminMember__select"
-                            value={selectValueForMember(m)}
-                            disabled={disabled}
-                            onChange={(e) =>
-                              handleRoleSelectChange(m, e.target.value)
-                            }
-                            aria-label={`${m.username ?? ""} 직책 선택`}
-                          >
-                            <option
-                              value="댄서"
-                              disabled={Boolean(isSelf && isExec)}
-                            >
-                              일반(댄서)
-                            </option>
-                            <option value="임원진">임원진</option>
-                          </select>
-                        </div>
-                        <button
-                          type="button"
-                          className="adminMember__btn adminMember__btn--danger"
-                          disabled={disabled || isSelf}
-                          title={
-                            isSelf ? "본인 계정은 삭제할 수 없습니다" : undefined
-                          }
-                          onClick={() =>
-                            removeMember(m._id, m.username || m.email || "해당")
-                          }
-                        >
-                          탈퇴 처리
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      ) : null}
+                        일반
+                      </button>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={isExec}
+                        disabled={disabled}
+                        onClick={() => handleRoleSelectChange(m, "임원진")}
+                      >
+                        임원진
+                      </button>
+                    </span>
+                  </span>
+                  <span role="cell" className="aList__actions">
+                    <button type="button" className="aList__btn" onClick={() => setDetailMember(m)}>
+                      상세
+                    </button>
+                    <button
+                      type="button"
+                      className="aList__btn aList__btn--danger"
+                      disabled={disabled || isSelf}
+                      title={isSelf ? "본인 계정은 삭제할 수 없어요" : undefined}
+                      onClick={() => removeMember(m._id, m.username || m.email || "해당")}
+                    >
+                      탈퇴
+                    </button>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </div>
 
       {detailMember
         ? createPortal(

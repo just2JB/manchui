@@ -55,17 +55,17 @@ body[data-club-theme] {
 
 body[data-club-theme="light"] {
   color-scheme: light;
-  --club-bg: #f4f4f5; /* 홈·새 룩 페이지와 같은 바탕 */
-  --club-sidebar-bg: #ffffff;
-  --club-surface: #ffffff;
-  --club-surface-hi: #ffffff;
-  --club-surface-2: #edf0f4;
-  --club-ink-rgb: 24, 27, 32;
-  --club-border: #b2bac6;
-  --club-hover: #e3e8ef;
-  --club-text: #181b20;
-  --club-text-muted: #59616e;
-  --club-primary: #181b20;
+  --club-bg: #e2e2df; /* 홈·새 룩 페이지와 같은 바탕 */
+  --club-sidebar-bg: #efefec;
+  --club-surface: #efefec;
+  --club-surface-hi: #f4f4f1;
+  --club-surface-2: #d9d9d5;
+  --club-ink-rgb: 22, 22, 22;
+  --club-border: #b9b9b4;
+  --club-hover: #d6d6d2;
+  --club-text: #161616;
+  --club-text-muted: #4c4c4a;
+  --club-primary: #161616;
   --club-primary-hover: #303641;
   --club-on-primary: #ffffff;
   --club-accent: #b30000;
@@ -154,4 +154,10 @@ body[data-club-theme] :is(.reservation__sheet, .clubHomeSheet, .teamCalSheet) {
     animation: none;
     transition: none;
   }
+}
+
+/* 라이트 모드: 콘크리트 벽 같은 아주 옅은 거친 결 (스트릿 톤). 바탕에만 깔고 카드는 매끈하게 둔다. */
+body[data-club-theme="light"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }

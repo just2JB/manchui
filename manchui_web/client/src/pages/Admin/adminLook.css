@@ -29,22 +29,22 @@ body[data-club-theme] .admin-layout,
 }
 
 body[data-club-theme="light"] .admin-layout {
-  --background-dark: #f4f4f5;
-  --box-1: #ffffff;
-  --box-2: #f1f1f3;
-  --box-3: #e4e4e7;
-  --box-4: #dcdce0;
-  --primary-200: #e4e4e7;
-  --text-primary: #111111;
-  --text-gray: #333333;
-  --text-secondary: #55555c;
-  --text-more: #6b6b6b;
+  --background-dark: #e2e2df;
+  --box-1: #efefec;
+  --box-2: #d9d9d5;
+  --box-3: #cfcfcb;
+  --box-4: #c5c5c1;
+  --primary-200: #cfcfcb;
+  --text-primary: #161616;
+  --text-gray: #2b2b2a;
+  --text-secondary: #4c4c4a;
+  --text-more: #616160;
   --brand-red: #b30000;
-  --accent-200: #111111;
-  --admin-primary: #111111;
+  --accent-200: #161616;
+  --admin-primary: #161616;
   --admin-on-primary: #ffffff;
-  --admin-line: rgba(0, 0, 0, 0.08);
-  --admin-hover: rgba(0, 0, 0, 0.05);
+  --admin-line: rgba(20, 20, 20, 0.12);
+  --admin-hover: rgba(20, 20, 20, 0.06);
   color-scheme: light;
 }
 
@@ -85,6 +85,29 @@ body[data-club-theme="light"] .admin-layout {
   border-color: var(--admin-line);
   background: var(--admin-hover);
   color: var(--text-primary);
+}
+
+/* 다크·라이트 전환 (상단 바) */
+.admin-layout .admin-nav__theme {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--admin-line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.admin-layout .admin-nav__theme:hover {
+  background: var(--admin-hover);
+}
+.admin-layout .admin-nav__theme:focus-visible {
+  outline: 2px solid var(--admin-primary);
+  outline-offset: 2px;
 }
 
 /* ---------- 주 버튼·선택 상태: 반전 ---------- */
@@ -209,4 +232,20 @@ body[data-club-theme="light"] .admin-layout {
   box-shadow: none;
   background: var(--club-accent);
   color: var(--club-on-accent);
+}
+
+/* 메뉴가 늘어나 PC에서는 아이콘 없이 글자만 → 한 줄 */
+@media (min-width: 900px) {
+  .admin-layout .admin-nav__links {
+    flex-wrap: nowrap;
+  }
+  .admin-layout .admin-nav__linkIcon {
+    display: none;
+  }
+}
+
+/* 라이트 모드 바탕의 옅은 콘크리트 결 (clubPalette.css 와 같은 결). 이 파일의 background 단축 속성보다 뒤에 둔다. */
+body[data-club-theme="light"] .admin-layout {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.09'/%3E%3C/svg%3E");
+  background-repeat: repeat;
 }

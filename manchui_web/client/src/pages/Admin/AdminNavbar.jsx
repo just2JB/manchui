@@ -5,14 +5,17 @@ import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { useAuth } from "../../context/AuthContext";
 import {
   IoAlbumsOutline,
+  IoArchiveOutline,
   IoCalendarOutline,
   IoClipboardOutline,
   IoGiftOutline,
   IoHomeOutline,
+  IoMoonOutline,
   IoMusicalNotesOutline,
   IoPeopleOutline,
   IoPeopleCircleOutline,
   IoSettingsOutline,
+  IoSunnyOutline,
 } from "react-icons/io5";
 import "./AdminNavbar.css";
 
@@ -25,9 +28,10 @@ const NAV_ITEMS = [
   { to: "/admin/setting", label: "웹 설정", Icon: IoSettingsOutline },
   { to: "/admin/member", label: "부원", Icon: IoPeopleOutline },
   { to: "/admin/team", label: "팀 관리", Icon: IoPeopleCircleOutline },
+  { to: "/admin/archive", label: "아카이브", Icon: IoArchiveOutline },
 ];
 
-const AdminNavbar = ({ user }) => {
+const AdminNavbar = ({ user, theme, onToggleTheme }) => {
   const nav = useNavigate();
   const manchuiModal = useManchuiModal();
   const { logout } = useAuth();
@@ -80,6 +84,17 @@ const AdminNavbar = ({ user }) => {
             <span className="admin-nav__user" title="로그인 계정">
               {user.username}
             </span>
+          ) : null}
+          {onToggleTheme ? (
+            <button
+              type="button"
+              className="admin-nav__theme"
+              onClick={onToggleTheme}
+              aria-label={theme === "dark" ? "라이트 모드로 바꾸기" : "다크 모드로 바꾸기"}
+              title={theme === "dark" ? "라이트 모드" : "다크 모드"}
+            >
+              {theme === "dark" ? <IoSunnyOutline aria-hidden /> : <IoMoonOutline aria-hidden />}
+            </button>
           ) : null}
           <Link to="/club" className="admin-nav__club">
             <IoAlbumsOutline className="admin-nav__clubIcon" aria-hidden />

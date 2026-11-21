@@ -39,6 +39,7 @@ const recommendationRouter = require("./routes/recommendation");
 const lotteryRouter = require("./routes/lottery");
 const pollRouter = require("./routes/poll");
 const archiveRouter = require("./routes/archive");
+const lightingRouter = require("./routes/lighting");
 
 app.use(
   cors({
@@ -66,6 +67,7 @@ app.use("/api/recommendations", recommendationRouter);
 app.use("/api/lottery", lotteryRouter);
 app.use("/api/poll", pollRouter);
 app.use("/api/archive", archiveRouter);
+app.use("/api/lighting", lightingRouter);
 
 app.get("/", (req, res) => {
   res.send("만취 웹사이트의 백엔드 서버 입니다.");

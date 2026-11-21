@@ -1,0 +1,1212 @@
+/* 정기공연 조명 큐시트 (1회용) — 어시스턴트(/club) 토큰 위에서
+   눈에 띄는 건 "무대"(지금 켜진 조명 + 가사 자막) 하나. 나머지는 조용하게. */
+.ltPage {
+  --lt-bg: var(--club-bg, #0b0b0b);
+  --lt-card: var(--club-surface, #141414);
+  --lt-card-hi: var(--club-surface-hi, #1a1a1a);
+  --lt-card-2: var(--club-surface-2, #242424);
+  --lt-line: var(--club-border, rgba(255, 255, 255, 0.06));
+  --lt-line-strong: rgba(255, 255, 255, 0.1);
+  --lt-text: var(--club-text, #fafafa);
+  --lt-sub: var(--club-text-muted, #8a8a8a);
+  --lt-red: var(--club-accent, #ff453a);
+  --lt-red-bg: var(--club-active-bg, rgba(255, 69, 58, 0.14));
+  --lt-radius: var(--club-radius, 16px);
+  --lt-radius-sm: var(--club-radius-sm, 10px);
+  --lt-shadow: var(--club-card-shadow);
+  --ch: #e87070;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 20px 16px 72px;
+  color: var(--lt-text);
+  background: var(--lt-bg);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* 내용은 가운데 폭에 두고, 배경은 화면 가로 끝까지 */
+.ltPage--narrow,
+.ltPage--team {
+  box-shadow: 0 0 0 100vmax var(--lt-bg);
+  clip-path: inset(0 -100vmax);
+}
+.ltPage--narrow {
+  max-width: 640px;
+}
+.ltPage--team {
+  max-width: 1180px;
+}
+
+/* ───────── 공통 ───────── */
+.ltHeader h1 {
+  margin-top: 12px;
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+.ltHint {
+  margin-top: 6px;
+  color: var(--lt-sub);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+.ltStatus {
+  color: var(--lt-sub);
+  font-size: 0.8rem;
+}
+.ltEmpty {
+  color: var(--lt-sub);
+  text-align: center;
+  padding: 28px 0;
+  font-size: 0.9rem;
+}
+.ltError {
+  color: #ff6b6b;
+  font-size: 0.88rem;
+}
+.ltBtn {
+  appearance: none;
+  border: 1px solid var(--lt-line-strong);
+  background: var(--lt-card-2);
+  color: var(--lt-text);
+  border-radius: var(--lt-radius-sm);
+  padding: 10px 16px;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ltBtn--primary {
+  background: rgba(255, 69, 58, 0.12);
+  border-color: rgba(255, 69, 58, 0.35);
+  color: var(--lt-red);
+}
+.ltBtn--primary:hover:not(:disabled) {
+  background: rgba(255, 69, 58, 0.22);
+  border-color: rgba(255, 69, 58, 0.5);
+}
+.ltBtn--sm {
+  padding: 7px 12px;
+  font-size: 0.82rem;
+}
+.ltBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.ltLinkBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+.ltLinkBtn--dim {
+  color: var(--lt-sub);
+}
+.ltLinkBtn:hover {
+  text-decoration: underline;
+}
+.ltChDot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ch);
+  box-shadow: 0 0 10px var(--ch);
+  flex: none;
+}
+:where(.ltPage, .ltModal) :focus-visible {
+  outline: 2px solid var(--club-accent, #ff453a);
+  outline-offset: 2px;
+}
+
+/* 언어 고르기: 페이지 맨 위 */
+.ltLang {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  align-self: flex-start;
+  padding: 4px;
+  border-radius: 999px;
+  border: 1px solid var(--lt-line-strong);
+  background: var(--lt-card);
+}
+.ltLang__icon {
+  width: 18px;
+  height: 18px;
+  margin: 0 4px 0 6px;
+  color: var(--lt-sub);
+  flex: none;
+}
+.ltLang__btn {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--lt-sub);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+.ltLang__btn:hover {
+  color: var(--lt-text);
+}
+.ltLang__btn.is-active {
+  background: var(--club-primary, #f4f4f4);
+  color: var(--club-on-primary, #0b0b0b);
+}
+.ltLang--compact {
+  align-self: flex-end;
+}
+.ltLang--compact .ltLang__btn {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+@media (min-width: 960px) {
+  .ltTeamTop {
+    margin-bottom: 16px;
+  }
+}
+@media print {
+  .ltLang {
+    display: none !important;
+  }
+}
+/* ───────── 팀 목록 ───────── */
+.ltTiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+@media (min-width: 560px) {
+  .ltTiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.teamTile.ltTile {
+  height: 92px;
+  padding: 10px 14px 12px;
+}
+.teamTile.ltTile .teamTile__name {
+  font-size: 1.2rem;
+}
+.teamTile.ltTile .teamTile__meta {
+  font-size: 0.7rem;
+}
+.teamTile.ltTile .teamTile__bigText {
+  font-size: 120px;
+}
+.teamTile.ltTile .teamTile__bigText--ko {
+  font-size: 84px;
+}
+/* 팀 목록 편집 */
+.ltHeader--row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+}
+.ltTileWrap {
+  position: relative;
+}
+.ltTileWrap.is-editing .teamTile {
+  opacity: 0.6;
+}
+.ltTileDel {
+  appearance: none;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  z-index: 2;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--lt-line-strong);
+  background: var(--club-surface-2, #242424);
+  color: var(--lt-text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+.ltTileDel:hover {
+  background: var(--lt-red);
+  border-color: var(--lt-red);
+}
+.ltTileDel:disabled {
+  opacity: 0.4;
+}
+.ltAddTile {
+  appearance: none;
+  height: 92px;
+  border-radius: 10px;
+  border: 1px dashed var(--lt-line-strong);
+  background: transparent;
+  color: var(--lt-sub);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ltAddTile:hover {
+  color: var(--lt-text);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.ltAddTile.is-open {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-style: solid;
+  background: var(--lt-card);
+  cursor: default;
+}
+.ltAddTile__input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ltAddTile__input:focus {
+  outline: none;
+}
+.ltAddTile__row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 예시 */
+.teamTile.ltTile--example {
+  outline: 1px dashed rgba(255, 255, 255, 0.25);
+  outline-offset: -1px;
+}
+.ltNotice strong {
+  color: var(--lt-text);
+  font-weight: 700;
+}
+.ltNotice {
+  padding: 10px 14px;
+  border-radius: var(--lt-radius-sm);
+  border: 1px solid var(--lt-line-strong);
+  background: var(--lt-card);
+  color: var(--lt-sub);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* ───────── 팀 페이지: 상단 ───────── */
+.ltTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.ltBack {
+  color: var(--lt-sub);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.ltBack:hover {
+  color: var(--lt-text);
+}
+
+.ltTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ltTitle__order {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--lt-line-strong);
+  background: var(--lt-card-2);
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.ltTitle__order::placeholder {
+  color: var(--lt-sub);
+}
+.ltTitle__name {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-size: clamp(1.6rem, 5vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  padding: 2px 6px;
+  margin-left: -6px;
+}
+.ltTitle__name:hover,
+.ltTitle__name:focus {
+  background: var(--lt-card-hi);
+  outline: none;
+}
+
+.ltChips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.ltChip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--lt-line-strong);
+  background: var(--lt-card);
+  color: var(--lt-sub);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ltChip--ch {
+  color: var(--lt-text);
+  border-color: color-mix(in srgb, var(--ch) 40%, transparent);
+  background: color-mix(in srgb, var(--ch) 10%, var(--lt-card));
+}
+.ltChip__hint {
+  color: var(--lt-sub);
+  font-weight: 500;
+  font-size: 0.78rem;
+}
+.ltChip__input {
+  width: 52px;
+  border: none;
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.ltChip__input:focus {
+  outline: none;
+}
+/* 음원 칩: 누르면 파일 고르기, ✕ 로 삭제 */
+.ltChip--audio {
+  gap: 4px;
+  padding: 0 6px 0 14px;
+  cursor: default;
+}
+.ltChip--audio.has-audio {
+  color: var(--lt-text);
+}
+.ltChip__btn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  padding: 0;
+}
+.ltChip__btn:disabled {
+  cursor: default;
+}
+.ltChip__x {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--lt-sub);
+  font-size: 0.8rem;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+.ltChip__x:hover {
+  color: var(--lt-text);
+}.ltChip:focus-within {
+  border-color: rgba(255, 69, 58, 0.5);
+}
+
+/* ───────── 무대 (지금 조명) + 타임라인 + 컨트롤 ───────── */
+.ltDeck {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0 -16px;
+  padding: 10px 16px 12px;
+  background: var(--lt-bg);
+  border-bottom: 1px solid var(--lt-line);
+}
+.ltStage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 30vh;
+  border-radius: var(--lt-radius);
+  overflow: hidden;
+  background: #000;
+  box-shadow: var(--lt-shadow);
+}
+.ltStage .ltStage__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  border: none;
+  border-radius: 0;
+}
+.ltStage .ltStage__img .ltThumb__num {
+  display: none;
+}
+.ltStage__over {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 36px 14px 12px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.82));
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ltStage__tag {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.85);
+}
+.ltStage__tag em {
+  font-style: normal;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.6);
+  font-variant-numeric: tabular-nums;
+}
+.ltStage__lyric {
+  font-size: clamp(1.05rem, 3.6vw, 1.35rem);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  white-space: pre-wrap;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.ltStage.is-dark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(60% 80% at 50% 0%, color-mix(in srgb, var(--ch) 14%, transparent), transparent 70%),
+    #050505;
+  border: 1px solid var(--lt-line);
+}
+.ltStage__empty {
+  color: var(--lt-sub);
+  font-size: 0.88rem;
+  padding: 0 24px;
+  text-align: center;
+}
+
+/* 타임라인 = 재생 바 */
+.ltTimeline {
+  position: relative;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--lt-card-hi);
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: none; /* 끌어서 이동할 때 화면 스크롤 막기 */
+  user-select: none;
+}
+.ltSeg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-right: 2px solid var(--lt-bg);
+  background-size: cover, cover;
+  background-position: center, center;
+  color: #fff;
+  opacity: 0.6;
+  overflow: hidden;
+  pointer-events: none;
+}
+.ltSeg.is-current {
+  opacity: 1;
+}
+.ltSeg.is-current {
+  box-shadow: inset 0 0 0 2px #fff;
+}
+.ltSeg span {
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-shadow: 0 0 4px #000, 0 0 2px #000;
+}
+.ltTimeline__head {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+}
+
+.ltControls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ltControls__time {
+  flex: 1;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.9rem;
+  color: var(--lt-sub);
+}
+.ltControls__time strong {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--lt-text);
+}
+.ltPlayBtn {
+  appearance: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--lt-line-strong);
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  flex: none;
+}
+.ltPlayBtn--main {
+  width: 46px;
+  height: 46px;
+  border: none;
+  background: var(--club-primary, #f4f4f4);
+  color: var(--club-on-primary, #0b0b0b);
+  font-size: 0.95rem;
+}
+.ltPlayBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ───────── 썸네일 16:9 ───────── */
+.ltThumb {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  flex: none;
+}
+.ltThumb img,
+.ltThumb__fallback {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ltThumb__num {
+  position: absolute;
+  left: 7px;
+  top: 5px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 4px #000, 0 0 2px #000;
+}
+
+/* 콘솔에 비어 있는 번호 (예: 30-8) */
+.ltThumb--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.03) 0 8px,
+    transparent 8px 16px
+  );
+  border: 1px dashed var(--lt-line-strong, rgba(255, 255, 255, 0.1));
+}
+.ltThumb--empty .ltThumb__num {
+  color: var(--club-text-muted, #8a8a8a);
+  text-shadow: none;
+}
+.ltThumb__emptyText {
+  font-size: 0.75rem;
+  color: var(--club-text-muted, #8a8a8a);
+}
+.ltPresetOpt.is-empty {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+.ltPresetOpt.is-empty:hover {
+  border-color: transparent;
+}
+
+/* ───────── 구간 목록 (인쇄된 큐시트처럼: 칸은 누를 때만 보임) ───────── */
+.ltCues {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+.ltCue {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-areas:
+    "time time"
+    "light note";
+  gap: 10px 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--lt-line);
+}
+.ltCue.is-current {
+  margin: 0 -10px;
+  padding: 14px 10px;
+  border-radius: 12px;
+  border-bottom-color: transparent;
+  background: var(--lt-card-hi);
+}
+.ltCue__time {
+  grid-area: time;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-right: 32px; /* 오른쪽 위 삭제 버튼 자리 */
+}
+/* 시작 ~ 끝 을 한 줄, 같은 크기로 */
+.ltCue__range {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--lt-sub);
+}
+/* 끝 = 다음 구간 시작 (자동, 흐리게) */
+.ltCue__to,
+.ltCue__from {
+  width: 4.1em;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  color: var(--lt-sub);
+  font-weight: 600;
+}
+.ltTimeIn {
+  width: 4.1em;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 4px 2px;
+}
+.ltTimeIn:hover {
+  background: var(--lt-card-hi);
+}
+.ltTimeIn:focus {
+  background: var(--lt-card-hi);
+  border-color: rgba(255, 69, 58, 0.5);
+  outline: none;
+}
+.ltTimeIn::placeholder {
+  color: #4a4a4a;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+.ltCue__light {
+  grid-area: light;
+  appearance: none;
+  border: none;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 10px;
+  max-width: 260px;
+}
+.ltCue__light .ltThumb {
+  border-radius: 10px;
+}
+.ltCue__light:hover .ltThumb {
+  filter: brightness(1.15);
+}
+.ltCue__note {
+  grid-area: note;
+  width: 100%;
+  min-height: 44px;
+  field-sizing: content;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  padding: 6px 8px;
+  resize: none;
+  white-space: pre-wrap;
+}
+.ltCue__note:hover,
+.ltCue__note:focus {
+  background: var(--lt-card-hi);
+  outline: none;
+}
+.ltCue__note::placeholder {
+  color: #4a4a4a;
+}
+.ltCue__del {
+  position: absolute;
+  top: 16px;
+  right: 0;
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: #555;
+  font-size: 0.85rem;
+  padding: 6px;
+  cursor: pointer;
+}
+.ltCue.is-current .ltCue__del {
+  right: 6px;
+}
+.ltCue__del:hover {
+  color: var(--lt-text);
+}
+
+.ltAdd {
+  appearance: none;
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--lt-radius-sm);
+  border: 1px dashed var(--lt-line-strong);
+  background: transparent;
+  color: var(--lt-sub);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.ltDeck .ltAdd {
+  padding: 12px;
+  border-style: solid;
+  border-color: rgba(255, 69, 58, 0.35);
+  background: rgba(255, 69, 58, 0.12);
+  color: var(--lt-red);
+  font-variant-numeric: tabular-nums;
+}
+.ltDeck .ltAdd:hover {
+  background: rgba(255, 69, 58, 0.22);
+  color: var(--lt-red);
+}
+.ltAdd:hover {
+  color: var(--lt-text);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.ltFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 팀 화면 위쪽 묶음 */
+.ltTeamBar,
+.ltTeamTop {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 구간 목록 묶음 (모바일에서는 그냥 아래로 이어짐) */
+.ltSide {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* 넓은 화면: 화면 높이에 맞추고, 왼쪽 무대는 고정 · 오른쪽 구간 목록만 스크롤 */
+@media (min-width: 960px) {
+  .ltPage--team {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    column-gap: 32px;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 0;
+    padding-bottom: 20px;
+    overflow: hidden;
+  }
+  /* 왼쪽: 위쪽 정보 → 무대. 오른쪽: 구간 목록이 맨 위부터 끝까지 */
+  .ltPage--team > .ltTeamBar {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .ltPage--team > .ltTeamTop {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  /* 왼쪽 칸: 남은 높이 안에 다 들어가게. 무대 사진이 줄어들고 재생 바 · 버튼은 항상 보인다 */
+  .ltPage--team > .ltDeck {
+    grid-column: 1;
+    grid-row: 3;
+    position: static;
+    align-self: stretch;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    container-type: inline-size;
+  }
+  .ltPage--team > .ltSide {
+    grid-column: 2;
+    grid-row: 2 / span 2;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0 12px 24px;
+    margin-right: -12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+  }
+  .ltStage {
+    flex: 1 1 auto;
+    aspect-ratio: auto;
+    min-height: 120px;
+    max-height: 56.25cqw; /* 칸 너비 기준 16:9 까지만 */
+  }
+  .ltDeck > :not(.ltStage) {
+    flex: none;
+  }
+  .ltCue {
+    grid-template-columns: 200px minmax(0, 1fr);
+    grid-template-areas:
+      "time time"
+      "light note";
+  }
+}
+/* ───────── 도움말 버튼 + 사용법 안내 ───────── */
+.ltTopBar__right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.ltHelp {
+  appearance: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--lt-line-strong);
+  background: var(--lt-card);
+  color: var(--lt-text);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.ltHelp:hover {
+  background: var(--lt-card-2);
+}
+.ltTour {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+}
+.ltTour__dim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+}
+/* 비출 곳만 뚫린 어두운 막 */
+.ltTour__spot {
+  position: fixed;
+  border-radius: 14px;
+  box-shadow: 0 0 0 200vmax rgba(0, 0, 0, 0.7);
+  outline: 2px solid rgba(255, 255, 255, 0.85);
+  transition: top 0.2s ease, left 0.2s ease, width 0.2s ease, height 0.2s ease;
+  pointer-events: none;
+}
+.ltTour__card {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(360px, calc(100vw - 32px));
+  padding: 16px;
+  border-radius: var(--club-radius, 16px);
+  border: 1px solid var(--club-border, rgba(255, 255, 255, 0.06));
+  background: var(--club-surface, #141414);
+  color: var(--club-text, #fafafa);
+  box-shadow: var(--club-overlay-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ltTour__card.is-center {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.ltTour__count {
+  font-size: 0.75rem;
+  color: var(--club-text-muted, #8a8a8a);
+  font-variant-numeric: tabular-nums;
+}
+.ltTour__card h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ltTour__body {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #d6d6d6;
+}
+.ltTour__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+}
+.ltTour__nav {
+  display: flex;
+  gap: 6px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ltTour__spot {
+    transition: none;
+  }
+}
+/* ───────── 모달 ───────── */
+.ltModal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.ltModal__panel {
+  width: min(960px, 100%);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  background: var(--club-surface, #141414);
+  color: var(--club-text, #fafafa);
+  border: 1px solid var(--club-border, rgba(255, 255, 255, 0.06));
+  border-radius: var(--club-radius, 16px);
+  box-shadow: var(--club-overlay-shadow);
+  overflow: hidden;
+}
+.ltModal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--club-border, rgba(255, 255, 255, 0.06));
+}
+.ltModal__head h3 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ltModal__close {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--club-text-muted, #8a8a8a);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.ltModal__body {
+  overflow-y: auto;
+  padding: 14px;
+}
+@media (max-width: 719px) {
+  .ltModal {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .ltModal__panel {
+    max-height: 90vh;
+    border-radius: 16px 16px 0 0;
+  }
+}
+.ltPresetGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (min-width: 720px) {
+  .ltPresetGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+.ltPresetOpt {
+  appearance: none;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: var(--club-surface-hi, #1a1a1a);
+  color: var(--club-text, #fafafa);
+  font: inherit;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+}
+.ltPresetOpt:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+.ltPresetOpt.is-selected {
+  border-color: var(--club-accent, #ff453a);
+}
+.ltPresetOpt .ltThumb__num {
+  font-size: 1.1rem;
+}
+.ltPresetOpt__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0 4px 2px;
+}
+.ltChannelList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ltChannelOpt {
+  border: 2px solid var(--club-border, rgba(255, 255, 255, 0.06));
+  border-radius: var(--club-radius, 16px);
+  padding: 12px;
+  background: color-mix(in srgb, var(--ch) 6%, var(--club-surface-hi, #1a1a1a));
+}
+.ltChannelOpt.is-selected {
+  border-color: var(--ch);
+}
+.ltChannelOpt__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.ltChannelOpt__head h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.ltChannelOpt__strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.ltChannelOpt__item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.7rem;
+  color: var(--club-text-muted, #8a8a8a);
+}
+@media (max-width: 719px) {
+  .ltChannelOpt__strip {
+    grid-template-columns: repeat(10, 120px);
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+}
+
+/* ───────── 인쇄: 흰 바탕 큐시트 ───────── */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm;
+  }
+  body {
+    background: #fff !important;
+  }
+  .noPrint,
+  .ltDeck,
+  .ltChip__hint {
+    display: none !important;
+  }
+  .ltPage,
+  .ltPage--team {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .ltSide {
+    overflow: visible !important;
+  }
+  .ltPage {
+    box-shadow: none !important;
+    clip-path: none !important;
+    --lt-bg: #fff;
+    --lt-text: #000;
+    --lt-sub: #444;
+    --lt-line: #bbb;
+    --lt-card: #fff;
+    --lt-card-hi: #fff;
+    display: flex !important;
+    padding: 0;
+    min-height: 0;
+  }
+  .ltChip {
+    border-color: #bbb;
+    background: #fff;
+  }
+  .ltCue {
+    grid-template-columns: 170px minmax(0, 1fr);
+    break-inside: avoid;
+    padding: 8px 0;
+  }
+  .ltCue.is-current {
+    margin: 0;
+    padding: 8px 0;
+    background: transparent;
+  }
+}

@@ -53,6 +53,8 @@ import TeamJoin from "./pages/ClubRoom/Team/TeamJoin";
 import TeamPracticeCreate from "./pages/ClubRoom/Team/TeamPracticeCreate";
 import PollCreate from "./pages/ClubRoom/Poll/PollCreate";
 import PollRespond from "./pages/ClubRoom/Poll/PollRespond";
+import Lighting from "./pages/Lighting/Lighting";
+import LightingTeam from "./pages/Lighting/LightingTeam";
 
 const router = createBrowserRouter([
   {
@@ -146,6 +148,9 @@ const router = createBrowserRouter([
       },
     ],
   },
+  /** 정기공연 조명 신청 (1회용 · 공개) */
+  { path: "/lighting", element: <Lighting /> },
+  { path: "/lighting/:teamId", element: <LightingTeam /> },
   { path: "*", element: <NotFound /> },
 ]);
 

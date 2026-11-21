@@ -225,6 +225,10 @@ export default function LightingTeam() {
   const [audioDur, setAudioDur] = useState(0);
   const channel = CHANNELS.includes(team?.channel) ? team.channel : DEFAULT_CHANNEL;
   const lengthSec = parseTime(savedTeam.current.length) ?? 0;
+  // 곡 길이를 정하기 전에는 재생 · 조명 추가를 막고 곡 길이부터 받는다
+  const needsLength = !isExample && !lengthSec;
+  const [gateLen, setGateLen] = useState("");
+  const [gateError, setGateError] = useState(false);
   const duration = src ? audioDur || lengthSec : lengthSec;
   const resort = useCallback(() => setOrder(sortRowIds(Object.values(savedRows.current))), []);
 
@@ -621,6 +625,44 @@ export default function LightingTeam() {
         />
       ) : null}
 
+      {needsLength ? (
+        <form
+          className="ltGate"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const sec = parseTime(gateLen);
+            if (!sec) {
+              setGateError(true);
+              return;
+            }
+            setGateError(false);
+            void commitTeam({ length: formatTime(sec) });
+          }}
+        >
+          <h2>{t("gateTitle")}</h2>
+          <p className="ltHint">{t("gateBody")}</p>
+          <div className="ltGate__row">
+            <input
+              className="ltGate__input"
+              inputMode="numeric"
+              autoFocus
+              placeholder="03:45"
+              aria-label={t("songLength")}
+              value={gateLen}
+              onChange={(e) => {
+                setGateLen(maskTime(e.target.value));
+                setGateError(false);
+              }}
+            />
+            <button type="submit" className="ltBtn ltBtn--primary" disabled={!gateLen}>
+              {t("gateStart")}
+            </button>
+          </div>
+          {gateError ? <p className="ltError">{t("gateInvalid")}</p> : null}
+          <p className="ltGate__alt">{t("gateAudioHint")}</p>
+        </form>
+      ) : (
+      <>
       {/* 무대: 지금 켜져 있는 조명 + 가사 자막 → 타임라인 → 컨트롤 */}
       <section className="ltDeck" data-tour="player">
         <div className={`ltStage${cur ? "" : " is-dark"}`}>
@@ -728,8 +770,11 @@ export default function LightingTeam() {
         )}
       </div>
       </div>
+      </>
+      )}
 
-      {tourOpen && !loading ? <LightingTour onClose={closeTour} /> : null}
+      {/* 사용법 안내는 곡 길이를 정한 다음에 (재생 · 조명 추가를 비춰야 하므로) */}
+      {tourOpen && !loading && !needsLength ? <LightingTour onClose={closeTour} /> : null}
       {channelOpen ? (
         <ChannelModal
           value={channel}

@@ -212,6 +212,33 @@ const DICT = {
   pause: { ko: "일시정지", en: "Pause", zh: "暂停", ja: "一時停止" },
   timeline: { ko: "재생 위치", en: "Playback position", zh: "播放位置", ja: "再生位置" },
 
+  /* ── 곡 길이 먼저 ── */
+  gateTitle: {
+    ko: "먼저 곡 길이를 적어 주세요",
+    en: "First, enter the song length",
+    zh: "请先填写歌曲时长",
+    ja: "まず曲の長さを入力してください",
+  },
+  gateBody: {
+    ko: "곡 길이를 정해야 재생 바와 조명 구간을 만들 수 있어요. 분:초로 적어 주세요. 숫자만 쳐도 돼요 (345 → 03:45).",
+    en: "The play bar and light parts need the song length. Enter it as min:sec. Digits are fine (345 → 03:45).",
+    zh: "需要先确定歌曲时长，才能使用播放条和设定灯光段落。请按 分:秒 填写，只输入数字也可以（345 → 03:45）。",
+    ja: "曲の長さを決めると、再生バーと照明の区間を作れます。分:秒で入力してください。数字だけでもOKです（345 → 03:45）。",
+  },
+  gateStart: { ko: "시작하기", en: "Start", zh: "开始", ja: "はじめる" },
+  gateInvalid: {
+    ko: "시간을 03:45 처럼 적어 주세요.",
+    en: "Please enter the time like 03:45.",
+    zh: "请按 03:45 这样的格式填写。",
+    ja: "03:45 のように入力してください。",
+  },
+  gateAudioHint: {
+    ko: "음원 파일이 있으면 위의 ♪ 음원으로 테스트 를 눌러도 길이가 자동으로 채워져요.",
+    en: "If you have the music file, tap ♪ Test with music above and the length fills in automatically.",
+    zh: "如果有音乐文件，点上面的 ♪ 用音乐测试，时长会自动填好。",
+    ja: "音源ファイルがあれば、上の ♪ 音源でテスト を押しても長さが自動で入ります。",
+  },
+
   /* ── 조명/채널 고르기 ── */
   pickLight: {
     ko: "채널 {n} 조명 고르기",

@@ -29,11 +29,17 @@ export const EXAMPLE_TEAM = {
 
 /** [시작, 조명 번호, 동작이나 상황 (조명의 느낌이 아니라 "언제 바꾸는지")] — 댄스 공연 기준 */
 const ROWS = [
-  ["00:00", 1, {
-    ko: "무대 암전. 멤버들이 자리 잡고 음악이 나오면 시작",
-    en: "Stage dark. Start when everyone is in place and the music begins",
-    zh: "舞台全暗。成员站好位、音乐响起时开始",
-    ja: "暗転。メンバーが位置について音楽が始まったらスタート",
+  ["00:00", 0, {
+    ko: "무대 암전. 멤버들이 자리 잡을 때까지",
+    en: "Blackout while the members get into position",
+    zh: "舞台全暗，直到成员站好位",
+    ja: "暗転。メンバーが位置につくまで",
+  }],
+  ["00:02", 1, {
+    ko: "음악이 시작되면 전환",
+    en: "Switch when the music starts",
+    zh: "音乐响起时切换",
+    ja: "音楽が始まったら切り替え",
   }],
   ["00:07", 3, {
     ko: "첫 동작. 다 같이 고개를 들 때",

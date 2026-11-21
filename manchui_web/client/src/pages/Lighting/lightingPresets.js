@@ -11,6 +11,8 @@ import { tr } from "./lightingI18n";
 export const CHANNELS = [28, 29, 30];
 export const DEFAULT_CHANNEL = CHANNELS[0];
 export const PRESET_COUNT = 10;
+/** 암전 (모든 채널 공통, 저장값 0) */
+export const BLACKOUT = 0;
 
 /** 움직이는 조명(사이키 등): public/lighting-presets/ch{채널}-{번호}.gif 가 있는 번호 */
 const ANIMATED_PRESETS = { 28: [8], 30: [7] };
@@ -46,6 +48,7 @@ export const PRESET_NAMES = {
 
 /** 지금 고른 언어로 조명 이름 */
 export function getPresetName(channel, preset) {
+  if (preset === BLACKOUT) return tr("blackout");
   const key = PRESET_NAMES[channel]?.[preset];
   return key ? tr(key) : tr("presetN", { n: preset });
 }
@@ -62,6 +65,7 @@ export function getPresetAnimation(channel, preset) {
 }
 
 export function getPresetColor(preset) {
+  if (preset === BLACKOUT) return "#000000";
   return FALLBACK_COLORS[(preset - 1) % FALLBACK_COLORS.length];
 }
 

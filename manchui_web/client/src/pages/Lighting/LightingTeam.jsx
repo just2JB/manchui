@@ -13,7 +13,9 @@ import LightingTour from "./LightingTour";
 import { EXAMPLE_AUDIO, EXAMPLE_ID, exampleTeamFor, makeExampleRows } from "./lightingExample";
 import { useLightingI18n } from "./lightingI18n";
 import LangSwitch from "./LangSwitch";
+import { buildLightingCsv, downloadCsv, safeFileName } from "./lightingSheet";
 import {
+  BLACKOUT,
   CHANNELS,
   CHANNEL_COLORS,
   DEFAULT_CHANNEL,
@@ -86,15 +88,18 @@ function Timeline({ segments, channel, duration, time, currentId, onSeek }) {
       {segments.map((s) => (
         <span
           key={s.id}
-          className={`ltSeg${s.id === currentId ? " is-current" : ""}`}
+          className={`ltSeg${s.id === currentId ? " is-current" : ""}${s.preset === BLACKOUT ? " is-blackout" : ""}`}
           style={{
             left: pct(s.start),
             width: `calc(${pct(s.end)} - ${pct(s.start)})`,
-            backgroundImage: `url(${getPresetImage(channel, s.preset)}), linear-gradient(${getPresetColor(s.preset)}, #0b0b0b)`,
+            backgroundImage:
+              s.preset === BLACKOUT
+                ? "none"
+                : `url(${getPresetImage(channel, s.preset)}), linear-gradient(${getPresetColor(s.preset)}, #0b0b0b)`,
           }}
           title={`${formatTime(s.start)}~${formatTime(s.end)} · ${getPresetName(channel, s.preset)}`}
         >
-          <span>{s.preset}</span>
+          <span>{s.preset === BLACKOUT ? getPresetName(channel, BLACKOUT) : s.preset}</span>
         </span>
       ))}
       <span className="ltTimeline__head" style={{ left: pct(time) }} />
@@ -382,7 +387,7 @@ export default function LightingTeam() {
       return;
     }
     const containing = spans.filter((s) => s.start <= at).pop();
-    const preset = (containing && rows[containing.id]?.preset) || 1;
+    const preset = containing ? rows[containing.id]?.preset ?? 1 : 1;
     try {
       const row = await api.createRow(teamId, { start: formatTime(at), preset });
       savedRows.current[row._id] = { ...row };
@@ -760,9 +765,23 @@ export default function LightingTeam() {
       ) : null}
 
       <div className="ltFooter noPrint">
-        <button type="button" className="ltLinkBtn" onClick={() => window.print()}>
-          {t("print")}
-        </button>
+        <span className="ltFooter__left">
+          <button
+            type="button"
+            className="ltLinkBtn"
+            onClick={() =>
+              downloadCsv(
+                `${safeFileName(team.name || t("teamFallback"))}.csv`,
+                buildLightingCsv([{ ...team, length: savedTeam.current.length, rows: Object.values(rows) }]),
+              )
+            }
+          >
+            {t("exportSheet")}
+          </button>
+          <button type="button" className="ltLinkBtn" onClick={() => window.print()}>
+            {t("print")}
+          </button>
+        </span>
         {isExample ? null : (
           <button type="button" className="ltLinkBtn ltLinkBtn--dim" onClick={removeTeam}>
             {t("deleteTeam")}

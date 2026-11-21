@@ -7,6 +7,7 @@ import {
   getPresetImage,
   getPresetName,
   allPresets,
+  BLACKOUT,
   isPresetEmpty,
 } from "./lightingPresets";
 import { tr, useLightingI18n } from "./lightingI18n";
@@ -18,6 +19,18 @@ const prefersReducedMotion = () =>
 
 /** 조명 이미지 16:9 (사이키처럼 움직이는 조명은 GIF, 없으면 색 그라데이션) */
 export function PresetThumb({ channel, preset, className = "", still = false }) {
+  if (preset === BLACKOUT) {
+    return (
+      <span className={`ltThumb ltThumb--blackout ${className}`}>
+        <span className="ltThumb__blackout">{tr("blackout")}</span>
+      </span>
+    );
+  }
+  return <PresetPhoto channel={channel} preset={preset} className={className} still={still} />;
+}
+
+/** 조명 사진 (GIF → 정지 사진 → 색 그라데이션 순으로 대체) */
+function PresetPhoto({ channel, preset, className, still }) {
   // 실패한 주소들을 기억: GIF 가 안 되면 정지 사진, 사진도 안 되면 색 그라데이션
   // (채널/번호가 바뀌면 주소가 달라져서 다시 시도함)
   const [failed, setFailed] = useState(() => new Set());
@@ -88,6 +101,20 @@ export function PresetModal({ channel, value, onSelect, onClose }) {
   return (
     <Modal title={t("pickLight", { n: channel })} onClose={onClose}>
       <div className="ltPresetGrid">
+        {/* 암전: 채널과 상관없이 맨 앞 */}
+        <button
+          type="button"
+          className={`ltPresetOpt${value === BLACKOUT ? " is-selected" : ""}`}
+          onClick={() => {
+            onSelect(BLACKOUT);
+            onClose();
+          }}
+        >
+          <PresetThumb channel={channel} preset={BLACKOUT} />
+          <span className="ltPresetOpt__label">
+            {t("blackout")} <em className="ltPresetOpt__sub">{t("blackoutDesc")}</em>
+          </span>
+        </button>
         {allPresets.map((p) =>
           isPresetEmpty(channel, p) ? (
             <div key={p} className="ltPresetOpt is-empty" aria-label={t("presetEmpty", { n: p })}>

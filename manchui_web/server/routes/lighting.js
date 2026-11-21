@@ -42,7 +42,8 @@ function pickRow(body) {
   const out = {};
   if ("start" in body) out.start = str(body.start, 10).trim();
   if ("end" in body) out.end = str(body.end, 10).trim();
-  if ("preset" in body) out.preset = clampInt(body.preset, 1, 10, 1);
+  // 0 = 암전, 1~10 = 콘솔 조명 번호
+  if ("preset" in body) out.preset = clampInt(body.preset, 0, 10, 1);
   if ("note" in body) out.note = str(body.note, 2000);
   return out;
 }
@@ -71,6 +72,27 @@ function fail(res, e, message) {
   console.error(e);
   res.status(500).json({ message });
 }
+
+/* ───────── 시트로 받기: 모든 팀 + 구간 ───────── */
+
+router.get("/export", async (req, res) => {
+  try {
+    const [teams, rows] = await Promise.all([
+      LightingTeam.find().sort({ createdAt: 1 }),
+      LightingRow.find().sort({ createdAt: 1 }),
+    ]);
+    const byTeam = {};
+    rows.forEach((r) => {
+      const key = String(r.teamId);
+      (byTeam[key] = byTeam[key] || []).push(rowPayload(r));
+    });
+    res.json({
+      teams: teams.map((t) => ({ ...teamPayload(t), rows: byTeam[String(t._id)] || [] })),
+    });
+  } catch (e) {
+    fail(res, e, "불러오지 못했어요.");
+  }
+});
 
 /* ───────── 팀 ───────── */
 

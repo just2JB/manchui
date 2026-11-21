@@ -9,7 +9,8 @@ const lightingRowSchema = new mongoose.Schema(
     teamId: { type: mongoose.Schema.Types.ObjectId, required: true, index: true },
     start: { type: String, default: "", trim: true },
     end: { type: String, default: "", trim: true },
-    preset: { type: Number, default: 1, min: 1, max: 10 },
+    /** 0 = 암전, 1~10 = 콘솔 조명 번호 */
+    preset: { type: Number, default: 1, min: 0, max: 10 },
     note: { type: String, default: "" },
   },
   { timestamps: true },

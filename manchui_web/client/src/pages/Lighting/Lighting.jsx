@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 import {
   createLightingTeam,
   deleteLightingTeam,
+  fetchLightingExport,
   fetchLightingTeams,
 } from "../../api/lightingApi";
+import { buildLightingCsv, downloadCsv, safeFileName } from "./lightingSheet";
 import TeamListCard from "../ClubRoom/Team/TeamListCard";
 import "../ClubRoom/Team/TeamListCard.css";
 import { CHANNEL_COLORS, DEFAULT_CHANNEL } from "./lightingPresets";
@@ -63,6 +65,21 @@ export default function Lighting() {
     }
   };
 
+  const [exporting, setExporting] = useState(false);
+  /** 모든 팀을 공연 순서대로 한 시트에 */
+  const exportAll = async () => {
+    setExporting(true);
+    try {
+      const all = sortTeams(await fetchLightingExport());
+      downloadCsv(`${safeFileName(t("exportFileAll"))}.csv`, buildLightingCsv(all));
+    } catch (err) {
+      console.error(err);
+      setError("exportFail");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const removeTeam = async (team) => {
     if (!window.confirm(t("confirmDeleteTeam", { name: team.name || t("thisTeam") }))) return;
     setDeletingId(team._id);
@@ -98,13 +115,26 @@ export default function Lighting() {
           </p>
         </div>
         {teams.length ? (
-          <button
-            type="button"
-            className={`ltBtn ltBtn--sm${editing ? " ltBtn--primary" : ""}`}
-            onClick={() => setEditing((v) => !v)}
-          >
-            {editing ? t("done") : t("edit")}
-          </button>
+          <div className="ltHeader__actions">
+            {editing ? null : (
+              <button
+                type="button"
+                className="ltBtn ltBtn--sm"
+                onClick={exportAll}
+                disabled={exporting}
+                title={t("exportAllTitle")}
+              >
+                {t("exportSheet")}
+              </button>
+            )}
+            <button
+              type="button"
+              className={`ltBtn ltBtn--sm${editing ? " ltBtn--primary" : ""}`}
+              onClick={() => setEditing((v) => !v)}
+            >
+              {editing ? t("done") : t("edit")}
+            </button>
+          </div>
         ) : null}
       </header>
 

@@ -1,5 +1,11 @@
 import apiClient from "./apiClient";
 
+/* 시트로 받기: 모든 팀 + 구간 */
+export async function fetchLightingExport() {
+  const res = await apiClient.get("/api/lighting/export");
+  return Array.isArray(res.data?.teams) ? res.data.teams : [];
+}
+
 /* 팀 */
 export async function fetchLightingTeams() {
   const res = await apiClient.get("/api/lighting/teams");

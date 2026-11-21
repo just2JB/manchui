@@ -212,6 +212,31 @@ const DICT = {
   pause: { ko: "일시정지", en: "Pause", zh: "暂停", ja: "一時停止" },
   timeline: { ko: "재생 위치", en: "Playback position", zh: "播放位置", ja: "再生位置" },
 
+  /* ── 시트로 받기 ── */
+  exportSheet: { ko: "시트로 받기", en: "Download sheet", zh: "导出表格", ja: "シートで保存" },
+  exportAllTitle: {
+    ko: "모든 팀의 구간을 엑셀 · 구글 시트용 파일(CSV)로 받아요",
+    en: "Download every team's parts as a CSV for Excel or Google Sheets",
+    zh: "把所有队伍的段落导出为 Excel / Google 表格用的 CSV 文件",
+    ja: "全チームの区間を Excel・Google スプレッドシート用の CSV で保存します",
+  },
+  exportFail: {
+    ko: "시트를 만들지 못했어요.",
+    en: "Couldn't create the sheet.",
+    zh: "导出表格失败。",
+    ja: "シートを作れませんでした。",
+  },
+  exportFileAll: { ko: "정기공연_조명_전체", en: "concert_lighting_all", zh: "定期演出_灯光_全部", ja: "定期公演_照明_全体" },
+  colOrder: { ko: "공연 순서", en: "Order", zh: "演出顺序", ja: "公演順" },
+  colTeam: { ko: "팀", en: "Team", zh: "队伍", ja: "チーム" },
+  colChannel: { ko: "채널", en: "Channel", zh: "通道", ja: "チャンネル" },
+  colNo: { ko: "구간", en: "Part", zh: "段落", ja: "区間" },
+  colStart: { ko: "시작", en: "Start", zh: "开始", ja: "開始" },
+  colEnd: { ko: "끝", en: "End", zh: "结束", ja: "終了" },
+  colLightNo: { ko: "조명 번호", en: "Light no.", zh: "灯光编号", ja: "照明番号" },
+  colLight: { ko: "조명", en: "Light", zh: "灯光", ja: "照明" },
+  colNote: { ko: "동작 · 상황", en: "Move / cue", zh: "动作 · 提示", ja: "振り・状況" },
+
   /* ── 곡 길이 먼저 ── */
   gateTitle: {
     ko: "먼저 곡 길이를 적어 주세요",
@@ -254,6 +279,13 @@ const DICT = {
   presetEmpty: { ko: "{n}번 · 비어 있음", en: "No. {n} · Empty", zh: "{n}号 · 空", ja: "{n}番 · 空き" },
   presetAlt: { ko: "채널 {c} {name}", en: "Channel {c} {name}", zh: "通道 {c} {name}", ja: "チャンネル {c} {name}" },
   psyche: { ko: "사이키", en: "Strobe", zh: "频闪", ja: "ストロボ" },
+  blackout: { ko: "암전", en: "Blackout", zh: "全暗", ja: "暗転" },
+  blackoutDesc: {
+    ko: "모든 조명 끄기",
+    en: "All lights off",
+    zh: "关掉所有灯光",
+    ja: "すべての照明を消す",
+  },
 
   /* ── 사용법 안내 ── */
   tourSkip: { ko: "건너뛰기", en: "Skip", zh: "跳过", ja: "スキップ" },

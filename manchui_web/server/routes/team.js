@@ -17,6 +17,49 @@ const {
   removeMemberFromCoLeaders,
 } = require("../utils/teamRoles");
 
+/**
+ * 팀을 지울 때 연습 정리: 연습실이 배정된 연습은 결산 기록으로 남기고(팀 이름·색 저장),
+ * 연습실이 없는 연습만 지운다. 멤버 일정에서 비워 둔 시간은 모두 되돌린다.
+ */
+async function removeTeamPracticesKeepingPlaceRecords(team) {
+  const teamId = String(team._id);
+  const teamPractices = await Practice.find({ teamId });
+  await releaseScheduleHoldbacksForPractices(teamPractices);
+  const hasPlace = (practice) => {
+    const place = String(practice.place ?? "").trim();
+    return place && place !== "미확정";
+  };
+  const keepIds = teamPractices.filter(hasPlace).map((practice) => practice._id);
+  const dropIds = teamPractices.filter((practice) => !hasPlace(practice)).map((practice) => practice._id);
+  if (dropIds.length > 0) await Practice.deleteMany({ _id: { $in: dropIds } });
+  if (keepIds.length > 0) {
+    // 결산에 필요한 것만 남기고 참석자 이름(멤버·게스트)은 지운다
+    const deletedAt = new Date();
+    await Practice.bulkWrite(
+      teamPractices.filter(hasPlace).map((practice) => ({
+        updateOne: {
+          filter: { _id: practice._id },
+          update: {
+            $set: {
+              teamNameSnapshot: team.name ?? null,
+              teamColorSnapshot: team.teamColor ?? null,
+              teamDeletedAt: deletedAt,
+              memberCountSnapshot:
+                (Array.isArray(practice.members) ? practice.members.length : 0) +
+                (Array.isArray(practice.guestNames) ? practice.guestNames.length : 0),
+              members: [],
+              memberByHour: [],
+              guestNames: [],
+              scheduleHoldbacks: [],
+            },
+          },
+        },
+      })),
+    );
+  }
+  return { kept: keepIds.length, deleted: dropIds.length };
+}
+
 router.get("/admin/list", requireExecutive, async (req, res) => {
   try {
     const [teams, practices] = await Promise.all([
@@ -51,7 +94,9 @@ router.get("/admin/practices", requireExecutive, async (req, res) => {
     const [teams, practices] = await Promise.all([
       Team.find().select("name teamColor").lean(),
       Practice.find()
-        .select("teamId date time place members guestNames placeAssignedAt placeAssignedBy placeCost")
+        .select(
+          "teamId date time place members guestNames placeAssignedAt placeAssignedBy placeCost teamNameSnapshot teamColorSnapshot teamDeletedAt memberCountSnapshot",
+        )
         .lean(),
     ]);
     const teamById = new Map(teams.map((team) => [String(team._id), team]));
@@ -70,10 +115,15 @@ router.get("/admin/practices", requireExecutive, async (req, res) => {
 
     res.json({
       practices: practices
-        .filter((practice) => teamById.has(String(practice.teamId)))
+        // 팀이 있거나, 팀은 지워졌지만 연습실 기록으로 남긴 연습
+        .filter((practice) => teamById.has(String(practice.teamId)) || practice.teamDeletedAt)
         .map((practice) => {
-          const team = teamById.get(String(practice.teamId));
+          const team = teamById.get(String(practice.teamId)) ?? {
+            name: practice.teamNameSnapshot || "삭제된 팀",
+            teamColor: practice.teamColorSnapshot,
+          };
           return {
+            teamDeleted: !teamById.has(String(practice.teamId)),
             _id: String(practice._id),
             teamId: String(practice.teamId),
             teamName: team.name,
@@ -84,8 +134,9 @@ router.get("/admin/practices", requireExecutive, async (req, res) => {
             placeAssignedAt: practice.placeAssignedAt ?? null,
             placeAssignedBy: practice.placeAssignedBy ?? null,
             placeCost: typeof practice.placeCost === "number" ? practice.placeCost : null,
-            memberCount:
-              (Array.isArray(practice.members) ? practice.members.length : 0) +
+            memberCount: practice.teamDeletedAt
+              ? practice.memberCountSnapshot ?? 0
+              : (Array.isArray(practice.members) ? practice.members.length : 0) +
               (Array.isArray(practice.guestNames) ? practice.guestNames.length : 0),
           };
         }),
@@ -284,9 +335,7 @@ router.delete("/admin/:teamId", requireExecutive, async (req, res) => {
       });
     }
 
-    const teamPractices = await Practice.find({ teamId: String(team._id) });
-    await releaseScheduleHoldbacksForPractices(teamPractices);
-    await Practice.deleteMany({ teamId: String(team._id) });
+    await removeTeamPracticesKeepingPlaceRecords(team);
     await TeamPoll.deleteMany({ teamId: String(team._id) });
     await Team.findByIdAndDelete(team._id);
 
@@ -327,9 +376,7 @@ router.delete("/:id", async (req, res) => {
     if (!team) {
       return res.status(404).json({ message: "없는 팀 입니다." });
     }
-    const teamPractices = await Practice.find({ teamId: String(team._id) });
-    await releaseScheduleHoldbacksForPractices(teamPractices);
-    await Practice.deleteMany({ teamId: String(team._id) });
+    await removeTeamPracticesKeepingPlaceRecords(team);
     await TeamPoll.deleteMany({ teamId: String(team._id) });
     await Team.findByIdAndDelete(req.params.id);
     res.json({ message: "팀이 삭제되었습니다." });

@@ -246,7 +246,7 @@ router.get("/mine", async (req, res) => {
     }
     await purgePastReservations();
     const now = new Date();
-    /** 일반 예약만: 종료 시각이 지난 건은 UI에 노출하지 않음 (DB에는 2일 보관) */
+    /** 일반 예약만: 종료 시각이 지난 건은 UI에 노출하지 않음 (DB에는 6개월 보관) */
     const list = filterActiveForUserDisplay(
       await Reservation.find({
         userId,
@@ -349,7 +349,7 @@ router.get("/admin/list", requireExecutive, async (req, res) => {
   }
 });
 
-/** 임원진: 보관 기간(예약 종료 후 2일)이 지난 예약 일괄 삭제 */
+/** 임원진: 보관 기간(예약 종료 후 6개월)이 지난 예약 일괄 삭제 */
 router.post("/admin/delete-past", requireExecutive, async (req, res) => {
   try {
     const result = await purgePastReservations();

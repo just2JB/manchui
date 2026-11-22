@@ -8,6 +8,7 @@ import apiClient from "../../api/apiClient";
 import { authRequestConfig } from "../../api/tokenStorage";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { downloadCsv } from "../Lighting/lightingSheet";
+import AdminPlaceCell from "./AdminPlaceCell";
 
 const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
 const UNSET = "미확정";
@@ -233,7 +234,16 @@ function CostCell({ row, onSave }) {
             : "자동 계산 · 눌러서 이 연습만 바꾸기"
         }
       >
-        {row.cost == null ? <><b className="aRecord__bang" aria-hidden>!</b>요금 미정</> : won(row.cost)}
+        {row.cost == null ? (
+          <>
+            <b className="aRecord__bang" aria-hidden>
+              !
+            </b>
+            요금 미정
+          </>
+        ) : (
+          won(row.cost)
+        )}
         {row.costManual ? <span className="aRecord__costTag">직접</span> : null}
       </button>
     );
@@ -281,6 +291,10 @@ const AdminPracticeRecords = ({
   placeRates,
   onRatesSaved,
   onCostSaved,
+  /** 연습실 바꾸기 (배정 화면과 같은 저장) */
+  onAssignPlace,
+  placeSuggestionsFor,
+  assignBusy = false,
 }) => {
   const modal = useManchuiModal();
   const now = new Date();
@@ -299,6 +313,8 @@ const AdminPracticeRecords = ({
   const [teamFilter, setTeamFilter] = useState(() => new Set());
   /** 요금 미정인 연습만 보기 */
   const [onlyUnpriced, setOnlyUnpriced] = useState(false);
+  /** 연습실을 바꾸는 중인 줄 */
+  const [editingPlaceId, setEditingPlaceId] = useState(null);
 
   const period =
     mode === "month"
@@ -362,6 +378,7 @@ const AdminPracticeRecords = ({
             assignedBy: practice.placeAssignedBy ?? "",
             // 연습실은 있는데 임원진 배정 기록이 없으면 팀(곡장)이 직접 정한 것
             byTeam: !isUnset(practice.place) && !practice.placeAssignedAt,
+            teamDeleted: Boolean(practice.teamDeleted),
           };
         })
         .sort(
@@ -478,7 +495,7 @@ const AdminPracticeRecords = ({
       row.start,
       row.end,
       row.hours,
-      row.teamName,
+      row.teamDeleted ? `${row.teamName} (삭제된 팀)` : row.teamName,
       row.memberCount,
       row.place,
       row.rate ?? "",
@@ -686,8 +703,6 @@ const AdminPracticeRecords = ({
         </button>
       </div>
 
-      
-
       {rows.length === 0 ? (
         <p className="aRecord__empty">
           {onlyUnpriced
@@ -757,18 +772,57 @@ const AdminPracticeRecords = ({
                     <td className="aRecord__num">{row.hours}</td>
                     <td>
                       {row.teamName}
+                      {row.teamDeleted ? (
+                        <span className="aRecord__deletedTeam">삭제된 팀</span>
+                      ) : null}
                       <span className="aRecord__muted">
                         {" "}
                         · {row.memberCount}명
                       </span>
                     </td>
-                    <td data-unset={row.place === "미정" || undefined}>
-                      {row.place}
-                      {row.byTeam ? (
-                        <span className="aRecord__byTeam" style={{ "--team": row.teamColor }}>
-                          팀 지정
-                        </span>
-                      ) : null}
+                    <td
+                      data-unset={row.place === "미정" || undefined}
+                      className="aPlace__colPlace"
+                    >
+                      {editingPlaceId === row.id ? (
+                        <AdminPlaceCell
+                          value={row.place === "미정" ? "" : row.place}
+                          suggestions={
+                            placeSuggestionsFor
+                              ? placeSuggestionsFor(row.teamId)
+                              : []
+                          }
+                          busy={assignBusy}
+                          onSave={async (place) => {
+                            await onAssignPlace?.(row.id, place);
+                            setEditingPlaceId(null);
+                          }}
+                          onCancel={() => setEditingPlaceId(null)}
+                        />
+                      ) : (
+                        <button
+                          type="button"
+                          className="aPlace__cellBtn"
+                          data-unset={row.place === "미정" || undefined}
+                          onClick={() => setEditingPlaceId(row.id)}
+                          title="눌러서 연습실 바꾸기"
+                          disabled={!onAssignPlace}
+                        >
+                          <span>
+                            {row.place === "미정"
+                              ? "+ 연습실 정하기"
+                              : row.place}
+                          </span>
+                          {row.byTeam ? (
+                            <em
+                              className="aRecord__byTeam"
+                              style={{ "--team": row.teamColor }}
+                            >
+                              팀 지정
+                            </em>
+                          ) : null}
+                        </button>
+                      )}
                     </td>
                     <td className="aRecord__num">
                       <CostCell
@@ -778,7 +832,9 @@ const AdminPracticeRecords = ({
                     </td>
                     <td className="aRecord__muted">
                       {row.byTeam ? (
-                        <span className="aRecord__byTeamText">{row.teamName}에서 직접</span>
+                        <span className="aRecord__byTeamText">
+                          {row.teamName}에서 직접
+                        </span>
                       ) : (
                         <>
                           {row.assignedBy ? `${row.assignedBy} · ` : ""}

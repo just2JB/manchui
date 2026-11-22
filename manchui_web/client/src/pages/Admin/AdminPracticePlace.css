@@ -911,3 +911,170 @@ body[data-club-theme="light"] .aRecord__stat--warn:not([data-zero]) strong {
   border-color: color-mix(in srgb, var(--team) 70%, transparent);
   background: color-mix(in srgb, var(--team) 14%, transparent);
 }
+
+/* —— 배정 화면 표 —— */
+.aPlace__tableWrap {
+  margin-top: 16px;
+}
+.aPlace__table th,
+.aPlace__table td {
+  padding: 6px 10px;
+  height: 46px;
+}
+.aPlace__thCheck {
+  width: 36px;
+  padding-right: 0 !important;
+}
+.aPlace__table tr[data-newday] td {
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.22);
+}
+.aPlace__table tr[data-selected] td {
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+}
+.aPlace__table tr[data-flash] td {
+  animation: aPlaceFlash 1.4s ease;
+}
+.aPlace__colPlace {
+  width: 44%;
+  min-width: 180px;
+}
+.aPlace__colCount {
+  width: 48px;
+}
+
+/* 연습실 칸: 평소엔 글자, 누르면 입력 */
+.aPlace__cellBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  margin: -4px -8px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.aPlace__cellBtn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aPlace__cellBtn:hover:not(:disabled) {
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.2);
+  background: var(--box-1, #121212);
+}
+.aPlace__cellBtn:disabled {
+  cursor: default;
+}
+.aPlace__cellBtn[data-unset] {
+  color: var(--text-more);
+  font-weight: 500;
+}
+.aPlace__cellBtn[data-conflict] {
+  color: var(--club-danger, #ff8a80);
+}
+.aPlace__cellBtn .aPlace__byTeam,
+.aPlace__cellBtn .aRecord__byTeam {
+  margin-left: 0;
+}
+
+/* 칸 안 입력 */
+.aPlaceCell {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+.aPlaceCell__input {
+  flex: 1;
+  min-width: 120px;
+  height: 34px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--text-primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+}
+.aPlaceCell__input:focus {
+  outline: none;
+}
+.aPlaceCell__btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-more);
+  font-size: 16px;
+  cursor: pointer;
+}
+.aPlaceCell__btn--ok {
+  background: var(--admin-primary, #fff);
+  color: var(--admin-on-primary, #000);
+}
+.aPlaceCell__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  width: 100%;
+}
+.aPlaceCell__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlaceCell__chip small {
+  font-size: 0.62rem;
+  color: var(--text-more);
+}
+.aPlaceCell__chip:hover:not(:disabled) {
+  border-color: var(--text-primary);
+}
+
+@media (max-width: 560px) {
+  .aPlace__table .aPlace__colCount,
+  .aPlace__date small,
+  .aPlace__rel {
+    display: none;
+  }
+  .aPlace__table th,
+  .aPlace__table td {
+    padding: 6px;
+  }
+  .aPlace__colPlace {
+    min-width: 120px;
+  }
+}
+
+.aRecord__deletedTeam {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.2);
+  color: var(--text-more);
+  font-size: 0.66rem;
+  font-weight: 700;
+  white-space: nowrap;
+}

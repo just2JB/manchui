@@ -1,5 +1,5 @@
-/** 예약 종료 시각 이후 보관 일수 (이후 자동 삭제) */
-const RETENTION_DAYS_AFTER_END = 2;
+/** 예약 종료 시각 이후 보관 개월 수 (이후 자동 삭제) */
+const RETENTION_MONTHS_AFTER_END = 6;
 
 /**
  * @param {{ date?: string, time?: unknown[] }} reservation
@@ -28,7 +28,7 @@ function getRetentionExpiresAt(reservation) {
   if (!endAt) return null;
 
   const expires = new Date(endAt);
-  expires.setDate(expires.getDate() + RETENTION_DAYS_AFTER_END);
+  expires.setMonth(expires.getMonth() + RETENTION_MONTHS_AFTER_END);
   return expires;
 }
 
@@ -39,7 +39,7 @@ function isPastReservationEnd(reservation, now = new Date()) {
   return now.getTime() > endAt.getTime();
 }
 
-/** 보관 기간(종료 후 2일)이 지났는지 (삭제·조회 제외용) */
+/** 보관 기간(종료 후 6개월)이 지났는지 (삭제·조회 제외용) */
 function isRetentionExpired(reservation, now = new Date()) {
   const expiresAt = getRetentionExpiresAt(reservation);
   if (!expiresAt) return true;
@@ -52,7 +52,7 @@ function filterActiveForUserDisplay(reservations, now = new Date()) {
   return reservations.filter((r) => !isPastReservationEnd(r, now));
 }
 
-/** 관리자 화면에 내려줄 예약 (종료 후 2일까지 포함) */
+/** 관리자 화면에 내려줄 예약 (종료 후 6개월까지 포함) */
 function filterActiveForAdminDisplay(reservations, now = new Date()) {
   if (!Array.isArray(reservations)) return [];
   return reservations.filter((r) => !isRetentionExpired(r, now));
@@ -75,7 +75,7 @@ async function purgeExpiredReservations(Reservation) {
 }
 
 module.exports = {
-  RETENTION_DAYS_AFTER_END,
+  RETENTION_MONTHS_AFTER_END,
   getReservationEndAt,
   getRetentionExpiresAt,
   isPastReservationEnd,

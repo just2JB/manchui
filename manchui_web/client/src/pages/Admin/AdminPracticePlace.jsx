@@ -22,6 +22,7 @@ import {
 import { parsePracticeHourRange } from "../ClubRoom/Team/practiceAvailabilityUtils";
 import { toVisibleTeamColor } from "../ClubRoom/Team/teamColorPresets";
 import AdminPracticeRecords from "./AdminPracticeRecords";
+import AdminPlaceCell from "./AdminPlaceCell";
 import "./adminList.css";
 import "./AdminPracticePlace.css";
 
@@ -180,8 +181,12 @@ const AdminPracticePlace = ({ embedded = false }) => {
         Array.isArray(res.data?.practices) ? res.data.practices : [],
       );
       setPlaces(Array.isArray(res.data?.places) ? res.data.places : []);
-      setPlaceRates(Array.isArray(res.data?.placeRates) ? res.data.placeRates : []);
-      setPinnedTeamIds(Array.isArray(res.data?.pinnedTeamIds) ? res.data.pinnedTeamIds : []);
+      setPlaceRates(
+        Array.isArray(res.data?.placeRates) ? res.data.placeRates : [],
+      );
+      setPinnedTeamIds(
+        Array.isArray(res.data?.pinnedTeamIds) ? res.data.pinnedTeamIds : [],
+      );
     } catch (err) {
       setError(
         err.response?.data?.message || "연습 목록을 불러오지 못했습니다.",
@@ -212,7 +217,7 @@ const AdminPracticePlace = ({ embedded = false }) => {
   const upcoming = useMemo(
     () =>
       enriched
-        .filter((practice) => practice.dateKey >= todayKey)
+        .filter((practice) => practice.dateKey >= todayKey && !practice.teamDeleted)
         .sort((a, b) =>
           a.dateKey !== b.dateKey
             ? a.dateKey.localeCompare(b.dateKey)
@@ -232,7 +237,8 @@ const AdminPracticePlace = ({ embedded = false }) => {
       .filter((practice) => practice.dateKey >= todayKey)
       .sort((a, b) => a.dateKey.localeCompare(b.dateKey));
     for (const practice of [...past, ...future]) {
-      if (!map.has(practice.teamId)) map.set(practice.teamId, String(practice.place).trim());
+      if (!map.has(practice.teamId))
+        map.set(practice.teamId, String(practice.place).trim());
     }
     return map;
   }, [enriched, todayKey]);
@@ -426,7 +432,10 @@ const AdminPracticePlace = ({ embedded = false }) => {
   const copyNotice = async () => {
     const byTeam = new Map();
     for (const practice of visible) {
-      const list = byTeam.get(practice.teamId) ?? { name: practice.teamName, items: [] };
+      const list = byTeam.get(practice.teamId) ?? {
+        name: practice.teamName,
+        items: [],
+      };
       list.items.push(practice);
       byTeam.set(practice.teamId, list);
     }
@@ -436,8 +445,12 @@ const AdminPracticePlace = ({ embedded = false }) => {
       for (const practice of items) {
         const [, m, d] = practice.dateKey.split("-").map(Number);
         const week = WEEK[new Date(practice.dateKey + "T00:00").getDay()];
-        const place = isUnset(practice.place) ? "장소 미정" : String(practice.place).trim();
-        lines.push(`${m}/${d}(${week}) ${formatPracticeTimeShort(practice.time)} ${place}`);
+        const place = isUnset(practice.place)
+          ? "장소 미정"
+          : String(practice.place).trim();
+        lines.push(
+          `${m}/${d}(${week}) ${formatPracticeTimeShort(practice.time)} ${place}`,
+        );
       }
       lines.push("");
     }
@@ -466,8 +479,14 @@ const AdminPracticePlace = ({ embedded = false }) => {
 
   return (
     <div className="aPlace">
-      <div className={`aPlace__head${embedded ? " aPlace__head--embedded" : ""}`}>
-        {embedded ? <span /> : <h1 className="admin-page-heading">연습실 예약</h1>}
+      <div
+        className={`aPlace__head${embedded ? " aPlace__head--embedded" : ""}`}
+      >
+        {embedded ? (
+          <span />
+        ) : (
+          <h1 className="admin-page-heading">연습실 예약</h1>
+        )}
         <div className="aPlace__headTools">
           <div
             className="aPlace__views"
@@ -515,12 +534,17 @@ const AdminPracticePlace = ({ embedded = false }) => {
         ) : (
           <AdminPracticeRecords
             practices={enriched}
+            placeSuggestionsFor={suggestionsFor}
+            onAssignPlace={(id, place) => assign([id], place)}
+            assignBusy={busy}
             placeRates={placeRates}
             onRatesSaved={setPlaceRates}
             onCostSaved={(ids, cost) =>
               setPractices((prev) =>
                 prev.map((practice) =>
-                  ids.includes(practice._id) ? { ...practice, placeCost: cost } : practice,
+                  ids.includes(practice._id)
+                    ? { ...practice, placeCost: cost }
+                    : practice,
                 ),
               )
             }
@@ -565,9 +589,9 @@ const AdminPracticePlace = ({ embedded = false }) => {
                 type="button"
                 className={`aPlace__teamChip${teamFilter === "all" ? " aPlace__teamChip--on" : ""}`}
                 onClick={() => {
-              setTeamFilter("all");
-              setSelected(new Set());
-            }}
+                  setTeamFilter("all");
+                  setSelected(new Set());
+                }}
               >
                 모든 팀
               </button>
@@ -606,99 +630,140 @@ const AdminPracticePlace = ({ embedded = false }) => {
               </p>
             </div>
           ) : (
-            <div className="aPlace__flat">
-              {/* 한 줄에 날짜 · 시간 · 팀 · 장소, 날짜·시간 순 */}
-              <div className="aPlace__listHead" aria-hidden="true">
-                <span />
-                <span>날짜</span>
-                <span>시간</span>
-                <span>팀</span>
-                <span>장소</span>
-              </div>
-              <ul className="aPlace__list">
-                <li className="aPlace__selectAll">
-                  <label className="aPlace__check">
-                    <input
-                      type="checkbox"
-                      checked={visible.length > 0 && visible.every((item) => selected.has(item._id))}
-                      onChange={() => toggleGroup(visible)}
-                      aria-label="보이는 연습 모두 선택"
-                    />
-                    <span aria-hidden />
-                  </label>
-                  <span>보이는 {visible.length}개 모두 선택</span>
-                </li>
-                {visible.map((practice, index) => {
-                  const unset = isUnset(practice.place);
-                  const conflict = conflictsById.get(practice._id);
-                  const editing = editingId === practice._id;
-                  const [, m, d] = practice.dateKey.split("-").map(Number);
-                  const head = formatDateHead(practice.dateKey, todayKey);
-                  const newDay = index > 0 && visible[index - 1].dateKey !== practice.dateKey;
-                  return (
-                    <li
-                      key={practice._id}
-                      className="aPlace__row"
-                      data-newday={newDay || undefined}
-                      data-selected={selected.has(practice._id) || undefined}
-                      data-flash={flashIds.has(practice._id) || undefined}
-                      style={{ "--team": practice.color }}
-                    >
-                      <div className="aPlace__rowMain">
-                        <label className="aPlace__check">
-                          <input
-                            type="checkbox"
-                            checked={selected.has(practice._id)}
-                            onChange={() => toggleSelect(practice._id)}
-                            aria-label={`${head.label} ${practice.teamName} ${formatPracticeTimeShort(practice.time)} 선택`}
-                          />
-                          <span aria-hidden />
-                        </label>
-                        <span className="aPlace__date" data-weekend={head.weekend || undefined}>
-                          {m}/{d}
-                          <small>({WEEK[new Date(practice.dateKey + "T00:00").getDay()]})</small>
-                          {head.rel ? <span className="aPlace__rel">{head.rel}</span> : null}
-                        </span>
-                        <span className="aPlace__time">{formatPracticeTimeShort(practice.time)}</span>
-                        <span className="aPlace__team">
-                          <i aria-hidden />
-                          <span>{practice.teamName}</span>
-                          <small>{practice.memberCount}명</small>
-                        </span>
-                        <button
-                          type="button"
-                          className="aPlace__placeBtn"
-                          data-unset={unset || undefined}
-                          data-conflict={conflict ? true : undefined}
-                          data-by-team={(!unset && !practice.placeAssignedAt) || undefined}
-                          onClick={() => setEditingId(editing ? null : practice._id)}
-                          aria-expanded={editing}
-                        >
-                          {conflict ? <IoWarningOutline aria-hidden /> : <IoLocationOutline aria-hidden />}
-                          <span>{unset ? "연습실 정하기" : String(practice.place).trim()}</span>
-                          {!unset && !practice.placeAssignedAt ? (
-                            <em className="aPlace__byTeam" title="팀(곡장)이 직접 정한 연습실">팀</em>
-                          ) : null}
-                        </button>
-                      </div>
-                      {conflict ? (
-                        <p className="aPlace__conflict">
-                          같은 시간 같은 장소: {[...new Set(conflict)].join(", ")}
-                        </p>
-                      ) : null}
-                      {editing ? (
-                        <PlacePicker
-                          suggestions={suggestionsFor(practice.teamId)}
-                          initial={unset ? "" : String(practice.place).trim()}
-                          busy={busy}
-                          onApply={(place) => void assign([practice._id], place)}
-                          onCancel={() => setEditingId(null)}
+            <div className="aRecord__tableWrap aPlace__tableWrap">
+              <table className="aRecord__table aPlace__table">
+                <thead>
+                  <tr>
+                    <th scope="col" className="aPlace__thCheck">
+                      <label className="aPlace__check">
+                        <input
+                          type="checkbox"
+                          checked={
+                            visible.length > 0 &&
+                            visible.every((item) => selected.has(item._id))
+                          }
+                          onChange={() => toggleGroup(visible)}
+                          aria-label="보이는 연습 모두 선택"
                         />
-                      ) : null}
-                    </li>
-                  );
-                })}
-              </ul>
+                        <span aria-hidden />
+                      </label>
+                    </th>
+                    <th scope="col">날짜</th>
+                    <th scope="col">시간</th>
+                    <th scope="col">팀</th>
+                    <th scope="col" className="aRecord__num aPlace__colCount">
+                      인원
+                    </th>
+                    <th scope="col" className="aPlace__colPlace">
+                      연습실
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visible.map((practice, index) => {
+                    const unset = isUnset(practice.place);
+                    const conflict = conflictsById.get(practice._id);
+                    const editing = editingId === practice._id;
+                    const byTeam = !unset && !practice.placeAssignedAt;
+                    const [, m, d] = practice.dateKey.split("-").map(Number);
+                    const head = formatDateHead(practice.dateKey, todayKey);
+                    const newDay =
+                      index > 0 &&
+                      visible[index - 1].dateKey !== practice.dateKey;
+                    return (
+                      <tr
+                        key={practice._id}
+                        data-newday={newDay || undefined}
+                        data-selected={selected.has(practice._id) || undefined}
+                        data-flash={flashIds.has(practice._id) || undefined}
+                        style={{ "--team": practice.color }}
+                      >
+                        <td className="aPlace__thCheck">
+                          <label className="aPlace__check">
+                            <input
+                              type="checkbox"
+                              checked={selected.has(practice._id)}
+                              onChange={() => toggleSelect(practice._id)}
+                              aria-label={`${head.label} ${practice.teamName} ${formatPracticeTimeShort(practice.time)} 선택`}
+                            />
+                            <span aria-hidden />
+                          </label>
+                        </td>
+                        <td className="aRecord__nowrap">
+                          <span
+                            className="aPlace__date"
+                            data-weekend={head.weekend || undefined}
+                          >
+                            {m}/{d}
+                            <small>
+                              (
+                              {
+                                WEEK[
+                                  new Date(practice.dateKey + "T00:00").getDay()
+                                ]
+                              }
+                              )
+                            </small>
+                            {head.rel ? (
+                              <span className="aPlace__rel">{head.rel}</span>
+                            ) : null}
+                          </span>
+                        </td>
+                        <td className="aRecord__nowrap">
+                          {formatPracticeTimeShort(practice.time)}
+                        </td>
+                        <td>
+                          <span className="aPlace__team">
+                            <i aria-hidden />
+                            <span>{practice.teamName}</span>
+                          </span>
+                        </td>
+                        <td className="aRecord__num aRecord__muted aPlace__colCount">
+                          {practice.memberCount}
+                        </td>
+                        <td className="aPlace__colPlace">
+                          {editing ? (
+                            <AdminPlaceCell
+                              value={unset ? "" : String(practice.place).trim()}
+                              suggestions={suggestionsFor(practice.teamId)}
+                              busy={busy}
+                              onSave={(place) =>
+                                void assign([practice._id], place)
+                              }
+                              onCancel={() => setEditingId(null)}
+                            />
+                          ) : (
+                            <button
+                              type="button"
+                              className="aPlace__cellBtn"
+                              data-unset={unset || undefined}
+                              data-conflict={conflict ? true : undefined}
+                              onClick={() => setEditingId(practice._id)}
+                              title={
+                                conflict
+                                  ? `같은 시간 같은 연습실: ${[...new Set(conflict)].join(", ")}`
+                                  : "눌러서 바꾸기"
+                              }
+                            >
+                              {conflict ? (
+                                <IoWarningOutline aria-hidden />
+                              ) : null}
+                              <span>
+                                {unset
+                                  ? "+ 연습실 정하기"
+                                  : String(practice.place).trim()}
+                              </span>
+                              {byTeam ? (
+                                <em className="aPlace__byTeam">팀</em>
+                              ) : null}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </>

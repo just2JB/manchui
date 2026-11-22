@@ -233,7 +233,7 @@ const AdminTeam = () => {
     }
     if (
       !(await manchuiModal(
-        `"${teamName}" 팀과 모든 연습을 삭제합니다. 계속할까요?`,
+        `"${teamName}" 팀을 삭제합니다. 연습실이 배정된 연습은 결산 기록으로 남고, 나머지 연습은 삭제돼요. 계속할까요?`,
         "confirm",
       ))
     ) {

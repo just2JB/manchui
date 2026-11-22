@@ -210,7 +210,7 @@ const TeamSettings = () => {
   const handleDeleteTeam = async () => {
     if (
       !(await modal(
-        "팀을 삭제하면 연습 일정 등 모든 데이터가 사라지며 복구할 수 없습니다. 정말 삭제하시겠습니까?",
+        "팀을 삭제하면 팀과 연습 일정이 사라지고 복구할 수 없어요. (연습실 사용 기록만 동아리 결산용으로 남아요) 정말 삭제할까요?",
         "confirm",
       ))
     ) {
@@ -515,7 +515,7 @@ const TeamSettings = () => {
                 팀 삭제
               </h2>
               <p className="teamSettings__dangerHint">
-                팀과 연습 일정이 모두 삭제되며 되돌릴 수 없어요.
+                팀과 연습 일정이 삭제되며 되돌릴 수 없어요. 연습실 사용 기록만 동아리 결산용으로 남아요.
               </p>
             </div>
             <button

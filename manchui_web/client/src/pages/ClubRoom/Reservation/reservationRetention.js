@@ -1,5 +1,5 @@
-/** 예약 종료 후 백엔드 보관 일수 (server/utils/reservationRetention.js 와 동일) */
-export const RETENTION_DAYS_AFTER_END = 2;
+/** 예약 종료 후 백엔드 보관 개월 수 (server/utils/reservationRetention.js 와 동일) */
+export const RETENTION_MONTHS_AFTER_END = 6;
 
 /**
  * @param {{ date?: string, time?: unknown[] }} reservation
@@ -24,7 +24,7 @@ function getRetentionExpiresAt(reservation) {
   if (!endAt) return null;
 
   const expires = new Date(endAt);
-  expires.setDate(expires.getDate() + RETENTION_DAYS_AFTER_END);
+  expires.setMonth(expires.getMonth() + RETENTION_MONTHS_AFTER_END);
   return expires;
 }
 
@@ -35,7 +35,7 @@ export function isPastReservationEnd(reservation, now = new Date()) {
   return now.getTime() > endAt.getTime();
 }
 
-/** 백엔드 보관 기간(종료 후 2일)이 지났는지 — 관리자 화면용 */
+/** 백엔드 보관 기간(종료 후 6개월)이 지났는지 — 관리자 화면용 */
 export function isRetentionExpired(reservation, now = new Date()) {
   const expiresAt = getRetentionExpiresAt(reservation);
   if (!expiresAt) return true;
@@ -48,7 +48,7 @@ export function filterVisibleReservations(reservations, now = new Date()) {
   return reservations.filter((r) => !isPastReservationEnd(r, now));
 }
 
-/** 관리자 화면 (종료 후 2일까지 표시) */
+/** 관리자 화면 (종료 후 6개월까지 표시) */
 export function filterAdminVisibleReservations(reservations, now = new Date()) {
   if (!Array.isArray(reservations)) return [];
   return reservations.filter((r) => !isRetentionExpired(r, now));

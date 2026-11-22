@@ -43,6 +43,24 @@ const practiceSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  /** 팀이 삭제돼도 연습실 배정 기록을 남길 때: 그때의 팀 이름·색, 삭제 시각 */
+  teamNameSnapshot: {
+    type: String,
+    default: null,
+  },
+  teamColorSnapshot: {
+    type: String,
+    default: null,
+  },
+  teamDeletedAt: {
+    type: Date,
+    default: null,
+  },
+  /** 팀 삭제 후 남긴 기록: 참석자 이름 대신 인원 수만 */
+  memberCountSnapshot: {
+    type: Number,
+    default: null,
+  },
   /** 이 연습만 금액을 따로 정할 때(원). null 이면 장소 시간당 요금 × 시간 */
   placeCost: {
     type: Number,

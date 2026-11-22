@@ -470,7 +470,7 @@ const AdminReservation = () => {
   const handlePurgePast = async () => {
     if (!serverUrl) return;
     const ok = await modal(
-      "예약 종료 후 보관 기간(2일)이 지난 예약을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.",
+      "예약 종료 후 보관 기간(6개월)이 지난 예약을 모두 삭제할까요? 이 작업은 되돌릴 수 없습니다.",
       "confirm",
     );
     if (!ok) return;

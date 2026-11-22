@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { CLUB_ROOM_RULES_ITEMS } from "./clubRoomRulesContent";
+import { useClubRoomRules } from "./clubRoomRulesContent";
 import "./Reservation.css";
 
 /**
@@ -9,6 +9,7 @@ import "./Reservation.css";
  * 이용 수칙 모달(ClubRoomRulesBar)과 같은 틀(.reservation__rules*)을 쓴다.
  */
 export default function ReservationDoneModal({ info, onClose, onShowLocation }) {
+  const rules = useClubRoomRules();
   useEffect(() => {
     if (!info) return undefined;
     const onKey = (e) => {
@@ -59,7 +60,7 @@ export default function ReservationDoneModal({ info, onClose, onShowLocation }) 
 
         <h3 className="reservation__doneRulesTitle">동아리방 이용 수칙</h3>
         <ul className="reservation__rulesList">
-          {CLUB_ROOM_RULES_ITEMS.map((line, i) => (
+          {rules.map((line, i) => (
             <li key={i}>{line}</li>
           ))}
         </ul>

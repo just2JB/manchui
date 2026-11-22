@@ -1,13 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { IoShareOutline } from "react-icons/io5";
 import apiClient, { serverUrl } from "../../../api/apiClient";
+import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import ClubRoomMapEmbed from "../../../components/ClubRoomMapEmbed/ClubRoomMapEmbed";
 import ClubRoomRulesBar from "./ClubRoomRulesBar";
+import { normalizeDateKey, formatDateKey } from "../Team/teamCalendarUtils";
 import "./ReservationShare.css";
 import { formatReservationTimeRange } from "./reservationTimeFormat";
 
+const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+
+/** 날짜 키 → { month, day, week, relative } */
+function describeDate(raw) {
+  const key = normalizeDateKey(raw);
+  if (!key) return null;
+  const [y, m, d] = key.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  const diff = Math.round(
+    (date - new Date(formatDateKey(new Date()) + "T00:00")) / 86400000,
+  );
+  const relative =
+    diff === 0 ? "오늘" : diff === 1 ? "내일" : diff === 2 ? "모레" : diff > 0 ? `${diff}일 후` : "지난 예약";
+  return { year: y, month: m, day: d, week: WEEK[date.getDay()], relative };
+}
+
+async function shareThisPage(modal) {
+  const url = window.location.href;
+  const shareData = { title: "동아리방 예약", url };
+  if (typeof navigator.share === "function" && (!navigator.canShare || navigator.canShare(shareData))) {
+    try {
+      await navigator.share(shareData);
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    await modal("예약 링크가 복사되었습니다.");
+  } catch {
+    await modal(`아래 링크를 복사해 보내 주세요.\n\n${url}`);
+  }
+}
+
 const ReservationShare = () => {
   const { id } = useParams();
+  const modal = useManchuiModal();
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,15 +77,15 @@ const ReservationShare = () => {
     };
   }, [id]);
 
+  const when = data ? describeDate(data.date) : null;
+  const thisYear = new Date().getFullYear();
+
   return (
     <div className="reservationShare">
-      <div className="reservationShare__titleRow">
-        <h1 className="reservationShare__title">동아리방 예약</h1>
+      <header className="reservationShare__head">
+        <p className="reservationShare__eyebrow">동아리방 예약</p>
         <ClubRoomRulesBar inline />
-      </div>
-      <p className="reservationShare__lead">
-        공유 링크로 열람한 예약 정보입니다.
-      </p>
+      </header>
 
       {loading ? (
         <p className="reservationShare__status">불러오는 중…</p>
@@ -55,24 +94,23 @@ const ReservationShare = () => {
           {error}
         </p>
       ) : data ? (
-        <div className="reservationShare__card">
-          <img
-            src="/logos/shortLogo.png"
-            alt=""
-            className="reservationShare__cardWatermark"
-            aria-hidden="true"
-          />
-          <dl className="reservationShare__dl">
+        <section className="reservationShare__info" aria-label="예약 정보">
+          {when ? (
+            <p className="reservationShare__date">
+              {when.year !== thisYear ? `${when.year}년 ` : ""}
+              {when.month}월 {when.day}일 {when.week}요일
+              <span className="reservationShare__relative" data-past={when.relative === "지난 예약" || undefined}>
+                {when.relative}
+              </span>
+            </p>
+          ) : (
+            <p className="reservationShare__date">{data.date}</p>
+          )}
+          <p className="reservationShare__time">{formatReservationTimeRange(data.time)}</p>
+
+          <dl className="reservationShare__rows">
             <div className="reservationShare__row">
-              <dt>날짜</dt>
-              <dd>{data.date}</dd>
-            </div>
-            <div className="reservationShare__row">
-              <dt>시간</dt>
-              <dd>{formatReservationTimeRange(data.time)}</dd>
-            </div>
-            <div className="reservationShare__row">
-              <dt>팀</dt>
+              <dt>예약한 팀</dt>
               <dd>{data.teamName ?? "—"}</dd>
             </div>
             <div className="reservationShare__row">
@@ -80,27 +118,37 @@ const ReservationShare = () => {
               <dd>{data.headcount != null ? `${data.headcount}명` : "—"}</dd>
             </div>
           </dl>
-        </div>
+        </section>
+      ) : null}
+
+      {data ? (
+        <button
+          type="button"
+          className="reservationShare__share"
+          onClick={() => void shareThisPage(modal)}
+        >
+          <IoShareOutline aria-hidden="true" />
+          이 예약 공유하기
+        </button>
       ) : null}
 
       <section className="reservationShare__location" aria-labelledby="reservationShare-location-title">
         <h2 id="reservationShare-location-title" className="reservationShare__locationTitle">
-          동아리방 위치
+          찾아오는 길
         </h2>
-        <ClubRoomMapEmbed height={300} />
+        <div className="reservationShare__map">
+          <ClubRoomMapEmbed height={260} />
+        </div>
       </section>
 
-      <div className="reservationShare__footer">
+      <footer className="reservationShare__footer">
         <Link className="reservationShare__link" to="/club/reservation">
-          예약 페이지로
+          동아리방 예약하기
         </Link>
-        <Link
-          className="reservationShare__link reservationShare__link--sub"
-          to="/club"
-        >
-          홈
+        <Link className="reservationShare__link reservationShare__link--sub" to="/club">
+          홈으로
         </Link>
-      </div>
+      </footer>
     </div>
   );
 };

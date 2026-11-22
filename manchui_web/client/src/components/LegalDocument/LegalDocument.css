@@ -1,0 +1,336 @@
+/* 약관·방침 문서: 글자 크기·줄 간격·줄 길이를 읽기 좋게 */
+.legalDoc {
+  --legal-line: rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
+  --legal-soft: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+  --legal-text: color-mix(in srgb, var(--text-primary, #fff) 86%, transparent);
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 48px 20px 96px;
+  background: var(--background-dark);
+  color: var(--text-primary);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+/* 머리 */
+.legalDoc__head {
+  max-width: 68ch;
+  margin-bottom: 32px;
+}
+.legalDoc__brand {
+  margin: 0 0 10px;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-more);
+}
+.legalDoc__title {
+  margin: 0;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+.legalDoc__date {
+  margin: 12px 0 0;
+  font-size: 0.875rem;
+  color: var(--text-more);
+}
+.legalDoc__intro {
+  margin: 20px 0 0;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+  color: var(--legal-text);
+}
+
+/* 한눈에 보기 */
+.legalDoc__summary {
+  margin-bottom: 48px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--legal-soft);
+  border: 1px solid var(--legal-line);
+}
+.legalDoc__summaryTitle {
+  margin: 0 0 16px;
+  font-size: 1rem;
+  font-weight: 700;
+}
+.legalDoc__summaryList {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.legalDoc__summaryItem {
+  display: grid;
+  gap: 4px;
+  padding-left: 14px;
+  border-left: 2px solid var(--text-primary);
+}
+.legalDoc__summaryItem strong {
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+.legalDoc__summaryItem span {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--legal-text);
+}
+
+/* 본문: PC 는 목차 왼쪽 고정 */
+.legalDoc__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 32px;
+}
+.legalDoc__toc {
+  font-size: 0.9375rem;
+}
+.legalDoc__tocDetails summary {
+  cursor: pointer;
+  font-weight: 700;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--legal-line);
+  list-style: none;
+}
+.legalDoc__tocDetails summary::-webkit-details-marker {
+  display: none;
+}
+.legalDoc__tocDetails summary::after {
+  content: "▾";
+  float: right;
+  color: var(--text-more);
+}
+.legalDoc__tocDetails:not([open]) summary::after {
+  content: "▸";
+}
+.legalDoc__toc ol {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.legalDoc__toc a {
+  display: flex;
+  gap: 10px;
+  padding: 7px 0;
+  color: var(--text-more);
+  text-decoration: none;
+  line-height: 1.45;
+}
+.legalDoc__toc a:hover {
+  color: var(--text-primary);
+}
+.legalDoc__tocNum {
+  flex: none;
+  width: 20px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-more);
+  opacity: 0.7;
+}
+
+.legalDoc__article {
+  max-width: 68ch;
+  min-width: 0;
+}
+.legalDoc__section {
+  padding-top: 8px;
+  margin-bottom: 48px;
+  scroll-margin-top: 24px;
+}
+.legalDoc__h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+.legalDoc__num {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  color: var(--background-dark);
+  font-size: 0.8125rem;
+  font-weight: 800;
+  transform: translateY(-2px);
+}
+.legalDoc__p {
+  margin: 0 0 14px;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--legal-text);
+}
+.legalDoc__list {
+  margin: 0 0 14px;
+  padding-left: 1.25em;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: var(--legal-text);
+}
+.legalDoc__list li {
+  margin-bottom: 6px;
+  padding-left: 4px;
+}
+.legalDoc__list li::marker {
+  color: var(--text-more);
+}
+.legalDoc__list strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.legalDoc__note {
+  margin: 0 0 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: var(--legal-soft);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--legal-text);
+}
+.legalDoc a {
+  color: var(--text-primary);
+  text-underline-offset: 3px;
+}
+
+/* 표 */
+.legalDoc__tableWrap {
+  margin: 4px 0 18px;
+  border: 1px solid var(--legal-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.legalDoc__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+.legalDoc__table th,
+.legalDoc__table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--legal-line);
+  text-align: left;
+  vertical-align: top;
+}
+.legalDoc__table th {
+  background: var(--legal-soft);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--text-more);
+}
+.legalDoc__table td {
+  color: var(--legal-text);
+}
+.legalDoc__table td:first-child {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+.legalDoc__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.legalDoc__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid var(--legal-line);
+}
+.legalDoc__footLink {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--background-dark) !important;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.legalDoc__footLink--sub {
+  background: transparent;
+  border: 1px solid var(--legal-line);
+  color: var(--text-primary) !important;
+}
+
+@media (min-width: 900px) {
+  .legalDoc {
+    padding-top: 72px;
+  }
+  .legalDoc__body {
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: 56px;
+  }
+  .legalDoc__toc {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+  }
+  .legalDoc__tocDetails summary {
+    pointer-events: none;
+  }
+  .legalDoc__tocDetails summary::after {
+    content: none;
+  }
+}
+
+/* 모바일: 표를 한 줄씩 카드처럼 */
+@media (max-width: 600px) {
+  .legalDoc {
+    padding-top: 32px;
+  }
+  .legalDoc__summary {
+    padding: 18px;
+  }
+  .legalDoc__p,
+  .legalDoc__list,
+  .legalDoc__intro {
+    font-size: 1rem;
+  }
+  .legalDoc__table thead {
+    display: none;
+  }
+  .legalDoc__table,
+  .legalDoc__table tbody,
+  .legalDoc__table tr,
+  .legalDoc__table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .legalDoc__table tr {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--legal-line);
+  }
+  .legalDoc__table tbody tr:last-child {
+    border-bottom: 0;
+  }
+  .legalDoc__table td {
+    padding: 2px 0;
+    border: 0;
+  }
+  .legalDoc__table td:first-child {
+    margin-bottom: 4px;
+    font-size: 1rem;
+  }
+  .legalDoc__table td:not(:first-child)::before {
+    content: attr(data-label) " · ";
+    color: var(--text-more);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+}

@@ -1,0 +1,913 @@
+/* 관리자: 연습 장소 배정 — 날짜별 목록, 줄마다 바로 지정, 여러 개 한 번에 */
+.aPlace {
+  --line: rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  padding-bottom: 160px;
+}
+
+.aPlace__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+.aPlace__head .admin-page-heading {
+  margin: 0;
+}
+.aPlace__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlace__copy:hover {
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.24);
+}
+
+.aList__tab[data-alert] span {
+  background: var(--club-danger, #ff453a);
+  color: #fff;
+}
+
+/* 팀 거르기 */
+.aPlace__teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 4px;
+}
+.aPlace__teamChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlace__teamChip i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--team);
+}
+.aPlace__teamChip--on {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.aPlace__status {
+  margin: 40px 0;
+  text-align: center;
+  color: var(--text-more);
+}
+.aPlace__status--error {
+  color: var(--club-danger, #ff8a80);
+}
+.aPlace__done {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 40px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  color: var(--text-more);
+  text-align: center;
+}
+.aPlace__done svg {
+  font-size: 28px;
+  color: var(--text-primary);
+}
+.aPlace__done p {
+  margin: 0;
+}
+
+/* 한 줄 목록: 체크 · 날짜 · 시간 · 팀 · 장소 */
+.aPlace__flat {
+  --cols: 32px 92px 64px minmax(0, 1fr) minmax(120px, 200px);
+  margin-top: 16px;
+}
+.aPlace__listHead {
+  display: grid;
+  grid-template-columns: var(--cols);
+  gap: 10px;
+  padding: 0 4px 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-more);
+}
+.aPlace__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.aPlace__selectAll {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.78rem;
+  color: var(--text-more);
+}
+.aPlace__row {
+  border-bottom: 1px solid var(--line);
+  transition: background-color 0.3s ease;
+}
+/* 날짜가 바뀌는 줄은 위 선을 조금 진하게 */
+.aPlace__row[data-newday] {
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.2);
+  margin-top: -1px;
+}
+.aPlace__row[data-selected] {
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.04);
+}
+.aPlace__row[data-flash] {
+  animation: aPlaceFlash 1.4s ease;
+}
+@keyframes aPlaceFlash {
+  0%, 30% { background: color-mix(in srgb, var(--team) 22%, transparent); }
+  100% { background: transparent; }
+}
+.aPlace__rowMain {
+  display: grid;
+  grid-template-columns: var(--cols);
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 4px;
+}
+.aPlace__date {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  min-width: 0;
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.aPlace__date small {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--text-more);
+}
+.aPlace__date[data-weekend] small {
+  color: var(--club-data, #ff6b6b);
+}
+.aPlace__rel {
+  align-self: center;
+  margin-left: 2px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--background-dark);
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+.aPlace__time {
+  font-size: 0.92rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.aPlace__team {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.aPlace__team i {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--team);
+}
+.aPlace__team span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aPlace__team small {
+  flex: none;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-more);
+}
+
+/* 장소 칸: 미정이면 점선 버튼으로 눈에 띄게 */
+.aPlace__placeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlace__placeBtn svg {
+  flex: none;
+}
+.aPlace__placeBtn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aPlace__placeBtn:hover,
+.aPlace__placeBtn[aria-expanded="true"] {
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.3);
+}
+.aPlace__placeBtn[data-unset] {
+  border-style: dashed;
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.3);
+  color: var(--text-more);
+}
+.aPlace__placeBtn[data-conflict] {
+  border-color: var(--club-danger, #ff453a);
+  color: var(--club-danger, #ff8a80);
+}
+.aPlace__conflict {
+  margin: -4px 0 8px 46px;
+  font-size: 0.74rem;
+  color: var(--club-danger, #ff8a80);
+}
+
+/* 체크박스 */
+.aPlace__check {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+.aPlace__check input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.aPlace__check span {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.3);
+  border-radius: 5px;
+  pointer-events: none;
+}
+.aPlace__check input:checked + span {
+  border-color: var(--text-primary);
+  background: var(--text-primary)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 12px no-repeat;
+}
+body[data-club-theme="light"] .aPlace__check input:checked + span {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.aPlace__check input:focus-visible + span {
+  outline: 2px solid var(--text-more);
+  outline-offset: 2px;
+}
+
+/* 장소 고르기 */
+.aPlace__picker {
+  display: grid;
+  gap: 10px;
+  margin: 0 4px 12px 42px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box-1, #121212);
+}
+.aPlace__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.aPlace__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlace__chip:hover:not(:disabled) {
+  border-color: var(--text-primary);
+}
+.aPlace__chipHint {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.1);
+  color: var(--text-more);
+  font-size: 0.66rem;
+  font-weight: 700;
+}
+.aPlace__inputRow {
+  display: flex;
+  gap: 8px;
+}
+.aPlace__input {
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.92rem;
+}
+.aPlace__input:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+.aPlace__apply {
+  flex: none;
+  height: 40px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--admin-primary, #fff);
+  color: var(--admin-on-primary, #000);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.aPlace__apply:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.aPlace__pickerFoot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+.aPlace__textBtn {
+  padding: 2px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlace__textBtn:hover:not(:disabled) {
+  color: var(--text-primary);
+}
+
+/* 여러 개 한 번에: 화면 아래 고정 */
+.aPlace__bulk {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+  width: min(640px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.14);
+  border-radius: 16px;
+  background: var(--box-1, #121212);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.7);
+  animation: aPlaceBulkIn 0.2s ease-out;
+}
+@keyframes aPlaceBulkIn {
+  from { opacity: 0; transform: translate(-50%, 10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+.aPlace__bulkHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.aPlace__bulk .aPlace__picker {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+@media (max-width: 560px) {
+  .aPlace__flat {
+    --cols: 26px 58px 44px minmax(0, 1fr) minmax(84px, 38%);
+  }
+  .aPlace__rowMain,
+  .aPlace__listHead {
+    gap: 6px;
+  }
+  .aPlace__date small,
+  .aPlace__team small,
+  .aPlace__rel {
+    display: none;
+  }
+  .aPlace__date,
+  .aPlace__time {
+    font-size: 0.82rem;
+  }
+  .aPlace__placeBtn {
+    padding: 0 8px;
+    font-size: 0.78rem;
+  }
+  .aPlace__picker {
+    margin-left: 4px;
+  }
+  .aPlace__conflict {
+    margin-left: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aPlace__row[data-flash],
+  .aPlace__bulk {
+    animation: none;
+  }
+}
+
+/* 머리: 배정 / 기록 전환 */
+.aPlace__headTools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.aPlace__views {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 10px;
+  background: var(--box-1, #121212);
+}
+.aPlace__view {
+  height: 30px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-more);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.aPlace__view[aria-selected="true"] {
+  background: var(--admin-primary, #fff);
+  color: var(--admin-on-primary, #000);
+}
+
+/* —— 기록: 달별 표 + 합계 —— */
+.aRecord__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+.aRecord__month {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.aRecord__monthBtn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+.aRecord__monthBtn:hover {
+  background: var(--box-1, #121212);
+}
+.aRecord__monthLabel {
+  min-width: 110px;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.aRecord__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--text-more);
+  cursor: pointer;
+}
+.aRecord__download {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  margin-left: auto;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--admin-primary, #fff);
+  color: var(--admin-on-primary, #000);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.aRecord__download:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.aRecord__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 16px 0;
+}
+.aRecord__stat {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--box-1, #121212);
+}
+.aRecord__stat span {
+  font-size: 0.74rem;
+  color: var(--text-more);
+}
+.aRecord__stat strong {
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.aRecord__empty {
+  margin: 40px 0;
+  text-align: center;
+  color: var(--text-more);
+}
+.aRecord__tableWrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.aRecord__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+.aRecord__table th,
+.aRecord__table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+.aRecord__table th {
+  position: sticky;
+  top: 0;
+  background: var(--box-1, #121212);
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--text-more);
+  white-space: nowrap;
+}
+.aRecord__table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.aRecord__table td[data-unset] {
+  color: var(--text-more);
+}
+.aRecord__num {
+  text-align: right !important;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.aRecord__nowrap {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.aRecord__muted {
+  font-size: 0.76rem;
+  color: var(--text-more);
+  white-space: nowrap;
+}
+.aRecord__sums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+.aRecord__sumTitle {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.aRecord__table--sum {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+}
+@media (max-width: 560px) {
+  .aRecord__download {
+    margin-left: 0;
+  }
+}
+
+.aPlace__head--embedded {
+  margin-bottom: 12px;
+}
+
+/* —— 금액 —— */
+.aRecord__range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.aRecord__range .aRate__input {
+  width: 150px;
+}
+.aRecord__barEnd {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+.aRecord__barEnd .aRecord__download {
+  margin-left: 0;
+}
+.aRecord__stat--money strong {
+  font-size: 1.3rem;
+}
+.aRecord__money {
+  font-weight: 700;
+}
+.aRecord__money small {
+  font-weight: 500;
+  color: var(--text-more);
+}
+.aRecord__sums {
+  margin: 0 0 20px;
+}
+.aRecord__costBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  margin: -4px -8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.aRecord__costBtn:hover {
+  background: var(--box-2, #1c1c1c);
+}
+.aRecord__costBtn[data-none] {
+  color: var(--text-more);
+  font-weight: 500;
+}
+.aRecord__costTag {
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.12);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: var(--text-more);
+}
+.aRecord__costEdit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.aRecord__costEdit .aRate__input {
+  width: 90px;
+  height: 30px;
+  text-align: right;
+}
+.aRecord__costOk {
+  height: 30px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--admin-primary, #fff);
+  color: var(--admin-on-primary, #000);
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 장소별 요금 편집 */
+.aRate {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--box-1, #121212);
+}
+.aRate__hint {
+  margin: 0 0 10px;
+  font-size: 0.76rem;
+  color: var(--text-more);
+}
+.aRate__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 6px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.aRate__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 40px;
+}
+.aRate__place {
+  min-width: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.aRate__field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+  font-size: 0.74rem;
+  color: var(--text-more);
+}
+.aRate__input {
+  height: 36px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+  color-scheme: dark;
+}
+body[data-club-theme="light"] .aRate__input,
+body[data-admin-theme="light"] .aRate__input {
+  color-scheme: light;
+}
+.aRate__field .aRate__input {
+  width: 96px;
+  text-align: right;
+}
+.aRate__input:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+.aRate__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 12px;
+}
+.aRate__newPlace {
+  flex: 1;
+  max-width: 240px;
+}
+
+/* 기록: 팀 거르기 */
+.aRecord__teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+.aRecord__teamCount {
+  margin-left: 2px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-more);
+}
+.aPlace__teamChip--on .aRecord__teamCount {
+  color: var(--text-primary);
+}
+
+/* 요금 미정: 색 강조 없이 느낌표만 */
+.aRecord__stats {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+@media (max-width: 640px) {
+  .aRecord__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+.aRecord__stat--warn {
+  border: 1px solid transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.aRecord__stat--warn[data-active] {
+  border-color: var(--admin-primary, #fff);
+}
+.aRecord__stat--warn[data-zero] {
+  cursor: default;
+}
+.aRecord__costBtn[data-none] {
+  color: #ff9f0a;
+  font-weight: 700;
+}
+.aRecord__stat--warn:not([data-zero]) strong {
+  color: #ff9f0a;
+}
+body[data-club-theme="light"] .aRecord__costBtn[data-none],
+body[data-club-theme="light"] .aRecord__stat--warn:not([data-zero]) strong {
+  color: #c26a00;
+}
+.aRecord__bang {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: #ff9f0a;
+  color: #000;
+  font-size: 0.7rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+/* 팀(곡장)이 직접 정한 연습실: 팀 색으로 눈에 띄게 */
+.aRecord__byTeam,
+.aPlace__byTeam {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--team, var(--text-primary));
+  color: #fff;
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 800;
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+.aPlace__byTeam {
+  flex: none;
+  margin-left: auto;
+}
+.aRecord__byTeamText {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.aPlace__placeBtn[data-by-team] {
+  border-color: color-mix(in srgb, var(--team) 70%, transparent);
+  background: color-mix(in srgb, var(--team) 14%, transparent);
+}

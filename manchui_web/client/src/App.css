@@ -29,7 +29,7 @@
 
 .clubRoomLayout {
   /* ClubRoomBottomNav(떠 있는 바): 높이 64 + 아래 여백 12 + 위 숨 12 + safe-area */
-  --club-room-bottom-nav: calc(88px + env(safe-area-inset-bottom, 0px));
+  --club-room-bottom-nav: calc(74px + env(safe-area-inset-bottom, 0px));
   width: 100%;
   min-height: 100dvh;
   height: 100dvh;

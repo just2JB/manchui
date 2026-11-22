@@ -340,3 +340,49 @@ export function storeGuestCredentials(pollId, creds) {
     /* 저장 불가 환경은 무시 */
   }
 }
+
+/**
+ * 여러 일정 종합을 한 표로 합친다 (연습 추가에서 다중 선택).
+ * 날짜·시간대는 합집합, 같은 사람의 같은 날 응답은 가능 시간을 합친다.
+ */
+export function mergePracticeGridData(polls) {
+  const grids = (Array.isArray(polls) ? polls : []).filter(Boolean).map(pollToPracticeGridData);
+  if (grids.length === 0) return null;
+  if (grids.length === 1) return grids[0];
+
+  const dateKeys = [...new Set(grids.flatMap((grid) => grid.dateKeys))].sort();
+  const allHours = grids.flatMap((grid) => grid.hours);
+  const minHour = Math.min(...allHours);
+  const maxHour = Math.max(...allHours);
+  const hours = [];
+  for (let hour = minHour; hour <= maxHour; hour += 1) hours.push(hour);
+
+  const memberById = new Map();
+  for (const grid of grids) {
+    for (const member of grid.members) {
+      if (!memberById.has(member._id)) memberById.set(member._id, member);
+    }
+  }
+
+  const scheduleByKey = new Map();
+  for (const grid of grids) {
+    for (const item of grid.memberSchedules) {
+      const key = `${item.userId}|${item.date}`;
+      const prev = scheduleByKey.get(key);
+      if (!prev) {
+        scheduleByKey.set(key, { ...item, times: [...item.times] });
+        continue;
+      }
+      prev.times = prev.times.map((value, index) => (value || item.times[index] ? 1 : 0));
+    }
+  }
+
+  const members = [...memberById.values()];
+  return {
+    dateKeys,
+    hours,
+    memberIds: members.map((member) => member._id),
+    members,
+    memberSchedules: [...scheduleByKey.values()],
+  };
+}

@@ -77,3 +77,35 @@ export async function shareTeamInvite(teamName, teamId, modal) {
     await modal(`아래 링크를 복사해 보내 주세요.\n\n${url}`);
   }
 }
+
+/** 팀 전체 연습 일정 공유 페이지 (로그인 없이 열람) */
+export function getTeamPracticeShareUrl(teamId) {
+  if (!teamId) return "";
+  return `${window.location.origin}/club/practice/share/${teamId}`;
+}
+
+export async function shareTeamPracticeSchedule(teamName, teamId, modal) {
+  const url = getTeamPracticeShareUrl(teamId);
+  const shareData = {
+    title: `${teamName} 연습 일정`,
+    text: `${teamName} 연습 일정이에요.`,
+    url,
+  };
+  if (
+    typeof navigator.share === "function" &&
+    (!navigator.canShare || navigator.canShare(shareData))
+  ) {
+    try {
+      await navigator.share(shareData);
+      return;
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(url);
+    await modal("연습 일정 링크가 복사되었습니다.");
+  } catch {
+    await modal(`아래 링크를 복사해 보내 주세요.\n\n${url}`);
+  }
+}

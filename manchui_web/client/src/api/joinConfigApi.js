@@ -8,6 +8,7 @@ export function normalizeJoinConfigPayload(data) {
       siteRestricted: false,
       assistantEnabled: true,
       president: { name: "", contact: "", major: "" },
+      clubRoomRules: [],
     };
   }
   return {
@@ -22,6 +23,9 @@ export function normalizeJoinConfigPayload(data) {
           major: data.president.major ?? "",
         }
       : { name: "", contact: "", major: "" },
+    clubRoomRules: Array.isArray(data.clubRoomRules)
+      ? data.clubRoomRules.filter((item) => typeof item === "string" && item.trim())
+      : [],
   };
 }
 

@@ -32,6 +32,27 @@ const settingSchema = new mongoose.Schema({
     min: 0,
     max: 99,
   },
+  /** 관리자 화면에서 맨 위에 고정해 둔 팀 (임원진 공용) */
+  pinnedTeamIds: {
+    type: [String],
+    default: [],
+  },
+  /** 동아리방 이용 수칙 (한 줄에 하나). 비어 있으면 화면 기본 문구 */
+  clubRoomRules: {
+    type: [String],
+    default: [],
+  },
+  /** 연습 장소별 시간당 요금(원) — 관리자 연습 장소 기록·결산용 */
+  placeRates: {
+    type: [
+      {
+        _id: false,
+        place: { type: String, required: true },
+        hourlyRate: { type: Number, default: 0, min: 0 },
+      },
+    ],
+    default: [],
+  },
 });
 
 const Setting = mongoose.model("Setting", settingSchema);

@@ -1,9 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { IoEllipsisHorizontal } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
 import ClubPageSkeleton from "../ClubPageSkeleton";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
+import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import {
   getMemberDisplayName,
   isCoTeamLeader,
@@ -12,6 +14,13 @@ import {
   isTeamLeader,
   isTeamMember,
 } from "./teamUtils";
+import {
+  TEAM_COLOR_PRESETS,
+  isTeamColorPreset,
+  isTeamColorTooDark,
+  isTeamColorTooLight,
+  toVisibleTeamColor,
+} from "./teamColorPresets";
 import "./Team.css";
 
 const TeamSettings = () => {
@@ -19,6 +28,7 @@ const TeamSettings = () => {
   const nav = useNavigate();
   const { user } = useAuth();
   const modal = useManchuiModal();
+  const invalidateTeams = useInvalidateClubTeams(user?._id);
 
   const [team, setTeam] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,8 +37,9 @@ const TeamSettings = () => {
 
   const [name, setName] = useState("");
   const [comment, setComment] = useState("");
-  const [savingName, setSavingName] = useState(false);
-  const [savingComment, setSavingComment] = useState(false);
+  const [teamColor, setTeamColor] = useState("");
+  const [savingInfo, setSavingInfo] = useState(false);
+  const [openMemberId, setOpenMemberId] = useState(null);
   const [removingMemberId, setRemovingMemberId] = useState(null);
   const [transferringMemberId, setTransferringMemberId] = useState(null);
   const [coLeaderMemberId, setCoLeaderMemberId] = useState(null);
@@ -61,6 +72,7 @@ const TeamSettings = () => {
       }
       setTeam(nextTeam);
       setName(nextTeam.name ?? "");
+      setTeamColor(nextTeam.teamColor || "#E87070");
       setComment(
         isDefaultComment(nextTeam.comment) ? "" : String(nextTeam.comment),
       );
@@ -79,48 +91,41 @@ const TeamSettings = () => {
 
   const leader = isTeamLeader(team, user?._id);
   const mainLeader = isMainTeamLeader(team, user?._id);
-  const accent = team?.teamColor || "#E87070";
+  const accent = toVisibleTeamColor(team?.teamColor);
   const members = Array.isArray(team?.members) ? team.members : [];
 
-  const handleSaveName = async (e) => {
+  const savedComment = isDefaultComment(team?.comment)
+    ? ""
+    : String(team?.comment ?? "");
+  const infoChanged =
+    Boolean(team) &&
+    (name.trim() !== (team.name ?? "") ||
+      comment.trim() !== savedComment.trim() ||
+      teamColor !== (team.teamColor || "#E87070"));
+
+  const handleSaveInfo = async (e) => {
     e.preventDefault();
     const trimmed = name.trim();
-    if (!trimmed || savingName || !leader) return;
-    setSavingName(true);
-    try {
-      await apiClient.post(
-        "/api/team/edit",
-        { teamId, name: trimmed },
-        { withCredentials: true },
-      );
-      await modal("팀 이름이 수정되었습니다.");
-      await loadTeam();
-    } catch (error) {
-      await modal(error.response?.data?.message ?? "이름 수정에 실패했습니다.");
-    } finally {
-      setSavingName(false);
-    }
-  };
-
-  const handleSaveComment = async (e) => {
-    e.preventDefault();
-    if (savingComment || !leader) return;
-    setSavingComment(true);
+    if (!trimmed || savingInfo || !leader || !infoChanged) return;
+    setSavingInfo(true);
     try {
       await apiClient.post(
         "/api/team/edit",
         {
           teamId,
+          name: trimmed,
           comment: comment.trim() || "작성해 주세요.",
+          teamColor,
         },
         { withCredentials: true },
       );
-      await modal("팀 소개가 수정되었습니다.");
+      await modal("팀 정보를 저장했습니다.");
+      invalidateTeams();
       await loadTeam();
     } catch (error) {
-      await modal(error.response?.data?.message ?? "소개 수정에 실패했습니다.");
+      await modal(error.response?.data?.message ?? "팀 정보 저장에 실패했습니다.");
     } finally {
-      setSavingComment(false);
+      setSavingInfo(false);
     }
   };
 
@@ -282,10 +287,17 @@ const TeamSettings = () => {
     );
   }
 
+  const roleLabel = mainLeader ? "곡장" : leader ? "부곡장" : "멤버";
+  const memberBusy = Boolean(
+    removingMemberId || transferringMemberId || coLeaderMemberId,
+  );
+  // 저장 전에도 고른 팀 색을 미리 보여준다
+  const previewAccent = leader ? toVisibleTeamColor(teamColor) : accent;
+
   return (
     <div
       className="teamPage teamPage--settings"
-      style={{ "--team-accent": accent }}
+      style={{ "--team-accent": previewAccent }}
     >
       <button
         type="button"
@@ -295,204 +307,250 @@ const TeamSettings = () => {
         ← {team.name}
       </button>
 
-      <div className="teamPage__top">
+      <header className="teamSettings__head">
         <h1 className="teamPage__title">팀 설정</h1>
-        <p className="teamPage__intro">
-          {mainLeader
-            ? "곡장으로 팀을 관리할 수 있습니다."
-            : leader
-              ? "부곡장 권한으로 팀을 관리할 수 있습니다."
-              : "팀 탈퇴만 이용할 수 있습니다."}
+        <p className="teamSettings__role">
+          <span className="teamSettings__roleDot" aria-hidden />
+          {roleLabel}
+          {leader ? " · 팀을 관리할 수 있어요" : ""}
         </p>
-      </div>
+      </header>
 
-      {leader ? (
-        <div className="teamSettings">
-          <section
-            className="teamSettings__section"
-            aria-labelledby="team-settings-members"
-          >
-            <h2
-              id="team-settings-members"
-              className="teamSettings__sectionTitle"
-            >
-              멤버 관리
+      <div className="teamSettings">
+        {leader ? (
+          <section className="teamSettings__section" aria-labelledby="team-settings-info">
+            <h2 id="team-settings-info" className="teamSettings__sectionTitle">
+              기본 정보
             </h2>
-            <ul className="teamSettings__memberList">
-              {members.map((member) => {
-                const memberId = String(member?._id ?? member);
-                const isLeaderMember = String(team.leaderId) === memberId;
-                const isCoLeaderMember = isCoTeamLeader(team, memberId);
-                const isRemoving = removingMemberId === memberId;
-                const isTransferring = transferringMemberId === memberId;
-                const isCoLeaderBusy = coLeaderMemberId === memberId;
-                const memberBusy = Boolean(
-                  removingMemberId || transferringMemberId || coLeaderMemberId,
-                );
-                const canManageCoLeader = mainLeader && !isLeaderMember;
-                const canTransfer = mainLeader && !isLeaderMember;
-                const canRemove =
-                  !isLeaderMember &&
-                  (mainLeader || !isCoLeaderMember);
+            <form className="teamSettings__form" onSubmit={handleSaveInfo}>
+              <label className="teamSettings__field">
+                <span className="teamSettings__label">이름</span>
+                <input
+                  className="teamForm__input"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  maxLength={40}
+                  required
+                />
+              </label>
+              <label className="teamSettings__field">
+                <span className="teamSettings__label">소개</span>
+                <textarea
+                  className="teamForm__textarea"
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  placeholder="팀에 대해 간단히 적어 주세요."
+                  maxLength={200}
+                />
+              </label>
+              <div className="teamSettings__field">
+                <span className="teamSettings__label">팀 색상</span>
+                <div className="teamForm__colors" role="group" aria-label="추천 색상">
+                  {TEAM_COLOR_PRESETS.map((color) => (
+                    <button
+                      key={color}
+                      type="button"
+                      className={`teamForm__colorBtn${teamColor === color ? " teamForm__colorBtn--selected" : ""}`}
+                      style={{ backgroundColor: color }}
+                      aria-label={`색상 ${color}`}
+                      aria-pressed={teamColor === color}
+                      onClick={() => setTeamColor(color)}
+                    />
+                  ))}
+                </div>
+                <div className="teamForm__customColor">
+                  <label
+                    className="teamForm__customColorLabel"
+                    htmlFor="team-settings-color"
+                  >
+                    <span
+                      className={`teamForm__colorBtn teamForm__colorBtn--custom${!isTeamColorPreset(teamColor) ? " teamForm__colorBtn--selected" : ""}`}
+                      style={{ backgroundColor: teamColor }}
+                      aria-hidden
+                    />
+                    <span className="teamForm__customColorText">직접 선택</span>
+                  </label>
+                  <input
+                    id="team-settings-color"
+                    className="teamForm__colorInput"
+                    type="color"
+                    value={teamColor}
+                    onChange={(e) => setTeamColor(e.target.value.toUpperCase())}
+                    aria-label="팀 색상 직접 선택"
+                  />
+                </div>
+                {isTeamColorTooDark(teamColor) || isTeamColorTooLight(teamColor) ? (
+                  <p className="teamSettings__colorHint">
+                    <span
+                      className="teamSettings__colorHintSwatch"
+                      style={{ background: toVisibleTeamColor(teamColor) }}
+                      aria-hidden
+                    />
+                    {isTeamColorTooDark(teamColor) ? "어두운" : "밝은"} 색은 화면에서 잘 보이도록
+                    이렇게 조금 {isTeamColorTooDark(teamColor) ? "밝혀서" : "어둡게"} 보여줘요.
+                  </p>
+                ) : null}
+              </div>
+              <div className="teamSettings__formFoot">
+                {infoChanged ? (
+                  <span className="teamSettings__dirty">저장하지 않은 변경이 있어요</span>
+                ) : null}
+                <button
+                  type="submit"
+                  className="teamSettings__saveBtn"
+                  disabled={!name.trim() || savingInfo || !infoChanged}
+                >
+                  {savingInfo ? "저장 중…" : "저장"}
+                </button>
+              </div>
+            </form>
+          </section>
+        ) : null}
 
-                return (
-                  <li key={memberId} className="teamSettings__memberRow">
-                    <div className="teamSettings__memberMain">
-                      <span className="teamSettings__memberName">
-                        {getMemberDisplayName(member)}
+        <section className="teamSettings__section" aria-labelledby="team-settings-members">
+          <h2 id="team-settings-members" className="teamSettings__sectionTitle">
+            멤버 <span className="teamSettings__count">{members.length}</span>
+          </h2>
+          <ul className="teamSettings__memberList">
+            {members.map((member) => {
+              const memberId = String(member?._id ?? member);
+              const displayName = getMemberDisplayName(member);
+              const isLeaderMember = String(team.leaderId) === memberId;
+              const isCoLeaderMember = isCoTeamLeader(team, memberId);
+              const isMe = String(user?._id) === memberId;
+              const canManageCoLeader = mainLeader && !isLeaderMember;
+              const canTransfer = mainLeader && !isLeaderMember;
+              const canRemove =
+                leader && !isLeaderMember && (mainLeader || !isCoLeaderMember);
+              const hasActions = canManageCoLeader || canTransfer || canRemove;
+              const isOpen = openMemberId === memberId;
+              const isBusy =
+                removingMemberId === memberId ||
+                transferringMemberId === memberId ||
+                coLeaderMemberId === memberId;
+
+              const runAction = (action) => {
+                setOpenMemberId(null);
+                void action();
+              };
+
+              return (
+                <li key={memberId} className="teamSettings__member">
+                  <div className="teamSettings__memberRow">
+                    <span className="teamSettings__memberName">{displayName}</span>
+                    {isMe ? <span className="teamSettings__me">나</span> : null}
+                    {isLeaderMember ? (
+                      <span className="teamSettings__memberBadge">곡장</span>
+                    ) : null}
+                    {isCoLeaderMember ? (
+                      <span className="teamSettings__memberBadge teamSettings__memberBadge--coLeader">
+                        부곡장
                       </span>
-                      {isLeaderMember ? (
-                        <span className="teamSettings__memberBadge">곡장</span>
+                    ) : null}
+                    {hasActions ? (
+                      <button
+                        type="button"
+                        className={`teamSettings__memberMore${isOpen ? " teamSettings__memberMore--open" : ""}`}
+                        onClick={() =>
+                          setOpenMemberId((prev) => (prev === memberId ? null : memberId))
+                        }
+                        aria-expanded={isOpen}
+                        aria-label={`${displayName} 관리`}
+                        disabled={memberBusy}
+                      >
+                        {isBusy ? "…" : <IoEllipsisHorizontal aria-hidden />}
+                      </button>
+                    ) : null}
+                  </div>
+                  {hasActions && isOpen ? (
+                    <div className="teamSettings__memberActions">
+                      {canManageCoLeader ? (
+                        <button
+                          type="button"
+                          className="teamSettings__memberAction"
+                          onClick={() =>
+                            runAction(() => handleSetCoLeader(member, !isCoLeaderMember))
+                          }
+                          disabled={memberBusy}
+                        >
+                          {isCoLeaderMember ? "부곡장 해임" : "부곡장 임명"}
+                        </button>
                       ) : null}
-                      {isCoLeaderMember ? (
-                        <span className="teamSettings__memberBadge teamSettings__memberBadge--coLeader">
-                          부곡장
-                        </span>
+                      {canTransfer ? (
+                        <button
+                          type="button"
+                          className="teamSettings__memberAction"
+                          onClick={() => runAction(() => handleTransferLeader(member))}
+                          disabled={memberBusy}
+                        >
+                          곡장 위임
+                        </button>
+                      ) : null}
+                      {canRemove ? (
+                        <button
+                          type="button"
+                          className="teamSettings__memberAction teamSettings__memberAction--danger"
+                          onClick={() => runAction(() => handleRemoveMember(member))}
+                          disabled={memberBusy}
+                        >
+                          내보내기
+                        </button>
                       ) : null}
                     </div>
-                    {canManageCoLeader || canTransfer || canRemove ? (
-                      <div className="teamSettings__memberActions">
-                        {canManageCoLeader ? (
-                          <button
-                            type="button"
-                            className="teamSettings__memberCoLeader"
-                            onClick={() =>
-                              void handleSetCoLeader(member, !isCoLeaderMember)
-                            }
-                            disabled={memberBusy}
-                          >
-                            {isCoLeaderBusy
-                              ? "처리 중…"
-                              : isCoLeaderMember
-                                ? "부곡장 해임"
-                                : "부곡장 임명"}
-                          </button>
-                        ) : null}
-                        {canTransfer ? (
-                          <button
-                            type="button"
-                            className="teamSettings__memberTransfer"
-                            onClick={() => void handleTransferLeader(member)}
-                            disabled={memberBusy}
-                          >
-                            {isTransferring ? "처리 중…" : "곡장 위임"}
-                          </button>
-                        ) : null}
-                        {canRemove ? (
-                          <button
-                            type="button"
-                            className="teamSettings__memberRemove"
-                            onClick={() => void handleRemoveMember(member)}
-                            disabled={memberBusy}
-                          >
-                            {isRemoving ? "처리 중…" : "내보내기"}
-                          </button>
-                        ) : null}
-                      </div>
-                    ) : null}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
+                  ) : null}
+                </li>
+              );
+            })}
+          </ul>
+        </section>
 
+        {mainLeader ? (
           <section
-            className="teamSettings__section"
-            aria-labelledby="team-settings-name"
+            className="teamSettings__section teamSettings__section--danger"
+            aria-labelledby="team-settings-delete"
           >
-            <h2 id="team-settings-name" className="teamSettings__sectionTitle">
-              이름 수정
-            </h2>
-            <form className="teamSettings__form" onSubmit={handleSaveName}>
-              <input
-                className="teamForm__input"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                maxLength={40}
-                required
-              />
-              <button
-                type="submit"
-                className="teamSettings__saveBtn"
-                disabled={!name.trim() || savingName}
-              >
-                {savingName ? "저장 중…" : "저장"}
-              </button>
-            </form>
-          </section>
-
-          <section
-            className="teamSettings__section"
-            aria-labelledby="team-settings-intro"
-          >
-            <h2 id="team-settings-intro" className="teamSettings__sectionTitle">
-              소개 수정
-            </h2>
-            <form className="teamSettings__form" onSubmit={handleSaveComment}>
-              <textarea
-                className="teamForm__textarea"
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                placeholder="팀에 대해 간단히 적어 주세요."
-                maxLength={200}
-              />
-              <button
-                type="submit"
-                className="teamSettings__saveBtn"
-                disabled={savingComment}
-              >
-                {savingComment ? "저장 중…" : "저장"}
-              </button>
-            </form>
-          </section>
-
-          {mainLeader ? (
-            <section
-              className="teamSettings__section teamSettings__section--danger"
-              aria-labelledby="team-settings-delete"
-            >
-              <h2
-                id="team-settings-delete"
-                className="teamSettings__sectionTitle"
-              >
+            <div className="teamSettings__dangerText">
+              <h2 id="team-settings-delete" className="teamSettings__sectionTitle">
                 팀 삭제
               </h2>
               <p className="teamSettings__dangerHint">
-                팀과 연습 일정이 모두 삭제되며 되돌릴 수 없습니다.
+                팀과 연습 일정이 모두 삭제되며 되돌릴 수 없어요.
               </p>
-              <button
-                type="button"
-                className="teamSettings__dangerBtn"
-                onClick={() => void handleDeleteTeam()}
-                disabled={deletingTeam}
-              >
-                {deletingTeam ? "삭제 중…" : "팀 삭제"}
-              </button>
-            </section>
-          ) : null}
-        </div>
-      ) : (
-        <section
-          className="teamSettings__section teamSettings__section--danger teamSettings__section--solo"
-          aria-labelledby="team-settings-quit"
-        >
-          <h2 id="team-settings-quit" className="teamSettings__sectionTitle">
-            팀 탈퇴
-          </h2>
-          <p className="teamSettings__dangerHint">
-            탈퇴하면 이 팀의 일정·캘린더에 더 이상 접근할 수 없습니다.
-          </p>
-          <button
-            type="button"
-            className="teamSettings__dangerBtn"
-            onClick={() => void handleQuit()}
-            disabled={quitting}
+            </div>
+            <button
+              type="button"
+              className="teamSettings__dangerBtn"
+              onClick={() => void handleDeleteTeam()}
+              disabled={deletingTeam}
+            >
+              {deletingTeam ? "삭제 중…" : "팀 삭제"}
+            </button>
+          </section>
+        ) : !leader ? (
+          <section
+            className="teamSettings__section teamSettings__section--danger"
+            aria-labelledby="team-settings-quit"
           >
-            {quitting ? "처리 중…" : "팀 탈퇴"}
-          </button>
-        </section>
-      )}
+            <div className="teamSettings__dangerText">
+              <h2 id="team-settings-quit" className="teamSettings__sectionTitle">
+                팀 탈퇴
+              </h2>
+              <p className="teamSettings__dangerHint">
+                탈퇴하면 이 팀의 일정·캘린더를 더 볼 수 없어요.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="teamSettings__dangerBtn"
+              onClick={() => void handleQuit()}
+              disabled={quitting}
+            >
+              {quitting ? "처리 중…" : "팀 탈퇴"}
+            </button>
+          </section>
+        ) : null}
+      </div>
     </div>
   );
 };

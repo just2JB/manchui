@@ -21,6 +21,7 @@ router.get("/config", async (req, res) => {
         contact: president.contact ?? "",
         major: president.major ?? "",
       },
+      clubRoomRules: Array.isArray(setting.clubRoomRules) ? setting.clubRoomRules : [],
     });
   } catch (err) {
     res.status(500).json({ message: "서버 오류가 발생하였습니다." });
@@ -60,6 +61,12 @@ router.put("/config", async (req, res) => {
       if (typeof req.body.president.major === "string")
         setting.president.major = req.body.president.major;
     }
+    if (Array.isArray(req.body.clubRoomRules)) {
+      setting.clubRoomRules = req.body.clubRoomRules
+        .map((item) => String(item ?? "").trim().slice(0, 300))
+        .filter(Boolean)
+        .slice(0, 20);
+    }
     await setting.save();
     const president = setting.president || {};
     res.json({
@@ -72,6 +79,7 @@ router.put("/config", async (req, res) => {
         contact: president.contact ?? "",
         major: president.major ?? "",
       },
+      clubRoomRules: Array.isArray(setting.clubRoomRules) ? setting.clubRoomRules : [],
       message: "설정이 저장되었습니다.",
     });
   } catch (err) {

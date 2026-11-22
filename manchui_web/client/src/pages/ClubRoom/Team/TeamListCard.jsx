@@ -1,5 +1,6 @@
 import React, { useId, useLayoutEffect, useRef, useState } from "react";
 import { useShineCard } from "../useShineCard";
+import { toVisibleTeamColor } from "./teamColorPresets";
 import "./TeamListCard.css";
 
 /**
@@ -12,7 +13,7 @@ import "./TeamListCard.css";
 /** meta: 위쪽 작은 줄을 직접 줄 때 (관리자 화면 등) */
 const TeamListCard = ({ team, isLeader, isActive, onClick, meta: metaOverride, className = "", ariaLabel }) => {
   const { ref, handlers } = useShineCard();
-  const color = team.teamColor || "#E87070";
+  const color = toVisibleTeamColor(team.teamColor);
   const memberCount = Array.isArray(team.members) ? team.members.length : 0;
   const name = String(team.name ?? "").trim() || "팀";
   const hasHangul = /[가-힣]/.test(name);

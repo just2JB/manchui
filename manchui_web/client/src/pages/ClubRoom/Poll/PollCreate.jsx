@@ -27,6 +27,7 @@ import {
   getPollUrl,
   sharePollLink,
 } from "./pollUtils";
+import { toVisibleTeamColor } from "../Team/teamColorPresets";
 import "../Team/Team.css";
 import "./Poll.css";
 
@@ -170,7 +171,7 @@ const PollCreate = () => {
     );
   }
 
-  const accent = team.teamColor || "#ff453a";
+  const accent = toVisibleTeamColor(team.teamColor, "#ff453a");
 
   if (created) {
     return (

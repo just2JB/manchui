@@ -1,9 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useSearchParams } from "react-router-dom";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { authRequestConfig } from "../../api/tokenStorage";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
+import {
+  IoChevronForward,
+  IoLocationOutline,
+  IoPeopleCircleOutline,
+  IoPin,
+  IoPinOutline,
+} from "react-icons/io5";
+import {
+  formatDateKey,
+  normalizeDateKey,
+} from "../ClubRoom/Team/teamCalendarUtils";
 import TeamListCard from "../ClubRoom/Team/TeamListCard";
+import AdminPracticePlace from "./AdminPracticePlace";
 import "./adminList.css";
 import "./AdminTeam.css";
 
@@ -37,6 +50,9 @@ const teamMatchesQuery = (team, rawQuery) => {
 
 const AdminTeam = () => {
   const manchuiModal = useManchuiModal();
+  /** 팀 목록 / 연습실 예약(배정·기록·결산) */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const view = searchParams.get("view") === "places" ? "places" : "teams";
   const [tab, setTab] = useState("active");
   const [activeTeams, setActiveTeams] = useState([]);
   const [inactiveTeams, setInactiveTeams] = useState([]);
@@ -48,6 +64,35 @@ const AdminTeam = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  /** 맨 위에 고정한 팀 id (임원진 공용, 고정한 순서) */
+  const [pinnedTeamIds, setPinnedTeamIds] = useState([]);
+  /** 연습실을 아직 못 정한 다가오는 연습 수 (전환 카드에 표시) */
+  const [unsetPracticeCount, setUnsetPracticeCount] = useState(null);
+
+  useEffect(() => {
+    if (!serverUrl) return undefined;
+    let alive = true;
+    const today = formatDateKey(new Date());
+    apiClient
+      .get("/api/team/admin/practices", authConfig())
+      .then((res) => {
+        if (!alive) return;
+        const list = Array.isArray(res.data?.practices)
+          ? res.data.practices
+          : [];
+        setUnsetPracticeCount(
+          list.filter((p) => {
+            const key = normalizeDateKey(p.date);
+            const place = String(p.place ?? "").trim();
+            return key && key >= today && (!place || place === "미확정");
+          }).length,
+        );
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [view]);
   const [detailTeamId, setDetailTeamId] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState("");
@@ -66,9 +111,14 @@ const AdminTeam = () => {
     setLoading(true);
     try {
       const res = await apiClient.get("/api/team/admin/list", authConfig());
-      setActiveTeams(Array.isArray(res.data?.activeTeams) ? res.data.activeTeams : []);
+      setActiveTeams(
+        Array.isArray(res.data?.activeTeams) ? res.data.activeTeams : [],
+      );
       setInactiveTeams(
         Array.isArray(res.data?.inactiveTeams) ? res.data.inactiveTeams : [],
+      );
+      setPinnedTeamIds(
+        Array.isArray(res.data?.pinnedTeamIds) ? res.data.pinnedTeamIds : [],
       );
       setCounts({
         totalCount: res.data?.totalCount ?? 0,
@@ -90,10 +140,40 @@ const AdminTeam = () => {
 
   const currentTeams = tab === "active" ? activeTeams : inactiveTeams;
 
-  const filteredTeams = useMemo(
-    () => currentTeams.filter((team) => teamMatchesQuery(team, searchQuery)),
-    [currentTeams, searchQuery],
-  );
+  // 고정한 팀이 맨 앞 (고정한 순서대로), 나머지는 원래 순서
+  const filteredTeams = useMemo(() => {
+    const list = currentTeams.filter((team) =>
+      teamMatchesQuery(team, searchQuery),
+    );
+    const rank = (team) => {
+      const index = pinnedTeamIds.indexOf(String(team._id));
+      return index === -1 ? Infinity : index;
+    };
+    return list
+      .map((team, index) => ({ team, index }))
+      .sort((a, b) => rank(a.team) - rank(b.team) || a.index - b.index)
+      .map(({ team }) => team);
+  }, [currentTeams, searchQuery, pinnedTeamIds]);
+
+  const togglePin = async (teamId) => {
+    const id = String(teamId);
+    const next = pinnedTeamIds.includes(id)
+      ? pinnedTeamIds.filter((item) => item !== id)
+      : [...pinnedTeamIds, id];
+    setPinnedTeamIds(next);
+    try {
+      const res = await apiClient.put(
+        "/api/team/admin/pins",
+        { teamIds: next },
+        authConfig(),
+      );
+      if (Array.isArray(res.data?.pinnedTeamIds))
+        setPinnedTeamIds(res.data.pinnedTeamIds);
+    } catch (err) {
+      setPinnedTeamIds(pinnedTeamIds);
+      await manchuiModal(err.response?.data?.message || "고정하지 못했습니다.");
+    }
+  };
 
   const loadDetail = useCallback(async (teamId) => {
     if (!teamId) return;
@@ -188,259 +268,346 @@ const AdminTeam = () => {
         <h1 className="admin-page-heading">팀 관리</h1>
       </div>
 
-      <div className="aList">
-        <div className="aList__tabs" role="tablist" aria-label="팀 분류">
-          {[
-            ["active", "활성", counts.activeCount],
-            ["inactive", "비활성", counts.inactiveCount],
-          ].map(([value, label, count]) => (
-            <button
-              key={value}
-              type="button"
-              role="tab"
-              aria-selected={tab === value}
-              className="aList__tab"
-              onClick={() => setTab(value)}
-            >
-              {label}
-              <span>{count}</span>
-            </button>
-          ))}
-          <span
-            className="adminTeam__hint"
-            title="활성 팀: 최근 1개월 내 연습·취합 일정이 있거나 생성된 지 1개월이 지나지 않은 팀"
-          >
-            최근 1개월 기준
-          </span>
-        </div>
-
-        <div className="aList__tools">
-          <input
-            type="search"
-            className="aList__search"
-            value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
-            placeholder="팀 이름, 곡장, 코멘트"
-            aria-label="팀 검색"
+      {/* 팀 / 연습실 예약: 큰 카드 두 개로 바로 보이게 */}
+      <div
+        className="adminTeam__switch"
+        role="tablist"
+        aria-label="팀 관리 화면"
+      >
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "teams"}
+          className="adminTeam__switchCard"
+          onClick={() => setSearchParams({}, { replace: true })}
+        >
+          <IoPeopleCircleOutline
+            className="adminTeam__switchIcon"
+            aria-hidden
           />
-          <button
-            type="button"
-            className="aList__ghost"
-            onClick={() => void fetchTeams()}
-            disabled={loading}
-          >
-            새로고침
-          </button>
-        </div>
-
-        {error ? <p className="aList__error">{error}</p> : null}
-
-        {loading ? (
-          <p className="aList__empty">불러오는 중…</p>
-        ) : filteredTeams.length === 0 ? (
-          <p className="aList__empty">
-            {searchQuery.trim()
-              ? "조건에 맞는 팀이 없어요."
-              : tab === "active"
-                ? "활성 팀이 없어요."
-                : "비활성 팀이 없어요."}
-          </p>
-        ) : (
-          <div className="adminTeam__grid">
-            {filteredTeams.map((team) => (
-              <TeamListCard
-                key={team._id}
-                team={team}
-                className={tab === "inactive" ? "adminTeam__card--inactive" : ""}
-                ariaLabel={`${team.name} 상세 보기`}
-                meta={[
-                  team.leaderName ? `곡장 ${team.leaderName}` : null,
-                  `멤버 ${team.memberCount ?? 0}명`,
-                  `연습 ${team.practiceCount ?? 0}`,
-                  `취합 ${team.requestScheduleCount ?? 0}`,
-                ]
-                  .filter(Boolean)
-                  .join(" · ")}
-                onClick={() => openDetail(team._id)}
-              />
-            ))}
-          </div>
-        )}
+          <span className="adminTeam__switchText">
+            <strong>팀</strong>
+            <small>
+              활성 {counts.activeCount}팀 · 전체 {counts.totalCount}팀
+            </small>
+          </span>
+        </button>
+        <button
+          type="button"
+          role="tab"
+          aria-selected={view === "places"}
+          className="adminTeam__switchCard"
+          onClick={() => setSearchParams({ view: "places" }, { replace: true })}
+        >
+          <IoLocationOutline className="adminTeam__switchIcon" aria-hidden />
+          <span className="adminTeam__switchText">
+            <strong>연습실 예약</strong>
+            <small>연습마다 연습실 정하기 · 기록 · 결산</small>
+          </span>
+          {unsetPracticeCount ? (
+            <span className="adminTeam__switchBadge">
+              미정 {unsetPracticeCount}
+            </span>
+          ) : (
+            <IoChevronForward className="adminTeam__switchArrow" aria-hidden />
+          )}
+        </button>
       </div>
 
-      {detailTeamId
-        ? createPortal(
-            <div
-              className="adminTeam__overlay"
-              role="presentation"
-              onClick={closeDetail}
-            >
-              <div
-                className="adminTeam__modal"
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="admin-team-detail-title"
-                onClick={(event) => event.stopPropagation()}
+      {view === "places" ? (
+        <AdminPracticePlace embedded />
+      ) : (
+        <>
+          <div className="aList">
+            <div className="aList__tabs" role="tablist" aria-label="팀 분류">
+              {[
+                ["active", "활성", counts.activeCount],
+                ["inactive", "비활성", counts.inactiveCount],
+              ].map(([value, label, count]) => (
+                <button
+                  key={value}
+                  type="button"
+                  role="tab"
+                  aria-selected={tab === value}
+                  className="aList__tab"
+                  onClick={() => setTab(value)}
+                >
+                  {label}
+                  <span>{count}</span>
+                </button>
+              ))}
+              <span
+                className="adminTeam__hint"
+                title="활성 팀: 최근 1개월 내 연습·취합 일정이 있거나 생성된 지 1개월이 지나지 않은 팀"
               >
-                {detailLoading ? (
-                  <p className="adminTeam__status">상세 정보 불러오는 중…</p>
-                ) : detailError ? (
-                  <p className="adminTeam__error">{detailError}</p>
-                ) : detailTeam ? (
-                  <>
-                    <div className="adminTeam__modalHead">
-                      <div>
-                        <h2
-                          id="admin-team-detail-title"
-                          className="adminTeam__modalTitle"
-                        >
-                          {detailTeam.name}
-                        </h2>
-                        <p className="adminTeam__modalMeta">
-                          곡장{" "}
-                          {detailTeam.leader?.username ||
-                            detailTeam.leader?.Identification ||
-                            "—"}{" "}
-                          · 멤버 {detailTeam.members?.length ?? 0}명 · 생성{" "}
-                          {formatDateTimeKo(detailTeam.createdAt)}
-                        </p>
-                      </div>
+                최근 1개월 기준
+              </span>
+            </div>
+
+            <div className="aList__tools">
+              <input
+                type="search"
+                className="aList__search"
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="팀 이름, 곡장, 코멘트"
+                aria-label="팀 검색"
+              />
+              <button
+                type="button"
+                className="aList__ghost"
+                onClick={() => void fetchTeams()}
+                disabled={loading}
+              >
+                새로고침
+              </button>
+            </div>
+
+            {error ? <p className="aList__error">{error}</p> : null}
+
+            {loading ? (
+              <p className="aList__empty">불러오는 중…</p>
+            ) : filteredTeams.length === 0 ? (
+              <p className="aList__empty">
+                {searchQuery.trim()
+                  ? "조건에 맞는 팀이 없어요."
+                  : tab === "active"
+                    ? "활성 팀이 없어요."
+                    : "비활성 팀이 없어요."}
+              </p>
+            ) : (
+              <div className="adminTeam__grid">
+                {filteredTeams.map((team) => {
+                  const pinned = pinnedTeamIds.includes(String(team._id));
+                  return (
+                    <div
+                      key={team._id}
+                      className="adminTeam__cardWrap"
+                      data-pinned={pinned || undefined}
+                    >
                       <button
                         type="button"
-                        className="adminTeam__modalClose"
-                        onClick={closeDetail}
+                        className="adminTeam__pin"
+                        onClick={() => void togglePin(team._id)}
+                        aria-pressed={pinned}
+                        aria-label={
+                          pinned
+                            ? `${team.name} 고정 풀기`
+                            : `${team.name} 맨 위에 고정`
+                        }
+                        title={pinned ? "고정 풀기" : "맨 위에 고정"}
                       >
-                        닫기
+                        {pinned ? (
+                          <IoPin aria-hidden />
+                        ) : (
+                          <IoPinOutline aria-hidden />
+                        )}
                       </button>
+                      <TeamListCard
+                        team={team}
+                        className={
+                          tab === "inactive" ? "adminTeam__card--inactive" : ""
+                        }
+                        ariaLabel={`${team.name} 상세 보기`}
+                        meta={[
+                          team.leaderName ? `곡장 ${team.leaderName}` : null,
+                          `멤버 ${team.memberCount ?? 0}명`,
+                          `연습 ${team.practiceCount ?? 0}`,
+                          `취합 ${team.requestScheduleCount ?? 0}`,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                        onClick={() => openDetail(team._id)}
+                      />
                     </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
-                    <section className="adminTeam__section">
-                      <h3 className="adminTeam__sectionTitle">팀 정보</h3>
-                      <dl className="adminTeam__infoList">
-                        <div>
-                          <dt>소개</dt>
-                          <dd>{detailTeam.comment || "—"}</dd>
+          {detailTeamId
+            ? createPortal(
+                <div
+                  className="adminTeam__overlay"
+                  role="presentation"
+                  onClick={closeDetail}
+                >
+                  <div
+                    className="adminTeam__modal"
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby="admin-team-detail-title"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    {detailLoading ? (
+                      <p className="adminTeam__status">
+                        상세 정보 불러오는 중…
+                      </p>
+                    ) : detailError ? (
+                      <p className="adminTeam__error">{detailError}</p>
+                    ) : detailTeam ? (
+                      <>
+                        <div className="adminTeam__modalHead">
+                          <div>
+                            <h2
+                              id="admin-team-detail-title"
+                              className="adminTeam__modalTitle"
+                            >
+                              {detailTeam.name}
+                            </h2>
+                            <p className="adminTeam__modalMeta">
+                              곡장{" "}
+                              {detailTeam.leader?.username ||
+                                detailTeam.leader?.Identification ||
+                                "—"}{" "}
+                              · 멤버 {detailTeam.members?.length ?? 0}명 · 생성{" "}
+                              {formatDateTimeKo(detailTeam.createdAt)}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            className="adminTeam__modalClose"
+                            onClick={closeDetail}
+                          >
+                            닫기
+                          </button>
                         </div>
-                        <div>
-                          <dt>팀 색</dt>
-                          <dd>
-                            <span
-                              className="adminTeam__colorChip"
-                              style={{
-                                background: detailTeam.teamColor || "#888",
-                              }}
-                            />
-                            {detailTeam.teamColor || "—"}
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>멤버</dt>
-                          <dd>
-                            <ul className="adminTeam__memberList">
-                              {(detailTeam.members ?? []).map((member) => (
-                                <li key={member._id}>
-                                  {member.username || member.Identification || "—"}
-                                  {String(member._id) ===
-                                  String(detailTeam.leaderId) ? (
-                                    <span className="adminTeam__leaderBadge">
-                                      곡장
-                                    </span>
-                                  ) : null}
-                                  {(detailTeam.coLeaderIds ?? [])
-                                    .map(String)
-                                    .includes(String(member._id)) ? (
-                                    <span className="adminTeam__leaderBadge adminTeam__leaderBadge--co">
-                                      부곡장
-                                    </span>
-                                  ) : null}
+
+                        <section className="adminTeam__section">
+                          <h3 className="adminTeam__sectionTitle">팀 정보</h3>
+                          <dl className="adminTeam__infoList">
+                            <div>
+                              <dt>소개</dt>
+                              <dd>{detailTeam.comment || "—"}</dd>
+                            </div>
+                            <div>
+                              <dt>팀 색</dt>
+                              <dd>
+                                <span
+                                  className="adminTeam__colorChip"
+                                  style={{
+                                    background: detailTeam.teamColor || "#888",
+                                  }}
+                                />
+                                {detailTeam.teamColor || "—"}
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>멤버</dt>
+                              <dd>
+                                <ul className="adminTeam__memberList">
+                                  {(detailTeam.members ?? []).map((member) => (
+                                    <li key={member._id}>
+                                      {member.username ||
+                                        member.Identification ||
+                                        "—"}
+                                      {String(member._id) ===
+                                      String(detailTeam.leaderId) ? (
+                                        <span className="adminTeam__leaderBadge">
+                                          곡장
+                                        </span>
+                                      ) : null}
+                                      {(detailTeam.coLeaderIds ?? [])
+                                        .map(String)
+                                        .includes(String(member._id)) ? (
+                                        <span className="adminTeam__leaderBadge adminTeam__leaderBadge--co">
+                                          부곡장
+                                        </span>
+                                      ) : null}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </dd>
+                            </div>
+                            <div>
+                              <dt>취합 요청일</dt>
+                              <dd>
+                                {(detailTeam.requestSchedules ?? []).length > 0
+                                  ? detailTeam.requestSchedules.join(", ")
+                                  : "—"}
+                              </dd>
+                            </div>
+                          </dl>
+                        </section>
+
+                        <section className="adminTeam__section">
+                          <h3 className="adminTeam__sectionTitle">
+                            연습 ({detailPractices.length})
+                          </h3>
+                          {detailPractices.length === 0 ? (
+                            <p className="adminTeam__empty">
+                              등록된 연습이 없습니다.
+                            </p>
+                          ) : (
+                            <ul className="adminTeam__practiceList">
+                              {detailPractices.map((practice) => (
+                                <li
+                                  key={practice._id}
+                                  className="adminTeam__practiceItem"
+                                >
+                                  <span className="adminTeam__practiceDate">
+                                    {practice.date}
+                                  </span>
+                                  <span className="adminTeam__practiceTime">
+                                    {practice.time}
+                                  </span>
+                                  <span className="adminTeam__practicePlace">
+                                    {practice.place || "미확정"}
+                                  </span>
+                                  <span className="adminTeam__practiceMembers">
+                                    참여{" "}
+                                    {Array.isArray(practice.members)
+                                      ? practice.members.length
+                                      : 0}
+                                    명
+                                  </span>
                                 </li>
                               ))}
                             </ul>
-                          </dd>
-                        </div>
-                        <div>
-                          <dt>취합 요청일</dt>
-                          <dd>
-                            {(detailTeam.requestSchedules ?? []).length > 0
-                              ? detailTeam.requestSchedules.join(", ")
-                              : "—"}
-                          </dd>
-                        </div>
-                      </dl>
-                    </section>
+                          )}
+                        </section>
 
-                    <section className="adminTeam__section">
-                      <h3 className="adminTeam__sectionTitle">
-                        연습 ({detailPractices.length})
-                      </h3>
-                      {detailPractices.length === 0 ? (
-                        <p className="adminTeam__empty">등록된 연습이 없습니다.</p>
-                      ) : (
-                        <ul className="adminTeam__practiceList">
-                          {detailPractices.map((practice) => (
-                            <li
-                              key={practice._id}
-                              className="adminTeam__practiceItem"
-                            >
-                              <span className="adminTeam__practiceDate">
-                                {practice.date}
-                              </span>
-                              <span className="adminTeam__practiceTime">
-                                {practice.time}
-                              </span>
-                              <span className="adminTeam__practicePlace">
-                                {practice.place || "미확정"}
-                              </span>
-                              <span className="adminTeam__practiceMembers">
-                                참여 {Array.isArray(practice.members)
-                                  ? practice.members.length
-                                  : 0}
-                                명
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </section>
-
-                    <section className="adminTeam__section adminTeam__section--danger">
-                      <h3 className="adminTeam__sectionTitle">팀 삭제</h3>
-                      <p className="adminTeam__dangerHint">
-                        삭제하려면 아래에 팀 이름{" "}
-                        <strong>{detailTeam.name}</strong>을(를) 입력하세요.
-                        팀의 모든 연습도 함께 삭제됩니다.
-                      </p>
-                      <label className="adminTeam__deleteLabel">
-                        <span className="adminTeam__deleteLabelText">
-                          팀 이름 확인
-                        </span>
-                        <input
-                          type="text"
-                          className="adminTeam__deleteInput"
-                          value={deleteNameInput}
-                          onChange={(event) =>
-                            setDeleteNameInput(event.target.value)
-                          }
-                          placeholder={detailTeam.name}
-                          autoComplete="off"
-                        />
-                      </label>
-                      <button
-                        type="button"
-                        className="adminTeam__deleteBtn"
-                        disabled={!deleteNameMatches || deleting}
-                        onClick={() => void handleDeleteTeam()}
-                      >
-                        {deleting ? "삭제 중…" : "팀 삭제"}
-                      </button>
-                    </section>
-                  </>
-                ) : null}
-              </div>
-            </div>,
-            document.body,
-          )
-        : null}
+                        <section className="adminTeam__section adminTeam__section--danger">
+                          <h3 className="adminTeam__sectionTitle">팀 삭제</h3>
+                          <p className="adminTeam__dangerHint">
+                            삭제하려면 아래에 팀 이름{" "}
+                            <strong>{detailTeam.name}</strong>을(를) 입력하세요.
+                            팀의 모든 연습도 함께 삭제됩니다.
+                          </p>
+                          <label className="adminTeam__deleteLabel">
+                            <span className="adminTeam__deleteLabelText">
+                              팀 이름 확인
+                            </span>
+                            <input
+                              type="text"
+                              className="adminTeam__deleteInput"
+                              value={deleteNameInput}
+                              onChange={(event) =>
+                                setDeleteNameInput(event.target.value)
+                              }
+                              placeholder={detailTeam.name}
+                              autoComplete="off"
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            className="adminTeam__deleteBtn"
+                            disabled={!deleteNameMatches || deleting}
+                            onClick={() => void handleDeleteTeam()}
+                          >
+                            {deleting ? "삭제 중…" : "팀 삭제"}
+                          </button>
+                        </section>
+                      </>
+                    ) : null}
+                  </div>
+                </div>,
+                document.body,
+              )
+            : null}
+        </>
+      )}
     </div>
   );
 };

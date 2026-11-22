@@ -9,14 +9,17 @@ import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import TeamPracticeEditSheet from "./TeamPracticeEditSheet";
 import TeamUpcomingPractice from "./TeamUpcomingPractice";
 import TeamPollSection from "../Poll/TeamPollSection";
-import { isPollActive } from "../Poll/pollUtils";
 import {
+  getMemberDisplayName,
   isDefaultComment,
   isTeamLeader,
   isTeamMember,
   shareTeamInvite,
 } from "./teamUtils";
+import { toVisibleTeamColor } from "./teamColorPresets";
 import "./Team.css";
+
+const MEMBER_AVATAR_COUNT = 6;
 
 const TeamDetail = () => {
   const { teamId } = useParams();
@@ -165,9 +168,7 @@ const TeamDetail = () => {
   const members = Array.isArray(team.members) ? team.members : [];
   const isMember = isTeamMember(team, user?._id);
   const isLeader = isTeamLeader(team, user?._id);
-  const accent = team.teamColor || "#E87070";
-  // 연습 추가 시 기준이 될 일정 종합: 진행 중인 것 우선, 없으면 가장 최근 것
-  const practicePoll = polls.find(isPollActive) ?? polls[0] ?? null;
+  const accent = toVisibleTeamColor(team.teamColor);
   // 편집 시트의 장소 빠른 선택: 최근에 쓴 장소 최대 4개
   const placeSuggestions = [
     ...new Set(
@@ -194,48 +195,67 @@ const TeamDetail = () => {
         ← 팀 목록
       </button>
 
-      {/* 상단: 박스 없이 팀 이름 · 설정, 아래 한 줄에 멤버 수 · 링크 공유 */}
+      {/* 상단: 팀 이름 · 공유/설정 아이콘, 아래에 멤버 얼굴(이니셜) */}
       <header className="teamHead">
         <div className="teamHead__row">
           <h1 className="teamHead__name">
             <span className="teamHead__dot" aria-hidden="true" />
             {team.name}
           </h1>
-          <button
-            type="button"
-            className="teamHead__settings"
-            onClick={() => nav(`/club/team/${teamId}/settings`)}
-            aria-label="팀 설정"
-          >
-            <IoSettingsOutline aria-hidden />
-          </button>
-        </div>
-        <p className="teamHead__meta">
-          멤버 {members.length}명
-          {isMember ? (
-            <>
-              <span aria-hidden="true"> · </span>
+          <div className="teamHead__actions">
+            {isMember ? (
               <button
                 type="button"
-                className="teamHead__share"
+                className="teamHead__settings"
                 onClick={() => void shareTeamInvite(team.name, teamId, modal)}
+                aria-label="팀 초대 링크 공유"
+                title="초대 링크 공유"
               >
                 <IoShareOutline aria-hidden />
-                링크 공유
               </button>
-            </>
-          ) : null}
-        </p>
+            ) : null}
+            <button
+              type="button"
+              className="teamHead__settings"
+              onClick={() => nav(`/club/team/${teamId}/settings`)}
+              aria-label="팀 설정"
+              title="팀 설정"
+            >
+              <IoSettingsOutline aria-hidden />
+            </button>
+          </div>
+        </div>
+        <button
+          type="button"
+          className="teamHead__members"
+          onClick={() => nav(`/club/team/${teamId}/settings`)}
+          aria-label={`멤버 ${members.length}명 보기`}
+        >
+          <span className="teamHead__avatars" aria-hidden="true">
+            {members.slice(0, MEMBER_AVATAR_COUNT).map((member) => (
+              <span key={String(member?._id ?? member)} className="teamHead__avatar">
+                {getMemberDisplayName(member).trim().charAt(0) || "?"}
+              </span>
+            ))}
+            {members.length > MEMBER_AVATAR_COUNT ? (
+              <span className="teamHead__avatar teamHead__avatar--more">
+                +{members.length - MEMBER_AVATAR_COUNT}
+              </span>
+            ) : null}
+          </span>
+        </button>
       </header>
 
       <TeamUpcomingPractice
+        teamId={teamId}
+        teamName={team.name}
         practices={practices}
         members={members}
         isLeader={isLeader}
         onPracticeClick={isLeader ? handlePracticeClick : undefined}
         onAddPractice={
-          isLeader && practicePoll
-            ? () => nav(`/club/team/${teamId}/practice/new?poll=${encodeURIComponent(practicePoll._id)}`)
+          isLeader
+            ? () => nav(`/club/team/${teamId}/practice/new`)
             : undefined
         }
       />

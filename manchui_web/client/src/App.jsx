@@ -1,5 +1,5 @@
 import "./App.css";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./queries/queryClient";
 import { ModalProvider } from "./hooks/ManchuiModal";
@@ -20,6 +20,7 @@ import EditProfile from "./pages/ClubRoom/Mypage/EditProfile";
 import EditUser from "./pages/ClubRoom/Mypage/EditUser";
 import Reservation from "./pages/ClubRoom/Reservation/Reservation";
 import ReservationShare from "./pages/ClubRoom/Reservation/ReservationShare";
+import TeamPracticeShare from "./pages/ClubRoom/Team/TeamPracticeShare";
 import Recommend from "./pages/ClubRoom/Recommend/Recommend";
 import RecommendDetail from "./pages/ClubRoom/Recommend/RecommendDetail";
 import RecommendEditor from "./pages/ClubRoom/Recommend/RecommendEditor";
@@ -81,6 +82,8 @@ const router = createBrowserRouter([
         path: "reservation/share/:id",
         element: <ReservationShare />,
       },
+      /** 팀 연습 일정 공유: 로그인 없이 열람 */
+      { path: "practice/share/:teamId", element: <TeamPracticeShare /> },
       /** 웬투밋식 일정 투표: 계정 없이(게스트)도 응답 가능 */
       { path: "poll/:pollId", element: <PollRespond /> },
       {
@@ -132,6 +135,8 @@ const router = createBrowserRouter([
           { path: "join", element: <AdminJoin /> },
           { path: "member", element: <AdminMember /> },
           { path: "team", element: <AdminTeam /> },
+          /** 연습실 예약은 팀 관리 안으로 옮김 */
+          { path: "practice-place", element: <Navigate to="/admin/team?view=places" replace /> },
           {
             path: "reservation",
             element: <AdminReservationLayout />,

@@ -529,7 +529,7 @@ const AdminReservation = () => {
   return (
     <div className="reservation admin-reservation admin-reservation--manage">
       <div className="admin-reservation__head">
-        <h1 className="admin-page-heading">예약 관리</h1>
+        <h1 className="admin-page-heading">동방 예약</h1>
         <div className="admin-reservation__headActions">
           <ClubRoomRulesBar inline />
           <button

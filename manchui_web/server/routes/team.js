@@ -4,6 +4,7 @@ const User = require("../models/User");
 const Team = require("../models/Team");
 const Schedule = require("../models/Schedule");
 const Practice = require("../models/Practice");
+const Setting = require("../models/Setting");
 const TeamPoll = require("../models/TeamPoll");
 const requireExecutive = require("../middleware/requireExecutive");
 const { buildAdminTeamSummaries, getTeamCreatedAt } = require("../utils/teamActivity");
@@ -34,7 +35,177 @@ router.get("/admin/list", requireExecutive, async (req, res) => {
     const users = await User.find({ _id: { $in: [...memberIds] } }).lean();
     const payload = buildAdminTeamSummaries(teams, practices, users);
 
-    res.json(payload);
+    res.json({ ...payload, pinnedTeamIds: await loadPinnedTeamIds() });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+/**
+ * 임원진: 모든 팀의 연습 (장소 배정 화면용)
+ * 어제 이후 연습만, 팀 이름·색과 함께. 자주 쓴 장소 목록도 같이 준다.
+ */
+router.get("/admin/practices", requireExecutive, async (req, res) => {
+  try {
+    const [teams, practices] = await Promise.all([
+      Team.find().select("name teamColor").lean(),
+      Practice.find()
+        .select("teamId date time place members guestNames placeAssignedAt placeAssignedBy placeCost")
+        .lean(),
+    ]);
+    const teamById = new Map(teams.map((team) => [String(team._id), team]));
+
+    // 자주 쓴 장소: 전체 연습 기록에서 많이 쓴 순
+    const placeCount = new Map();
+    for (const practice of practices) {
+      const place = String(practice.place ?? "").trim();
+      if (!place || place === "미확정") continue;
+      placeCount.set(place, (placeCount.get(place) ?? 0) + 1);
+    }
+    const places = [...placeCount.entries()]
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "ko"))
+      .slice(0, 20)
+      .map(([place, count]) => ({ place, count }));
+
+    res.json({
+      practices: practices
+        .filter((practice) => teamById.has(String(practice.teamId)))
+        .map((practice) => {
+          const team = teamById.get(String(practice.teamId));
+          return {
+            _id: String(practice._id),
+            teamId: String(practice.teamId),
+            teamName: team.name,
+            teamColor: team.teamColor,
+            date: practice.date,
+            time: practice.time,
+            place: practice.place,
+            placeAssignedAt: practice.placeAssignedAt ?? null,
+            placeAssignedBy: practice.placeAssignedBy ?? null,
+            placeCost: typeof practice.placeCost === "number" ? practice.placeCost : null,
+            memberCount:
+              (Array.isArray(practice.members) ? practice.members.length : 0) +
+              (Array.isArray(practice.guestNames) ? practice.guestNames.length : 0),
+          };
+        }),
+      places,
+      teams: teams.map((team) => ({ _id: String(team._id), name: team.name, teamColor: team.teamColor })),
+      placeRates: await loadPlaceRates(),
+      pinnedTeamIds: await loadPinnedTeamIds(),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+async function loadPinnedTeamIds() {
+  const setting = await Setting.findOne().select("pinnedTeamIds").lean();
+  return Array.isArray(setting?.pinnedTeamIds) ? setting.pinnedTeamIds.map(String) : [];
+}
+
+/** 임원진: 고정 팀 목록 저장 (순서대로) */
+router.put("/admin/pins", requireExecutive, async (req, res) => {
+  try {
+    const ids = [
+      ...new Set(
+        (Array.isArray(req.body?.teamIds) ? req.body.teamIds : [])
+          .map(String)
+          .filter((id) => /^[a-f0-9]{24}$/i.test(id)),
+      ),
+    ].slice(0, 30);
+    let setting = await Setting.findOne();
+    if (!setting) setting = new Setting({});
+    setting.pinnedTeamIds = ids;
+    await setting.save();
+    res.json({ pinnedTeamIds: ids });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+async function loadPlaceRates() {
+  const setting = await Setting.findOne().select("placeRates").lean();
+  return Array.isArray(setting?.placeRates) ? setting.placeRates : [];
+}
+
+/** 임원진: 장소별 시간당 요금 저장 (전체 목록을 통째로 바꾼다) */
+router.put("/admin/place-rates", requireExecutive, async (req, res) => {
+  try {
+    const seen = new Set();
+    const rates = (Array.isArray(req.body?.rates) ? req.body.rates : [])
+      .map((item) => ({
+        place: String(item?.place ?? "").trim().slice(0, 40),
+        hourlyRate: Math.max(0, Math.round(Number(item?.hourlyRate) || 0)),
+      }))
+      .filter((item) => {
+        if (!item.place || item.place === "미확정" || seen.has(item.place)) return false;
+        seen.add(item.place);
+        return true;
+      })
+      .slice(0, 100);
+    let setting = await Setting.findOne();
+    if (!setting) setting = new Setting({});
+    setting.placeRates = rates;
+    await setting.save();
+    res.json({ placeRates: rates });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+/** 임원진: 연습 금액 직접 정하기 (cost 가 null 이면 다시 자동 계산) */
+router.post("/admin/practices/cost", requireExecutive, async (req, res) => {
+  try {
+    const ids = (Array.isArray(req.body?.practiceIds) ? req.body.practiceIds : [])
+      .map(String)
+      .filter((id) => /^[a-f0-9]{24}$/i.test(id))
+      .slice(0, 200);
+    if (ids.length === 0) {
+      return res.status(400).json({ message: "연습을 골라 주세요." });
+    }
+    const raw = req.body?.cost;
+    const cost =
+      raw === null || raw === undefined || raw === ""
+        ? null
+        : Math.max(0, Math.round(Number(raw) || 0));
+    await Practice.updateMany({ _id: { $in: ids } }, { $set: { placeCost: cost } });
+    res.json({ placeCost: cost });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+/** 임원진: 연습 장소 한 번에 지정 (여러 개 가능). 비우면 미확정 */
+router.post("/admin/practices/place", requireExecutive, async (req, res) => {
+  try {
+    const ids = (Array.isArray(req.body?.practiceIds) ? req.body.practiceIds : [])
+      .map(String)
+      .filter((id) => /^[a-f0-9]{24}$/i.test(id))
+      .slice(0, 200);
+    if (ids.length === 0) {
+      return res.status(400).json({ message: "연습을 골라 주세요." });
+    }
+    const place = String(req.body?.place ?? "").trim().slice(0, 40) || "미확정";
+    const admin = await User.findById(req.adminUserId).select("username").lean();
+    // 미정으로 되돌리면 배정 기록도 지운다
+    const assigned = place !== "미확정";
+    const placeAssignedAt = assigned ? new Date() : null;
+    const placeAssignedBy = assigned ? admin?.username ?? null : null;
+    const result = await Practice.updateMany(
+      { _id: { $in: ids } },
+      { $set: { place, placeAssignedAt, placeAssignedBy } },
+    );
+    res.json({
+      place,
+      placeAssignedAt,
+      placeAssignedBy,
+      updatedCount: result.modifiedCount ?? result.nModified ?? 0,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });

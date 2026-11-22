@@ -16,6 +16,11 @@ function isReservationSharePath(pathname) {
   return /^\/club\/reservation\/share\/[^/]+$/.test(pathname);
 }
 
+/** 팀 연습 일정 공유 링크: 비회원도 열 수 있는 공개 페이지 */
+function isPracticeSharePath(pathname) {
+  return /^\/club\/practice\/share\/[^/]+\/?$/.test(pathname);
+}
+
 /** 일정 투표 링크: 비회원도 열 수 있는 공개 페이지 */
 function isPollPath(pathname) {
   return /^\/club\/poll\/[^/]+\/?$/.test(pathname);
@@ -48,11 +53,14 @@ const ClubRoomLayout = () => {
   } = useAppSettings();
   const { user } = useAuth();
   const pollPage = isPollPath(location.pathname);
-  const shareOnly = isReservationSharePath(location.pathname) || pollPage;
+  const practiceSharePage = isPracticeSharePath(location.pathname);
+  const shareOnly =
+    isReservationSharePath(location.pathname) || pollPage || practiceSharePage;
   const wideBody = isWideBodyPath(location.pathname);
   // 비로그인 게스트가 투표 링크로 들어오면 어시스턴트 탭은 숨긴다
   const hideBottomNav =
-    location.pathname === "/club/login" || (pollPage && !user);
+    location.pathname === "/club/login" ||
+    ((pollPage || practiceSharePage) && !user);
   /** 일정 종합 · 연습 생성 화면: 모바일 하단 탭바만 숨김 (PC 사이드바는 그대로) */
   const hideMobileTabBar = pollPage || isPracticeCreatePath(location.pathname);
 

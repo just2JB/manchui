@@ -1,6 +1,7 @@
 import apiClient, { serverUrl } from "../api/apiClient";
 import { enrichPracticesWithTeam } from "../pages/ClubRoom/Home/clubHomeUtils";
 import { parseMineResponse } from "../pages/ClubRoom/Reservation/reservationMine";
+import { toVisibleTeamColor } from "../pages/ClubRoom/Team/teamColorPresets";
 
 export async function fetchUserTeams(userId) {
   const res = await apiClient.get(`/api/team/user/${userId}`, {
@@ -38,7 +39,7 @@ export async function fetchPracticesForTeams(teams) {
       ...practice,
       teamId: String(team._id),
       teamName: team.name,
-      teamColor: team.teamColor,
+      teamColor: toVisibleTeamColor(team.teamColor),
     })),
   );
   return enrichPracticesWithTeam(practices, teams);

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { IoReaderOutline } from "react-icons/io5";
-import { CLUB_ROOM_RULES_ITEMS } from "./clubRoomRulesContent";
+import { useClubRoomRules } from "./clubRoomRulesContent";
 import "./Reservation.css";
 
 /**
@@ -37,6 +37,7 @@ export default function ClubRoomRulesBar({ inline = false }) {
 }
 
 function ClubRoomRulesModalInner({ onClose }) {
+  const rules = useClubRoomRules();
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === "Escape") onClose();
@@ -68,7 +69,7 @@ function ClubRoomRulesModalInner({ onClose }) {
           동아리방 이용 수칙
         </h2>
         <ul className="reservation__rulesList">
-          {CLUB_ROOM_RULES_ITEMS.map((line, i) => (
+          {rules.map((line, i) => (
             <li key={i}>{line}</li>
           ))}
         </ul>

@@ -224,3 +224,85 @@
 .joinFrame {
   border: 1px solid #333333;
 }
+
+/* 동아리방 이용 수칙 편집 */
+.rulesEditor {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+.rulesEditor__item {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+}
+.rulesEditor__num {
+  padding-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-more, #9a9a9a);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.rulesEditor__text {
+  width: 100%;
+  min-height: 44px;
+  box-sizing: border-box;
+  resize: vertical;
+  line-height: 1.5;
+  font: inherit;
+}
+.rulesEditor__tools {
+  display: flex;
+  gap: 2px;
+  padding-top: 4px;
+}
+.rulesEditor__tools button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-more, #9a9a9a);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.rulesEditor__tools button:hover:not(:disabled) {
+  background: var(--box-2, #1c1c1c);
+  color: var(--text-primary);
+}
+.rulesEditor__tools button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.rulesEditor__actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.rulesEditor__add,
+.rulesEditor__reset {
+  height: 34px;
+  padding: 0 12px;
+  border: 1px dashed rgba(var(--club-ink-rgb, 255, 255, 255), 0.2);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.rulesEditor__reset {
+  border: 0;
+  color: var(--text-more, #9a9a9a);
+}
+.rulesEditor__add:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

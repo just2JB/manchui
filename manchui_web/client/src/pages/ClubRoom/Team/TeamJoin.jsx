@@ -7,7 +7,20 @@ import ClubPageSkeleton from "../ClubPageSkeleton";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useInvalidateClubTeams } from "../../../queries/useClubQueries";
 import { getMemberDisplayName, isDefaultComment, isTeamMember } from "./teamUtils";
+import { toVisibleTeamColor } from "./teamColorPresets";
+import {
+  formatPracticeTimeShort,
+  getUpcomingPractices,
+} from "./teamCalendarUtils";
 import "./Team.css";
+
+const INVITE_PRACTICE_LIMIT = 5;
+const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+
+function formatInviteDate(dateKey) {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return `${m}/${d} (${WEEK[new Date(y, m - 1, d).getDay()]})`;
+}
 
 function getLeaderName(team) {
   if (!team?.leaderId) return null;
@@ -29,6 +42,7 @@ const TeamJoin = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [joining, setJoining] = useState(false);
+  const [practices, setPractices] = useState([]);
 
   const loadTeam = useCallback(async () => {
     if (!teamId) {
@@ -44,7 +58,25 @@ const TeamJoin = () => {
       });
       const nextTeam = res.data?.team ?? null;
       setTeam(nextTeam);
-      if (!nextTeam) setNotFound(true);
+      if (!nextTeam) {
+        setNotFound(true);
+        return;
+      }
+      // 연습 목록은 못 불러와도 초대장은 보여준다
+      try {
+        const practiceRes = await apiClient.get(
+          `/api/practice/teamPractice/${teamId}`,
+          { withCredentials: true },
+        );
+        setPractices(
+          Array.isArray(practiceRes.data?.teamPractice)
+            ? practiceRes.data.teamPractice
+            : [],
+        );
+      } catch (practiceError) {
+        console.error(practiceError);
+        setPractices([]);
+      }
     } catch (error) {
       console.error(error);
       if (error.response?.status === 404) setNotFound(true);
@@ -112,9 +144,11 @@ const TeamJoin = () => {
   }
 
   const members = Array.isArray(team.members) ? team.members : [];
-  const accent = team.teamColor || "#E87070";
+  const accent = toVisibleTeamColor(team.teamColor);
   const alreadyMember = isTeamMember(team, user?._id);
   const leaderName = getLeaderName(team);
+  const upcoming = getUpcomingPractices(practices, { limit: 0 });
+  const shownPractices = upcoming.slice(0, INVITE_PRACTICE_LIMIT);
   const comment = isDefaultComment(team.comment)
     ? "아직 팀 소개가 없습니다."
     : team.comment;
@@ -169,6 +203,37 @@ const TeamJoin = () => {
             <blockquote className="teamInvite__message">
               <p>{comment}</p>
             </blockquote>
+          </div>
+
+          <div className="teamInvite__intro">
+            <p className="teamInvite__introLabel">다가오는 연습</p>
+            {shownPractices.length === 0 ? (
+              <p className="teamInvite__practiceEmpty">아직 잡힌 연습이 없어요.</p>
+            ) : (
+              <ul className="teamInvite__practices">
+                {shownPractices.map((practice) => {
+                  const place = String(practice.place ?? "").trim();
+                  return (
+                    <li key={practice._id} className="teamInvite__practice">
+                      <span className="teamInvite__practiceDate">
+                        {formatInviteDate(practice.dateKey)}
+                      </span>
+                      <span className="teamInvite__practiceTime">
+                        {formatPracticeTimeShort(practice.time)}
+                      </span>
+                      <span className="teamInvite__practicePlace">
+                        {place && place !== "미확정" ? place : "장소 미정"}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {upcoming.length > shownPractices.length ? (
+              <p className="teamInvite__practiceMore">
+                외 {upcoming.length - shownPractices.length}개
+              </p>
+            ) : null}
           </div>
 
           <footer className="teamInvite__footer">

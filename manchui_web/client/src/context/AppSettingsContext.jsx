@@ -15,6 +15,7 @@ const defaultJoinConfig = {
   siteRestricted: false,
   assistantEnabled: true,
   president: { name: "", contact: "", major: "" },
+  clubRoomRules: [],
 };
 
 const AppSettingsContext = createContext(null);

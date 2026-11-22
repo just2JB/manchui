@@ -1,5 +1,11 @@
 import React, { useState } from "react";
-import { IoAdd, IoChevronDown, IoChevronUp, IoClipboardOutline } from "react-icons/io5";
+import {
+  IoAdd,
+  IoChevronDown,
+  IoChevronUp,
+  IoClipboardOutline,
+  IoShareOutline,
+} from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import {
   buildUpcomingPracticesCopyText,
@@ -8,6 +14,7 @@ import {
   formatUpcomingPracticeDate,
   getUpcomingPractices,
 } from "./teamCalendarUtils";
+import { shareTeamPracticeSchedule } from "./teamUtils";
 
 /** 처음에 보여줄 연습 수 (다음 연습 1 + 이후 3) */
 const INITIAL_COUNT = 4;
@@ -32,6 +39,9 @@ const TeamUpcomingPractice = ({
   isLeader = false,
   onPracticeClick,
   onAddPractice,
+  /** 연습 일정 공유 페이지용 */
+  teamId,
+  teamName = "",
 }) => {
   const modal = useManchuiModal();
   const [expanded, setExpanded] = useState(false);
@@ -88,6 +98,18 @@ const TeamUpcomingPractice = ({
             <span className="teamUpcoming__count">{all.length}</span>
           ) : null}
         </h2>
+        <div className="teamUpcoming__tools">
+        {teamId ? (
+          <button
+            type="button"
+            className="teamUpcoming__copyBtn"
+            onClick={() => void shareTeamPracticeSchedule(teamName, teamId, modal)}
+            aria-label="연습 일정 공유 페이지 링크 보내기"
+            title="연습 일정 공유"
+          >
+            <IoShareOutline aria-hidden />
+          </button>
+        ) : null}
         {all.length > 0 ? (
           <button
             type="button"
@@ -99,6 +121,7 @@ const TeamUpcomingPractice = ({
             <IoClipboardOutline aria-hidden />
           </button>
         ) : null}
+        </div>
       </div>
 
       {!next ? (
@@ -167,7 +190,7 @@ const TeamUpcomingPractice = ({
         </>
       )}
 
-      {/* 팀장: 연습 추가 (일정 종합의 추천 시간 / 직접 정하기 시트) */}
+      {/* 팀장: 연습 추가 (일정 종합에서 고르기 / 직접 입력은 추가 페이지에서) */}
       {onAddPractice ? (
         <button type="button" className="teamUpcoming__addBtn" onClick={onAddPractice}>
           <IoAdd aria-hidden />

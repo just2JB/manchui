@@ -360,8 +360,6 @@ export function clearHourRange(hours, startHour, endHour) {
 }
 
 export const PRACTICE_FULL_DAY_HOURS = Array.from({ length: 24 }, (_, index) => index);
-export const PRACTICE_AFTERNOON_START = 12;
-export const PRACTICE_RECOMMEND_MIN_HOURS = 2;
 
 export function getHoursInRange(startHour, endHour) {
   const start = Number(startHour);
@@ -375,98 +373,39 @@ export function getHoursInRange(startHour, endHour) {
   return hours;
 }
 
-export function getRangeMinAvailability(counts, startHour, endHour) {
-  const hours = getHoursInRange(startHour, endHour);
-  if (hours.length === 0) return 0;
-
-  let min = Infinity;
-  for (const hour of hours) {
-    const count = counts?.[hour] ?? 0;
-    if (count < min) min = count;
-  }
-  return min === Infinity ? 0 : min;
-}
-
-/** 2시간 이상 · 참여 가능 인원 많은 순 · 오후 우선 */
-export function buildRecommendedPracticeSlots(
-  dateKeys,
-  matrix,
-  totalMembers,
-  { minDuration = PRACTICE_RECOMMEND_MIN_HOURS, maxResults = 50 } = {},
-) {
-  const keys = Array.isArray(dateKeys) ? dateKeys : [];
-  const candidates = [];
-
-  for (const dateKey of keys) {
-    const counts = matrix?.[dateKey] ?? {};
-
-    for (let startHour = 0; startHour <= 23; startHour += 1) {
-      for (
-        let endHour = startHour + minDuration - 1;
-        endHour <= 23;
-        endHour += 1
-      ) {
-        const duration = endHour - startHour + 1;
-        if (duration < minDuration) continue;
-
-        const minAvailable = getRangeMinAvailability(counts, startHour, endHour);
-        if (minAvailable <= 0) continue;
-
-        candidates.push({
-          id: `${dateKey}-${startHour}-${endHour}`,
-          dateKey,
-          startHour,
-          endHour,
-          duration,
-          minAvailable,
-          totalMembers,
-          time: formatHourRangeLabel(startHour, endHour),
-          isAfternoon: startHour >= PRACTICE_AFTERNOON_START,
-        });
-      }
-    }
-  }
-
-  candidates.sort((a, b) => {
-    if (b.minAvailable !== a.minAvailable) {
-      return b.minAvailable - a.minAvailable;
-    }
-    if (a.isAfternoon !== b.isAfternoon) {
-      return a.isAfternoon ? -1 : 1;
-    }
-    if (a.dateKey !== b.dateKey) {
-      return a.dateKey.localeCompare(b.dateKey);
-    }
-    if (a.startHour !== b.startHour) {
-      return a.startHour - b.startHour;
-    }
-    return b.duration - a.duration;
-  });
-
-  return candidates.slice(0, maxResults);
-}
-
-export function applyRecommendedRanges(selectionByDate, ranges) {
-  const next = { ...(selectionByDate ?? {}) };
-
-  for (const range of ranges) {
-    const dateKey = range?.dateKey;
-    const startHour = Number(range?.startHour);
-    const endHour = Number(range?.endHour);
-    if (!dateKey || Number.isNaN(startHour) || Number.isNaN(endHour)) continue;
-
-    const merged = new Set(Array.isArray(next[dateKey]) ? next[dateKey] : []);
-    for (const hour of getHoursInRange(startHour, endHour)) {
-      merged.add(hour);
-    }
-    next[dateKey] = [...merged].sort((a, b) => a - b);
-  }
-
-  return next;
-}
-
-export function recommendationNeedsDawn(ranges) {
-  return (Array.isArray(ranges) ? ranges : []).some(
-    (range) => Number(range?.startHour) <= PRACTICE_DAWN_HOUR_END,
+/** "14:00–17:00" → { startHour: 14, endHour: 16 } (끝 시각 직전 칸까지) */
+export function parsePracticeHourRange(time) {
+  const match = String(time ?? "").match(
+    /(\d{1,2}):(\d{2})\s*[-–~]\s*(\d{1,2}):(\d{2})/,
   );
+  if (!match) return null;
+  const startHour = Number(match[1]);
+  let endHourRaw = Number(match[3]);
+  const endMinute = Number(match[4]);
+  if (endHourRaw === 0 && endMinute === 0) endHourRaw = 24;
+  const endHour = endMinute > 0 ? endHourRaw : endHourRaw - 1;
+  if (Number.isNaN(startHour) || endHour < startHour) return null;
+  return { startHour, endHour: Math.min(endHour, 23) };
+}
+
+/** 이미 잡힌 연습 → { [dateKey]: { [hour]: { isStart, time, place } } } */
+export function buildBookedHoursByDate(practices, dateKeys) {
+  const keys = new Set(Array.isArray(dateKeys) ? dateKeys : []);
+  const map = {};
+  for (const practice of Array.isArray(practices) ? practices : []) {
+    const dateKey = normalizeDateKey(practice?.date);
+    if (!dateKey || !keys.has(dateKey)) continue;
+    const range = parsePracticeHourRange(practice.time);
+    if (!range) continue;
+    const byHour = map[dateKey] ?? {};
+    for (const hour of getHoursInRange(range.startHour, range.endHour)) {
+      byHour[hour] = {
+        isStart: hour === range.startHour,
+        time: practice.time,
+        place: practice.place,
+      };
+    }
+    map[dateKey] = byHour;
+  }
+  return map;
 }

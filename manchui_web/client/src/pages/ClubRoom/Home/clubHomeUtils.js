@@ -1,3 +1,4 @@
+import { toVisibleTeamColor } from "../Team/teamColorPresets";
 import {
   formatDateKey,
   normalizeDateKey,
@@ -138,7 +139,7 @@ export function enrichPracticesWithTeam(practices, teams) {
     return {
       ...practice,
       teamName: practice.teamName ?? team?.name ?? "팀",
-      teamColor: practice.teamColor ?? team?.teamColor ?? "#E87070",
+      teamColor: toVisibleTeamColor(practice.teamColor ?? team?.teamColor),
     };
   });
 }

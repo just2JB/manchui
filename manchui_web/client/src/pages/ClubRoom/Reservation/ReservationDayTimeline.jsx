@@ -130,9 +130,9 @@ export default function ReservationDayTimeline({
                     </button>
                   );
                 })}
-                {rowBlocks.map((b, i) => {
-                  // 이름표: 블록 시작 칸부터 — 다른 팀은 다음 블록 시작 전(또는 줄 끝)까지, 내 예약은 블록 안까지
-                  const nextStart = b.mine ? b.end : (rowBlocks[i + 1]?.start ?? row.from + 12);
+                {rowBlocks.map((b) => {
+                  // 이름표: 예약 칸 안에서만, 길면 … 으로 자른다 (전체 이름은 블록 title·상세에서)
+                  const nextStart = b.end;
                   return (
                     <span
                       key={`label-${b.r._id}-${b.start}`}

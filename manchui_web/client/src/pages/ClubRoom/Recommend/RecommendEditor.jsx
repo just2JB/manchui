@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import apiClient, { serverUrl } from "../../../api/apiClient";
 import { useAuth } from "../../../context/AuthContext";
-import { IoChevronBack } from "react-icons/io5";
+import { IoChevronBack, IoLinkOutline } from "react-icons/io5";
 import { useManchuiModal } from "../../../hooks/ManchuiModal";
 import { useInvalidateClubRecommendations } from "../../../queries/useClubQueries";
 import {
@@ -12,6 +12,7 @@ import {
   toggleTagInList,
 } from "./hashtagUtils";
 import { RECOMMEND_SUGGESTED_TAGS } from "./recommendSuggestedTags";
+import { getLinkThumbnailUrl } from "./linkThumbnailUrl";
 import "./RecommendEditor.css";
 
 const emptyForm = () => ({
@@ -19,6 +20,33 @@ const emptyForm = () => ({
   videoUrl: "",
   body: "",
 });
+
+/** 링크 주소 → 어떤 서비스인지 (미리보기 문구용) */
+const LINK_SERVICES = [
+  [/youtu\.?be/i, "YouTube"],
+  [/instagram\.com/i, "Instagram"],
+  [/spotify\.com/i, "Spotify"],
+  [/melon\.com/i, "멜론"],
+  [/soundcloud\.com/i, "SoundCloud"],
+  [/vimeo\.com/i, "Vimeo"],
+  [/tiktok\.com/i, "TikTok"],
+  [/music\.apple\.com/i, "Apple Music"],
+  [/genie\.co\.kr/i, "지니"],
+  [/vibe\.naver\.com/i, "VIBE"],
+];
+
+function describeLink(raw) {
+  const value = String(raw ?? "").trim();
+  if (!value) return { known: false, label: "" };
+  let host = "";
+  try {
+    host = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`).hostname;
+  } catch {
+    return { known: false, label: "링크 형식이 아닌 것 같아요" };
+  }
+  const hit = LINK_SERVICES.find(([pattern]) => pattern.test(host));
+  return hit ? { known: true, label: `${hit[1]} 링크` } : { known: false, label: host.replace(/^www\./, "") };
+}
 
 const RecommendEditor = () => {
   const { id } = useParams();
@@ -255,6 +283,9 @@ const RecommendEditor = () => {
     );
   }
 
+  const linkInfo = describeLink(form.videoUrl);
+  const thumb = getLinkThumbnailUrl(form.videoUrl);
+
   return (
     <div className="recommendEditor">
       <header className="recommendEditor__header">
@@ -267,74 +298,101 @@ const RecommendEditor = () => {
           <IoChevronBack size={22} aria-hidden />
         </button>
         <h1 className="recommendEditor__headTitle">
-          {isEdit ? "추천 수정" : "추천 등록"}
+          {isEdit ? "추천 수정" : "곡 추천하기"}
         </h1>
       </header>
 
       <form className="recommendEditor__form" onSubmit={handleSubmit}>
-        <section
-          className="recommendEditor__section"
-          aria-labelledby="sec-basic"
-        >
-          <h2 id="sec-basic" className="recommendEditor__sectionTitle">
-            기본 정보
-          </h2>
-          <div className="recommendEditor__field">
-            <label htmlFor="re-title">제목 *</label>
-            <input
-              id="re-title"
-              value={form.title}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, title: e.target.value }))
-              }
-              placeholder="어떤 곡인지 짧게"
-              required
-            />
-          </div>
-          <div className="recommendEditor__field">
-            <label htmlFor="re-url">영상·음원 링크 *</label>
+        {/* 1. 링크: 먼저 붙여 넣으면 미리보기가 뜬다 */}
+        <div className="recommendEditor__field">
+          <label htmlFor="re-url" className="recommendEditor__label">
+            영상·음원 링크 <span className="recommendEditor__req">필수</span>
+          </label>
+          <div className="recommendEditor__urlWrap">
+            <IoLinkOutline className="recommendEditor__urlIcon" aria-hidden />
             <input
               id="re-url"
-              type="text"
+              type="url"
+              inputMode="url"
+              className="recommendEditor__input recommendEditor__input--url"
               value={form.videoUrl}
-              onChange={(e) =>
-                setForm((f) => ({ ...f, videoUrl: e.target.value }))
-              }
-              placeholder="YouTube, Instagram, Spotify, 멜론 등"
+              onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))}
+              placeholder="https:// 링크 붙여 넣기"
+              autoComplete="off"
               required
             />
-            <p className="recommendEditor__hint">
-              저장 시 가능한 서비스는 썸네일·제목을 자동으로 가져옵니다.
-            </p>
           </div>
-        </section>
+          {form.videoUrl.trim() ? (
+            <div className="recommendEditor__preview" data-known={linkInfo.known || undefined}>
+              {thumb ? (
+                <img src={thumb} alt="" className="recommendEditor__previewImg" loading="lazy" />
+              ) : (
+                <span className="recommendEditor__previewIcon" aria-hidden>
+                  ♪
+                </span>
+              )}
+              <span className="recommendEditor__previewText">
+                <strong>{linkInfo.label}</strong>
+                <small>
+                  {linkInfo.known
+                    ? "저장하면 썸네일·제목을 가져와요"
+                    : "링크가 맞는지 한 번 확인해 주세요"}
+                </small>
+              </span>
+            </div>
+          ) : (
+            <p className="recommendEditor__hint">YouTube, Instagram, Spotify, 멜론 등 어디든 괜찮아요.</p>
+          )}
+        </div>
 
-        <section
-          className="recommendEditor__section"
-          aria-labelledby="sec-tags"
-        >
-          <h2 id="sec-tags" className="recommendEditor__sectionTitle">
-            태그
-          </h2>
-          <div className="recommendEditor__field">
-            {committedTags.length > 0 ? (
-              <div
-                className="recommendEditor__tagChips"
-                aria-label="확정된 태그"
+        {/* 2. 제목 */}
+        <div className="recommendEditor__field">
+          <label htmlFor="re-title" className="recommendEditor__label">
+            제목 <span className="recommendEditor__req">필수</span>
+            <span className="recommendEditor__count">{form.title.length}/60</span>
+          </label>
+          <input
+            id="re-title"
+            className="recommendEditor__input recommendEditor__input--title"
+            value={form.title}
+            onChange={(e) => setForm((f) => ({ ...f, title: e.target.value.slice(0, 60) }))}
+            placeholder="곡 이름 - 아티스트"
+            required
+          />
+        </div>
+
+        {/* 3. 설명 */}
+        <div className="recommendEditor__field">
+          <label htmlFor="re-body" className="recommendEditor__label">
+            추천하는 이유 <span className="recommendEditor__opt">선택</span>
+          </label>
+          <textarea
+            id="re-body"
+            className="recommendEditor__input recommendEditor__textarea"
+            value={form.body}
+            onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
+            placeholder="무드, 어울리는 무대, 안무 포인트 등을 적어 보세요."
+            rows={5}
+          />
+        </div>
+
+        {/* 4. 태그 */}
+        <div className="recommendEditor__field">
+          <label htmlFor="re-tags" className="recommendEditor__label">
+            태그 <span className="recommendEditor__opt">선택</span>
+          </label>
+          <div className="recommendEditor__tagBox">
+            {committedTags.map((t) => (
+              <button
+                key={t.toLowerCase()}
+                type="button"
+                className="recommendEditor__tagCommitChip"
+                onClick={() => removeCommittedTag(t)}
+                aria-label={`태그 ${t} 빼기`}
               >
-                {committedTags.map((t) => (
-                  <button
-                    key={t.toLowerCase()}
-                    type="button"
-                    className="recommendEditor__tagCommitChip"
-                    onClick={() => removeCommittedTag(t)}
-                    aria-label={`태그 ${t} 제거`}
-                  >
-                    #{t}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+                #{t} <span aria-hidden>×</span>
+              </button>
+            ))}
             <input
               id="re-tags"
               type="text"
@@ -343,65 +401,29 @@ const RecommendEditor = () => {
               onChange={handleTagDraftChange}
               onKeyDown={handleTagKeyDown}
               onKeyUp={handleTagKeyUp}
-              placeholder="코레오, k-pop … 입력 후 스페이스·엔터"
+              placeholder={committedTags.length ? "" : "입력 후 스페이스·엔터"}
               autoComplete="off"
             />
-            <p className="recommendEditor__suggestLabel">추천 태그</p>
-            <div
-              className="recommendEditor__suggestedTags"
-              role="group"
-              aria-label="추천 태그"
-            >
-              {RECOMMEND_SUGGESTED_TAGS.map((tag) => {
-                const active = tagListHasTag(committedTags, tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    className={`recommendEditor__tagChip${active ? " recommendEditor__tagChip--active" : ""}`}
-                    aria-pressed={active}
-                    onClick={() =>
-                      setCommittedTags((prev) => toggleTagInList(prev, tag))
-                    }
-                  >
-                    #{tag}
-                  </button>
-                );
-              })}
-            </div>
-            <p className="recommendEditor__hint">
-              태그 입력 후 스페이스·엔터로 확정하거나 추천 태그를 눌러
-              추가하세요. # 없이 입력해도 됩니다.
-            </p>
           </div>
-        </section>
-
-        <section
-          className="recommendEditor__section"
-          aria-labelledby="sec-body"
-        >
-          <h2 id="sec-body" className="recommendEditor__sectionTitle">
-            추천 설명
-          </h2>
-          <div className="recommendEditor__field">
-            <label htmlFor="re-body">내용</label>
-            <textarea
-              id="re-body"
-              value={form.body}
-              onChange={(e) => setForm((f) => ({ ...f, body: e.target.value }))}
-              placeholder="왜 이 곡을 추천하는지, 무드나 상황 등을 적어 보세요."
-            />
+          <div className="recommendEditor__suggestedTags" role="group" aria-label="추천 태그">
+            {RECOMMEND_SUGGESTED_TAGS.map((tag) => {
+              const active = tagListHasTag(committedTags, tag);
+              return (
+                <button
+                  key={tag}
+                  type="button"
+                  className={`recommendEditor__tagChip${active ? " recommendEditor__tagChip--active" : ""}`}
+                  aria-pressed={active}
+                  onClick={() => setCommittedTags((prev) => toggleTagInList(prev, tag))}
+                >
+                  #{tag}
+                </button>
+              );
+            })}
           </div>
-        </section>
+        </div>
 
-        <div className="recommendEditor__actions recommendEditor__actions--inForm">
-          <button
-            type="submit"
-            className="recommendEditor__btn recommendEditor__btn--primary"
-            disabled={saving || !user?._id}
-          >
-            {saving ? "저장 중…" : isEdit ? "저장하기" : "등록하기"}
-          </button>
+        <div className="recommendEditor__actions">
           <button
             type="button"
             className="recommendEditor__btn recommendEditor__btn--ghost"
@@ -409,6 +431,13 @@ const RecommendEditor = () => {
             disabled={saving}
           >
             취소
+          </button>
+          <button
+            type="submit"
+            className="recommendEditor__btn recommendEditor__btn--primary"
+            disabled={saving || !user?._id || !form.title.trim() || !form.videoUrl.trim()}
+          >
+            {saving ? "저장 중…" : isEdit ? "저장하기" : "추천 올리기"}
           </button>
         </div>
       </form>

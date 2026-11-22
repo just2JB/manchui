@@ -49,7 +49,7 @@ body[data-club-theme="light"] .dHome {
 
 /* ---------- ✦ mark ----------
    The one shape of this screen, cut like the logo's strokes. Coloured by background. */
-.dHome :is(.dHero__team i, .dHero__later i, .dAgenda__list i, .dCal__day i, .dList__mark),
+.dHome :is(.dHero__team i, .dAgenda__list i, .dCal__day i, .dList__mark),
 .dSpark {
   -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
   mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
@@ -82,19 +82,28 @@ body[data-club-theme="light"] .dHome {
 .dHome__main, .dHome__side { display: grid; gap: 12px; min-width: 0; align-content: start; }
 
 /* ---------- Title row ---------- */
-.dHome__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 4px 8px; }
-.dHome__hello { margin-bottom: 4px !important; font-size: .875rem; color: var(--h-muted); }
-.dHome__date { font-size: 1.375rem; font-weight: 600; letter-spacing: -.02em; line-height: 1.25; }
-.dHome__add {
-  flex: none; display: inline-flex; align-items: center; gap: 4px;
-  height: 36px; padding: 0 14px 0 10px; border-radius: var(--h-radius-control);
-  background: var(--h-invert-bg); color: var(--h-invert-text) !important;
-  font-size: .875rem; font-weight: 600;
-  transition: opacity .15s, transform .15s;
+.dHome__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 4px 2px; }
+.dHome__today { margin: 0 !important; font-size: .9375rem; font-weight: 600; color: var(--h-muted); }
+.dHome__srTitle {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap;
 }
-.dHome__add svg { font-size: 18px; }
-.dHome__add:hover { opacity: .88; }
-.dHome__add:active { transform: scale(.96); }
+/* 알림: 배경 없이 아이콘만, 누를 때만 살짝 */
+.dHome__bell {
+  position: relative; flex: none; display: grid; place-items: center;
+  width: 40px; height: 40px; margin-right: -8px; border-radius: 999px;
+  background: transparent !important; color: var(--h-text) !important;
+  font-size: 22px;
+  transition: background .15s, transform .15s;
+}
+.dHome__bell:hover { background: var(--h-hover) !important; }
+.dHome__bell:active { transform: scale(.92); }
+/* 안 읽은 알림이 생기면 data-unread 로 빨간 점 (푸시 알림 붙일 때 사용) */
+.dHome__bell[data-unread]::after {
+  content: ""; position: absolute; top: 9px; right: 10px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--h-brand); box-shadow: 0 0 0 2px var(--h-bg, #050505);
+}
 
 /* ---------- Next practice (the lead block) ---------- */
 .dHero {
@@ -102,32 +111,52 @@ body[data-club-theme="light"] .dHome {
   padding: 20px; border-radius: var(--h-radius);
   background: var(--h-hero); color: var(--h-hero-text);
 }
-.dHero__eyebrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: .875rem; font-weight: 500; color: var(--h-hero-muted); }
-.dHero__dday {
-  flex: none; padding: 4px 10px; border-radius: var(--h-radius-control);
-  background: var(--h-hero-raised); color: var(--h-hero-text);
-  font-size: .8125rem; font-weight: 600;
+.dHero__eyebrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; }
+.dHero__eyebrow h2 { font-size: .875rem; font-weight: 500; color: var(--h-hero-muted); }
+.dHero__nav { display: flex; align-items: center; gap: 2px; }
+.dHero__count { margin-right: 6px; font-size: .8125rem; font-weight: 600; color: var(--h-hero-muted); font-variant-numeric: tabular-nums; }
+.dHero__arrow {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 999px;
+  color: var(--h-hero-text) !important; font-size: 16px;
+  transition: background .15s, opacity .15s;
 }
-.dHero__dday[data-today] { background: var(--h-brand); color: #fff; }
-.dHero__team { display: flex; align-items: center; gap: 8px; margin-top: 20px !important; font-size: 1rem; font-weight: 600; }
-.dHero__team i, .dHero__later i, .dAgenda__list i { flex: none; width: 12px; height: 12px; background: var(--team); }
+.dHero__arrow:hover:not(:disabled) { background: var(--h-hero-raised) !important; }
+.dHero__arrow:disabled { opacity: .3; }
+
+/* 연습 카드 줄: 옆으로 밀어서 넘김, 다음 카드가 살짝 보이게 */
+.dHero__track {
+  display: grid; grid-auto-flow: column; grid-auto-columns: 86%; column-gap: 10px;
+  margin: 14px -20px 0 !important; padding: 0 20px !important; scroll-padding-inline: 20px;
+  overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  scrollbar-width: none; list-style: none;
+}
+.dHero__track::-webkit-scrollbar { display: none; }
+.dHero__track[data-single] { grid-auto-columns: 100%; }
+.dHero__slide {
+  scroll-snap-align: start;
+  display: grid; align-content: start; gap: 4px; min-width: 0;
+  padding: 16px; border-radius: var(--h-radius-inner);
+  background: var(--h-hero-raised);
+  box-shadow: inset 3px 0 0 var(--team);
+}
+.dHero__when { font-size: .8125rem; font-weight: 600; color: var(--h-hero-muted); }
+.dHero__team { display: flex; align-items: center; gap: 8px; margin-top: 6px !important; font-size: 1rem; font-weight: 600; overflow: hidden; }
+.dHero__team i, .dAgenda__list i { flex: none; width: 12px; height: 12px; background: var(--team); }
 .dHero__time {
-  margin-top: 4px !important;
-  font-size: clamp(2rem, 8.5vw, 2.5rem); font-weight: 600; line-height: 1.1; letter-spacing: -.035em;
-  overflow-wrap: anywhere;
+  font-size: clamp(1.75rem, 7.5vw, 2.25rem); font-weight: 600; line-height: 1.1; letter-spacing: -.035em;
+  font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
 }
 .dHero__time--empty { margin-top: 20px !important; font-size: 1.375rem; letter-spacing: -.02em; }
-.dHero__foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
-.dHero__meta { font-size: .9375rem; color: var(--h-hero-muted); overflow-wrap: anywhere; }
-.dHero__later { display: grid; gap: 2px; margin-top: 16px !important; padding: 6px !important; border-radius: var(--h-radius-inner); background: var(--h-hero-raised); }
-.dHero__later li { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; align-items: center; gap: 10px; min-height: 36px; padding: 0 10px; font-size: .875rem; }
-.dHero__later span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dHero__later time { color: var(--h-hero-muted); font-size: .8125rem; }
-.dHero__more {
-  display: inline-flex; align-items: center; gap: 2px; margin-top: 10px; padding: 4px 2px;
-  color: var(--h-hero-muted) !important; font-size: .8125rem; font-weight: 600;
+.dHero__place {
+  display: flex; align-items: center; gap: 4px; margin-top: 6px !important;
+  font-size: .9375rem; color: var(--h-hero-muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.dHero__more:hover { color: var(--h-hero-text) !important; }
+.dHero__place svg { flex: none; font-size: 15px; }
+@media (min-width: 1024px) {
+  .dHero__track { grid-auto-columns: calc(50% - 5px); }
+  .dHero__track[data-single] { grid-auto-columns: 100%; }
+}
 .dHero__empty { display: grid; justify-items: start; gap: 16px; }
 .dHero__cta {
   display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: var(--h-radius-control);
@@ -141,9 +170,12 @@ body[data-club-theme="light"] .dHome {
 .dCard__more:hover { color: var(--h-text) !important; }
 .dCard__empty { padding: 4px 0; font-size: .875rem; color: var(--h-muted); }
 .dCard__empty a { color: var(--h-text) !important; font-weight: 600; text-decoration: underline !important; text-underline-offset: 3px; }
+/* 할 일 개수: 빨간 글씨 + 옅은 빨강 알약 */
 .dBadge {
-  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 4px;
-  background: var(--h-brand); color: #fff; font-size: .75rem; font-weight: 600;
+  display: inline-flex; align-items: center; height: 20px; margin-left: 4px; padding: 0 8px;
+  border-radius: 999px; vertical-align: 1px; box-sizing: border-box;
+  background: var(--h-data-soft); color: var(--h-data);
+  font-size: .75rem; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Calendar ---------- */
@@ -158,7 +190,16 @@ body[data-club-theme="light"] .dHome {
   font-size: .8125rem !important; font-weight: 600; color: var(--h-text) !important;
 }
 .dCal__mode { background: var(--h-raised) !important; }
-.dCal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 2px; touch-action: pan-y; }
+.dCal__weekdays { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+.dCal__viewport { overflow: hidden; touch-action: pan-y; }
+.dCal__grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 2px; }
+/* 다음/이전 주·달: 방향대로 밀려 들어옴, 주간↔월간: 살짝 내려오며 나타남 */
+.dCal__grid[data-motion="next"] { animation: dCalSlideNext .32s cubic-bezier(.22, 1, .36, 1); }
+.dCal__grid[data-motion="prev"] { animation: dCalSlidePrev .32s cubic-bezier(.22, 1, .36, 1); }
+.dCal__grid[data-motion="mode"] { animation: dCalModeIn .28s cubic-bezier(.22, 1, .36, 1); }
+@keyframes dCalSlideNext { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes dCalSlidePrev { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@keyframes dCalModeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
 .dCal__weekday { padding: 4px 0 6px; text-align: center; font-size: .75rem; font-weight: 500; color: var(--h-meta); }
 .dCal__weekday[data-sunday] { color: var(--h-data); }
 .dCal__day {
@@ -174,9 +215,12 @@ body[data-club-theme="light"] .dHome {
 .dCal__day[data-outside] { color: var(--h-off); }
 .dCal__day[aria-current=date] { color: var(--h-data); font-weight: 600; }
 .dCal__day[aria-pressed=true] { background: var(--h-invert-bg); color: var(--h-invert-text); font-weight: 600; }
+/* 일정 별: 팀 색 (여러 팀이면 최대 3개), 예약 등 팀 없는 일정은 기본색 */
+.dCal__marks { display: flex; align-items: center; justify-content: center; gap: 1px; height: 9px; }
 .dCal__day i { width: 9px; height: 9px; }
-.dCal__day i[data-on] { background: var(--h-data); }
-.dCal__day[aria-pressed=true] i[data-on] { background: var(--h-invert-text); }
+.dCal__marks i + i, .dCal__marks i:has(+ i) { width: 7px; height: 7px; }
+.dCal__day i[data-on] { background: var(--mark, var(--h-data)); }
+.dCal__day[aria-pressed=true] i[data-on] { background: var(--mark, var(--h-invert-text)); }
 
 /* ---------- The chosen day ---------- */
 .dAgenda { margin-top: 12px; }
@@ -228,7 +272,7 @@ a.dList__row:hover { background: var(--h-raised); }
   .clubHome.dHome { padding: 28px 24px 48px; gap: 16px; }
   .dHome__main, .dHome__side { gap: 16px; }
   .dHero, .dCard { padding: 24px; }
-  .dHome__date { font-size: 1.5rem; }
+  .dHero__track { margin-inline: -24px !important; padding-inline: 24px !important; scroll-padding-inline: 24px; }
 }
 @media (min-width: 1024px) {
   .clubRoomLayout .clubHome.dHome:not(.clubHome--loading),
@@ -246,4 +290,5 @@ a.dList__row:hover { background: var(--h-raised); }
 
 @media (prefers-reduced-motion: reduce) {
   .dHome * { transition: none !important; }
+  .dCal__grid { animation: none !important; }
 }

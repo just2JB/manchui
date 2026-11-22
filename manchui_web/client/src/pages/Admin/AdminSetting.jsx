@@ -4,6 +4,7 @@ import apiClient, { serverUrl } from "../../api/apiClient";
 import { useAuth } from "../../context/AuthContext";
 import { useAppSettings } from "../../context/AppSettingsContext";
 import { LOADING_TEXT } from "../../constants/loadingText";
+import { CLUB_ROOM_RULES_ITEMS } from "../ClubRoom/Reservation/clubRoomRulesContent";
 
 const AdminSetting = () => {
   const { user } = useAuth();
@@ -17,6 +18,9 @@ const AdminSetting = () => {
   const [assistantEnabled, setAssistantEnabled] = useState(true);
   const [savingAssistant, setSavingAssistant] = useState(false);
   const [savingPresident, setSavingPresident] = useState(false);
+  /** 동아리방 이용 수칙 (한 줄 = 한 항목) */
+  const [rules, setRules] = useState(CLUB_ROOM_RULES_ITEMS);
+  const [savingRules, setSavingRules] = useState(false);
 
   useEffect(() => {
     void ensureJoinConfigLoaded();
@@ -30,7 +34,46 @@ const AdminSetting = () => {
       contact: joinConfig.president?.contact ?? "",
       major: joinConfig.president?.major ?? "",
     });
+    setRules(
+      Array.isArray(joinConfig.clubRoomRules) && joinConfig.clubRoomRules.length > 0
+        ? joinConfig.clubRoomRules
+        : CLUB_ROOM_RULES_ITEMS,
+    );
   }, [joinConfigLoading, joinConfig]);
+
+  const updateRule = (index, value) =>
+    setRules((prev) => prev.map((item, i) => (i === index ? value : item)));
+  const moveRule = (index, delta) =>
+    setRules((prev) => {
+      const next = [...prev];
+      const target = index + delta;
+      if (target < 0 || target >= next.length) return prev;
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    });
+  const removeRule = (index) => setRules((prev) => prev.filter((_, i) => i !== index));
+
+  const saveRules = async () => {
+    if (!serverUrl || !user?._id) return;
+    const cleaned = rules.map((item) => item.trim()).filter(Boolean);
+    if (cleaned.length === 0) {
+      alert("수칙을 한 개 이상 적어 주세요.");
+      return;
+    }
+    setSavingRules(true);
+    try {
+      await apiClient.put("/api/join/config", {
+        userId: user._id,
+        clubRoomRules: cleaned,
+      });
+      alert("동아리방 이용 수칙이 저장되었습니다.");
+      void refreshJoinConfig();
+    } catch (err) {
+      alert(err.response?.data?.message || "저장에 실패했습니다.");
+    } finally {
+      setSavingRules(false);
+    }
+  };
 
   const saveAssistant = async () => {
     if (!serverUrl || !user?._id) return;
@@ -178,6 +221,53 @@ const AdminSetting = () => {
           disabled={savingPresident}
         >
           {savingPresident ? "저장 중…" : "설정 저장"}
+        </button>
+      </div>
+
+      <div className="joinSetting">
+        <h3 className="configTitle">동아리방 이용 수칙</h3>
+        <p className="configHint">
+          예약 화면의 &lsquo;이용 수칙&rsquo;과 예약 완료 창에 보여요. 한 칸에 수칙 하나씩 적어 주세요.
+        </p>
+        <ol className="rulesEditor">
+          {rules.map((rule, index) => (
+            <li key={index} className="rulesEditor__item">
+              <span className="rulesEditor__num">{index + 1}</span>
+              <textarea
+                className="configInput rulesEditor__text"
+                value={rule}
+                onChange={(event) => updateRule(index, event.target.value)}
+                rows={2}
+                maxLength={300}
+                placeholder="예: 사용 후 불을 꺼 주세요."
+                aria-label={`수칙 ${index + 1}`}
+              />
+              <div className="rulesEditor__tools">
+                <button type="button" onClick={() => moveRule(index, -1)} disabled={index === 0}
+                  aria-label={`수칙 ${index + 1} 위로`}>↑</button>
+                <button type="button" onClick={() => moveRule(index, 1)} disabled={index === rules.length - 1}
+                  aria-label={`수칙 ${index + 1} 아래로`}>↓</button>
+                <button type="button" onClick={() => removeRule(index)} aria-label={`수칙 ${index + 1} 지우기`}>✕</button>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <div className="rulesEditor__actions">
+          <button type="button" className="rulesEditor__add" onClick={() => setRules((prev) => [...prev, ""])}
+            disabled={rules.length >= 20}>
+            + 수칙 추가
+          </button>
+          <button type="button" className="rulesEditor__reset" onClick={() => setRules(CLUB_ROOM_RULES_ITEMS)}>
+            기본 문구로
+          </button>
+        </div>
+        <button
+          type="button"
+          className="configSave configSave--block"
+          onClick={saveRules}
+          disabled={savingRules}
+        >
+          {savingRules ? "저장 중…" : "수칙 저장"}
         </button>
       </div>
     </div>

@@ -21,13 +21,13 @@ import "./AdminNavbar.css";
 
 const NAV_ITEMS = [
   { to: "/admin", label: "홈", end: true, Icon: IoHomeOutline },
+  { to: "/admin/team", label: "팀 관리", Icon: IoPeopleCircleOutline },
   { to: "/admin/join", label: "가입 신청", Icon: IoClipboardOutline },
-  { to: "/admin/reservation", label: "예약 관리", Icon: IoCalendarOutline },
+  { to: "/admin/reservation", label: "동방 예약", Icon: IoCalendarOutline },
   { to: "/admin/recommendation", label: "곡 추천", Icon: IoMusicalNotesOutline },
   { to: "/admin/lottery", label: "상품 추첨", Icon: IoGiftOutline },
   { to: "/admin/setting", label: "웹 설정", Icon: IoSettingsOutline },
   { to: "/admin/member", label: "부원", Icon: IoPeopleOutline },
-  { to: "/admin/team", label: "팀 관리", Icon: IoPeopleCircleOutline },
   { to: "/admin/archive", label: "아카이브", Icon: IoArchiveOutline },
 ];
 

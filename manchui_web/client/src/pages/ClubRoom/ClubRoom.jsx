@@ -1,8 +1,9 @@
 import { useRefreshOnFocus } from "../../hooks/useRefreshOnFocus";
 import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { IoAdd, IoChevronForward } from "react-icons/io5";
+import { IoChevronForward, IoNotificationsOutline } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
+import { useManchuiModal } from "../../hooks/ManchuiModal";
 import ClubPageSkeleton from "./ClubPageSkeleton";
 import { filterVisibleReservations } from "./Reservation/reservationRetention";
 import { useReservationNow } from "./Reservation/useReservationLiveSync";
@@ -18,6 +19,7 @@ import {
   getPollDisplayTitle,
 } from "./Poll/pollUtils";
 import ClubHomeCalendar from "./Home/ClubHomeCalendar";
+import ClubHomePracticeCarousel from "./Home/ClubHomePracticeCarousel";
 import "./Home/ClubHomeLayout.css";
 import "./Home/ClubHomeDark.css";
 import {
@@ -35,6 +37,7 @@ import {
   usePracticesQuery,
   useUserTeamsQuery,
 } from "../../queries/useClubQueries";
+import { toVisibleTeamColor } from "./Team/teamColorPresets";
 import "./Home/ClubHome.css";
 import "./Poll/Poll.css";
 
@@ -71,6 +74,7 @@ function formatPlace(place) {
 
 const ClubRoom = () => {
   const { user } = useAuth();
+  const modal = useManchuiModal();
   const userId = user?._id;
   const [selected, setSelected] = useState(() => formatDateKey(new Date()));
 
@@ -146,9 +150,6 @@ const ClubRoom = () => {
   }
 
   const todayKey = formatDateKey(now);
-  const nextPractice = upcomingPractices[0];
-  const laterPractices = upcomingPractices.slice(1, 4);
-  const morePracticeCount = Math.max(0, upcomingPractices.length - 4);
   const pendingPolls = openPolls.filter(poll => !poll.responded);
   const sortedPolls = [...pendingPolls, ...openPolls.filter(poll => poll.responded)];
   const dayEntries = [
@@ -166,44 +167,24 @@ const ClubRoom = () => {
   return (
     <div className="clubHome dHome">
       <header className="dHome__head">
-        <div>
-          <p className="dHome__hello">안녕하세요{user?.username ? `, ${user.username}님` : ""}</p>
-          <h1 className="dHome__date">{formatLongDate(todayKey)}</h1>
-        </div>
-        <Link to="/club/reservation" className="dHome__add" aria-label="동아리방 예약하기"><IoAdd aria-hidden="true" />예약</Link>
+        {/* 머리말은 날짜 한 줄만 (화면 제목은 숨김 제목으로) */}
+        <h1 className="dHome__srTitle">홈</h1>
+        <p className="dHome__today">{formatLongDate(todayKey)}</p>
+        {/* 알림: 푸시 알림 서비스를 붙이면 목록·안 읽음 표시(data-unread)를 연결 */}
+        <button type="button" className="dHome__bell" aria-label="알림"
+          onClick={() => void modal("알림 기능은 준비 중이에요.")}>
+          <IoNotificationsOutline aria-hidden="true" />
+        </button>
       </header>
 
       <div className="dHome__main">
-        <section className="dHero" aria-labelledby="dhero-title"
-          style={nextPractice ? { "--team": nextPractice.teamColor } : undefined}>
-          <h2 id="dhero-title" className="dHero__eyebrow">
-            <span>다음 연습</span>
-            {nextPractice && <span className="dHero__dday" data-today={dDay(todayKey, nextPractice.dateKey) === 0 || undefined}>
-              {formatDDay(todayKey, nextPractice.dateKey)}
-            </span>}
-          </h2>
-          {nextPractice ? <>
-            <p className="dHero__team"><i aria-hidden="true" />{nextPractice.teamName}</p>
-            <p className="dHero__time">{formatPracticeTimeDisplay(nextPractice.time)}</p>
-            <div className="dHero__foot">
-              <p className="dHero__meta">{formatRelativeDay(todayKey, nextPractice.dateKey)} · {formatPlace(nextPractice.place)}</p>
-            </div>
-            {laterPractices.length > 0 && <ul className="dHero__later" aria-label="이후 연습">
-              {laterPractices.map((practice, index) => <li key={practice._id ?? `${practice.dateKey}-${index}`}
-                style={{ "--team": practice.teamColor }}>
-                <i aria-hidden="true" />
-                <span>{practice.teamName}</span>
-                <time>{formatUpcomingPracticeDate(practice.dateKey)}</time>
-              </li>)}
-            </ul>}
-            {morePracticeCount > 0 && <Link className="dHero__more" to="/club/team">
-              연습 {morePracticeCount}개 더 있어요<IoChevronForward aria-hidden="true" />
-            </Link>}
-          </> : <div className="dHero__empty">
-            <p className="dHero__time dHero__time--empty">예정된 연습이 없어요</p>
-            <Link className="dHero__cta" to="/club/team">{teams.length ? "팀에서 연습 잡기" : "팀 만들기"}</Link>
-          </div>}
-        </section>
+<ClubHomePracticeCarousel
+          practices={upcomingPractices}
+          teamsCount={teams.length}
+          formatWhen={(dateKey) => formatRelativeDay(todayKey, dateKey)}
+          formatTime={formatPracticeTimeDisplay}
+          formatPlace={formatPlace}
+        />
 
         <section className="dCard dCard--calendar" aria-label="캘린더">
           <ClubHomeCalendar selected={selected} onSelect={setSelected} practiceByDate={practiceByDate}
@@ -220,7 +201,7 @@ const ClubRoom = () => {
                   <time>{entry.time}</time>
                 </li>)}
                 {dayPolls.map(poll => <li key={poll._id} data-kind="투표"
-                  style={poll.team?.teamColor ? { "--team": poll.team.teamColor } : undefined}>
+                  style={poll.team?.teamColor ? { "--team": toVisibleTeamColor(poll.team.teamColor) } : undefined}>
                   <i aria-hidden="true" />
                   <div>
                     <strong><Link to={`/club/poll/${poll._id}`}>{getPollDisplayTitle(poll)}</Link></strong>
@@ -243,7 +224,7 @@ const ClubRoom = () => {
             : <ul className="dList">
               {sortedPolls.map(poll => <li key={poll._id}>
                 <Link to={`/club/poll/${poll._id}`} className="dList__row" data-done={poll.responded || undefined}
-                  style={poll.team?.teamColor ? { "--team": poll.team.teamColor } : undefined}>
+                  style={poll.team?.teamColor ? { "--team": toVisibleTeamColor(poll.team.teamColor) } : undefined}>
                   <span className="dList__mark" aria-hidden="true" />
                   <span className="dList__body">
                     <strong>{getPollDisplayTitle(poll)}</strong>

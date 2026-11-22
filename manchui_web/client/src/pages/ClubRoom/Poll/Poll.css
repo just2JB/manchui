@@ -751,20 +751,40 @@
   gap: 8px;
 }
 
+/* 새 일정 종합: 흰 버튼 + 팀 색 동그라미 아이콘 */
 .teamPolls__new {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   min-height: 32px;
-  padding: 0 12px;
+  padding: 0 14px 0 5px;
   border: none;
   border-radius: 999px;
-  background: var(--club-primary);
-  color: var(--club-on-primary);
+  background: var(--club-text, #fff);
+  color: var(--club-bg, #0b0b0b);
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: 700;
   cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.12s ease;
+}
+
+.teamPolls__new svg {
+  width: 22px;
+  height: 22px;
+  padding: 3px;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: var(--team-accent, var(--club-text-muted));
+  color: #fff;
+}
+
+.teamPolls__new:hover {
+  opacity: 0.9;
+}
+
+.teamPolls__new:active {
+  transform: scale(0.97);
 }
 
 .teamPolls__list {
@@ -1643,4 +1663,92 @@ button.teamPollCard__count[aria-expanded="true"] {
   color: var(--club-text-muted);
   font-size: 0.8125rem;
   text-align: center;
+}
+
+/* ---------- 일정 요청 화면: 팀 연습 일정 (다른 일정 요청에서 잡힌 것도 모두) ---------- */
+.pollPractices {
+  margin-top: 28px;
+}
+
+.pollPractices__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pollPractices__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--club-text, var(--text-primary));
+}
+
+.pollPractices__meta {
+  font-size: 0.8rem;
+  color: var(--club-text-muted, var(--text-more));
+}
+
+.pollPractices__empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--club-text-muted, var(--text-more));
+}
+
+.pollPractices__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+}
+
+.pollPractices__item {
+  display: grid;
+  grid-template-columns: 76px 92px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 0 10px 10px;
+  border-bottom: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  border-left: 3px solid transparent;
+  font-size: 0.88rem;
+}
+
+/* 이 일정 요청 날짜에 있는 연습은 팀 색 줄로 표시 */
+.pollPractices__item--inPoll {
+  border-left-color: var(--team-accent);
+}
+
+.pollPractices__date {
+  color: var(--club-text-muted, var(--text-more));
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.pollPractices__time {
+  color: var(--club-text, var(--text-primary));
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.pollPractices__place {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--club-text-muted, var(--text-more));
+  text-align: right;
+}
+
+.pollPractices__more {
+  margin-top: 8px;
+  padding: 6px 0;
+  border: 0;
+  background: transparent;
+  color: var(--club-text-muted, var(--text-more));
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
 }

@@ -23,9 +23,22 @@ import {
   sharePollLink,
   storeGuestCredentials,
 } from "./pollUtils";
+import { toVisibleTeamColor } from "../Team/teamColorPresets";
+import {
+  formatPracticeTimeShort,
+  getUpcomingPractices,
+} from "../Team/teamCalendarUtils";
 import "./Poll.css";
 
 /** identity: { kind: "user" } | { kind: "guest", name, password } */
+
+const PRACTICE_PREVIEW_COUNT = 6;
+const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
+
+function formatPracticeDate(dateKey) {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  return `${m}/${d} (${WEEK[new Date(y, m - 1, d).getDay()]})`;
+}
 
 const PollRespond = () => {
   const { pollId } = useParams();
@@ -36,6 +49,8 @@ const PollRespond = () => {
   const [poll, setPoll] = useState(null);
   const [viewer, setViewer] = useState({});
   const [teamMembers, setTeamMembers] = useState([]);
+  const [teamPractices, setTeamPractices] = useState([]);
+  const [showAllPractices, setShowAllPractices] = useState(false);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
@@ -67,6 +82,7 @@ const PollRespond = () => {
       setPoll(data.poll);
       setViewer(data.viewer);
       setTeamMembers(data.teamMembers);
+      setTeamPractices(data.teamPractices);
       return data;
     } catch (error) {
       if (error.response?.status === 404) setNotFound(true);
@@ -115,9 +131,15 @@ const PollRespond = () => {
     [poll],
   );
 
+  const upcomingPractices = useMemo(
+    () => getUpcomingPractices(teamPractices, { limit: 0 }),
+    [teamPractices],
+  );
+  const pollDateSet = useMemo(() => new Set(poll?.dates ?? []), [poll]);
+
   const readOnly = Boolean(poll?.closed) || isPollPast(poll);
   const teamName = poll?.team?.name ?? "";
-  const accent = poll?.team?.teamColor || "#ff453a";
+  const accent = toVisibleTeamColor(poll?.team?.teamColor, "#ff453a");
 
   const myName =
     identity?.kind === "guest" ? identity.name : (user?.username ?? "나");
@@ -532,6 +554,61 @@ const PollRespond = () => {
         {leftPanel ? <div className="pollColumns__mine">{leftPanel}</div> : null}
         <div className="pollColumns__group">{groupPanel}</div>
       </div>
+
+      {/* 이 팀에 이미 잡힌 연습 전체 (어느 일정 요청에서 잡혔든) */}
+      <section className="pollPractices" aria-labelledby="poll-practices-title">
+        <div className="pollPractices__head">
+          <h2 id="poll-practices-title" className="pollPractices__title">
+            {teamName ? `${teamName} 연습 일정` : "팀 연습 일정"}
+          </h2>
+          <span className="pollPractices__meta">
+            {upcomingPractices.length > 0 ? `앞으로 ${upcomingPractices.length}개` : ""}
+          </span>
+        </div>
+        {upcomingPractices.length === 0 ? (
+          <p className="pollPractices__empty">아직 잡힌 연습이 없어요.</p>
+        ) : (
+          <>
+            <ul className="pollPractices__list">
+              {(showAllPractices
+                ? upcomingPractices
+                : upcomingPractices.slice(0, PRACTICE_PREVIEW_COUNT)
+              ).map((practice) => {
+                const place = String(practice.place ?? "").trim();
+                const inPoll = pollDateSet.has(practice.dateKey);
+                return (
+                  <li
+                    key={practice._id}
+                    className={`pollPractices__item${inPoll ? " pollPractices__item--inPoll" : ""}`}
+                  >
+                    <span className="pollPractices__date">
+                      {formatPracticeDate(practice.dateKey)}
+                    </span>
+                    <span className="pollPractices__time">
+                      {formatPracticeTimeShort(practice.time)}
+                    </span>
+                    <span className="pollPractices__place">
+                      {place && place !== "미확정" ? place : "장소 미정"}
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            {upcomingPractices.length > PRACTICE_PREVIEW_COUNT ? (
+              <button
+                type="button"
+                className="pollPractices__more"
+                onClick={() => setShowAllPractices((prev) => !prev)}
+                aria-expanded={showAllPractices}
+              >
+                {showAllPractices
+                  ? "접기"
+                  : `${upcomingPractices.length - PRACTICE_PREVIEW_COUNT}개 더 보기`}
+              </button>
+            ) : null}
+          </>
+        )}
+      </section>
     </div>
   );
 };

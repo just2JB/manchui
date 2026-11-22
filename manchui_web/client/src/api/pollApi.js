@@ -31,6 +31,7 @@ export async function fetchPoll(pollId) {
     poll: res.data?.poll ?? null,
     viewer: res.data?.viewer ?? {},
     teamMembers: Array.isArray(res.data?.teamMembers) ? res.data.teamMembers : [],
+    teamPractices: Array.isArray(res.data?.teamPractices) ? res.data.teamPractices : [],
   };
 }
 

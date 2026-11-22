@@ -309,11 +309,6 @@ export function buildPracticeCreateSearch(dateKeys) {
   return `dates=${encodeURIComponent(keys.join(","))}`;
 }
 
-function formatPracticePlace(place) {
-  const value = String(place ?? "").trim();
-  return value || "미확정";
-}
-
 function buildPracticeMemberIdSet(practice) {
   return new Set(
     (Array.isArray(practice?.members) ? practice.members : []).map((member) =>
@@ -322,18 +317,40 @@ function buildPracticeMemberIdSet(practice) {
   );
 }
 
-/** 클립보드용 한 줄: 날짜 시간 위치 인원수 (제외인원 명단) */
+/** "14:00–17:00" → "14-17" (정시는 분 생략, 30분 등은 그대로) */
+export function formatPracticeTimeShort(time) {
+  const raw = String(time ?? "").trim();
+  const match = raw.match(/(\d{1,2}):(\d{2})\s*[-–~]\s*(\d{1,2}):(\d{2})/);
+  if (!match) return raw || "시간 미정";
+  const part = (hour, minute) => {
+    const h = Number(hour);
+    return minute === "00" ? String(h) : `${h}:${minute}`;
+  };
+  const endHour = match[3] === "00" || match[3] === "0" ? "24" : match[3];
+  return `${part(match[1], match[2])}-${part(endHour, match[4])}`;
+}
+
+/** 클립보드용 한 줄: 11/24(월) 14-17 동방 5명 (불참 철수, 영희) */
 export function buildUpcomingPracticeCopyLine(practice, teamMembers = []) {
   const dateKey = normalizeDateKey(practice?.dateKey ?? practice?.date);
-  const dateLabel = dateKey ? formatUpcomingPracticeDate(dateKey) : "—";
-  const timeLabel = formatPracticeTimeDisplay(practice?.time);
-  const placeLabel = formatPracticePlace(practice?.place);
+  let dateLabel = "—";
+  if (dateKey) {
+    const [y, m, d] = dateKey.split("-").map(Number);
+    const week = WEEK_LABELS[new Date(y, m - 1, d).getDay()];
+    dateLabel = `${m}/${d}(${week})`;
+  }
+  const timeLabel = formatPracticeTimeShort(practice?.time);
+  const place = String(practice?.place ?? "").trim();
   const memberIds = buildPracticeMemberIdSet(practice);
   const excludedNames = (Array.isArray(teamMembers) ? teamMembers : [])
     .filter((member) => !memberIds.has(String(member?._id ?? member)))
     .map((member) => getMemberDisplayName(member));
 
-  return `${dateLabel} ${timeLabel} ${placeLabel} ${memberIds.size}명 (${excludedNames.join(", ")})`;
+  const parts = [dateLabel, timeLabel];
+  if (place && place !== "미확정") parts.push(place);
+  parts.push(`${memberIds.size}명`);
+  if (excludedNames.length > 0) parts.push(`(불참 ${excludedNames.join(", ")})`);
+  return parts.join(" ");
 }
 
 /** 앞으로 잡힌 연습 전체를 클립보드용 텍스트로 */

@@ -133,29 +133,32 @@ const TeamPracticeEditSheet = ({
   };
 
   return createPortal(
-    <div className="teamCalSheet__root" role="presentation">
+    <div className="teamPracticeModal__root" role="presentation">
       <button
         type="button"
-        className="teamCalSheet__backdrop"
+        className="teamPracticeModal__backdrop"
         aria-label="닫기"
         onClick={() => {
           if (!busy) onClose();
         }}
       />
       <div
-        className="teamCalSheet teamPracticeEdit"
+        className="teamPracticeModal teamPracticeEdit"
         style={{ "--team-accent": accentColor }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="team-practice-edit-title"
       >
-        <div className="teamCalSheet__handleWrap">
-          <span className="teamCalSheet__handle" aria-hidden />
-        </div>
         <div className="teamPracticeEdit__head">
-          <h2 id="team-practice-edit-title" className="teamCalSheet__title">
-            연습 편집
-          </h2>
+          <div className="teamPracticeEdit__when">
+            <span className="teamPracticeEdit__date">
+              {dateLabel}
+              <span className="teamPracticeEdit__dday">{formatDDay(dateKey)}</span>
+            </span>
+            <h2 id="team-practice-edit-title" className="teamPracticeEdit__time">
+              {timeLabel}
+            </h2>
+          </div>
           <button
             type="button"
             className="teamPracticeEdit__close"
@@ -165,15 +168,6 @@ const TeamPracticeEditSheet = ({
           >
             <IoCloseOutline aria-hidden />
           </button>
-        </div>
-
-        <div className="teamPracticeEdit__summary">
-          <span className="teamPracticeEdit__summaryTop">
-            <span>{dateLabel}</span>
-            <span className="teamPracticeEdit__dday">{formatDDay(dateKey)}</span>
-          </span>
-          <span className="teamPracticeEdit__time">{timeLabel}</span>
-          <span className="teamPracticeEdit__count">참석 {attendeeNames.length}명</span>
         </div>
 
         <div className="teamPracticeEdit__section">
@@ -188,6 +182,12 @@ const TeamPracticeEditSheet = ({
               className="teamPracticeEdit__input"
               value={place}
               onChange={(event) => setPlace(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" && !event.nativeEvent.isComposing) {
+                  event.preventDefault();
+                  void handleSave();
+                }
+              }}
               placeholder="비워 두면 미확정"
               autoComplete="off"
               disabled={busy}
@@ -217,32 +217,42 @@ const TeamPracticeEditSheet = ({
 
         {attendeeNames.length > 0 ? (
           <div className="teamPracticeEdit__section">
-            <p className="teamPracticeEdit__label">참석 멤버</p>
-            <ul className="teamPracticeEdit__members">
-              {attendeeNames.map((name, index) => (
-                <li key={`${name}-${index}`}>{name}</li>
-              ))}
-            </ul>
+            <p className="teamPracticeEdit__label">
+              참석 {attendeeNames.length}명
+            </p>
+            <p className="teamPracticeEdit__members">{attendeeNames.join(", ")}</p>
           </div>
         ) : null}
 
-        <button
-          type="button"
-          className="teamPracticeEdit__save"
-          onClick={() => void handleSave()}
-          disabled={busy}
-        >
-          {busy ? "처리 중…" : "저장"}
-        </button>
-        <button
-          type="button"
-          className="teamPracticeEdit__deleteBtn"
-          onClick={() => void handleDelete()}
-          disabled={busy}
-        >
-          <IoTrashOutline aria-hidden />
-          연습 삭제
-        </button>
+        <div className="teamPracticeEdit__foot">
+          <button
+            type="button"
+            className="teamPracticeEdit__deleteBtn"
+            onClick={() => void handleDelete()}
+            disabled={busy}
+          >
+            <IoTrashOutline aria-hidden />
+            삭제
+          </button>
+          <div className="teamPracticeEdit__footRight">
+            <button
+              type="button"
+              className="teamPracticeEdit__cancel"
+              onClick={onClose}
+              disabled={busy}
+            >
+              취소
+            </button>
+            <button
+              type="button"
+              className="teamPracticeEdit__save"
+              onClick={() => void handleSave()}
+              disabled={busy}
+            >
+              {busy ? "저장 중…" : "저장"}
+            </button>
+          </div>
+        </div>
       </div>
     </div>,
     document.body,

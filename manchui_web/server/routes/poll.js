@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const router = express.Router();
 const Team = require("../models/Team");
 const TeamPoll = require("../models/TeamPoll");
+const Practice = require("../models/Practice");
 const User = require("../models/User");
 const requireAuth = require("../middleware/requireAuth");
 const optionalAuth = require("../middleware/optionalAuth");
@@ -274,12 +275,26 @@ router.get("/:pollId", optionalAuth, async (req, res) => {
         myResponseId: myResponse ? String(myResponse._id) : null,
       },
       teamMembers: isMember ? await loadTeamMemberSummaries(team) : [],
+      teamPractices: await loadTeamPracticeSummaries(team._id),
     });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "서버 오류가 발생했습니다." });
   }
 });
+
+/** 일정 요청 화면용 팀 연습 목록: 게스트도 보므로 날짜·시간·장소만 */
+async function loadTeamPracticeSummaries(teamId) {
+  const practices = await Practice.find({ teamId: String(teamId) })
+    .select("date time place")
+    .lean();
+  return practices.map((practice) => ({
+    _id: String(practice._id),
+    date: practice.date,
+    time: practice.time,
+    place: practice.place,
+  }));
+}
 
 async function findGuestResponse(pollId, name) {
   if (!pollId || !/^[a-f0-9]{24}$/i.test(String(pollId))) {

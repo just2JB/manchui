@@ -1,0 +1,198 @@
+/* 팀 연습 일정 공유 페이지 (로그인 없이 보는 화면) */
+.practiceShare {
+  width: 100%;
+  max-width: 560px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 28px 18px calc(40px + env(safe-area-inset-bottom, 0px));
+  background: var(--background-dark);
+  color: var(--text-primary);
+}
+
+.practiceShare__status,
+.practiceShare__error {
+  margin: 40px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-more);
+  text-align: center;
+}
+.practiceShare__error {
+  color: var(--club-danger, #ff8a80);
+}
+
+.practiceShare__head {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+}
+.practiceShare__eyebrow {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-more);
+}
+.practiceShare__team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: clamp(1.6rem, 6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+.practiceShare__mark {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background: var(--team-accent);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 0Q60 40 100 50Q60 60 50 100Q40 60 0 50Q40 40 50 0Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.practiceShare__headRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 4px;
+}
+.practiceShare__summary {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-more);
+}
+.practiceShare__shareBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.16);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.practiceShare__shareBtn:hover {
+  border-color: rgba(var(--club-ink-rgb, 255, 255, 255), 0.32);
+}
+
+/* 달별 묶음 */
+.practiceShare__month {
+  margin-top: 24px;
+}
+.practiceShare__monthTitle {
+  margin: 0 0 8px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--text-more);
+}
+.practiceShare__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.practiceShare__item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px 12px 12px;
+  border: 1px solid rgba(var(--club-ink-rgb, 255, 255, 255), 0.08);
+  border-radius: var(--club-radius, 14px);
+}
+.practiceShare__item[data-today] {
+  border-color: var(--team-accent);
+  box-shadow: inset 3px 0 0 var(--team-accent);
+}
+.practiceShare__date {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  border-radius: 10px;
+  background: rgba(var(--club-ink-rgb, 255, 255, 255), 0.05);
+}
+.practiceShare__day {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.practiceShare__week {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-more);
+}
+.practiceShare__date[data-weekend] .practiceShare__week {
+  color: var(--team-accent);
+}
+.practiceShare__body {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+.practiceShare__time {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.practiceShare__rel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--team-accent);
+}
+.practiceShare__place {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-more);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.practiceShare__place svg {
+  flex: none;
+}
+
+.practiceShare__foot {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  margin-top: 36px;
+}
+.practiceShare__homeLink {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 22px;
+  border-radius: 999px;
+  background: var(--text-primary);
+  color: var(--background-dark) !important;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+.practiceShare__url {
+  font-size: 0.72rem;
+  color: var(--text-more);
+  opacity: 0.7;
+  word-break: break-all;
+  text-align: center;
+}

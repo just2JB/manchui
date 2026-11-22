@@ -8,7 +8,7 @@
    알약은 하나만 있고 선택이 바뀌면 스윽 미끄러진다 (ClubRoomNavbar.jsx useSlidingPill).
    어두운 화면에서는 그림자가 안 보이므로: 바 뒤로 아래에서 올라오는 페이드 + 밝은 반투명 테두리
    + 윗면 하이라이트로 떠 보이게 한다.
-   높이 64 + 아래 여백 12 + safe-area → App.css --club-room-bottom-nav 와 맞춤 */
+   높이 50 + 아래 여백 12 + safe-area → App.css --club-room-bottom-nav 와 맞춤 */
 body[data-club-theme] .ClubRoomBottomNav,
 .ClubRoomBottomNav {
   --nav-bg: #1a1a1c;
@@ -40,14 +40,14 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
   right: 12px;
   bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   margin-inline: auto;
-  max-width: 576px;
+  max-width: 440px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  height: 64px;
-  padding: 0 10px;
+  height: 50px;
+  padding: 0 6px;
   user-select: none;
   z-index: 810;
 }
@@ -59,7 +59,7 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
   z-index: -1;
   inset: 0;
   border: 1px solid var(--nav-edge);
-  border-radius: 22px;
+  border-radius: 25px; /* 높이 50 의 절반 → 완전한 알약 모양 (선택 알약과 맞춤) */
   background: var(--nav-bg);
   box-shadow: var(--nav-highlight), var(--nav-shadow); /* 떠 있는 요소에만 쓰는 그림자 */
   pointer-events: none;
@@ -73,7 +73,7 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
   left: -13px;
   right: -13px;
   bottom: calc(-13px - env(safe-area-inset-bottom, 0px));
-  height: calc(104px + env(safe-area-inset-bottom, 0px)); /* 바 + 아래 여백 + 위로 약간. 떠 있는 버튼(FAB)은 덮지 않음 */
+  height: calc(90px + env(safe-area-inset-bottom, 0px)); /* 바 + 아래 여백 + 위로 약간. 떠 있는 버튼(FAB)은 덮지 않음 */
   background: linear-gradient(
     to top,
     rgba(var(--nav-fade), 0.96) 0%,
@@ -89,8 +89,8 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
   top: 50%;
   left: 0;
   width: 0;
-  height: 44px;
-  margin-top: -22px;
+  height: 36px;
+  margin-top: -18px;
   border-radius: 999px;
   background: var(--nav-pill);
   opacity: 0;
@@ -109,15 +109,15 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 44px;
-  height: 44px;
+  min-width: 36px;
+  height: 36px;
   padding: 0;
   border: none;
   border-radius: 999px;
   background: transparent;
   color: var(--nav-idle);
   font: inherit;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -142,7 +142,7 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
 }
 
 .ClubRoomBottomNav__icon {
-  font-size: 24px;
+  font-size: 20px;
   flex-shrink: 0;
 }
 
@@ -155,7 +155,7 @@ body[data-club-theme="light"] .ClubRoomBottomNav {
 body[data-club-theme] .ClubRoomBottomNav__item--active,
 .ClubRoomBottomNav__item--active {
   flex: 0 0 auto;
-  padding: 0 18px 0 14px;
+  padding: 0 14px 0 10px;
   background: transparent;
   color: var(--nav-on-pill);
 }

@@ -62,6 +62,11 @@ router.post("/edit", async (req, res) => {
     practice.time = time;
     practice.members = resolvedMembers;
     practice.memberByHour = resolvedMemberByHour;
+    // 팀에서 장소를 바꾸면 임원진 배정 기록은 지운다 (기록 표에 '팀에서 입력'으로 보임)
+    if (String(practice.place ?? "").trim() !== String(place ?? "").trim()) {
+      practice.placeAssignedAt = null;
+      practice.placeAssignedBy = null;
+    }
     practice.place = place;
     await practice.save();
     res.status(201).json({ message: "연습이 수정되었습니다" });
@@ -85,6 +90,34 @@ router.get("/teamPractice/:teamId", async (req, res) => {
     res.json({ teamPractice: teamPractice });
   } catch (error) {
     res.status(501).json({ message: "서버 오류가 발생하였습니다." });
+  }
+});
+
+/** 팀 연습 일정 공유 페이지용 (로그인 없이): 팀 이름·색, 연습 날짜·시간·장소만 */
+router.get("/share/:teamId", async (req, res) => {
+  try {
+    const { teamId } = req.params;
+    if (!/^[a-f0-9]{24}$/i.test(String(teamId))) {
+      return res.status(404).json({ message: "존재하지 않는 팀입니다." });
+    }
+    const team = await Team.findById(teamId).select("name teamColor").lean();
+    if (!team) {
+      return res.status(404).json({ message: "존재하지 않는 팀입니다." });
+    }
+    const practices = await Practice.find({ teamId: String(teamId) })
+      .select("date time place")
+      .lean();
+    res.json({
+      team: { _id: String(team._id), name: team.name, teamColor: team.teamColor },
+      practices: practices.map((practice) => ({
+        _id: String(practice._id),
+        date: practice.date,
+        time: practice.time,
+        place: practice.place,
+      })),
+    });
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류가 발생하였습니다." });
   }
 });
 

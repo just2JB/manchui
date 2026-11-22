@@ -1,30 +1,56 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "./AdminSetting.css";
 import apiClient, { serverUrl } from "../../api/apiClient";
 import { useAuth } from "../../context/AuthContext";
 import { useAppSettings } from "../../context/AppSettingsContext";
+import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { LOADING_TEXT } from "../../constants/loadingText";
 import { CLUB_ROOM_RULES_ITEMS } from "../ClubRoom/Reservation/clubRoomRulesContent";
 
+const EMPTY_PRESIDENT = { name: "", contact: "", major: "" };
+
+const sameList = (a, b) => a.length === b.length && a.every((item, i) => item === b[i]);
+
+/** 왼쪽 제목·설명, 오른쪽 설정 (모바일은 위아래) */
+function SettingSection({ title, desc, children }) {
+  return (
+    <section className="aSet__section">
+      <div className="aSet__about">
+        <h2 className="aSet__title">{title}</h2>
+        {desc ? <p className="aSet__desc">{desc}</p> : null}
+      </div>
+      <div className="aSet__body">{children}</div>
+    </section>
+  );
+}
+
 const AdminSetting = () => {
   const { user } = useAuth();
+  const modal = useManchuiModal();
   const { joinConfig, joinConfigLoading, refreshJoinConfig, ensureJoinConfigLoaded } =
     useAppSettings();
-  const [president, setPresident] = useState({
-    name: "",
-    contact: "",
-    major: "",
-  });
+
   const [assistantEnabled, setAssistantEnabled] = useState(true);
   const [savingAssistant, setSavingAssistant] = useState(false);
+  const [president, setPresident] = useState(EMPTY_PRESIDENT);
   const [savingPresident, setSavingPresident] = useState(false);
-  /** 동아리방 이용 수칙 (한 줄 = 한 항목) */
+  /** 동아리방 이용 수칙 (한 칸 = 한 항목) */
   const [rules, setRules] = useState(CLUB_ROOM_RULES_ITEMS);
   const [savingRules, setSavingRules] = useState(false);
 
   useEffect(() => {
     void ensureJoinConfigLoaded();
   }, [ensureJoinConfigLoaded]);
+
+  const savedPresident = {
+    name: joinConfig.president?.name ?? "",
+    contact: joinConfig.president?.contact ?? "",
+    major: joinConfig.president?.major ?? "",
+  };
+  const savedRules =
+    Array.isArray(joinConfig.clubRoomRules) && joinConfig.clubRoomRules.length > 0
+      ? joinConfig.clubRoomRules
+      : CLUB_ROOM_RULES_ITEMS;
 
   useEffect(() => {
     if (joinConfigLoading) return;
@@ -41,6 +67,56 @@ const AdminSetting = () => {
     );
   }, [joinConfigLoading, joinConfig]);
 
+  const presidentChanged =
+    president.name !== savedPresident.name ||
+    president.contact !== savedPresident.contact ||
+    president.major !== savedPresident.major;
+  const cleanedRules = rules.map((item) => item.trim()).filter(Boolean);
+  const rulesChanged = !sameList(cleanedRules, savedRules) || cleanedRules.length !== rules.length;
+
+  const putConfig = (payload) =>
+    apiClient.put("/api/join/config", { userId: user._id, ...payload });
+
+  // 어시스턴트: 스위치를 누르면 바로 저장 (끌 때는 한 번 확인)
+  const toggleAssistant = async () => {
+    if (!serverUrl || !user?._id || savingAssistant) return;
+    const next = !assistantEnabled;
+    if (
+      !next &&
+      !(await modal(
+        "동아리방을 끄면 부원들이 로그인·동아리방에 들어올 수 없어요. 끌까요?",
+        "confirm",
+      ))
+    ) {
+      return;
+    }
+    setAssistantEnabled(next);
+    setSavingAssistant(true);
+    try {
+      await putConfig({ assistantEnabled: next });
+      void refreshJoinConfig();
+    } catch (err) {
+      setAssistantEnabled(!next);
+      await modal(err.response?.data?.message || "저장에 실패했습니다.");
+    } finally {
+      setSavingAssistant(false);
+    }
+  };
+
+  const savePresident = async () => {
+    if (!serverUrl || !user?._id) return;
+    setSavingPresident(true);
+    try {
+      await putConfig({ president });
+      await modal("회장 정보를 저장했어요.");
+      void refreshJoinConfig();
+    } catch (err) {
+      await modal(err.response?.data?.message || "저장에 실패했습니다.");
+    } finally {
+      setSavingPresident(false);
+    }
+  };
+
   const updateRule = (index, value) =>
     setRules((prev) => prev.map((item, i) => (i === index ? value : item)));
   const moveRule = (index, delta) =>
@@ -55,186 +131,110 @@ const AdminSetting = () => {
 
   const saveRules = async () => {
     if (!serverUrl || !user?._id) return;
-    const cleaned = rules.map((item) => item.trim()).filter(Boolean);
-    if (cleaned.length === 0) {
-      alert("수칙을 한 개 이상 적어 주세요.");
+    if (cleanedRules.length === 0) {
+      await modal("수칙을 한 개 이상 적어 주세요.");
       return;
     }
     setSavingRules(true);
     try {
-      await apiClient.put("/api/join/config", {
-        userId: user._id,
-        clubRoomRules: cleaned,
-      });
-      alert("동아리방 이용 수칙이 저장되었습니다.");
+      await putConfig({ clubRoomRules: cleanedRules });
+      await modal("동아리방 이용 수칙을 저장했어요.");
       void refreshJoinConfig();
     } catch (err) {
-      alert(err.response?.data?.message || "저장에 실패했습니다.");
+      await modal(err.response?.data?.message || "저장에 실패했습니다.");
     } finally {
       setSavingRules(false);
     }
   };
 
-  const saveAssistant = async () => {
-    if (!serverUrl || !user?._id) return;
-    setSavingAssistant(true);
-    try {
-      await apiClient.put("/api/join/config", {
-        userId: user._id,
-        assistantEnabled,
-      });
-      alert("어시스턴트 설정이 저장되었습니다.");
-      void refreshJoinConfig();
-    } catch (err) {
-      alert(err.response?.data?.message || "저장에 실패했습니다.");
-    } finally {
-      setSavingAssistant(false);
-    }
-  };
-
-  const savePresident = async () => {
-    if (!serverUrl || !user?._id) return;
-    setSavingPresident(true);
-    try {
-      await apiClient.put("/api/join/config", {
-        userId: user._id,
-        president,
-      });
-      alert("회장 정보가 저장되었습니다.");
-      void refreshJoinConfig();
-    } catch (err) {
-      alert(err.response?.data?.message || "저장에 실패했습니다.");
-    } finally {
-      setSavingPresident(false);
-    }
-  };
-
   if (joinConfigLoading) {
     return (
-      <div className="adminSetting">
+      <div className="aSet">
         <h1 className="admin-page-heading">웹페이지 설정</h1>
-        <p>{LOADING_TEXT}</p>
+        <p className="aSet__desc">{LOADING_TEXT}</p>
       </div>
     );
   }
 
   return (
-    <div className="adminSetting">
+    <div className="aSet">
       <h1 className="admin-page-heading">웹페이지 설정</h1>
-      <div className="joinSetting joinSetting--assistant">
-        <h3 className="configTitle">동아리방 (어시스턴트)</h3>
-        <p className="configHint">
-          끄면 메인 사이트 네비게이션의 어시스턴트를 누를 수 없고, 동아리방
-          진입도 제한됩니다. (예약 공유 링크 열람은 가능)
-        </p>
-        <div
-          className="assistantToggle"
-          role="radiogroup"
-          aria-label="어시스턴트 사용 여부"
-        >
-          <div
-            className={`assistantStatus assistantStatus--${assistantEnabled ? "on" : "off"}`}
-            aria-live="polite"
-          >
-            <span className="assistantStatus__dot" aria-hidden />
-            <span className="assistantStatus__text">
-              {assistantEnabled ? "켜짐" : "꺼짐"}
-            </span>
-            <span className="assistantStatus__sub">
-              {assistantEnabled
-                ? "회원이 동아리방을 이용할 수 있습니다."
-                : "동아리방·로그인 진입이 막힙니다."}
-            </span>
-          </div>
-          <div className="assistantToggle__btns">
-            <button
-              type="button"
-              className={`assistantToggle__btn assistantToggle__btn--on${assistantEnabled ? " assistantToggle__btn--selected" : ""}`}
-              onClick={() => setAssistantEnabled(true)}
-              aria-checked={assistantEnabled}
-              role="radio"
-            >
-              켜기
-            </button>
-            <button
-              type="button"
-              className={`assistantToggle__btn assistantToggle__btn--off${!assistantEnabled ? " assistantToggle__btn--selected" : ""}`}
-              onClick={() => setAssistantEnabled(false)}
-              aria-checked={!assistantEnabled}
-              role="radio"
-            >
-              끄기
-            </button>
-          </div>
-        </div>
+
+      <SettingSection
+        title="동아리방"
+        desc="끄면 메인 사이트에서 동아리방(어시스턴트)과 로그인으로 들어갈 수 없어요. 예약 공유 링크는 계속 열려요."
+      >
         <button
           type="button"
-          className="configSave configSave--block"
-          onClick={saveAssistant}
+          role="switch"
+          aria-checked={assistantEnabled}
+          className="aSet__switchRow"
+          onClick={() => void toggleAssistant()}
           disabled={savingAssistant}
         >
-          {savingAssistant ? "저장 중…" : "설정 저장"}
+          <span className="aSet__switchText">
+            <strong>{assistantEnabled ? "켜져 있어요" : "꺼져 있어요"}</strong>
+            <small>
+              {savingAssistant
+                ? "저장 중…"
+                : assistantEnabled
+                  ? "부원이 동아리방을 쓸 수 있어요"
+                  : "동아리방·로그인 진입이 막혀 있어요"}
+            </small>
+          </span>
+          <span className="aSet__switch" data-on={assistantEnabled || undefined} aria-hidden />
         </button>
-      </div>
-      <div className="joinSetting">
-        <h3 className="configTitle">회장 정보</h3>
-        <div className="configRow">
-          <span className="configLabel">이름</span>
-          <input
-            type="text"
-            className="configInput"
-            value={president.name}
-            onChange={(e) =>
-              setPresident((p) => ({ ...p, name: e.target.value }))
-            }
-            placeholder="회장 이름"
-          />
-        </div>
-        <div className="configRow">
-          <span className="configLabel">연락처</span>
-          <input
-            type="text"
-            className="configInput"
-            value={president.contact}
-            onChange={(e) =>
-              setPresident((p) => ({ ...p, contact: e.target.value }))
-            }
-            placeholder="전화번호 또는 카카오ID"
-          />
-        </div>
-        <div className="configRow">
-          <span className="configLabel">학과</span>
-          <input
-            type="text"
-            className="configInput"
-            value={president.major}
-            onChange={(e) =>
-              setPresident((p) => ({ ...p, major: e.target.value }))
-            }
-            placeholder="학과명"
-          />
-        </div>
-        <button
-          type="button"
-          className="configSave configSave--block"
-          onClick={savePresident}
-          disabled={savingPresident}
-        >
-          {savingPresident ? "저장 중…" : "설정 저장"}
-        </button>
-      </div>
+      </SettingSection>
 
-      <div className="joinSetting">
-        <h3 className="configTitle">동아리방 이용 수칙</h3>
-        <p className="configHint">
-          예약 화면의 &lsquo;이용 수칙&rsquo;과 예약 완료 창에 보여요. 한 칸에 수칙 하나씩 적어 주세요.
-        </p>
-        <ol className="rulesEditor">
+      <SettingSection
+        title="회장 정보"
+        desc="가입 안내와 개인정보 처리방침의 책임자 칸에 보여요."
+      >
+        <div className="aSet__fields">
+          {[
+            ["name", "이름", "회장 이름"],
+            ["contact", "연락처", "010-0000-0000 또는 이메일"],
+            ["major", "학과", "학과명"],
+          ].map(([key, label, placeholder]) => (
+            <label key={key} className="aSet__field">
+              <span className="aSet__label">{label}</span>
+              <input
+                type="text"
+                className="aSet__input"
+                value={president[key]}
+                onChange={(e) => setPresident((p) => ({ ...p, [key]: e.target.value }))}
+                placeholder={placeholder}
+              />
+            </label>
+          ))}
+        </div>
+        <div className="aSet__actions">
+          {presidentChanged ? (
+            <button type="button" className="aSet__ghost" onClick={() => setPresident(savedPresident)}>
+              되돌리기
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="aSet__save"
+            onClick={() => void savePresident()}
+            disabled={savingPresident || !presidentChanged}
+          >
+            {savingPresident ? "저장 중…" : "저장"}
+          </button>
+        </div>
+      </SettingSection>
+
+      <SettingSection
+        title="동아리방 이용 수칙"
+        desc="예약 화면의 이용 수칙, 예약 완료 창, 예약 공유 페이지에 보여요. 한 칸에 하나씩 적어 주세요."
+      >
+        <ol className="aSet__rules">
           {rules.map((rule, index) => (
-            <li key={index} className="rulesEditor__item">
-              <span className="rulesEditor__num">{index + 1}</span>
+            <li key={index} className="aSet__rule">
+              <span className="aSet__ruleNum">{index + 1}</span>
               <textarea
-                className="configInput rulesEditor__text"
+                className="aSet__input aSet__ruleText"
                 value={rule}
                 onChange={(event) => updateRule(index, event.target.value)}
                 rows={2}
@@ -242,7 +242,7 @@ const AdminSetting = () => {
                 placeholder="예: 사용 후 불을 꺼 주세요."
                 aria-label={`수칙 ${index + 1}`}
               />
-              <div className="rulesEditor__tools">
+              <div className="aSet__ruleTools">
                 <button type="button" onClick={() => moveRule(index, -1)} disabled={index === 0}
                   aria-label={`수칙 ${index + 1} 위로`}>↑</button>
                 <button type="button" onClick={() => moveRule(index, 1)} disabled={index === rules.length - 1}
@@ -252,24 +252,26 @@ const AdminSetting = () => {
             </li>
           ))}
         </ol>
-        <div className="rulesEditor__actions">
-          <button type="button" className="rulesEditor__add" onClick={() => setRules((prev) => [...prev, ""])}
-            disabled={rules.length >= 20}>
-            + 수칙 추가
-          </button>
-          <button type="button" className="rulesEditor__reset" onClick={() => setRules(CLUB_ROOM_RULES_ITEMS)}>
-            기본 문구로
+        <div className="aSet__actions aSet__actions--split">
+          <div className="aSet__actionsLeft">
+            <button type="button" className="aSet__add" onClick={() => setRules((prev) => [...prev, ""])}
+              disabled={rules.length >= 20}>
+              + 수칙 추가
+            </button>
+            <button type="button" className="aSet__ghost" onClick={() => setRules(CLUB_ROOM_RULES_ITEMS)}>
+              기본 문구로
+            </button>
+          </div>
+          <button
+            type="button"
+            className="aSet__save"
+            onClick={() => void saveRules()}
+            disabled={savingRules || !rulesChanged}
+          >
+            {savingRules ? "저장 중…" : "저장"}
           </button>
         </div>
-        <button
-          type="button"
-          className="configSave configSave--block"
-          onClick={saveRules}
-          disabled={savingRules}
-        >
-          {savingRules ? "저장 중…" : "수칙 저장"}
-        </button>
-      </div>
+      </SettingSection>
     </div>
   );
 };

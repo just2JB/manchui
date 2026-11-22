@@ -1,5 +1,5 @@
 import { useRefreshOnFocus } from "../../hooks/useRefreshOnFocus";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { IoChevronForward, IoNotificationsOutline } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
@@ -86,6 +86,14 @@ const ClubRoom = () => {
 
   const invalidateHome = useInvalidateClubHome(userId);
   useRefreshOnFocus(invalidateHome);
+
+  // 홈에 들어올 때마다 한 번 새로 불러온다.
+  // 처음 열 때(아직 받은 데이터가 없을 때)는 이미 불러오는 중이라 건너뛴다.
+  const hadCachedDataRef = useRef(teamsQuery.dataUpdatedAt > 0);
+  useEffect(() => {
+    if (!userId || !hadCachedDataRef.current) return;
+    invalidateHome();
+  }, [userId, invalidateHome]);
 
   const practices = practicesQuery.data ?? EMPTY_LIST;
   const openPolls = openPollsQuery.data ?? EMPTY_LIST;

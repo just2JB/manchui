@@ -38,8 +38,11 @@ test("URL을 다시 읽어도 선택을 복원하며 상위 이동은 하위 선
     category: "자료", group: "공연 양식 / 인수인계", generation: "none", record: "record-id",
   });
   assert.deepEqual(readArchiveLocation(new URLSearchParams(params.toString())), {
-    category: "자료", group: "공연 양식 / 인수인계", generation: "none", record: "record-id",
+    category: "자료", group: "공연 양식 / 인수인계", generation: "none", record: "record-id", view: "list",
   });
+  const graph = archiveSearchParams(params, { view: "graph" });
+  assert.equal(readArchiveLocation(graph).view, "graph");
+  assert.equal(readArchiveLocation(archiveSearchParams(graph, { category: "자료" })).view, "list");
   const parent = archiveSearchParams(params, { category: "자료" });
   assert.equal(parent.get("record"), null);
   assert.equal(parent.get("generation"), null);

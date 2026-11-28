@@ -16,6 +16,7 @@
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.11.0",
     "cookies": "^0.9.1",
+    "d3-force": "^3.0.1",
     "gsap": "^3.13.0",
     "motion": "^12.23.12",
     "ogl": "^1.0.11",

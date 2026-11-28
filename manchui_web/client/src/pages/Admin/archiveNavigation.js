@@ -7,12 +7,14 @@ export const readArchiveLocation = (params) => {
     category, group,
     generation: group ? params.get("generation") || "all" : "all",
     record: group ? params.get("record") || null : null,
+    view: params.get("view") === "graph" ? "graph" : "list",
   };
 };
 
-export const archiveSearchParams = (current, { category = "all", group = "", generation = "all", record = null }) => {
+/** 위치를 바꾸면 그래프 보기는 닫힌다 (view: "graph" 를 넘길 때만 유지). */
+export const archiveSearchParams = (current, { category = "all", group = "", generation = "all", record = null, view = "list" }) => {
   const next = new URLSearchParams(current);
-  for (const key of ["category", "group", "generation", "record"]) next.delete(key);
+  for (const key of ["category", "group", "generation", "record", "view"]) next.delete(key);
   if (category !== "all") {
     next.set("category", category);
     if (group) {
@@ -21,5 +23,6 @@ export const archiveSearchParams = (current, { category = "all", group = "", gen
       if (record) next.set("record", record);
     }
   }
+  if (view === "graph") next.set("view", "graph");
   return next;
 };

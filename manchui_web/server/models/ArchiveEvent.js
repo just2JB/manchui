@@ -21,6 +21,8 @@ const noticeSchema = new mongoose.Schema(
     /** 타임라인 항목 종류 */
     kind: { type: String, enum: NOTICE_KINDS, default: "공지" },
     tags: { type: [{ type: String, enum: ["행사", "공연", "공지"] }], default: undefined },
+    /** 갈래: 같은 기록 안에서 누구에게·어디서 낸 공지인지 (예: 공연진, 곡장). 비우면 제목으로 추론 */
+    branch: { type: String, default: "", trim: true, maxlength: 30 },
     body: { type: String, default: "", maxlength: 20000 },
     authorName: { type: String, default: "", trim: true, maxlength: 40 },
   },

@@ -1312,3 +1312,86 @@ button.archiveCallout__icon:hover { background: color-mix(in srgb, var(--text-pr
 .archiveCallout__titleInput { display: block; width: 100%; box-sizing: border-box; margin: 0 0 4px; padding: 0; border: 0; background: transparent; color: var(--text-primary, #fff); font: inherit; font-size: .9rem; font-weight: 700; }
 .archiveCallout__titleInput::placeholder { color: var(--text-more, #9a9a9a); font-weight: 400; }
 .admin-layout .archiveCallout .archiveCallout__titleInput:focus { outline: none; box-shadow: none; border: 0; background: transparent; }
+
+/* ---------- 그래프 보기 (옵시디언 그래프 뷰처럼) ---------- */
+.adminArchive__headActions { display: flex; align-items: center; gap: 8px; }
+.adminArchive__viewSwitch { display: inline-flex; padding: 3px; border: 1px solid var(--admin-line); border-radius: 999px; background: var(--box-1, #121212); }
+.adminArchive__viewSwitch button { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 12px; border: 0; border-radius: 999px; background: transparent; color: var(--text-more, #9a9a9a); font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; }
+.adminArchive__viewSwitch button:hover { color: var(--text-primary, #fff); }
+.adminArchive__viewSwitch button[aria-pressed="true"] { background: var(--admin-primary, #fff); color: var(--admin-on-primary, #000); }
+@media (max-width: 520px) { .adminArchive__viewSwitch button { padding: 0 9px; } .adminArchive__new { padding-inline: 10px; } }
+
+.archiveGraph { position: relative; overflow: hidden; width: 100%; height: 100%; min-height: 220px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.archiveGraph__canvas { display: block; width: 100%; height: 100%; }
+.archiveGraph__empty { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--text-more, #9a9a9a); font-size: .85rem; pointer-events: none; }
+.archiveGraph__zoom { position: absolute; left: 12px; bottom: 12px; display: grid; gap: 4px; }
+.archiveGraph__zoom button,
+.archiveGraphView__settings,
+.graphPanel__icon { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 1px solid var(--admin-line); border-radius: 8px; background: color-mix(in srgb, var(--box-2, #1c1c1c) 88%, transparent); color: var(--text-secondary, #b4b4b4); font-size: 1rem; cursor: pointer; backdrop-filter: blur(6px); }
+.archiveGraph__zoom button:hover,
+.archiveGraphView__settings:hover,
+.graphPanel__icon:hover,
+.graphPanel__icon[aria-pressed="true"] { color: var(--text-primary, #fff); background: var(--box-3, #262626); }
+
+/* 그래프 보기는 화면 전체 (상단 바 포함 덮음). 시트(1200)·모달(9999)은 그 위 */
+.archiveGraphView { position: fixed; inset: 0; z-index: 1000; background: var(--background-dark, #050505); overflow: hidden; }
+.archiveGraphView .archiveGraph { position: absolute; inset: 0; }
+.archiveGraphView__bar { position: absolute; left: max(12px, env(safe-area-inset-left)); top: max(12px, env(safe-area-inset-top)); z-index: 2; display: flex; align-items: center; gap: 10px; max-width: calc(100% - 300px); pointer-events: none; }
+.archiveGraphView__bar > * { pointer-events: auto; }
+.archiveGraphView__back { display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 12px 0 10px; border: 1px solid var(--admin-line); border-radius: 999px; background: color-mix(in srgb, var(--box-2, #1c1c1c) 88%, transparent); color: var(--text-primary, #fff); font: inherit; font-size: .82rem; font-weight: 600; cursor: pointer; backdrop-filter: blur(6px); }
+.archiveGraphView__back:hover { background: var(--box-3, #262626); }
+.archiveGraphView__title { margin: 0; font-size: .95rem; font-weight: 700; white-space: nowrap; }
+.archiveGraphView__stats { margin: 0; color: var(--text-more, #9a9a9a); font-size: .75rem; white-space: nowrap; pointer-events: none; }
+.archiveGraphView__hint { position: absolute; right: 14px; bottom: 10px; max-width: calc(100% - 80px); margin: 0; color: var(--text-more, #9a9a9a); font-size: .72rem; text-align: right; opacity: .75; pointer-events: none; }
+.archiveGraphView__settings { position: absolute; right: 12px; top: 12px; }
+.archiveGraphView .archiveGraph__zoom { left: max(12px, env(safe-area-inset-left)); bottom: max(12px, env(safe-area-inset-bottom)); }
+@media (max-width: 640px) { .archiveGraphView__hint, .archiveGraphView__title { display: none; } .archiveGraphView__bar { max-width: calc(100% - 60px); } }
+
+.graphPanel { position: absolute; right: 12px; top: 12px; z-index: 2; width: 248px; max-height: calc(100% - 24px); overflow-y: auto; scrollbar-width: thin; padding: 6px 0 8px; border: 1px solid var(--admin-line); border-radius: 12px; background: color-mix(in srgb, var(--box-2, #1c1c1c) 94%, transparent); box-shadow: 0 12px 32px -18px rgba(0, 0, 0, .7); backdrop-filter: blur(10px); font-size: .8rem; }
+.graphPanel__top { display: flex; justify-content: flex-end; gap: 4px; padding: 0 8px 2px; }
+.graphPanel__top .graphPanel__icon { width: 26px; height: 26px; border: 0; background: transparent; }
+.graphPanel__section + .graphPanel__section { border-top: 1px solid var(--admin-line); }
+.graphPanel__sectionHead { display: flex; align-items: center; gap: 6px; width: 100%; padding: 9px 12px; border: 0; background: transparent; color: var(--text-primary, #fff); font: inherit; font-weight: 600; text-align: left; cursor: pointer; }
+.graphPanel__sectionHead svg { color: var(--text-more, #9a9a9a); transition: transform .15s ease; }
+.graphPanel__sectionHead[aria-expanded="true"] svg { transform: rotate(90deg); }
+.graphPanel__sectionBody { display: grid; gap: 8px; padding: 0 12px 10px 14px; }
+.graphPanel__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--text-secondary, #b4b4b4); }
+.graphPanel__row--slider { display: grid; gap: 4px; }
+.graphPanel__row input[type="range"] { width: 100%; accent-color: var(--admin-primary, #fff); }
+.graphPanel__switch { position: relative; flex: none; width: 32px; height: 18px; padding: 0; border: 0; border-radius: 999px; background: var(--box-4, #2c2c2c); cursor: pointer; transition: background .15s ease; }
+.graphPanel__switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: var(--text-more, #9a9a9a); transition: transform .15s ease, background .15s ease; }
+.graphPanel__switch[aria-checked="true"] { background: var(--admin-primary, #fff); }
+.graphPanel__switch[aria-checked="true"]::after { transform: translateX(14px); background: var(--admin-on-primary, #000); }
+.graphPanel__switch:focus-visible { outline: 2px solid var(--admin-primary, #fff); outline-offset: 2px; }
+.graphPanel__search { height: 30px; padding: 0 10px; border: 1px solid var(--admin-line); border-radius: 8px; background: var(--box-1, #121212); color: var(--text-primary, #fff); font: inherit; outline: none; }
+.graphPanel__search:focus { border-color: var(--text-more, #9a9a9a); }
+.graphPanel__legend { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 8px; margin: 0; padding: 0; list-style: none; color: var(--text-secondary, #b4b4b4); }
+.graphPanel__legend li { display: flex; align-items: center; gap: 6px; }
+.graphPanel__legend span { width: 9px; height: 9px; border-radius: 50%; background: var(--text-secondary, #b4b4b4); }
+.graphPanel__legend .graphPanel__legendTag { border-radius: 1px; transform: rotate(45deg) scale(.85); background: var(--text-more, #9a9a9a); }
+.graphPanel__legend .graphPanel__legendGhost { background: transparent; border: 1px dashed var(--text-more, #9a9a9a); }
+.graphPanel__animate { height: 30px; margin-top: 2px; border: 0; border-radius: 8px; background: var(--admin-primary, #fff); color: var(--admin-on-primary, #000); font: inherit; font-weight: 600; cursor: pointer; }
+@media (max-width: 640px) { .graphPanel { left: 12px; right: 12px; width: auto; max-height: 60%; } .archiveGraphView .graphPanel { top: 54px; } }
+
+/* 기록 상세의 연관(로컬) 그래프 */
+.archiveLocalGraph { border: 1px solid var(--admin-line); border-radius: 14px; background: var(--box-1, #121212); overflow: hidden; }
+.archiveLocalGraph__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 8px 6px 4px; }
+.archiveLocalGraph__title { display: inline-flex; align-items: center; gap: 6px; padding: 6px 8px; border: 0; background: transparent; color: var(--text-primary, #fff); font: inherit; font-size: .88rem; font-weight: 600; cursor: pointer; }
+.archiveLocalGraph__title svg { color: var(--text-more, #9a9a9a); transition: transform .15s ease; }
+.archiveLocalGraph__title[aria-expanded="true"] svg { transform: rotate(90deg); }
+.archiveLocalGraph__title span { color: var(--text-more, #9a9a9a); font-size: .76rem; font-weight: 500; }
+.archiveLocalGraph__body { position: relative; height: 300px; border-top: 1px solid var(--admin-line); }
+.archiveLocalGraph__body .archiveGraph { position: absolute; inset: 0; }
+.archiveLocalGraph__body .graphPanel { top: 8px; right: 8px; }
+@media (max-width: 640px) { .archiveLocalGraph__body { height: 240px; } }
+
+/* 본문 [[위키링크]] */
+.archiveWiki { display: inline; padding: 0 1px; border: 0; background: transparent; color: var(--text-primary, #fff); font: inherit; font-weight: 600; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--archive-pick) 70%, transparent); text-underline-offset: 3px; cursor: pointer; }
+.archiveWiki:hover { color: var(--archive-pick); }
+.archiveWiki--missing { color: var(--text-more, #9a9a9a); text-decoration-style: dashed; text-decoration-color: currentColor; }
+@media (prefers-reduced-motion: reduce) { .graphPanel__switch, .graphPanel__switch::after, .graphPanel__sectionHead svg, .archiveLocalGraph__title svg { transition: none; } }
+
+/* 갈래 */
+.graphPanel__legend .graphPanel__legendBranch { background: transparent; border: 3px solid var(--text-secondary, #b4b4b4); box-sizing: border-box; }
+.adminArchive__branch { display: inline-flex; align-items: center; height: 20px; margin-left: 8px; padding: 0 8px; border: 1px solid var(--admin-line); border-radius: 999px; background: var(--box-2, #1c1c1c); color: var(--text-secondary, #b4b4b4); font-size: .72rem; font-weight: 600; vertical-align: 1px; }
+.archiveSheet__hint { display: block; margin-top: 4px; color: var(--text-more, #9a9a9a); font-size: .74rem; }

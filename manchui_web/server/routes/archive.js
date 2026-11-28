@@ -4,10 +4,12 @@ const ArchiveEvent = require("../models/ArchiveEvent");
 const User = require("../models/User");
 const requireExecutive = require("../middleware/requireExecutive");
 const { titleFromBody } = require("../utils/archiveNoticeTitle");
+const { wikiLinksOf } = require("../utils/archiveWikiLinks");
 
 /**
  * 임원진 아카이브 (행사별 공지글 묶음). 전부 임원진만.
  *  GET    /api/archive?q=검색어          행사 목록 (행사명·요약·태그·공지 제목/본문 검색)
+ *  GET    /api/archive/graph             그래프 뷰용 전체 기록·항목·위키링크 (본문 제외)
  *  GET    /api/archive/:id               행사 + 공지글
  *  POST   /api/archive                   행사 만들기
  *  PATCH  /api/archive/:id               행사 정보 수정
@@ -83,6 +85,7 @@ const normalizeNotice = (raw) => {
     const start = out.date ?? "";
     out.endDate = isRealDate(e) && start && e > start ? e : "";
   }
+  if (body.branch !== undefined) out.branch = String(body.branch ?? "").trim().replace(/\s+/g, " ").slice(0, 30);
   if (body.kind !== undefined) {
     out.kind = body.kind === "공지" ? "공지" : "일정";
   }
@@ -156,6 +159,45 @@ router.get("/", async (req, res) => {
   } catch (e) {
     console.error(e);
     return res.status(500).json({ message: "아카이브를 불러오지 못했습니다." });
+  }
+});
+
+/**
+ * 그래프 뷰용 가벼운 전체 목록: 본문 대신 본문에서 뽑은 [[위키링크]] 대상만 보낸다.
+ */
+router.get("/graph", async (req, res) => {
+  try {
+    const events = await ArchiveEvent.find({})
+      .select("title startDate endDate eventDate generation category eventGroup tags summary notices._id notices.title notices.date notices.endDate notices.kind notices.tags notices.branch notices.body")
+      .sort({ startDate: -1, eventDate: -1, createdAt: -1 })
+      .limit(500)
+      .lean();
+    return res.json({
+      events: events.map((e) => ({
+        _id: e._id,
+        title: e.title,
+        startDate: e.startDate || e.eventDate || "",
+        endDate: e.endDate || e.startDate || e.eventDate || "",
+        generation: e.generation,
+        category: e.category || "기타",
+        eventGroup: e.eventGroup || "",
+        tags: e.tags ?? [],
+        links: wikiLinksOf(e.summary),
+        notices: (e.notices ?? []).map((n) => ({
+          _id: n._id,
+          title: n.title,
+          date: n.date || "",
+          endDate: n.endDate || "",
+          kind: n.kind,
+          tags: n.tags,
+          branch: n.branch || "",
+          links: wikiLinksOf(`${n.title ?? ""}\n${n.body ?? ""}`),
+        })),
+      })),
+    });
+  } catch (e) {
+    console.error(e);
+    return res.status(500).json({ message: "그래프를 불러오지 못했습니다." });
   }
 });
 
@@ -281,6 +323,7 @@ router.post("/:id/notices/:nid/split", async (req, res) => {
       date: notice.date,
       endDate: notice.endDate,
       kind: notice.kind,
+      branch: notice.branch,
       tags: Array.isArray(notice.tags) ? [...notice.tags] : undefined,
       body: tail,
       authorName: notice.authorName,

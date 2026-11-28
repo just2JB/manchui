@@ -1,10 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useSearchParams } from "react-router-dom";
-import { IoAddOutline, IoCloseOutline } from "react-icons/io5";
+import { IoAddOutline, IoCloseOutline, IoGitNetworkOutline, IoGridOutline } from "react-icons/io5";
 import ArchiveCatalog from "./ArchiveCatalog.jsx";
 import ArchiveBody from "./ArchiveBody.jsx";
+import { ArchiveGraphView, ArchiveLocalGraph } from "./ArchiveGraphView.jsx";
+import { buildWikiIndex } from "./archiveGraphData.js";
 import { noticeTagsOf } from "./archiveNoticeTags.js";
+import { branchOf, branchOptions, inferBranch } from "./archiveBranches.js";
 import { readArchiveLocation, archiveSearchParams } from "./archiveNavigation.js";
 import { CATEGORIES, PERFORMANCE_GROUPS, UNCLASSIFIED_PERFORMANCE, categoryOf, groupOf, generationKey, generationGroups } from "./archiveCatalogData.js";
 import apiClient, { serverUrl } from "../../api/apiClient";
@@ -160,9 +163,14 @@ const ArchiveSheet = ({ title, fields, value, onChange, onClose, onSubmit, submi
                   maxLength={f.maxLength}
                   inputMode={f.inputMode}
                   autoFocus={f.autoFocus}
+                  list={f.suggestions ? `archiveSheet-${f.name}` : undefined}
                   onChange={(e) => onChange({ ...value, [f.name]: e.target.value })}
                 />
               )}
+              {f.suggestions ? <datalist id={`archiveSheet-${f.name}`}>
+                {f.suggestions.map((o) => <option key={o} value={o} />)}
+              </datalist> : null}
+              {f.hint ? <span className="archiveSheet__hint">{f.hint(value)}</span> : null}
             </label>
           ))}
         </div>
@@ -194,6 +202,9 @@ const NOTICE_FIELDS = [
   { name: "title", label: "제목", placeholder: "예: 정기공연 참가 신청 공지", maxLength: 120, autoFocus: true },
   { name: "date", label: "날짜 (타임라인 위치)", type: "date", half: true },
   { name: "endDate", label: "끝 날짜 (기간이면)", type: "date", half: true },
+  { name: "branch", label: "갈래 (누구에게 낸 공지인지)", placeholder: "예: 공연진, 곡장", maxLength: 30,
+    hint: (v) => !String(v.branch ?? "").trim() && inferBranch(v.title)
+      ? `비워 두면 제목을 보고 「${inferBranch(v.title)}」 갈래로 묶어요.` : "그래프에서 이 이름으로 갈라져 뻗어 나가요." },
   { name: "body", label: "본문", placeholder: "단톡방·인스타에 올렸던 공지 내용을 그대로 붙여넣기", multiline: true, rows: 12, maxLength: 20000 },
 ];
 
@@ -285,7 +296,11 @@ const AdminArchive = () => {
   const [query, setQuery] = useState("");
   const [appliedQuery, setAppliedQuery] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
-  const { category: catFilter, group: groupFilter, generation: genFilter, record: selectedId } = readArchiveLocation(searchParams);
+  const { category: catFilter, group: groupFilter, generation: genFilter, record: selectedId, view } = readArchiveLocation(searchParams);
+  /** 그래프 뷰·위키링크용 전체 기록 (본문 대신 링크만) */
+  const [graphEvents, setGraphEvents] = useState([]);
+  const [graphLoading, setGraphLoading] = useState(true);
+  const [graphError, setGraphError] = useState("");
   const [detail, setDetail] = useState(null);
   const [detailLoading, setDetailLoading] = useState(false);
   /** { kind: "event" | "notice", mode: "create" | "edit", noticeId?, value } */
@@ -324,6 +339,21 @@ const AdminArchive = () => {
       if (request === listRequest.current) setListLoading(false);
     }
   }, []);
+
+  const loadGraph = useCallback(async () => {
+    if (!serverUrl) return;
+    try {
+      const res = await apiClient.get("/api/archive/graph", authConfig());
+      setGraphEvents(Array.isArray(res.data?.events) ? res.data.events : []);
+      setGraphError("");
+    } catch (e) {
+      setGraphError(e.response?.data?.message || "그래프를 불러오지 못했습니다.");
+    } finally {
+      setGraphLoading(false);
+    }
+  }, []);
+  useEffect(() => { void loadGraph(); }, [loadGraph]);
+  const resolveWiki = useMemo(() => buildWikiIndex(graphEvents), [graphEvents]);
 
   // 검색: 입력 멈추고 0.25초 뒤
   useEffect(() => {
@@ -407,6 +437,41 @@ const AdminArchive = () => {
     changeLocation({ category, group });
   };
 
+  /** 그래프·[[위키링크]]에서 기록(과 그 안의 항목)을 연다. */
+  const openRecord = (recordId, noticeId) => {
+    const event = graphEvents.find((item) => String(item._id) === recordId) ?? events.find((item) => String(item._id) === recordId);
+    if (!event) return;
+    if (noticeId) {
+      if (selectedId === recordId && detail && String(detail._id) === recordId) setActiveKey(String(noticeId));
+      else setJump({ eventId: recordId, noticeId: String(noticeId), q: "" });
+    }
+    changeLocation({ category: categoryOf(event), group: groupOf(event), generation: generationKey(event), record: recordId });
+  };
+  const openNewRecord = (title = "") => setSheet({ kind: "event", mode: "create", value: {
+    ...EMPTY_EVENT, title, category: catFilter === "all" ? "공연" : catFilter,
+    eventGroup: title ? "" : groupFilter, generation: genFilter === "all" || genFilter === "none" ? "" : genFilter,
+  } });
+  /** 없는 링크 대상: 옵시디언처럼 그 이름으로 새 기록 만들기 */
+  const createFromLink = async (title) => {
+    if (await modal(`「${title}」 기록이 아직 없어요. 이 이름으로 새 기록을 만들까요?`, "confirm")) openNewRecord(title.slice(0, 80));
+  };
+  const openGraphNode = (node) => {
+    if (node.type === "record") openRecord(node.recordId);
+    else if (node.type === "notice") openRecord(node.recordId, node.noticeId);
+    else if (node.type === "group") changeLocation({ category: node.category, group: node.groupName });
+    else if (node.type === "tag") { setQuery(node.tagName); changeLocation({}); }
+    else if (node.type === "ghost") void createFromLink(node.label);
+  };
+  const openWikiLink = (target) => {
+    const hit = resolveWiki(target);
+    if (!hit) void createFromLink(target.replace(/^#/, ""));
+    else if (hit.type === "record") openRecord(hit.recordId);
+    else if (hit.type === "notice") openRecord(hit.recordId, hit.noticeId);
+    else openGraphNode(hit.type === "group"
+      ? { type: "group", groupName: hit.name, category: categoryOf(graphEvents.find((e) => groupOf(e) === hit.name) ?? {}) }
+      : { type: "tag", tagName: hit.name });
+  };
+
   /** 저장 후 해당 분류·행사·기수의 상세를 유지한다. */
   const afterSave = (event) => {
     changeLocation({ category: categoryOf(event), group: groupOf(event), generation: generationKey(event), record: String(event._id) }, selectedId === String(event._id));
@@ -417,6 +482,7 @@ const AdminArchive = () => {
     });
     setDetail(event);
     void loadList(appliedQuery);
+    void loadGraph();
   };
 
   const submitSheet = async () => {
@@ -455,6 +521,7 @@ const AdminArchive = () => {
           date: v.date,
           endDate: v.endDate && v.date && v.endDate > v.date ? v.endDate : "",
           kind: v.kind === "공지" ? "공지" : "일정",
+          branch: v.branch ?? "",
           tags: v.tags || [],
         };
         // 수정할 때 태그를 건드리지 않았으면 보내지 않는다 (태그를 보내면 서버가 날짜 기준 자동 태그를 고정함).
@@ -486,6 +553,7 @@ const AdminArchive = () => {
       setDetail(null);
       changeLocation({ category: catFilter, group: groupFilter }, true);
       void loadList(appliedQuery);
+      void loadGraph();
     } catch (e) {
       await modal(e.response?.data?.message || "삭제하지 못했습니다.");
     }
@@ -550,11 +618,13 @@ const AdminArchive = () => {
       setActiveKey(null);
       return;
     }
+    // 검색 결과·그래프에서 고른 항목이 있으면 그 항목부터 (검색어 없이 온 경우는 한 번만)
+    if (jump && String(jump.eventId) === String(detail?._id) && timeline.some((it) => keyOfItem(it) === String(jump.noticeId))) {
+      setActiveKey(String(jump.noticeId));
+      if (!jump.q) setJump(null);
+      return;
+    }
     setActiveKey((cur) => {
-      // 검색 결과에서 고른 항목이 있으면 그 항목부터
-      if (jump && String(jump.eventId) === String(detail?._id) && timeline.some((it) => keyOfItem(it) === String(jump.noticeId))) {
-        return String(jump.noticeId);
-      }
       if (cur && timeline.some((it) => keyOfItem(it) === cur)) return cur;
       const q = appliedQuery.toLowerCase();
       const hit =
@@ -586,17 +656,25 @@ const AdminArchive = () => {
     <div className="adminArchive adminArchive--catalog">
       <div className="adminArchive__head">
         <h1 className="admin-page-heading">아카이브</h1>
-        <button
-          type="button"
-          className="aBar__save adminArchive__new"
-          onClick={() => setSheet({ kind: "event", mode: "create", value: {
-            ...EMPTY_EVENT, category: catFilter === "all" ? "공연" : catFilter,
-            eventGroup: groupFilter, generation: genFilter === "all" || genFilter === "none" ? "" : genFilter,
-          } })}
-        >
-          <IoAddOutline aria-hidden /> 새 기록
-        </button>
+        <div className="adminArchive__headActions">
+          <div className="adminArchive__viewSwitch" role="group" aria-label="보기 방식">
+            <button type="button" aria-pressed={view === "list"} onClick={() => view !== "list" && changeLocation({
+              category: catFilter, group: groupFilter, generation: genFilter, record: selectedId })}>
+              <IoGridOutline aria-hidden /> 목록
+            </button>
+            <button type="button" aria-pressed={view === "graph"} onClick={() => view !== "graph" && changeLocation({
+              category: catFilter, group: groupFilter, generation: genFilter, record: selectedId, view: "graph" })}>
+              <IoGitNetworkOutline aria-hidden /> 그래프
+            </button>
+          </div>
+          <button type="button" className="aBar__save adminArchive__new" onClick={() => openNewRecord()}>
+            <IoAddOutline aria-hidden /> 새 기록
+          </button>
+        </div>
       </div>
+
+      {view === "graph" ? <ArchiveGraphView events={graphEvents} loading={graphLoading} error={graphError} onOpen={openGraphNode}
+        onExit={() => changeLocation({ category: catFilter, group: groupFilter, generation: genFilter, record: selectedId })} /> : <>
 
       <ArchiveCatalog events={events} category={catFilter} group={groupFilter} generation={genFilter}
         selectedId={selectedId} query={query} onQuery={setQuery} loading={listLoading} error={error}
@@ -663,6 +741,9 @@ const AdminArchive = () => {
                 </p>
               ) : null}
 
+              <ArchiveLocalGraph events={graphEvents} recordId={String(detail._id)}
+                activeNoticeId={activeItem?.kind === "notice" ? String(activeItem.notice._id) : null} onOpen={openGraphNode} />
+
               <div className="adminArchive__noticesHead">
                 <button
                   type="button"
@@ -674,7 +755,7 @@ const AdminArchive = () => {
                     setSheet({
                       kind: "notice",
                       mode: "create",
-                      value: { title: "", body: "", kind: "일정", tags: [], endDate: "", date: start && t > endOf(detail) ? start : t },
+                      value: { title: "", body: "", kind: "일정", tags: [], endDate: "", branch: "", date: start && t > endOf(detail) ? start : t },
                     });
                   }}
                 >
@@ -737,6 +818,8 @@ const AdminArchive = () => {
                                 ? ` · ${periodDays(activeItem.date, activeItem.notice.endDate)}일간`
                                 : ""}
                               {activeItem.notice.authorName ? ` · ${activeItem.notice.authorName}` : ""}
+                              {branchOf(activeItem.notice) ? <span className="adminArchive__branch"
+                                title={activeItem.notice.branch ? "갈래" : "제목으로 추론한 갈래"}>{branchOf(activeItem.notice)}</span> : null}
                             </p>
                             <h4 className="adminArchive__focusTitle">
                               <Highlight text={activeItem.notice.title} query={appliedQuery} />
@@ -748,6 +831,8 @@ const AdminArchive = () => {
                           focusQuery={jump && String(jump.noticeId) === String(activeItem.notice._id) ? jump.q : ''}
                           onFocused={() => setJump(null)}
                           query={appliedQuery}
+                          onWikiLink={openWikiLink}
+                          resolveWiki={resolveWiki}
                           editing={editingId === String(activeItem.notice._id) || activeItem.notice._id in bodyDrafts}
                           onEditStart={() => setEditingId(String(activeItem.notice._id))}
                           onEditEnd={() => { clearDraft(activeItem.notice._id); setEditingId(null); }}
@@ -761,6 +846,7 @@ const AdminArchive = () => {
                               body: bodyDrafts[activeItem.notice._id] ?? activeItem.notice.body ?? "",
                               date: activeItem.notice.date ?? "",
                               endDate: activeItem.notice.endDate ?? "",
+                              branch: activeItem.notice.branch ?? "",
                               kind: activeItem.notice.kind ?? "일정",
                               tags: getTags(activeItem),
                             },
@@ -843,6 +929,7 @@ const AdminArchive = () => {
           ) : null}
         </section>
       </div> : null}
+      </>}
 
       {sheet ? (
         <ArchiveSheet
@@ -858,7 +945,8 @@ const AdminArchive = () => {
           fields={sheet.kind === "event" ? EVENT_FIELDS.map((field) => field.name === "eventGroup" && sheet.value.category === "공연" ? {
             ...field, label: "공연 분류", options: ["", ...PERFORMANCE_GROUPS, UNCLASSIFIED_PERFORMANCE,
               ...(sheet.value.eventGroup && ![...PERFORMANCE_GROUPS, UNCLASSIFIED_PERFORMANCE].includes(sheet.value.eventGroup) ? [sheet.value.eventGroup] : [])],
-          } : field) : NOTICE_FIELDS}
+          } : field) : NOTICE_FIELDS.map((field) => field.name === "branch"
+            ? { ...field, suggestions: branchOptions(detail?.notices) } : field)}
           value={sheet.value}
           onChange={(value) => setSheet((s) => ({ ...s, value: s.kind === "event" && s.value.category !== value.category ? { ...value, eventGroup: "" } : value }))}
           onClose={() => setSheet(null)}

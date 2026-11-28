@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { IoAddOutline, IoTrashOutline } from "react-icons/io5";
 import { useManchuiModal } from "../../hooks/ManchuiModal";
 import { DEFAULT_ICON, SECTION_ICONS, parseSections, serializeSections } from "./archiveSections.js";
+import { splitWikiLinks } from "./archiveGraphData.js";
 
 const Highlight = ({ text, query }) => {
   const q = (query || "").trim();
@@ -12,6 +13,16 @@ const Highlight = ({ text, query }) => {
   );
 };
 
+/** [[위키링크]]는 누를 수 있는 링크로, 나머지는 검색어 강조 */
+const WikiText = ({ text, query, onWikiLink, resolveWiki }) => {
+  if (!onWikiLink || !String(text ?? "").includes("[[")) return <Highlight text={text} query={query} />;
+  return splitWikiLinks(text).map((part, i) => part.link === undefined
+    ? <Highlight key={i} text={part.text} query={query} />
+    : <button key={i} type="button" className={`archiveWiki${resolveWiki?.(part.link) ? "" : " archiveWiki--missing"}`}
+      title={resolveWiki?.(part.link) ? `${part.link} 열기` : `${part.link} (아직 없는 기록)`}
+      onClick={() => onWikiLink(part.link)}><Highlight text={part.text} query={query} /></button>);
+};
+
 const autosize = (el) => {
   if (!el) return;
   el.style.height = "auto";
@@ -19,18 +30,19 @@ const autosize = (el) => {
 };
 
 /** 읽기 화면: 머리말은 평범한 글, 섹션은 노션 콜아웃처럼 */
-const ReadView = ({ value, query, readRef }) => {
+const ReadView = ({ value, query, readRef, onWikiLink, resolveWiki }) => {
+  const link = { onWikiLink, resolveWiki };
   const sections = parseSections(value);
   const empty = sections.every((s) => !s.text);
   return <div ref={readRef} className="archiveBody">
     {empty ? <p className="archiveBody__empty">아직 내용이 없어요. ‘수정하기’를 눌러 작성하세요.</p> : null}
     {sections.map((s, i) => !s.text && (s.icon === null || empty) ? null : s.icon === null
-      ? <div key={i} className="archiveBody__text"><Highlight text={s.text} query={query} /></div>
+      ? <div key={i} className="archiveBody__text"><WikiText text={s.text} query={query} {...link} /></div>
       : <div key={i} className="archiveCallout">
           <span className="archiveCallout__icon" aria-hidden>{s.icon}</span>
           <div className="archiveCallout__text">
-            {s.title ? <strong className="archiveCallout__title"><Highlight text={s.title} query={query} /></strong> : null}
-            <Highlight text={s.text} query={query} />
+            {s.title ? <strong className="archiveCallout__title"><WikiText text={s.title} query={query} {...link} /></strong> : null}
+            <WikiText text={s.text} query={query} {...link} />
           </div>
         </div>)}
   </div>;
@@ -149,7 +161,7 @@ const SectionEditor = ({ initial, value, onDraft, onSave, onCancel, onSplitNotic
  * 저장하지 않은 초안은 부모가 들고 있어서 다른 항목을 보고 와도 편집 상태로 이어진다.
  */
 const ArchiveBody = ({ value, draft, onDraft, onSave, onDelete, onEdit, onSplitNotice, onMergeNotice, mergeLabel,
-  query, focusQuery, onFocused, editing, onEditStart, onEditEnd }) => {
+  query, focusQuery, onFocused, editing, onEditStart, onEditEnd, onWikiLink, resolveWiki }) => {
   const readRef = useRef(null);
   // 검색 결과에서 왔으면: 본문에서 검색어가 화면 가운데 오게
   useEffect(() => {
@@ -172,7 +184,7 @@ const ArchiveBody = ({ value, draft, onDraft, onSave, onDelete, onEdit, onSplitN
     </div>;
   }
   return <div className="archiveEditor">
-    <ReadView value={value} query={query || focusQuery} readRef={readRef} />
+    <ReadView value={value} query={query || focusQuery} readRef={readRef} onWikiLink={onWikiLink} resolveWiki={resolveWiki} />
     <div className="archiveEditor__foot">
       <span />
       <div className="archiveEditor__actions">
